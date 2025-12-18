@@ -1,71 +1,86 @@
 export interface TutorialSlide {
-  title: string;
-  content: string;
-  characterMessage: string;
+  title: string
+  content: string
+  characterMessage: string
 }
 
-export interface Tutorial {
-  lessonId: number;
-  characterName: string;
-  characterEmoji: string;
-  characterImage?: string;
-  slides: TutorialSlide[];
+export interface LessonTutorial {
+  lessonId: number
+  characterName: string
+  characterEmoji: string
+  characterImage?: string
+  slides: TutorialSlide[]
 }
 
-const tutorials: Tutorial[] = [
+export const tutorials: LessonTutorial[] = [
   {
     lessonId: 1,
-    characterName: "コーディー",
-    characterEmoji: "🐍",
+    characterName: 'コーディ（Cody）',
+    characterEmoji: '🐍',
     slides: [
       {
-        title: "print関数を学ぼう",
-        content: "print関数は、Pythonで文字列や変数の値を画面に表示するための関数です。\n\n使い方は簡単です：\nprint(\"表示したい文字列\")\n\nこれで、画面に文字列が表示されます。",
-        characterMessage: "print関数を使って、文字列を画面に表示してみましょう！"
+        title: 'print()関数とは？',
+        content: 'print()は、画面に文字を表示するための命令だ。',
+        characterMessage: 'よし、一緒にPythonの基本を学ぼう！俺が全力でサポートする！',
       },
       {
-        title: "print関数の使い方",
-        content: "print関数は、括弧の中に表示したい内容を書きます。\n\n文字列を表示する場合は、引用符（\"）で囲みます。\n\n例：\nprint(\"Hello World\")\n\nこれで「Hello World」が画面に表示されます。",
-        characterMessage: "引用符で囲むのを忘れないでね！"
-      }
-    ]
+        title: 'print()の使い方',
+        content: 'print()の中に、表示したい文字を " " で囲んで入れるんだ。',
+        characterMessage: 'まずは "Hello World" を表示させてみよう！これがプログラミングの第一歩だ！',
+      },
+      {
+        title: 'さあ、挑戦だ！',
+        content: 'これから実際にコードを組み立ててもらう。',
+        characterMessage: '準備はいいか？腕試しの時間だ！',
+      },
+    ],
   },
   {
     lessonId: 2,
-    characterName: "コーディー",
-    characterEmoji: "🐍",
+    characterName: 'ボックス',
+    characterEmoji: '🤖',
     slides: [
       {
-        title: "変数を使ってみよう",
-        content: "変数は、値を保存しておく箱のようなものです。\n\n変数を作るには、変数名 = 値 と書きます。\n\n例：\nname = \"Yuki\"\n\nこれで、nameという変数に「Yuki」という文字列が保存されます。",
-        characterMessage: "変数を使うと、値を再利用できるようになるよ！"
+        title: '変数とは？',
+        content: '変数は、データを入れておく箱のようなものです。',
+        characterMessage: '変数を使うと、データを保存して何度も使えるようになるよ！',
       },
       {
-        title: "変数の使い方",
-        content: "変数に保存した値は、後で使うことができます。\n\n例：\nname = \"Yuki\"\nprint(name)\n\nこれで、変数nameに保存された「Yuki」が表示されます。",
-        characterMessage: "変数を使うと、コードが分かりやすくなるね！"
-      }
-    ]
+        title: '変数の使い方',
+        content: '変数には名前をつけて、= で値を入れます。',
+        characterMessage: '例えば、name = "Yuki" のように書くんだ。',
+      },
+      {
+        title: 'やってみよう！',
+        content: '実際に変数を使ってみましょう。',
+        characterMessage: '準備はいい？さあ、始めよう！',
+      },
+    ],
   },
   {
     lessonId: 3,
-    characterName: "コーディー",
-    characterEmoji: "🐍",
+    characterName: 'ウィズ',
+    characterEmoji: '🦉',
     slides: [
       {
-        title: "if文で条件分岐",
-        content: "if文は、条件に応じて処理を分けるための構文です。\n\n使い方：\nif 条件:\n    処理\n\n条件が真（True）のときだけ、処理が実行されます。",
-        characterMessage: "if文を使うと、条件によって処理を変えられるよ！"
+        title: '条件分岐とは？',
+        content: 'if文は、条件によって処理を変える命令です。',
+        characterMessage: '条件によって違う結果を出せるようになるよ。',
       },
       {
-        title: "if文の例",
-        content: "例を見てみましょう：\n\nif age >= 10:\n    print(\"10歳以上です\")\n\nageが10以上のときだけ、「10歳以上です」が表示されます。\n\n注意：処理の前には4つのスペース（インデント）が必要です。",
-        characterMessage: "インデントを忘れないでね！"
-      }
-    ]
+        title: 'if文の書き方',
+        content: 'if 条件: の後にインデント（字下げ）をして処理を書きます。',
+        characterMessage: '条件が正しい時だけ、中の処理が実行されるんだ。',
+      },
+      {
+        title: '挑戦してみよう！',
+        content: '実際に条件分岐を使ってみましょう。',
+        characterMessage: 'さあ、やってみよう！',
+      },
+    ],
   },
-];
+]
 
-export function getTutorial(lessonId: number): Tutorial | undefined {
-  return tutorials.find((t) => t.lessonId === lessonId);
+export function getTutorial(lessonId: number): LessonTutorial | undefined {
+  return tutorials.find(t => t.lessonId === lessonId)
 }
