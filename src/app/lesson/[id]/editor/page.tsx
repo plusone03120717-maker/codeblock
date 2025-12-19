@@ -362,7 +362,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
             if (lessonId) {
               localStorage.removeItem(`lesson-${lessonId}-mission`);
             }
-            router.push("/");
+            router.push(`/lesson/${lessonId}/complete`);
           }, 2000);
         }
       } else {
