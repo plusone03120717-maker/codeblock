@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { lessons } from '@/data/lessons'
 import { getTutorial } from '@/data/tutorials'
 
@@ -13,6 +14,7 @@ export default function LessonDetailPage() {
   const lesson = lessons.find(l => l.id === lessonId)
   const tutorial = getTutorial(lessonId)
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [imageError, setImageError] = useState(false)
   
   if (!lesson || !tutorial) {
     return (
@@ -45,8 +47,19 @@ export default function LessonDetailPage() {
           
           {/* キャラクター画像 */}
           <div className="flex-shrink-0">
-            <div className="w-32 h-32 md:w-40 md:h-40 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-purple-200">
-              <span className="text-7xl">{tutorial.characterEmoji}</span>
+            <div className="w-32 h-32 md:w-40 md:h-40 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-purple-200 relative overflow-hidden">
+              {tutorial.characterImage && !imageError ? (
+                <Image
+                  src={tutorial.characterImage}
+                  alt={tutorial.characterName}
+                  width={128}
+                  height={128}
+                  className="object-contain"
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <span className="text-7xl">{tutorial.characterEmoji}</span>
+              )}
             </div>
             <p className="text-center mt-2 font-bold text-gray-700">
               {tutorial.characterName}
@@ -75,6 +88,26 @@ export default function LessonDetailPage() {
           <p className="text-xl text-gray-700 leading-relaxed">
             {slide.content}
           </p>
+          {slide.codeExample && (
+            <div className="mt-4 space-y-3">
+              {slide.codeExample.bad && (
+                <div className="bg-red-50 border-2 border-red-300 rounded-xl p-4">
+                  <div className="text-red-600 font-bold text-sm mb-2">❌ ダメな例</div>
+                  <pre className="bg-red-100 rounded-lg p-3 text-red-800 font-mono text-sm overflow-x-auto">
+                    {slide.codeExample.bad}
+                  </pre>
+                </div>
+              )}
+              {slide.codeExample.good && (
+                <div className="bg-green-50 border-2 border-green-300 rounded-xl p-4">
+                  <div className="text-green-600 font-bold text-sm mb-2">✅ 正しい例</div>
+                  <pre className="bg-green-100 rounded-lg p-3 text-green-800 font-mono text-sm overflow-x-auto">
+                    {slide.codeExample.good}
+                  </pre>
+                </div>
+              )}
+            </div>
+          )}
         </div>
         
         {/* スライドインジケーターとナビゲーション */}

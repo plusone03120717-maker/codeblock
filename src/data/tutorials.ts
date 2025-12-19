@@ -2,6 +2,10 @@ export interface TutorialSlide {
   title: string
   content: string
   characterMessage: string
+  codeExample?: {
+    good?: string    // 正しいコード例
+    bad?: string     // 間違ったコード例
+  }
 }
 
 export interface LessonTutorial {
@@ -17,6 +21,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: 1,
     characterName: 'コーディ（Cody）',
     characterEmoji: '🐍',
+    characterImage: '/images/characters/cody.png',
     slides: [
       {
         title: 'print()関数とは？',
@@ -27,6 +32,26 @@ export const tutorials: LessonTutorial[] = [
         title: 'print()の使い方',
         content: 'print()の中に、表示したい文字を " " で囲んで入れるんだ。',
         characterMessage: 'まずは "Hello World" を表示させてみよう！これがプログラミングの第一歩だ！',
+        codeExample: {
+          good: 'print("Hello World")',
+        },
+      },
+      {
+        title: '改行について',
+        content: 'プログラムは1行ずつ書いていくんだ。print()を2回使うと、2つのメッセージを表示できるよ。',
+        characterMessage: '↵マークは「改行」を意味する。次の行に移るときに使うんだ！',
+        codeExample: {
+          good: 'print("Hello")\nprint("World")',
+        },
+      },
+      {
+        title: '改行を忘れるとエラーになる！',
+        content: 'print()を続けて書くときは、必ず改行を入れよう。同じ行に2つの命令を書くとエラーになってしまうよ。',
+        characterMessage: '↵を使って改行するのを忘れないでね！',
+        codeExample: {
+          bad: 'print("Hello")print("World")',
+          good: 'print("Hello")\nprint("World")',
+        },
       },
       {
         title: 'さあ、挑戦だ！',
