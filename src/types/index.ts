@@ -8,9 +8,26 @@ export interface Block {
 
 export interface Lesson {
   id: string;
+  unitNumber: number;
+  subNumber: number;
   title: string;
   description: string;
-  difficulty: "easy" | "medium" | "hard";
+  difficulty: "かんたん" | "ふつう" | "むずかしい";
+  expectedOutput?: string; // オプショナルに変更（後方互換性のため）
+}
+
+export interface WordBlock {
+  id: string;
+  text: string;
+  type: "keyword" | "operator" | "string" | "number" | "variable";
+  color: string;
+}
+
+export interface Mission {
+  id: number;
+  title: string;
+  description: string;
   expectedOutput: string;
+  availableBlocks: WordBlock[];
 }
 

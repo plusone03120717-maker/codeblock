@@ -1,165 +1,93 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { lessons } from '@/data/lessons'
-import { getProgress, isLessonCompleted } from '@/utils/progress'
+import Link from "next/link";
+import { lessons } from "@/data/lessons";
+import { useState } from "react";
 
 export default function Home() {
-  const [totalXP, setTotalXP] = useState(0)
-  const [completedLessons, setCompletedLessons] = useState<number[]>([])
-  
-  useEffect(() => {
-    const progress = getProgress()
-    setTotalXP(progress.totalXP)
-    setCompletedLessons(progress.completedLessons)
-  }, [])
-  // カラーパレット（レッスン数が増えても自動的に循環）
-  const colorPalette = [
-    {
-      // 紫系
-      border: 'border-purple-200 hover:border-purple-400',
-      badge: 'bg-gradient-to-br from-purple-400 to-purple-500',
-      button: 'bg-gradient-to-r from-purple-400 to-purple-600 hover:from-purple-500 hover:to-purple-700',
-    },
-    {
-      // ピンク系
-      border: 'border-pink-200 hover:border-pink-400',
-      badge: 'bg-gradient-to-br from-pink-400 to-pink-500',
-      button: 'bg-gradient-to-r from-pink-400 to-pink-600 hover:from-pink-500 hover:to-pink-700',
-    },
-    {
-      // 青系
-      border: 'border-blue-200 hover:border-blue-400',
-      badge: 'bg-gradient-to-br from-blue-400 to-blue-500',
-      button: 'bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700',
-    },
-    {
-      // 緑系（レッスン4以降用）
-      border: 'border-green-200 hover:border-green-400',
-      badge: 'bg-gradient-to-br from-green-400 to-green-500',
-      button: 'bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700',
-    },
-    {
-      // オレンジ系（レッスン5以降用）
-      border: 'border-orange-200 hover:border-orange-400',
-      badge: 'bg-gradient-to-br from-orange-400 to-orange-500',
-      button: 'bg-gradient-to-r from-orange-400 to-orange-600 hover:from-orange-500 hover:to-orange-700',
-    },
-    {
-      // 水色系（レッスン6以降用）
-      border: 'border-cyan-200 hover:border-cyan-400',
-      badge: 'bg-gradient-to-br from-cyan-400 to-cyan-500',
-      button: 'bg-gradient-to-r from-cyan-400 to-cyan-600 hover:from-cyan-500 hover:to-cyan-700',
-    },
-  ]
-  
-  // レッスンIDから色を取得（IDが6を超えても循環）
-  const getColorForLesson = (lessonId: number) => {
-    return colorPalette[(lessonId - 1) % colorPalette.length]
-  }
-  
+  const [completedLessons, setCompletedLessons] = useState<string[]>([]);
+
+  // ユニットごとの色定義
+  const colors = [
+    "from-purple-200 to-purple-300",  // ユニット1（print）
+    "from-pink-200 to-pink-300",      // ユニット2（変数）
+    "from-blue-200 to-blue-300",      // ユニット3（条件分岐）
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 via-purple-50 to-blue-50 p-8">
-      <div className="max-w-6xl mx-auto">
-        
-        {/* ヘッダー */}
-        <div className="text-center mb-12">
-          <h1 className="text-6xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-4">
+    <div className="min-h-screen bg-gradient-to-b from-sky-50 to-indigo-100 px-4 py-8 font-sans">
+      <main className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 md:px-6">
+        <header className="text-center md:text-left">
+          <h1 className="text-2xl font-bold text-sky-900 md:text-3xl">
             CodeBlock - Python学習
           </h1>
-          <p className="text-2xl text-gray-700 mb-4">
-            ブロックを組み立てながら、Pythonプログラムの考え方を楽しく学びましょう 🐍
+          <p className="mt-2 text-sm text-sky-800 md:text-base">
+            ブロックを組み立てながら、Python プログラムの考え方を楽しく学びましょう。
           </p>
-          <div className="flex items-center justify-center gap-2 bg-yellow-100 px-4 py-2 rounded-full shadow inline-block">
-            <span className="text-2xl">⭐</span>
-            <span className="text-xl font-bold text-yellow-600">{totalXP} XP</span>
-          </div>
-        </div>
-        
-        {/* レッスン一覧 */}
-        <div className="mb-8">
-          <h2 className="text-4xl font-bold text-gray-800 mb-4">レッスン一覧</h2>
-          <p className="text-xl text-gray-600">
-            まずはレッスン1から順番に、少しずつレベルアップしていきましょう 📚
+        </header>
+
+        <section>
+          <h2 className="text-lg font-semibold text-sky-900 md:text-xl">
+            レッスン一覧
+          </h2>
+          <p className="mt-1 text-xs text-sky-800 md:text-sm">
+            まずはレッスン1から順番に、少しずつレベルアップしていきましょう。
           </p>
-        </div>
-        
-        {/* レッスンカード */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {lessons.map((lesson) => {
-            const difficultyText = lesson.difficulty === 'easy' ? 'やさしい' : lesson.difficulty === 'medium' ? 'ふつう' : '難しい'
-            const colors = getColorForLesson(lesson.id)
-            
-            return (
-              <Link key={lesson.id} href={`/lesson/${lesson.id}`}>
-                <div className={`relative bg-white rounded-3xl shadow-xl p-8 hover:shadow-2xl hover:scale-105 transition-all cursor-pointer border-4 ${colors.border}`}>
-                  
-                  {/* 完了バッジ */}
-                  {completedLessons.includes(lesson.id) && (
-                    <div className="absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow">
-                      ✓ 完了
-                    </div>
-                  )}
-                  
-                  {/* ヘッダー */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-12 h-12 rounded-full ${colors.badge} flex items-center justify-center text-white font-bold text-xl shadow-lg`}>
-                        {lesson.id}
+
+          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {lessons.map((lesson) => {
+              // 色の取得
+              const colorIndex = (lesson.unitNumber - 1) % colors.length;
+              const bgColor = colors[colorIndex];
+              const isCompleted = completedLessons.includes(lesson.id);
+
+              return (
+                <article
+                  key={lesson.id}
+                  className={`flex flex-col justify-between rounded-2xl bg-gradient-to-br ${bgColor} p-4 shadow-sm ring-1 ring-sky-100 transition hover:-translate-y-1 hover:shadow-md ${
+                    isCompleted ? "ring-2 ring-green-400" : ""
+                  }`}
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex flex-col">
+                        <span className="text-lg font-bold text-gray-800">
+                          レッスン {lesson.id}
+                        </span>
+                        <h3 className="text-sm font-bold text-sky-900 md:text-base">
+                          {lesson.title}
+                        </h3>
                       </div>
-                      <h3 className="text-2xl font-bold text-gray-800">
-                        レッスン {lesson.id}
-                      </h3>
+                      <span
+                        className={
+                          "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold md:text-xs " +
+                          (lesson.difficulty === "かんたん"
+                            ? "bg-emerald-50 text-emerald-700"
+                            : lesson.difficulty === "ふつう"
+                            ? "bg-amber-50 text-amber-700"
+                            : "bg-rose-50 text-rose-700")
+                        }
+                      >
+                        {lesson.difficulty}
+                      </span>
                     </div>
+                    <p className="text-xs text-sky-800 md:text-sm">
+                      {lesson.description}
+                    </p>
                   </div>
-                  
-                  {/* 難易度バッジ */}
-                  <div className="mb-4">
-                    <span className={`inline-block px-4 py-2 rounded-full text-sm font-bold shadow-md ${
-                      lesson.difficulty === 'easy' 
-                        ? 'bg-green-200 text-green-800' 
-                        : lesson.difficulty === 'medium'
-                        ? 'bg-yellow-200 text-yellow-800'
-                        : 'bg-red-200 text-red-800'
-                    }`}>
-                      {difficultyText}
-                    </span>
-                  </div>
-                  
-                  {/* タイトル */}
-                  <h4 className="text-2xl font-bold text-gray-900 mb-4">
-                    {lesson.title}
-                  </h4>
-                  
-                  {/* 説明 */}
-                  <p className="text-gray-600 mb-6 text-lg leading-relaxed">
-                    {lesson.description}
-                  </p>
-                  
-                  {/* 開始ボタン */}
-                  {completedLessons.includes(lesson.id) ? (
-                    <button className="w-full bg-gradient-to-r from-blue-400 to-cyan-400 hover:from-blue-500 hover:to-cyan-500 text-white px-8 py-4 rounded-full font-bold text-xl transition-all shadow-lg hover:shadow-xl border-2 border-white">
-                      🔄 復習する
-                    </button>
-                  ) : (
-                    <button className={`w-full ${colors.button} text-white px-8 py-4 rounded-full font-bold text-xl transition-all shadow-lg hover:shadow-xl border-2 border-white`}>
-                      開始 →
-                    </button>
-                  )}
-                </div>
-              </Link>
-            )
-          })}
-        </div>
-        
-        {/* フッター */}
-        <div className="text-center mt-16">
-          <p className="text-gray-500 text-lg">
-            全{lessons.length}レッスンで、Pythonの基礎をマスターしよう！✨
-          </p>
-        </div>
-      </div>
+
+                  <Link
+                    href={`/lesson/${lesson.id}`}
+                    className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-sky-500 px-4 py-2 text-center text-xs font-semibold text-white shadow-sm transition hover:bg-sky-600 active:scale-95 md:text-sm"
+                  >
+                    {isCompleted ? "✓ 完了" : "開始"}
+                  </Link>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      </main>
     </div>
-  )
+  );
 }

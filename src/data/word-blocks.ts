@@ -148,13 +148,14 @@ export const lesson3Blocks: WordBlock[] = [
 ];
 
 export function getLessonBlocks(lessonId: string): WordBlock[] {
-  // レッスンIDからmainLessonIdを取得
-  const id = parseInt(lessonId, 10);
-  if (id === 1) return lesson1Blocks;
-  if (id === 2) return lesson2Blocks;
-  if (id === 3) return lesson3Blocks;
+  // レッスンIDからunitNumberを取得（"1-1" -> 1）
+  const unitNumber = parseInt(lessonId.split("-")[0], 10);
+  if (unitNumber === 1) return lesson1Blocks;
+  if (unitNumber === 2) return lesson2Blocks;
+  if (unitNumber === 3) return lesson3Blocks;
   return [];
 }
+
 
 
 
