@@ -6,7 +6,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { getLesson, getNextLesson } from "@/data/lessons";
 import { getTutorial } from "@/data/tutorials";
-import { addLessonComplete, getProgress } from "@/utils/progress";
+import { 
+  addXP, 
+  calculateLessonCompleteXP, 
+  markLessonComplete,
+  getLevelInfo,
+  getLevelProgress,
+  getProgress
+} from "@/utils/progress";
 
 type CompletePageProps = {
   params: Promise<{
@@ -18,8 +25,14 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
   const router = useRouter();
   const [lessonId, setLessonId] = useState<string | null>(null);
   const [imageError, setImageError] = useState(false);
-  const [xpGained, setXpGained] = useState(0);
+  const [earnedXP, setEarnedXP] = useState(0);
+  const [isReview, setIsReview] = useState(false);
   const [leveledUp, setLeveledUp] = useState(false);
+  const [newLevelInfo, setNewLevelInfo] = useState<{ level: number; name: string } | null>(null);
+  const [totalXP, setTotalXP] = useState(0);
+  const [levelInfo, setLevelInfo] = useState(getLevelInfo(0));
+  const [levelProgress, setLevelProgress] = useState(0);
+  const [xpProcessed, setXpProcessed] = useState(false);
 
   useEffect(() => {
     params.then((p) => {
@@ -27,17 +40,35 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
       if (id) {
         setLessonId(id);
         setImageError(false);
-        
-        // レッスンを完了にする（XPを追加）
-        const oldProgress = getProgress();
-        const newProgress = addLessonComplete(id, 100);
-        
-        // XP獲得とレベルアップ判定
-        setXpGained(100);
-        setLeveledUp(newProgress.level > oldProgress.level);
       }
     });
   }, [params]);
+
+  useEffect(() => {
+    if (!lessonId || xpProcessed) return;
+    
+    setXpProcessed(true);
+    
+    const progress = getProgress();
+    const oldLevel = getLevelInfo(progress.totalXP);
+    
+    const { xp, isReview: review } = calculateLessonCompleteXP(lessonId);
+    setEarnedXP(xp);
+    setIsReview(review);
+    
+    const { newTotal, newLevel } = addXP(xp);
+    setTotalXP(newTotal);
+    setLevelInfo(newLevel);
+    setLevelProgress(getLevelProgress(newTotal));
+    
+    const didLevelUp = newLevel.level > oldLevel.level;
+    if (didLevelUp) {
+      setLeveledUp(true);
+      setNewLevelInfo({ level: newLevel.level, name: newLevel.name });
+    }
+    
+    markLessonComplete(lessonId);
+  }, [lessonId, xpProcessed]);
 
   const currentLesson = lessonId ? getLesson(lessonId) : undefined;
   const nextLesson = lessonId ? getNextLesson(lessonId) : undefined;
@@ -151,26 +182,37 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
             </div>
           )}
 
-          {/* XP獲得表示 */}
-          <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl p-6 mb-6 border-2 border-yellow-300">
-            <div className="flex items-center justify-center gap-4">
-              <span className="text-3xl">⭐</span>
-              <div className="text-center">
-                <p className="text-sm text-gray-600 mb-1">獲得経験値</p>
-                <p className="text-3xl font-bold text-orange-700">
-                  +{xpGained} XP
-                </p>
+          {/* XPアニメーション */}
+          <div className="py-4">
+            <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl p-6 mb-6 border-2 border-yellow-300">
+              <div className="flex items-center justify-center gap-4">
+                <span className="text-3xl">⭐</span>
+                <div className="text-center">
+                  <p className="text-sm text-gray-600 mb-1">獲得経験値</p>
+                  <p className="text-3xl font-bold text-orange-700">
+                    +{earnedXP} XP
+                  </p>
+                </div>
+                <span className="text-3xl">⭐</span>
               </div>
-              <span className="text-3xl">⭐</span>
             </div>
-            {leveledUp && (
-              <div className="mt-4 text-center">
-                <p className="text-xl font-bold text-purple-700">
-                  🎊 レベルアップ！ 🎊
-                </p>
-              </div>
-            )}
+            <p className="text-gray-500 mt-2 text-center">
+              {isReview ? "🔄 復習ボーナス" : "🎉 初回クリアボーナス"}
+            </p>
           </div>
+
+          {/* レベルアップ表示 */}
+          {leveledUp && newLevelInfo && (
+            <div className="bg-gradient-to-r from-yellow-200 to-orange-200 rounded-2xl p-6 mb-4 animate-pulse border-4 border-yellow-400 shadow-lg">
+              <div className="text-4xl mb-2 text-center">🎊</div>
+              <p className="text-2xl font-bold text-orange-600 mb-2 text-center">
+                レベルアップ！
+              </p>
+              <p className="text-3xl font-bold text-orange-500 text-center">
+                Lv.{newLevelInfo.level} {newLevelInfo.name}
+              </p>
+            </div>
+          )}
 
           {/* ナビゲーションボタン */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -195,6 +237,29 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
                 </p>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* 統計カード */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border-2 border-purple-200">
+          <div className="grid grid-cols-3 gap-4 text-sm">
+            <div className="bg-white rounded-xl p-3">
+              <div className="text-2xl">✅</div>
+              <div className="text-gray-500">クリア</div>
+              <div className="font-bold text-lg text-green-500">10/10</div>
+            </div>
+            <div className="bg-white rounded-xl p-3">
+              <div className="text-2xl">⭐</div>
+              <div className="text-gray-500">レベル</div>
+              <div className="font-bold text-lg text-yellow-500">Lv.{levelInfo.level}</div>
+            </div>
+            <div className="bg-white rounded-xl p-3">
+              <div className="text-2xl">💎</div>
+              <div className="text-gray-500">
+                <ruby>累計<rt>るいけい</rt></ruby>XP
+              </div>
+              <div className="font-bold text-lg text-purple-500">{totalXP}</div>
+            </div>
           </div>
         </div>
 

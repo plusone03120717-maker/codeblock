@@ -8,6 +8,15 @@ import { lessons } from "@/data/lessons";
 import { getLessonMissions, getMission } from "@/data/missions";
 import { getTutorial } from "@/data/tutorials";
 import { WordBlock } from "@/types";
+import { 
+  getProgress, 
+  addXP, 
+  calculateMissionXP, 
+  updateStreak, 
+  resetStreak,
+  getLevelInfo,
+  getLevelProgress
+} from "@/utils/progress";
 import {
   DndContext,
   closestCenter,
@@ -208,6 +217,13 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   const [executionResult, setExecutionResult] = useState<ExecutionResult>(null);
   const [isExecuting, setIsExecuting] = useState<boolean>(false);
   const [imageError, setImageError] = useState(false);
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const [earnedXP, setEarnedXP] = useState<number | null>(null);
+  const [streakBonus, setStreakBonus] = useState(0);
+  const [showXPAnimation, setShowXPAnimation] = useState(false);
+  const [totalXP, setTotalXP] = useState(0);
+  const [levelInfo, setLevelInfo] = useState(getLevelInfo(0));
+  const [levelProgress, setLevelProgress] = useState(0);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -244,6 +260,14 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       }
     });
   }, [params]);
+
+  useEffect(() => {
+    const progress = getProgress();
+    setCurrentStreak(progress.currentStreak);
+    setTotalXP(progress.totalXP);
+    setLevelInfo(getLevelInfo(progress.totalXP));
+    setLevelProgress(getLevelProgress(progress.totalXP));
+  }, []);
 
   const lesson = lessonId ? lessons.find((l) => l.id === lessonId) : undefined;
   const missions = lessonId ? getLessonMissions(lessonId) : undefined;
@@ -345,6 +369,27 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           output: actualOutput,
         });
 
+        // XP計算
+        const { xp, streakBonus: bonus, newStreak } = calculateMissionXP(true, currentStreak);
+        setCurrentStreak(newStreak);
+        setEarnedXP(xp);
+        setStreakBonus(bonus);
+        setShowXPAnimation(true);
+        updateStreak(newStreak);
+
+        // XPを加算
+        const { newTotal, leveledUp, newLevel } = addXP(xp);
+        setTotalXP(newTotal);
+        setLevelInfo(newLevel);
+        setLevelProgress(getLevelProgress(newTotal));
+
+        // アニメーション後にリセット
+        setTimeout(() => {
+          setShowXPAnimation(false);
+          setEarnedXP(null);
+          setStreakBonus(0);
+        }, 1500);
+
         // 次のミッションまたはレッスン完了
         if (currentMissionId < (missions?.length || 0)) {
           // 次のミッションへ
@@ -374,6 +419,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           output: actualOutput,
           error: "期待される出力と異なります。もう一度試してみましょう！",
         });
+        setCurrentStreak(0);
+        resetStreak();
       }
     } catch (error) {
       setExecutionResult({
@@ -437,6 +484,16 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 via-purple-50 to-blue-50 p-8">
+      {showXPAnimation && earnedXP !== null && (
+        <div className="fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 animate-bounce">
+          <div className="bg-yellow-400 text-white px-6 py-3 rounded-full text-2xl font-bold shadow-lg">
+            +{earnedXP} XP
+            {streakBonus > 0 && (
+              <span className="ml-2 text-green-200">(+{streakBonus}ボーナス)</span>
+            )}
+          </div>
+        </div>
+      )}
       <div className="max-w-5xl mx-auto">
         {/* ホームに戻るボタン（左上） */}
         <div className="mb-4">
@@ -464,6 +521,36 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           >
             ← レッスン詳細に戻る
           </Link>
+
+          {/* XPとレベル表示 */}
+          <div className="mb-4 bg-white rounded-2xl p-4 shadow-lg border-2 border-yellow-200">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">⭐</span>
+                <span className="font-bold text-yellow-600">Lv.{levelInfo.level} {levelInfo.name}</span>
+              </div>
+              <div className="text-lg font-bold text-yellow-500">{totalXP} XP</div>
+            </div>
+            
+            {/* レベルプログレスバー */}
+            <div className="w-full bg-gray-200 rounded-full h-3">
+              <div 
+                className="bg-gradient-to-r from-yellow-400 to-orange-400 h-3 rounded-full transition-all duration-500"
+                style={{ width: `${levelProgress * 100}%` }}
+              />
+            </div>
+            
+            {/* 連続正解表示 */}
+            {currentStreak > 0 && (
+              <div className="mt-2 text-center">
+                <span className="text-orange-500 font-bold">🔥 {currentStreak}連続正解！</span>
+                {currentStreak % 3 === 0 && currentStreak > 0 && (
+                  <span className="ml-2 text-green-500 font-bold">ボーナス獲得！</span>
+                )}
+              </div>
+            )}
+          </div>
+
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-2xl font-bold text-gray-800">
               ミッション {currentMissionId} / {missions.length}

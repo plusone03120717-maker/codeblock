@@ -2,10 +2,31 @@
 
 import Link from "next/link";
 import { lessons } from "@/data/lessons";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { 
+  getProgress, 
+  getLevelInfo, 
+  getLevelProgress, 
+  getXPToNextLevel 
+} from "@/utils/progress";
 
 export default function Home() {
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
+  const [totalXP, setTotalXP] = useState(0);
+  const [levelInfo, setLevelInfo] = useState({ level: 1, name: "ビギナー", minXP: 0, maxXP: 99 });
+  const [levelProgress, setLevelProgress] = useState(0);
+  const [xpToNext, setXpToNext] = useState(100);
+  const [highestStreak, setHighestStreak] = useState(0);
+
+  useEffect(() => {
+    const progress = getProgress();
+    setTotalXP(progress.totalXP);
+    setCompletedLessons(progress.completedLessons);
+    setLevelInfo(getLevelInfo(progress.totalXP));
+    setLevelProgress(getLevelProgress(progress.totalXP));
+    setXpToNext(getXPToNextLevel(progress.totalXP));
+    setHighestStreak(progress.highestStreak);
+  }, []);
 
   // ユニットごとの色定義
   const colors = [
@@ -25,6 +46,48 @@ export default function Home() {
             ブロックを組み立てながら、Python プログラムの考え方を楽しく学びましょう。
           </p>
         </header>
+
+        {/* ステータスカード */}
+        <div className="bg-white rounded-3xl shadow-xl p-6 mb-8 border-2 border-yellow-200">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            {/* レベルとXP */}
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center shadow-lg">
+                <span className="text-2xl font-bold text-white">{levelInfo.level}</span>
+              </div>
+              <div>
+                <p className="text-lg font-bold text-gray-800">{levelInfo.name}</p>
+                <p className="text-yellow-600 font-bold">{totalXP} XP</p>
+              </div>
+            </div>
+            
+            {/* 最高連続正解 */}
+            {highestStreak > 0 && (
+              <div className="flex items-center gap-2 bg-orange-100 px-4 py-2 rounded-full">
+                <span className="text-xl">🔥</span>
+                <span className="font-bold text-orange-600">
+                  <ruby>最高<rt>さいこう</rt></ruby>{highestStreak}<ruby>連続<rt>れんぞく</rt></ruby>
+                </span>
+              </div>
+            )}
+          </div>
+          
+          {/* XPプログレスバー */}
+          <div className="mt-4">
+            <div className="flex justify-between text-sm text-gray-600 mb-1">
+              <span>Lv.{levelInfo.level}</span>
+              <span>
+                <ruby>次<rt>つぎ</rt></ruby>のレベルまで {xpToNext} XP
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-4">
+              <div 
+                className="bg-gradient-to-r from-yellow-400 to-orange-400 h-4 rounded-full transition-all duration-500"
+                style={{ width: `${levelProgress * 100}%` }}
+              />
+            </div>
+          </div>
+        </div>
 
         <section>
           <h2 className="text-lg font-semibold text-sky-900 md:text-xl">
