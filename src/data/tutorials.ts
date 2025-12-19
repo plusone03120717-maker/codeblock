@@ -3,8 +3,8 @@ export interface TutorialSlide {
   content: string
   characterMessage: string
   codeExample?: {
-    good?: string    // 正しいコード例
-    bad?: string     // 間違ったコード例
+    good?: string
+    bad?: string
   }
 }
 

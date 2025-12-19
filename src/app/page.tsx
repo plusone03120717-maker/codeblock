@@ -1,9 +1,19 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { lessons } from '@/data/lessons'
+import { getProgress, isLessonCompleted } from '@/utils/progress'
 
 export default function Home() {
+  const [totalXP, setTotalXP] = useState(0)
+  const [completedLessons, setCompletedLessons] = useState<number[]>([])
+  
+  useEffect(() => {
+    const progress = getProgress()
+    setTotalXP(progress.totalXP)
+    setCompletedLessons(progress.completedLessons)
+  }, [])
   // カラーパレット（レッスン数が増えても自動的に循環）
   const colorPalette = [
     {
@@ -58,9 +68,13 @@ export default function Home() {
           <h1 className="text-6xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-4">
             CodeBlock - Python学習
           </h1>
-          <p className="text-2xl text-gray-700">
+          <p className="text-2xl text-gray-700 mb-4">
             ブロックを組み立てながら、Pythonプログラムの考え方を楽しく学びましょう 🐍
           </p>
+          <div className="flex items-center justify-center gap-2 bg-yellow-100 px-4 py-2 rounded-full shadow inline-block">
+            <span className="text-2xl">⭐</span>
+            <span className="text-xl font-bold text-yellow-600">{totalXP} XP</span>
+          </div>
         </div>
         
         {/* レッスン一覧 */}
@@ -79,7 +93,14 @@ export default function Home() {
             
             return (
               <Link key={lesson.id} href={`/lesson/${lesson.id}`}>
-                <div className={`bg-white rounded-3xl shadow-xl p-8 hover:shadow-2xl hover:scale-105 transition-all cursor-pointer border-4 ${colors.border}`}>
+                <div className={`relative bg-white rounded-3xl shadow-xl p-8 hover:shadow-2xl hover:scale-105 transition-all cursor-pointer border-4 ${colors.border}`}>
+                  
+                  {/* 完了バッジ */}
+                  {completedLessons.includes(lesson.id) && (
+                    <div className="absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow">
+                      ✓ 完了
+                    </div>
+                  )}
                   
                   {/* ヘッダー */}
                   <div className="flex items-center justify-between mb-6">
@@ -117,9 +138,15 @@ export default function Home() {
                   </p>
                   
                   {/* 開始ボタン */}
-                  <button className={`w-full ${colors.button} text-white px-8 py-4 rounded-full font-bold text-xl transition-all shadow-lg hover:shadow-xl border-2 border-white`}>
-                    開始 →
-                  </button>
+                  {completedLessons.includes(lesson.id) ? (
+                    <button className="w-full bg-gradient-to-r from-blue-400 to-cyan-400 hover:from-blue-500 hover:to-cyan-500 text-white px-8 py-4 rounded-full font-bold text-xl transition-all shadow-lg hover:shadow-xl border-2 border-white">
+                      🔄 復習する
+                    </button>
+                  ) : (
+                    <button className={`w-full ${colors.button} text-white px-8 py-4 rounded-full font-bold text-xl transition-all shadow-lg hover:shadow-xl border-2 border-white`}>
+                      開始 →
+                    </button>
+                  )}
                 </div>
               </Link>
             )

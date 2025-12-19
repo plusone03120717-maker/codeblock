@@ -2,7 +2,10 @@
 
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { lessons } from '@/data/lessons'
+import { addLessonComplete } from '@/utils/progress'
+import { getTutorial } from '@/data/tutorials'
 
 export default function LessonCompletePage() {
   const params = useParams()
@@ -15,6 +18,8 @@ export default function LessonCompletePage() {
   const [xp, setXp] = useState(0)
   const [showStats, setShowStats] = useState(false)
   const [showButtons, setShowButtons] = useState(false)
+  const [imageError, setImageError] = useState(false)
+  const tutorial = lessonId ? getTutorial(lessonId) : undefined
   
   // XPカウントアップアニメーション
   useEffect(() => {
@@ -46,6 +51,13 @@ export default function LessonCompletePage() {
       clearTimeout(buttonsTimer)
     }
   }, [])
+  
+  // レッスン完了時にXPを保存
+  useEffect(() => {
+    if (lessonId) {
+      addLessonComplete(lessonId, 100)
+    }
+  }, [lessonId])
   
   if (!currentLesson) {
     return (
@@ -161,8 +173,19 @@ export default function LessonCompletePage() {
           
           {/* コーディのお祝い */}
           <div className="text-center mb-12">
-            <div className="text-8xl mb-6 bounce-animation">
-              🐍
+            <div className="w-32 h-32 mx-auto mb-6 bounce-animation">
+              {tutorial?.characterImage && !imageError ? (
+                <Image
+                  src={tutorial.characterImage}
+                  alt={tutorial.characterName || "キャラクター"}
+                  width={128}
+                  height={128}
+                  className="object-contain"
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <span className="text-8xl block text-center">{tutorial?.characterEmoji || "🐍"}</span>
+              )}
             </div>
             <h1 className="text-6xl font-bold text-gray-800 mb-4">
               レッスン<ruby>完了<rt>かんりょう</rt></ruby>！

@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { lessons } from '@/data/lessons'
 import { getTutorial } from '@/data/tutorials'
+import { isLessonCompleted } from '@/utils/progress'
 
 export default function LessonDetailPage() {
   const params = useParams()
@@ -15,6 +16,13 @@ export default function LessonDetailPage() {
   const tutorial = getTutorial(lessonId)
   const [currentSlide, setCurrentSlide] = useState(0)
   const [imageError, setImageError] = useState(false)
+  const [isCompleted, setIsCompleted] = useState(false)
+  
+  useEffect(() => {
+    if (lessonId) {
+      setIsCompleted(isLessonCompleted(lessonId))
+    }
+  }, [lessonId])
   
   if (!lesson || !tutorial) {
     return (
@@ -162,12 +170,21 @@ export default function LessonDetailPage() {
             ← ホームに戻る
           </button>
           
-          <button
-            onClick={() => router.push(`/lesson/${lessonId}/editor`)}
-            className="flex-1 bg-gradient-to-r from-green-300 to-emerald-400 hover:from-green-400 hover:to-emerald-500 text-white px-12 py-4 rounded-full font-bold text-xl shadow-lg hover:shadow-xl transition-all border-2 border-white"
-          >
-            ミッション開始！ 🚀
-          </button>
+          {isCompleted ? (
+            <button
+              onClick={() => router.push(`/lesson/${lessonId}/editor`)}
+              className="flex-1 bg-gradient-to-r from-blue-400 to-cyan-400 hover:from-blue-500 hover:to-cyan-500 text-white px-12 py-4 rounded-full font-bold text-xl shadow-lg hover:shadow-xl transition-all border-2 border-white"
+            >
+              🔄 復習する
+            </button>
+          ) : (
+            <button
+              onClick={() => router.push(`/lesson/${lessonId}/editor`)}
+              className="flex-1 bg-gradient-to-r from-green-300 to-emerald-400 hover:from-green-400 hover:to-emerald-500 text-white px-12 py-4 rounded-full font-bold text-xl shadow-lg hover:shadow-xl transition-all border-2 border-white"
+            >
+              ミッション開始！ 🚀
+            </button>
+          )}
         </div>
       </div>
     </div>
