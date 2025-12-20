@@ -369,11 +369,24 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       const actualOutput = output || "";
       const expectedOutput = currentMission?.expectedOutput || "";
 
-      // 出力を比較（改行を正規化）
+      // スペースを保持したまま、前後の空白と末尾の改行のみ除去
       const normalizedActual = actualOutput.trim();
       const normalizedExpected = expectedOutput.trim();
 
-      if (normalizedActual === normalizedExpected) {
+      // 出力結果の比較
+      const outputMatches = normalizedActual === normalizedExpected;
+
+      // レッスン1-4（文字列連結）の場合、「+」を使っているかもチェック
+      let codeIsValid = true;
+      if (lessonId === "1-4") {
+        // 生成されたコードに「+」が含まれているか確認
+        if (!code.includes("+")) {
+          codeIsValid = false;
+        }
+      }
+
+      // 両方の条件を満たした場合のみ正解
+      if (outputMatches && codeIsValid) {
         // 正解時の表示を更新
         setExecutionResult({
           success: true,
@@ -425,10 +438,14 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         }
       } else {
         // 不正解
+        let errorMessage = "期待される出力と異なります。もう一度試してみましょう！";
+        if (!codeIsValid) {
+          errorMessage = "「+」を使って文字列をつなげてね！";
+        }
         setExecutionResult({
           success: false,
           output: actualOutput,
-          error: "期待される出力と異なります。もう一度試してみましょう！",
+          error: errorMessage,
         });
         setCurrentStreak(0);
         resetStreak();
