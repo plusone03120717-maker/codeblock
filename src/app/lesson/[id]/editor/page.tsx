@@ -22,6 +22,7 @@ import {
   closestCenter,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   DragEndEvent,
@@ -181,13 +182,13 @@ function DraggableBlock({ block, index, onRemove }: DraggableBlockProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className="inline-block relative"
+      className="inline-block relative touch-none"
     >
       {/* メインブロック（ドラッグ用） */}
       <div
         {...attributes}
         {...listeners}
-        className={`${block.color} text-gray-700 px-5 py-3 rounded-2xl text-lg font-mono shadow-md hover:shadow-lg transition-all border-2 border-white cursor-grab active:cursor-grabbing select-none`}
+        className={`${block.color} text-gray-700 px-3 py-2 rounded-xl text-sm font-mono shadow-md hover:shadow-lg transition-all border-2 border-white cursor-grab active:cursor-grabbing select-none`}
       >
         {block.text}
       </div>
@@ -199,7 +200,7 @@ function DraggableBlock({ block, index, onRemove }: DraggableBlockProps) {
           e.stopPropagation();
           onRemove(index);
         }}
-        className="absolute -top-2 -right-2 bg-red-400 hover:bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold shadow-md hover:shadow-lg transition-all border-2 border-white z-10"
+        className="absolute -top-1 -right-1 bg-red-400 hover:bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-md hover:shadow-lg transition-all border-2 border-white z-10"
         type="button"
       >
         ×
@@ -226,7 +227,17 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   const [levelProgress, setLevelProgress] = useState(0);
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 200,
+        tolerance: 5,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -483,7 +494,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 via-purple-50 to-blue-50 p-8">
+    <div className="min-h-screen bg-gradient-to-b from-pink-50 via-purple-50 to-blue-50 p-2 md:p-4">
       {showXPAnimation && earnedXP !== null && (
         <div className="fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 animate-bounce">
           <div className="bg-yellow-400 text-white px-6 py-3 rounded-full text-2xl font-bold shadow-lg">
@@ -495,75 +506,55 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         </div>
       )}
       <div className="max-w-5xl mx-auto">
-        {/* ホームに戻るボタン（左上） */}
-        <div className="mb-4">
+        {/* ホームに戻るリンク */}
+        <div className="mb-2">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-gray-700 hover:text-gray-900 font-semibold transition-colors"
+            className="inline-flex items-center gap-1 text-gray-700 hover:text-gray-900 font-semibold transition-colors text-sm"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
+              className="h-4 w-4"
               viewBox="0 0 20 20"
               fill="currentColor"
             >
               <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
             </svg>
-            ホームに戻る
+            ホーム
           </Link>
         </div>
 
-        {/* 進捗バー */}
-        <div className="mb-8">
-          <Link
-            href={`/lesson/${lessonId}`}
-            className="inline-block text-blue-600 hover:text-blue-800 mb-4"
-          >
-            ← レッスン詳細に戻る
-          </Link>
-
-          {/* XPとレベル表示 */}
-          <div className="mb-4 bg-white rounded-2xl p-4 shadow-lg border-2 border-yellow-200">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">⭐</span>
-                <span className="font-bold text-yellow-600">Lv.{levelInfo.level} {levelInfo.name}</span>
-              </div>
-              <div className="text-lg font-bold text-yellow-500">{totalXP} XP</div>
-            </div>
-            
-            {/* レベルプログレスバー */}
-            <div className="w-full bg-gray-200 rounded-full h-3">
+        {/* XPとレベル表示（コンパクト版） */}
+        <div className="flex items-center justify-between bg-white rounded-xl p-2 shadow border border-yellow-200 mb-2">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">⭐</span>
+            <span className="font-bold text-yellow-600 text-sm">Lv.{levelInfo.level}</span>
+            <span className="text-yellow-500 text-sm">{totalXP} XP</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-24 bg-gray-200 rounded-full h-2">
               <div 
-                className="bg-gradient-to-r from-yellow-400 to-orange-400 h-3 rounded-full transition-all duration-500"
+                className="bg-gradient-to-r from-yellow-400 to-orange-400 h-2 rounded-full transition-all"
                 style={{ width: `${levelProgress * 100}%` }}
               />
             </div>
-            
-            {/* 連続正解表示 */}
             {currentStreak > 0 && (
-              <div className="mt-2 text-center">
-                <span className="text-orange-500 font-bold">🔥 {currentStreak}連続正解！</span>
-                {currentStreak % 3 === 0 && currentStreak > 0 && (
-                  <span className="ml-2 text-green-500 font-bold">ボーナス獲得！</span>
-                )}
-              </div>
+              <span className="text-orange-500 font-bold text-sm">🔥{currentStreak}</span>
             )}
           </div>
+        </div>
 
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-2xl font-bold text-gray-800">
-              ミッション {currentMissionId} / {missions.length}
-            </h2>
-            <span className="text-sm text-gray-600">
-              残り {missions.length - currentMissionId} 問
-            </span>
+        {/* 進捗バー（コンパクト版） */}
+        <div className="mb-2">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-sm font-bold text-gray-700">ミッション {currentMissionId}/{missions.length}</span>
+            <span className="text-xs text-gray-500">残り {missions.length - currentMissionId} 問</span>
           </div>
           <div className="flex gap-1">
             {missions.map((_, index) => (
               <div
                 key={index}
-                className={`flex-1 h-3 rounded-full transition-all ${
+                className={`flex-1 h-2 rounded-full ${
                   index < currentMissionId - 1
                     ? "bg-green-400"
                     : index === currentMissionId - 1
@@ -575,213 +566,197 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           </div>
         </div>
 
-        {/* ミッション内容 */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border-2 border-blue-200">
-          {/* キャラクターとメッセージ */}
-          {tutorial && (
-            <div className="flex flex-col md:flex-row gap-6 mb-6">
-              {/* キャラクター画像 */}
-              <div className="flex-shrink-0">
-                <div className="w-24 h-24 md:w-32 md:h-32 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-purple-200 relative overflow-hidden">
-                  {tutorial.characterImage && !imageError ? (
-                    <Image
-                      src={tutorial.characterImage}
-                      alt={tutorial.characterName}
-                      width={128}
-                      height={128}
-                      className="object-contain"
-                      onError={() => {
-                        setImageError(true);
-                      }}
-                    />
-                  ) : (
-                    <span className="text-5xl md:text-6xl">{tutorial.characterEmoji}</span>
+        {/* ミッション内容（コンパクト版） */}
+        <div className="bg-white rounded-xl shadow p-3 mb-2 border border-blue-200">
+          <div className="flex items-start gap-3">
+            {/* キャラクター（小さく） */}
+            {tutorial && (
+              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                {tutorial.characterImage && !imageError ? (
+                  <Image
+                    src={tutorial.characterImage}
+                    alt={tutorial.characterName}
+                    width={48}
+                    height={48}
+                    className="object-contain"
+                    onError={() => setImageError(true)}
+                  />
+                ) : (
+                  <span className="text-2xl">{tutorial.characterEmoji}</span>
+                )}
+              </div>
+            )}
+            
+            {/* 説明 */}
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-gray-700 mb-1">{currentMission.description}</p>
+              <div className="bg-gray-800 rounded-lg p-2">
+                <p className="text-xs text-gray-400 mb-1">期待される出力:</p>
+                <pre className="text-green-400 font-mono text-sm">{currentMission.expectedOutput}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 回答エリアと単語選択（横並び） */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
+          {/* 回答エリア */}
+          <div>
+            <h3 className="text-sm font-bold mb-1 text-gray-700">あなたの答え</h3>
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-xl p-3 min-h-[80px]">
+              {selectedBlocks.length === 0 ? (
+                <p className="text-gray-400 text-center py-4 text-sm">単語を選んでください</p>
+              ) : (
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                  <SortableContext items={selectedBlocks.map((_, i) => `block-${i}`)} strategy={horizontalListSortingStrategy}>
+                    <div className="flex flex-col gap-1">
+                      {(() => {
+                        // 改行ブロックで分割して行ごとに表示
+                        const lines: { blocks: { block: typeof selectedBlocks[0]; index: number }[] }[] = [];
+                        let currentLine: { block: typeof selectedBlocks[0]; index: number }[] = [];
+                        
+                        selectedBlocks.forEach((block, index) => {
+                          if (block.text === "↵") {
+                            // 現在の行を保存
+                            if (currentLine.length > 0) {
+                              lines.push({ blocks: currentLine });
+                              currentLine = [];
+                            }
+                            // 改行ブロック自体も行として追加
+                            lines.push({ blocks: [{ block, index }] });
+                          } else {
+                            currentLine.push({ block, index });
+                          }
+                        });
+                        
+                        // 最後の行を追加
+                        if (currentLine.length > 0) {
+                          lines.push({ blocks: currentLine });
+                        }
+                        
+                        return lines.map((line, lineIndex) => (
+                          <div key={`line-${lineIndex}`} className="flex flex-wrap gap-1 items-center">
+                            {line.blocks.map(({ block, index }) => (
+                              <DraggableBlock
+                                key={`block-${index}`}
+                                block={block}
+                                index={index}
+                                onRemove={removeBlock}
+                              />
+                            ))}
+                          </div>
+                        ));
+                      })()}
+                    </div>
+                  </SortableContext>
+                </DndContext>
+              )}
+            </div>
+          </div>
+          
+          {/* 単語選択 */}
+          <div>
+            <h3 className="text-sm font-bold mb-1 text-gray-700">単語を選んでね</h3>
+            <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-3 min-h-[80px]">
+              <div className="flex flex-wrap gap-2">
+                {availableBlocks.map((block) => (
+                  <button
+                    key={block.id}
+                    type="button"
+                    onClick={() => selectBlock(block)}
+                    className={`${block.color} text-gray-700 px-3 py-2 rounded-xl text-sm font-mono shadow hover:shadow-md hover:scale-105 transition-all border border-white`}
+                  >
+                    {block.text}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 固定ボタン分の余白 */}
+        <div className="h-40"></div>
+      </div>
+
+      {/* ボタンと結果表示（画面下部に固定） */}
+      <div 
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 9999,
+          backgroundColor: 'white',
+          borderTop: '2px solid #e5e7eb',
+          boxShadow: '0 -4px 6px -1px rgba(0, 0, 0, 0.1)',
+        }}
+      >
+        {/* 実行結果 */}
+        {executionResult && (
+          <div className="p-2 border-b">
+            {executionResult.success ? (
+              <div className="bg-green-100 border-2 border-green-500 rounded-xl p-2 flex items-center gap-2">
+                <span className="text-xl">🎉</span>
+                <div className="flex-1">
+                  <p className="text-green-800 font-bold text-sm">正解！</p>
+                  <p className="text-green-700 text-xs">出力: {executionResult.output}</p>
+                </div>
+                <p className="text-green-600 font-bold text-xs">
+                  {currentMissionId < (missions?.length || 0) ? "次へ..." : "🎊 完了！"}
+                </p>
+              </div>
+            ) : (
+              <div className="bg-red-100 border-2 border-red-500 rounded-xl p-2 flex items-center gap-2">
+                <span className="text-xl">🤔</span>
+                <div>
+                  <p className="text-red-800 font-bold text-sm">もう一度！</p>
+                  {executionResult.output && (
+                    <p className="text-red-700 text-xs">出力: {executionResult.output}</p>
                   )}
                 </div>
-                <p className="text-center mt-2 font-bold text-gray-700 text-sm">
-                  {tutorial.characterName}
-                </p>
-              </div>
-              
-              {/* 吹き出し */}
-              <div className="flex-1 relative">
-                <div className="bg-blue-100 rounded-3xl p-4 md:p-6 shadow-lg border-2 border-blue-200 relative">
-                  {/* 三角形（吹き出しの矢印） */}
-                  <div className="absolute left-0 top-1/2 transform -translate-x-3 -translate-y-1/2 hidden md:block">
-                    <div className="w-0 h-0 border-t-8 border-t-transparent border-r-8 border-r-blue-100 border-b-8 border-b-transparent"></div>
-                  </div>
-                  
-                  <p className="text-base md:text-lg text-gray-800">
-                    {currentMission.description}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          <h3 className="text-3xl font-bold text-blue-900 mb-4">
-            {currentMission.title}
-          </h3>
-
-          <h4 className="text-xl font-bold text-gray-800 mb-3">
-            【期待される出力】
-          </h4>
-          <div className="bg-gray-900 rounded-lg p-4">
-            <pre className="text-green-400 font-mono text-lg whitespace-pre-wrap">
-              {currentMission.expectedOutput}
-            </pre>
-          </div>
-        </div>
-
-        {/* セクション2: 回答エリア */}
-        <div className="mb-8">
-          <h3 className="text-2xl font-bold mb-4 text-gray-800">あなたの答え</h3>
-          <div className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-2xl p-6 min-h-[150px] shadow-inner">
-            {selectedBlocks.length === 0 ? (
-              <p className="text-gray-400 text-center py-8 text-lg">
-                単語を選んでください
-              </p>
-            ) : (
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
-                <SortableContext
-                  items={selectedBlocks.map((_, i) => `block-${i}`)}
-                  strategy={horizontalListSortingStrategy}
-                >
-                  <div className="flex flex-col gap-2">
-                    {(() => {
-                      // 改行ブロックで分割して行ごとに表示
-                      const lines: { blocks: { block: WordBlock; index: number }[] }[] = [];
-                      let currentLine: { block: WordBlock; index: number }[] = [];
-                      
-                      selectedBlocks.forEach((block, index) => {
-                        if (block.text === "↵") {
-                          // 現在の行を保存
-                          if (currentLine.length > 0) {
-                            lines.push({ blocks: currentLine });
-                            currentLine = [];
-                          }
-                          // 改行ブロック自体も行として追加
-                          lines.push({ blocks: [{ block, index }] });
-                        } else {
-                          currentLine.push({ block, index });
-                        }
-                      });
-                      
-                      // 最後の行を追加
-                      if (currentLine.length > 0) {
-                        lines.push({ blocks: currentLine });
-                      }
-                      
-                      return lines.map((line, lineIndex) => (
-                        <div key={`line-${lineIndex}`} className="flex flex-wrap gap-2 items-center">
-                          {line.blocks.map(({ block, index }) => (
-                            <DraggableBlock
-                              key={`block-${index}`}
-                              block={block}
-                              index={index}
-                              onRemove={removeBlock}
-                            />
-                          ))}
-                        </div>
-                      ));
-                    })()}
-                  </div>
-                </SortableContext>
-              </DndContext>
-            )}
-          </div>
-        </div>
-
-        {/* セクション3: 単語選択エリア */}
-        <div className="mb-8">
-          <h3 className="text-2xl font-bold mb-4 text-gray-800">
-            単語を選んでください
-          </h3>
-          <div className="flex flex-wrap gap-3">
-            {availableBlocks.map((block) => (
-              <button
-                key={block.id}
-                type="button"
-                onClick={() => selectBlock(block)}
-                className={`${block.color} text-gray-700 px-6 py-4 rounded-2xl text-lg font-mono shadow-lg hover:shadow-xl hover:scale-105 transition-all border-2 border-white`}
-              >
-                {block.text}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* 生成されたコードセクション */}
-        {generatedCode && (
-          <div className="mb-8 bg-white rounded-2xl shadow-lg p-6">
-            <h3 className="text-xl font-bold mb-4 text-gray-800">
-              生成されたコード
-            </h3>
-            <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-4 shadow-lg border-2 border-purple-300">
-              <pre className="text-green-300 font-mono text-lg overflow-x-auto">
-                <code>{generatedCode}</code>
-              </pre>
-            </div>
-          </div>
-        )}
-
-        {/* 実行結果セクション */}
-        {executionResult && (
-          <div className="mb-8 bg-white rounded-2xl shadow-lg p-6">
-            <h3 className="text-xl font-bold mb-4 text-gray-800">実行結果</h3>
-            {executionResult.success ? (
-              <div className="bg-green-100 border-2 border-green-500 rounded-2xl p-6">
-                <p className="text-green-800 text-2xl font-bold mb-2">
-                  ✓ 正解です！🎉
-                </p>
-                <p className="text-green-700 text-lg">
-                  出力: {executionResult.output}
-                </p>
-                <p className="text-green-600 mt-2">
-                  {currentMissionId < missions.length
-                    ? "次のミッションに進みます..."
-                    : "レッスン完了！ホームに戻ります..."}
-                </p>
-              </div>
-            ) : (
-              <div className="bg-red-100 border-2 border-red-500 rounded-2xl p-6">
-                <p className="text-red-800 text-2xl font-bold mb-2">
-                  もう一度試してみましょう！
-                </p>
-                {executionResult.output && (
-                  <p className="text-red-700 text-lg">
-                    あなたの出力: {executionResult.output}
-                  </p>
-                )}
-                {executionResult.error && (
-                  <p className="text-red-700">{executionResult.error}</p>
-                )}
               </div>
             )}
           </div>
         )}
-
-        {/* ボタンエリア */}
-        <div className="flex justify-center gap-4">
-          <button
-            type="button"
-            onClick={reset}
-            className="bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-gray-700 px-8 py-4 rounded-full text-lg font-bold shadow-lg hover:shadow-xl transition-all border-2 border-white"
-          >
-            やり直す
-          </button>
-          <button
-            type="button"
-            onClick={handleCheck}
-            disabled={isExecuting}
-            className="bg-gradient-to-r from-green-300 to-emerald-400 hover:from-green-400 hover:to-emerald-500 text-white px-12 py-4 rounded-full text-xl font-bold shadow-lg hover:shadow-xl transition-all border-2 border-white disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isExecuting ? "実行中..." : "確認する 🎯"}
-          </button>
+        
+        {/* ボタン */}
+        <div className="p-3">
+          <div className="flex justify-center gap-3">
+            <button
+              type="button"
+              onClick={reset}
+              style={{
+                background: 'linear-gradient(to right, #e5e7eb, #d1d5db)',
+                color: '#374151',
+                padding: '12px 20px',
+                borderRadius: '9999px',
+                fontWeight: 'bold',
+                fontSize: '14px',
+                border: '2px solid white',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+              }}
+            >
+              やり直す
+            </button>
+            <button
+              type="button"
+              onClick={handleCheck}
+              disabled={isExecuting}
+              style={{
+                background: isExecuting ? '#9ca3af' : 'linear-gradient(to right, #86efac, #34d399)',
+                color: 'white',
+                padding: '12px 24px',
+                borderRadius: '9999px',
+                fontWeight: 'bold',
+                fontSize: '14px',
+                border: '2px solid white',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                opacity: isExecuting ? 0.5 : 1,
+              }}
+            >
+              {isExecuting ? "実行中..." : "確認する 🎯"}
+            </button>
+          </div>
         </div>
       </div>
     </div>
