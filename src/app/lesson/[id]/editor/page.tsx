@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -225,6 +225,10 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   const [totalXP, setTotalXP] = useState(0);
   const [levelInfo, setLevelInfo] = useState(getLevelInfo(0));
   const [levelProgress, setLevelProgress] = useState(0);
+  const [wrongMissionIds, setWrongMissionIds] = useState<number[]>([]);
+  const [isRetryMode, setIsRetryMode] = useState(false);
+  const [retryIndex, setRetryIndex] = useState(0);
+  const wrongMissionIdsRef = useRef<number[]>([]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -280,11 +284,27 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     setLevelProgress(getLevelProgress(progress.totalXP));
   }, []);
 
+  useEffect(() => {
+    wrongMissionIdsRef.current = wrongMissionIds;
+  }, [wrongMissionIds]);
+
   const lesson = lessonId ? lessons.find((l) => l.id === lessonId) : undefined;
   const missions = lessonId ? getLessonMissions(lessonId) : undefined;
-  const currentMission = lessonId
-    ? getMission(lessonId, currentMissionId)
-    : undefined;
+  
+  // 現在のミッションを取得
+  const currentMission = useMemo(() => {
+    if (!missions) return undefined;
+    
+    if (isRetryMode) {
+      // 再出題モード：間違えた問題から出題
+      const retryMissionId = wrongMissionIds[retryIndex];
+      return missions.find(m => m.id === retryMissionId) || undefined;
+    } else {
+      // 通常モード：順番に出題
+      return missions.find(m => m.id === currentMissionId) || undefined;
+    }
+  }, [missions, currentMissionId, isRetryMode, wrongMissionIds, retryIndex]);
+  
   const tutorial = lessonId ? getTutorial(lessonId) : undefined;
   
   // ブロックをランダムに並べ替える
@@ -393,49 +413,74 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           output: actualOutput,
         });
 
-        // XP計算
-        const { xp, streakBonus: bonus, newStreak } = calculateMissionXP(true, currentStreak);
-        setCurrentStreak(newStreak);
-        setEarnedXP(xp);
-        setStreakBonus(bonus);
-        setShowXPAnimation(true);
-        updateStreak(newStreak);
+        // XP計算（再出題モードでなければXPを加算）
+        if (!isRetryMode) {
+          const { xp, streakBonus: bonus, newStreak } = calculateMissionXP(true, currentStreak);
+          setCurrentStreak(newStreak);
+          setEarnedXP(xp);
+          setStreakBonus(bonus);
+          setShowXPAnimation(true);
+          updateStreak(newStreak);
 
-        // XPを加算
-        const { newTotal, leveledUp, newLevel } = addXP(xp);
-        setTotalXP(newTotal);
-        setLevelInfo(newLevel);
-        setLevelProgress(getLevelProgress(newTotal));
+          // XPを加算
+          const { newTotal, leveledUp, newLevel } = addXP(xp);
+          setTotalXP(newTotal);
+          setLevelInfo(newLevel);
+          setLevelProgress(getLevelProgress(newTotal));
 
-        // アニメーション後にリセット
-        setTimeout(() => {
-          setShowXPAnimation(false);
-          setEarnedXP(null);
-          setStreakBonus(0);
-        }, 1500);
-
-        // 次のミッションまたはレッスン完了
-        if (currentMissionId < (missions?.length || 0)) {
-          // 次のミッションへ
-          const nextMissionId = currentMissionId + 1;
+          // アニメーション後にリセット
           setTimeout(() => {
-            setCurrentMissionId(nextMissionId);
-            setSelectedBlocks([]);
-            setExecutionResult(null);
-            // 次のミッションIDを保存
-            if (lessonId) {
-              localStorage.setItem(`lesson-${lessonId}-mission`, nextMissionId.toString());
-            }
-          }, 2000);
-        } else {
-          // 全ミッション完了 - 進捗をクリア
-          setTimeout(() => {
-            if (lessonId) {
-              localStorage.removeItem(`lesson-${lessonId}-mission`);
-            }
-            router.push(`/lesson/${lessonId}/complete`);
-          }, 2000);
+            setShowXPAnimation(false);
+            setEarnedXP(null);
+            setStreakBonus(0);
+          }, 1500);
         }
+
+        // 次の問題へ進む処理
+        setTimeout(() => {
+          setExecutionResult(null);
+          setSelectedBlocks([]);
+          
+          if (isRetryMode) {
+            // 再出題モード
+            if (retryIndex + 1 < wrongMissionIdsRef.current.length) {
+              // 次の間違えた問題へ
+              setRetryIndex(retryIndex + 1);
+            } else {
+              // 全ての再出題が完了 → 完了画面へ
+              if (lessonId) {
+                localStorage.removeItem(`lesson-${lessonId}-mission`);
+              }
+              router.push(`/lesson/${lessonId}/complete`);
+            }
+          } else {
+            // 通常モード
+            if (currentMissionId < (missions?.length || 0)) {
+              // 次の問題へ
+              const nextMissionId = currentMissionId + 1;
+              setCurrentMissionId(nextMissionId);
+              // 次のミッションIDを保存
+              if (lessonId) {
+                localStorage.setItem(`lesson-${lessonId}-mission`, nextMissionId.toString());
+              }
+            } else {
+              // 全問終了 - 少し待ってから最新のwrongMissionIdsを確認
+              setTimeout(() => {
+                if (wrongMissionIdsRef.current.length > 0) {
+                  // 間違えた問題がある → 再出題モードへ
+                  setIsRetryMode(true);
+                  setRetryIndex(0);
+                } else {
+                  // 全問正解 → 完了画面へ
+                  if (lessonId) {
+                    localStorage.removeItem(`lesson-${lessonId}-mission`);
+                  }
+                  router.push(`/lesson/${lessonId}/complete`);
+                }
+              }, 100);
+            }
+          }
+        }, 2000);
       } else {
         // 不正解
         let errorMessage = "期待される出力と異なります。もう一度試してみましょう！";
@@ -447,6 +492,12 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           output: actualOutput,
           error: errorMessage,
         });
+        
+        // 間違えた問題を記録（まだ記録されていなければ、通常モードのみ）
+        if (!isRetryMode && currentMission && !wrongMissionIds.includes(currentMission.id)) {
+          setWrongMissionIds(prev => [...prev, currentMission.id]);
+        }
+        
         setCurrentStreak(0);
         resetStreak();
       }
@@ -564,22 +615,56 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         {/* 進捗バー（コンパクト版） */}
         <div className="mb-2">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-sm font-bold text-gray-700">ミッション {currentMissionId}/{missions.length}</span>
-            <span className="text-xs text-gray-500">残り {missions.length - currentMissionId} 問</span>
+            {isRetryMode ? (
+              <>
+                <span className="text-sm font-bold text-orange-600">
+                  🔄 復習 {retryIndex + 1}/{wrongMissionIds.length}
+                </span>
+                <span className="text-xs text-orange-500">間違えた問題をもう一度！</span>
+              </>
+            ) : (
+              <>
+                <span className="text-sm font-bold text-gray-700">
+                  ミッション {currentMissionId}/{missions?.length || 0}
+                </span>
+                <span className="text-xs text-gray-500">
+                  残り {(missions?.length || 0) - currentMissionId} 問
+                </span>
+              </>
+            )}
           </div>
           <div className="flex gap-1">
-            {missions.map((_, index) => (
-              <div
-                key={index}
-                className={`flex-1 h-2 rounded-full ${
-                  index < currentMissionId - 1
-                    ? "bg-green-400"
-                    : index === currentMissionId - 1
-                    ? "bg-purple-400"
-                    : "bg-gray-300"
-                }`}
-              />
-            ))}
+            {isRetryMode ? (
+              // 再出題モードの進捗バー
+              wrongMissionIds.map((_, index) => (
+                <div
+                  key={index}
+                  className={`flex-1 h-2 rounded-full ${
+                    index < retryIndex
+                      ? "bg-green-400"
+                      : index === retryIndex
+                      ? "bg-orange-400"
+                      : "bg-gray-300"
+                  }`}
+                />
+              ))
+            ) : (
+              // 通常モードの進捗バー
+              missions?.map((mission, index) => (
+                <div
+                  key={index}
+                  className={`flex-1 h-2 rounded-full ${
+                    index < currentMissionId - 1
+                      ? wrongMissionIds.includes(mission.id)
+                        ? "bg-orange-400"
+                        : "bg-green-400"
+                      : index === currentMissionId - 1
+                      ? "bg-purple-400"
+                      : "bg-gray-300"
+                  }`}
+                />
+              ))
+            )}
           </div>
         </div>
 
