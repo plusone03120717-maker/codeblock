@@ -171,18 +171,18 @@ export default function LessonPage({ params }: LessonPageProps) {
             {/* キャラクターと吹き出し（横並び） */}
             <div className="flex items-start gap-3 mb-3">
               {/* キャラクター（小さく） */}
-              <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 border-2 border-purple-200 overflow-hidden">
+              <div className="w-28 h-28 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 border-2 border-purple-200 overflow-hidden">
                 {tutorial.characterImage && !imageError ? (
                   <Image
                     src={tutorial.characterImage}
                     alt={tutorial.characterName}
-                    width={56}
-                    height={56}
+                    width={112}
+                    height={112}
                     className="object-contain"
                     onError={() => setImageError(true)}
                   />
                 ) : (
-                  <span className="text-2xl">{tutorial.characterEmoji}</span>
+                  <span className="text-4xl">{tutorial.characterEmoji}</span>
                 )}
               </div>
               

@@ -240,26 +240,175 @@ export const tutorials: LessonTutorial[] = [
   },
   {
     lessonId: "2-1",
-    characterName: "ボックス",
-    characterEmoji: "🤖",
+    characterName: "リリー",
+    characterEmoji: "👩‍🏫",
+    characterImage: "/images/characters/lily.png",
     slides: [
       {
-        title: "変数とは？",
-        content: "変数は、データを入れておく箱のようなものです。",
-        characterMessage: "変数を使うと、データを保存して何度も使えるようになるよ！",
+        title: "はじめまして！",
+        content: "私はリリー。レッスン2からは私が担当するわね。一緒にゆっくり学んでいきましょう。",
+        characterMessage: "よろしくね！焦らなくて大丈夫よ。",
       },
       {
-        title: "変数の使い方",
-        content: "変数には名前をつけて、= で値を入れます。",
-        characterMessage: "例えば、name = \"Yuki\" のように書くんだ。",
+        title: "変数ってなに？",
+        content: "変数は「データを入れる箱」のようなものよ。箱に名前をつけて、中に文字や数字を入れておけるの。",
+        characterMessage: "名前のついた箱をイメージしてね。",
+      },
+      {
+        title: "変数の作り方",
+        content: "変数を作るには「名前 = 値」と書くの。「=」は「入れる」という意味よ。",
+        characterMessage: "数学の「等しい」とは少し違うの。",
         codeExample: {
-          good: "name = \"Yuki\"\nprint(name)",
+          good: "name = \"太郎\"",
         },
       },
       {
-        title: "やってみよう！",
-        content: "実際に変数を使ってみましょう。",
-        characterMessage: "準備はいい？さあ、始めよう！",
+        title: "変数名のルール",
+        content: "変数名は英語で書くのが基本よ。数字から始めたり、スペースを入れたりはできないの。",
+        characterMessage: "わかりやすい名前をつけるのがコツよ。",
+        codeExample: {
+          good: "age = 10\nmy_name = \"花子\"",
+          bad: "1name = \"太郎\"  # 数字から始まるのはダメ",
+        },
+      },
+      {
+        title: "さあ、やってみましょう！",
+        content: "変数に値を入れるミッションに挑戦してみましょう。",
+        characterMessage: "ゆっくりで大丈夫。私が見守っているわ。",
+      },
+    ],
+  },
+  {
+    lessonId: "2-2",
+    characterName: "リリー",
+    characterEmoji: "👩‍🏫",
+    characterImage: "/images/characters/lily.png",
+    slides: [
+      {
+        title: "変数を表示しよう",
+        content: "変数の中身を見るには、print()を使うの。変数名をそのまま入れればいいのよ。",
+        characterMessage: "箱の中身を見てみましょう。",
+      },
+      {
+        title: "変数の表示方法",
+        content: "print()の中に変数名を書くと、その変数の中身が表示されるわ。",
+        characterMessage: "クオーテーションは要らないのがポイントよ。",
+        codeExample: {
+          good: "name = \"太郎\"\nprint(name)  # 太郎と表示される",
+          bad: "print(\"name\")  # nameという文字が表示されちゃう",
+        },
+      },
+      {
+        title: "文字列と変数の違い",
+        content: "\"name\"と書くと文字列、nameと書くと変数よ。この違いは大切ね。",
+        characterMessage: "クオーテーションがあるかないかで意味が変わるの。",
+      },
+      {
+        title: "挑戦してみましょう",
+        content: "変数を作って、print()で表示するミッションよ。",
+        characterMessage: "落ち着いて取り組んでね。",
+      },
+    ],
+  },
+  {
+    lessonId: "2-3",
+    characterName: "リリー",
+    characterEmoji: "👩‍🏫",
+    characterImage: "/images/characters/lily.png",
+    slides: [
+      {
+        title: "変数で計算しよう",
+        content: "変数には数字も入れられるの。数字を入れた変数は計算に使えるわよ。",
+        characterMessage: "変数を使うと計算がもっと便利になるの。",
+      },
+      {
+        title: "数字を変数に入れる",
+        content: "数字を入れるときは、クオーテーションなしで書くのよ。",
+        characterMessage: "文字列と数字の違いを思い出してね。",
+        codeExample: {
+          good: "x = 5\ny = 3\nprint(x + y)  # 8と表示される",
+        },
+      },
+      {
+        title: "変数を使った計算",
+        content: "変数同士を足したり、引いたり、掛けたりできるわ。",
+        characterMessage: "変数を使うと、後から値を変えやすいの。",
+        codeExample: {
+          good: "price = 100\ncount = 3\nprint(price * count)  # 300",
+        },
+      },
+      {
+        title: "チャレンジタイム！",
+        content: "変数を使った計算ミッションに挑戦してみましょう。",
+        characterMessage: "ここまで大丈夫？ゆっくりやってみてね。",
+      },
+    ],
+  },
+  {
+    lessonId: "2-4",
+    characterName: "リリー",
+    characterEmoji: "👩‍🏫",
+    characterImage: "/images/characters/lily.png",
+    slides: [
+      {
+        title: "変数の中身を変えよう",
+        content: "変数は箱だから、中身を入れ替えることができるの。同じ変数名に新しい値を入れるだけよ。",
+        characterMessage: "上書きって言ったりするわね。",
+      },
+      {
+        title: "値の上書き",
+        content: "同じ変数名にもう一度「=」で値を入れると、前の値は消えて新しい値になるの。",
+        characterMessage: "箱の中身を入れ替えるイメージね。",
+        codeExample: {
+          good: "x = 5\nprint(x)  # 5\nx = 10\nprint(x)  # 10",
+        },
+      },
+      {
+        title: "自分自身を使った更新",
+        content: "今の値を使って更新することもできるわ。「x = x + 1」は「今のxに1を足す」という意味よ。",
+        characterMessage: "これはよく使うテクニックね。",
+        codeExample: {
+          good: "score = 100\nscore = score + 50\nprint(score)  # 150",
+        },
+      },
+      {
+        title: "やってみましょう",
+        content: "変数の値を変更するミッションに挑戦よ。",
+        characterMessage: "少し難しくなるけど、大丈夫。",
+      },
+    ],
+  },
+  {
+    lessonId: "2-5",
+    characterName: "リリー",
+    characterEmoji: "👩‍🏫",
+    characterImage: "/images/characters/lily.png",
+    slides: [
+      {
+        title: "変数を組み合わせよう",
+        content: "複数の変数を使って、計算したり文字列をつなげたりしてみましょう。",
+        characterMessage: "今まで学んだことの総まとめね。",
+      },
+      {
+        title: "複数の変数で計算",
+        content: "いくつもの変数を組み合わせて計算できるわ。",
+        characterMessage: "変数が増えても基本は同じよ。",
+        codeExample: {
+          good: "a = 10\nb = 20\nc = 30\nprint(a + b + c)  # 60",
+        },
+      },
+      {
+        title: "文字列変数の連結",
+        content: "文字列が入った変数同士も「+」でつなげられるの。",
+        characterMessage: "レッスン1-4でやった文字列連結と同じね。",
+        codeExample: {
+          good: "first = \"山田\"\nlast = \"太郎\"\nprint(first + last)  # 山田太郎",
+        },
+      },
+      {
+        title: "最後のチャレンジ！",
+        content: "複数の変数を使いこなすミッションよ。レッスン2の総仕上げね！",
+        characterMessage: "ここまでよく頑張ったわね。",
       },
     ],
   },

@@ -673,18 +673,18 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           <div className="flex items-start gap-3">
             {/* キャラクター（小さく） */}
             {tutorial && (
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
                 {tutorial.characterImage && !imageError ? (
                   <Image
                     src={tutorial.characterImage}
                     alt={tutorial.characterName}
-                    width={48}
-                    height={48}
+                    width={96}
+                    height={96}
                     className="object-contain"
                     onError={() => setImageError(true)}
                   />
                 ) : (
-                  <span className="text-2xl">{tutorial.characterEmoji}</span>
+                  <span className="text-4xl">{tutorial.characterEmoji}</span>
                 )}
               </div>
             )}
