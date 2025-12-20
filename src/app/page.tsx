@@ -99,53 +99,48 @@ export default function Home() {
 
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {lessons.map((lesson) => {
-              // 色の取得
+              const isCompleted = completedLessons.includes(lesson.id);
               const colorIndex = (lesson.unitNumber - 1) % colors.length;
               const bgColor = colors[colorIndex];
-              const isCompleted = completedLessons.includes(lesson.id);
 
               return (
-                <article
+                <Link
                   key={lesson.id}
-                  className={`flex flex-col justify-between rounded-2xl bg-gradient-to-br ${bgColor} p-4 shadow-sm ring-1 ring-sky-100 transition hover:-translate-y-1 hover:shadow-md ${
-                    isCompleted ? "ring-2 ring-green-400" : ""
-                  }`}
+                  href={`/lesson/${lesson.id}`}
+                  className={`block bg-gradient-to-br ${bgColor} rounded-2xl p-5 shadow-lg hover:shadow-xl hover:scale-105 transition-all relative overflow-hidden flex flex-col h-full`}
                 >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex flex-col">
-                        <span className="text-lg font-bold text-gray-800">
-                          レッスン {lesson.id}
-                        </span>
-                        <h3 className="text-sm font-bold text-sky-900 md:text-base">
-                          {lesson.title}
-                        </h3>
-                      </div>
-                      <span
-                        className={
-                          "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold md:text-xs " +
-                          (lesson.difficulty === "かんたん"
-                            ? "bg-emerald-50 text-emerald-700"
-                            : lesson.difficulty === "ふつう"
-                            ? "bg-amber-50 text-amber-700"
-                            : "bg-rose-50 text-rose-700")
-                        }
-                      >
-                        {lesson.difficulty}
-                      </span>
+                  {/* 完了バッジ */}
+                  {isCompleted && (
+                    <div className="absolute top-0 right-0 bg-green-500 text-white px-3 py-1 text-xs font-bold rounded-bl-xl">
+                      ✓ 完了
                     </div>
-                    <p className="text-xs text-sky-800 md:text-sm">
-                      {lesson.description}
-                    </p>
+                  )}
+
+                  {/* レッスン番号 */}
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className={`text-sm font-bold px-2 py-1 rounded-full ${isCompleted ? 'bg-green-100 text-green-700' : 'bg-white/50 text-gray-700'}`}>
+                      {lesson.id}
+                    </span>
+                    <span className="text-xs text-gray-600">{lesson.difficulty}</span>
                   </div>
 
-                  <Link
-                    href={`/lesson/${lesson.id}`}
-                    className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-sky-500 px-4 py-2 text-center text-xs font-semibold text-white shadow-sm transition hover:bg-sky-600 active:scale-95 md:text-sm"
-                  >
-                    {isCompleted ? "✓ 完了" : "開始"}
-                  </Link>
-                </article>
+                  {/* タイトル */}
+                  <h2 className="text-lg font-bold text-gray-800 mb-1">{lesson.title}</h2>
+
+                  {/* 説明 */}
+                  <p className="text-sm text-gray-600 mb-3 flex-grow">{lesson.description}</p>
+
+                  {/* ボタン */}
+                  {isCompleted ? (
+                    <div className="bg-blue-500 text-white text-center py-2 rounded-full font-bold text-sm mt-auto">
+                      🔄 復習する
+                    </div>
+                  ) : (
+                    <div className="bg-green-500 text-white text-center py-2 rounded-full font-bold text-sm mt-auto">
+                      🚀 学習する
+                    </div>
+                  )}
+                </Link>
               );
             })}
           </div>

@@ -598,78 +598,71 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           </div>
         </div>
 
-        {/* 回答エリアと単語選択（横並び） */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
-          {/* 回答エリア */}
-          <div>
-            <h3 className="text-sm font-bold mb-1 text-gray-700">あなたの答え</h3>
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-xl p-3 min-h-[80px]">
-              {selectedBlocks.length === 0 ? (
-                <p className="text-gray-400 text-center py-4 text-sm">単語を選んでください</p>
-              ) : (
-                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                  <SortableContext items={selectedBlocks.map((_, i) => `block-${i}`)} strategy={horizontalListSortingStrategy}>
-                    <div className="flex flex-col gap-1">
-                      {(() => {
-                        // 改行ブロックで分割して行ごとに表示
-                        const lines: { blocks: { block: typeof selectedBlocks[0]; index: number }[] }[] = [];
-                        let currentLine: { block: typeof selectedBlocks[0]; index: number }[] = [];
-                        
-                        selectedBlocks.forEach((block, index) => {
-                          if (block.text === "↵") {
-                            // 現在の行を保存
-                            if (currentLine.length > 0) {
-                              lines.push({ blocks: currentLine });
-                              currentLine = [];
-                            }
-                            // 改行ブロック自体も行として追加
-                            lines.push({ blocks: [{ block, index }] });
-                          } else {
-                            currentLine.push({ block, index });
+        {/* 回答エリア */}
+        <div className="mb-3">
+          <h3 className="text-sm font-bold mb-1 text-gray-700">あなたの答え</h3>
+          <div className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-xl p-3 min-h-[60px]">
+            {selectedBlocks.length === 0 ? (
+              <p className="text-gray-400 text-center py-2 text-sm">単語を選んでください</p>
+            ) : (
+              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                <SortableContext items={selectedBlocks.map((_, i) => `block-${i}`)} strategy={horizontalListSortingStrategy}>
+                  <div className="flex flex-col gap-1">
+                    {(() => {
+                      const lines: { blocks: { block: typeof selectedBlocks[0]; index: number }[] }[] = [];
+                      let currentLine: { block: typeof selectedBlocks[0]; index: number }[] = [];
+                      
+                      selectedBlocks.forEach((block, index) => {
+                        if (block.text === "↵") {
+                          if (currentLine.length > 0) {
+                            lines.push({ blocks: currentLine });
+                            currentLine = [];
                           }
-                        });
-                        
-                        // 最後の行を追加
-                        if (currentLine.length > 0) {
-                          lines.push({ blocks: currentLine });
+                          lines.push({ blocks: [{ block, index }] });
+                        } else {
+                          currentLine.push({ block, index });
                         }
-                        
-                        return lines.map((line, lineIndex) => (
-                          <div key={`line-${lineIndex}`} className="flex flex-wrap gap-1 items-center">
-                            {line.blocks.map(({ block, index }) => (
-                              <DraggableBlock
-                                key={`block-${index}`}
-                                block={block}
-                                index={index}
-                                onRemove={removeBlock}
-                              />
-                            ))}
-                          </div>
-                        ));
-                      })()}
-                    </div>
-                  </SortableContext>
-                </DndContext>
-              )}
-            </div>
+                      });
+                      
+                      if (currentLine.length > 0) {
+                        lines.push({ blocks: currentLine });
+                      }
+                      
+                      return lines.map((line, lineIndex) => (
+                        <div key={`line-${lineIndex}`} className="flex flex-wrap gap-1 items-center">
+                          {line.blocks.map(({ block, index }) => (
+                            <DraggableBlock
+                              key={`block-${index}`}
+                              block={block}
+                              index={index}
+                              onRemove={removeBlock}
+                            />
+                          ))}
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                </SortableContext>
+              </DndContext>
+            )}
           </div>
-          
-          {/* 単語選択 */}
-          <div>
-            <h3 className="text-sm font-bold mb-1 text-gray-700">単語を選んでね</h3>
-            <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-3 min-h-[80px]">
-              <div className="flex flex-wrap gap-2">
-                {availableBlocks.map((block) => (
-                  <button
-                    key={block.id}
-                    type="button"
-                    onClick={() => selectBlock(block)}
-                    className={`${block.color} text-gray-700 px-3 py-2 rounded-xl text-sm font-mono shadow hover:shadow-md hover:scale-105 transition-all border border-white`}
-                  >
-                    {block.text}
-                  </button>
-                ))}
-              </div>
+        </div>
+
+        {/* 単語選択 */}
+        <div className="mb-3">
+          <h3 className="text-sm font-bold mb-1 text-gray-700">単語を選んでね</h3>
+          <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-3">
+            <div className="flex flex-wrap gap-2">
+              {availableBlocks.map((block) => (
+                <button
+                  key={block.id}
+                  type="button"
+                  onClick={() => selectBlock(block)}
+                  className={`${block.color} text-gray-700 px-3 py-2 rounded-xl text-sm font-mono shadow hover:shadow-md hover:scale-105 transition-all border border-white`}
+                >
+                  {block.text}
+                </button>
+              ))}
             </div>
           </div>
         </div>

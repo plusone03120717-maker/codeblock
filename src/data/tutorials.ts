@@ -11,6 +11,7 @@ export interface LessonTutorial {
       good?: string;
       bad?: string;
     };
+    image?: string;
   }>;
 }
 
@@ -28,7 +29,7 @@ export const tutorials: LessonTutorial[] = [
       },
       {
         title: "print()の使い方",
-        content: "print()の中に、表示したい文字を \" \" で囲んで入れるんだ。",
+        content: "print()の中に、表示したい文字を \" \" で囲んで入れるんだ。\" \" は「クォーテーション」と読むよ。",
         characterMessage: "まずは \"Hello World\" を表示させてみよう！これがプログラミングの第一歩だ！",
         codeExample: {
           good: "print(\"Hello World\")",
@@ -36,11 +37,12 @@ export const tutorials: LessonTutorial[] = [
       },
       {
         title: "改行について",
-        content: "プログラムは1行ずつ書いていくんだ。print()を2回使うと、2つのメッセージを表示できるよ。",
+        content: "プログラムは1行ずつ書いていくんだ。print()を2回使うと、2つのメッセージを表示できるよ。改行はスペースキーで行うことができる。codeblockの中では、改行ブロックを使う。",
         characterMessage: "↵マークは「改行」を意味する。次の行に移るときに使うんだ！",
         codeExample: {
           good: "print(\"Hello\")\nprint(\"World\")",
         },
+        image: "/images/blocks/newline.png",
       },
       {
         title: "改行を忘れるとエラーになる！",

@@ -123,125 +123,120 @@ export default function LessonPage({ params }: LessonPageProps) {
 
         {/* チュートリアルスライド */}
         {tutorial && currentSlide ? (
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border-2 border-blue-200">
-            {/* スライド進捗 */}
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-600">
-                  スライド {currentSlideIndex + 1} / {slides.length}
-                </span>
-                <span className="text-sm text-gray-600">
-                  {tutorial.characterName}
-                </span>
-              </div>
+          <div className="bg-white rounded-2xl shadow-xl p-4 border-2 border-purple-200 mb-4">
+            {/* ナビゲーションボタン（上部） */}
+            <div className="flex justify-between items-center gap-2 mb-3">
+              {currentSlideIndex > 0 ? (
+                <button
+                  onClick={() => setCurrentSlideIndex(currentSlideIndex - 1)}
+                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full font-bold text-sm transition-all"
+                >
+                  ← 前へ
+                </button>
+              ) : (
+                <div className="px-4 py-2 invisible text-sm">← 前へ</div>
+              )}
+
+              {/* スライドインジケーター */}
               <div className="flex gap-1">
                 {slides.map((_, index) => (
                   <div
                     key={index}
-                    className={`flex-1 h-2 rounded-full transition-all ${
-                      index <= currentSlideIndex
-                        ? "bg-blue-400"
-                        : "bg-gray-300"
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      index === currentSlideIndex
+                        ? "bg-purple-500"
+                        : "bg-purple-200"
                     }`}
                   />
                 ))}
               </div>
-            </div>
 
-            {/* キャラクターとメッセージ */}
-            <div className="flex flex-col md:flex-row gap-6 mb-6">
-              {/* キャラクター画像 */}
-              <div className="flex-shrink-0">
-                <div className="w-24 h-24 md:w-32 md:h-32 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-purple-200 relative overflow-hidden">
-                  {tutorial.characterImage && !imageError ? (
-                    <Image
-                      src={tutorial.characterImage}
-                      alt={tutorial.characterName}
-                      width={128}
-                      height={128}
-                      className="object-contain"
-                      onError={() => {
-                        setImageError(true);
-                      }}
-                    />
-                  ) : (
-                    <span className="text-5xl md:text-6xl">
-                      {tutorial.characterEmoji}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* 吹き出し */}
-              <div className="flex-1 relative">
-                <div className="bg-blue-100 rounded-3xl p-4 md:p-6 shadow-lg border-2 border-blue-200 relative">
-                  {/* 三角形（吹き出しの矢印） */}
-                  <div className="absolute left-0 top-1/2 transform -translate-x-3 -translate-y-1/2 hidden md:block">
-                    <div className="w-0 h-0 border-t-8 border-t-transparent border-r-8 border-r-blue-100 border-b-8 border-b-transparent"></div>
-                  </div>
-
-                  <p className="text-base md:text-lg text-gray-800">
-                    {currentSlide.characterMessage}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* スライドコンテンツ */}
-            <div className="space-y-4">
-              <h3 className="text-2xl font-bold text-blue-900">
-                {currentSlide.title}
-              </h3>
-              <p className="text-lg text-gray-700">{currentSlide.content}</p>
-
-              {/* コード例 */}
-              {currentSlide.codeExample && (
-                <div className="mt-6 space-y-4">
-                  {currentSlide.codeExample.good && (
-                    <div>
-                      <p className="text-sm font-semibold text-green-700 mb-2">
-                        ✓ 正しい例
-                      </p>
-                      <div className="bg-gray-900 rounded-lg p-4">
-                        <pre className="text-green-400 font-mono text-sm whitespace-pre-wrap">
-                          {currentSlide.codeExample.good}
-                        </pre>
-                      </div>
-                    </div>
-                  )}
-                  {currentSlide.codeExample.bad && (
-                    <div>
-                      <p className="text-sm font-semibold text-red-700 mb-2">
-                        ✗ 間違った例
-                      </p>
-                      <div className="bg-gray-900 rounded-lg p-4">
-                        <pre className="text-red-400 font-mono text-sm whitespace-pre-wrap">
-                          {currentSlide.codeExample.bad}
-                        </pre>
-                      </div>
-                    </div>
-                  )}
-                </div>
+              {currentSlideIndex < slides.length - 1 ? (
+                <button
+                  onClick={() => setCurrentSlideIndex(currentSlideIndex + 1)}
+                  className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-full font-bold text-sm transition-all"
+                >
+                  次へ →
+                </button>
+              ) : (
+                <button
+                  onClick={() => router.push(`/lesson/${lessonId}/editor`)}
+                  className="px-4 py-2 bg-gradient-to-r from-green-400 to-emerald-500 text-white rounded-full font-bold text-sm transition-all"
+                >
+                  開始 🚀
+                </button>
               )}
             </div>
 
-            {/* ナビゲーションボタン */}
-            <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
-              <button
-                onClick={handlePrevSlide}
-                disabled={!hasPrevSlide}
-                className="bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed text-gray-700 px-6 py-3 rounded-full font-bold transition-all"
-              >
-                ← 前へ
-              </button>
-
-              <button
-                onClick={handleNextSlide}
-                className="bg-gradient-to-r from-green-300 to-emerald-400 hover:from-green-400 hover:to-emerald-500 text-white px-8 py-3 rounded-full text-lg font-bold shadow-lg hover:shadow-xl transition-all"
-              >
-                {hasNextSlide ? "次へ →" : "エディタで練習する"}
-              </button>
+            {/* キャラクターと吹き出し（横並び） */}
+            <div className="flex items-start gap-3 mb-3">
+              {/* キャラクター（小さく） */}
+              <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 border-2 border-purple-200 overflow-hidden">
+                {tutorial.characterImage && !imageError ? (
+                  <Image
+                    src={tutorial.characterImage}
+                    alt={tutorial.characterName}
+                    width={56}
+                    height={56}
+                    className="object-contain"
+                    onError={() => setImageError(true)}
+                  />
+                ) : (
+                  <span className="text-2xl">{tutorial.characterEmoji}</span>
+                )}
+              </div>
+              
+              {/* 吹き出し */}
+              <div className="flex-1 bg-purple-100 rounded-xl p-3 relative">
+                <div className="absolute left-0 top-4 transform -translate-x-2">
+                  <div className="w-0 h-0 border-t-6 border-t-transparent border-r-8 border-r-purple-100 border-b-6 border-b-transparent"></div>
+                </div>
+                <p className="text-sm text-gray-700">{currentSlide.characterMessage}</p>
+              </div>
             </div>
+
+            {/* スライドタイトル */}
+            <h2 className="text-lg font-bold text-purple-800 mb-2">
+              {currentSlide.title}
+            </h2>
+            
+            {/* 説明 */}
+            <p className="text-sm text-gray-600 mb-2">{currentSlide.content}</p>
+            
+            {/* 画像 */}
+            {currentSlide.image && (
+              <div className="mb-3">
+                <Image
+                  src={currentSlide.image}
+                  alt="ブロック画像"
+                  width={50}
+                  height={25}
+                  className="border-2 border-gray-300 rounded-lg"
+                />
+              </div>
+            )}
+            
+            {/* コード例（コンパクト版） */}
+            {currentSlide.codeExample && (
+              <div className="space-y-2">
+                {currentSlide.codeExample.bad && (
+                  <div className="bg-red-50 border border-red-300 rounded-lg p-2">
+                    <div className="text-red-600 font-bold text-xs mb-1">❌ ダメな例</div>
+                    <pre className="bg-red-100 rounded p-2 text-red-800 font-mono text-xs overflow-x-auto">
+                      {currentSlide.codeExample.bad}
+                    </pre>
+                  </div>
+                )}
+                {currentSlide.codeExample.good && (
+                  <div className="bg-green-50 border border-green-300 rounded-lg p-2">
+                    <div className="text-green-600 font-bold text-xs mb-1">✅ 正しい例</div>
+                    <pre className="bg-green-100 rounded p-2 text-green-800 font-mono text-xs overflow-x-auto">
+                      {currentSlide.codeExample.good}
+                    </pre>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         ) : (
           <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border-2 border-blue-200">
