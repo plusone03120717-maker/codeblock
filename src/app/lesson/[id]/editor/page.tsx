@@ -36,6 +36,7 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { playBlockAddSound, playBlockRemoveSound } from "@/utils/sounds";
 
 type EditorPageProps = {
   params: Promise<{
@@ -323,11 +324,13 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   // 単語ブロックを選択
   const selectBlock = (block: WordBlock) => {
     setSelectedBlocks([...selectedBlocks, block]);
+    playBlockAddSound(); // ブロック配置時のSE
   };
 
   // 単語ブロックを削除
   const removeBlock = (index: number) => {
     setSelectedBlocks(selectedBlocks.filter((_, i) => i !== index));
+    playBlockRemoveSound(); // ブロック削除時のSE
   };
 
   // ドラッグ終了時のハンドラ

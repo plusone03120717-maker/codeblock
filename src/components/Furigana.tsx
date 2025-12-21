@@ -72,6 +72,13 @@ export const words = {
   準備: { text: "準備", reading: "じゅんび" },
   実際: { text: "実際", reading: "じっさい" },
   第一歩: { text: "第一歩", reading: "だいいっぽ" },
+  四則: { text: "四則", reading: "しそく" },
+  四則演算: { text: "四則演算", reading: "しそくえんざん" },
+  中身: { text: "中身", reading: "なかみ" },
+  上書き: { text: "上書き", reading: "うわがき" },
+  同士: { text: "同士", reading: "どうし" },
+  組み合わせ: { text: "組み合わせ", reading: "くみあわせ" },
+  複数: { text: "複数", reading: "ふくすう" },
 };
 
 // 単語キーから直接ふりがな付きテキストを返すヘルパー

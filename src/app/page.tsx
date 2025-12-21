@@ -20,6 +20,9 @@ export default function Home() {
   const [xpToNext, setXpToNext] = useState(100);
   const [highestStreak, setHighestStreak] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showDebugPanel, setShowDebugPanel] = useState(false);
+  const [debugXP, setDebugXP] = useState("");
+  const [debugLessonId, setDebugLessonId] = useState("");
 
   useEffect(() => {
     const progress = getProgress();
@@ -51,6 +54,82 @@ export default function Home() {
     // 前のレッスンが完了していればアンロック
     const previousLesson = lessons[lessonIndex - 1];
     return !completedLessons.includes(previousLesson.id);
+  };
+
+  // デバッグ用：全レッスンを完了にする
+  const debugCompleteAll = () => {
+    const allLessonIds = lessons.map(l => l.id);
+    const progress = getProgress();
+    const newProgress = {
+      ...progress,
+      completedLessons: allLessonIds,
+    };
+    localStorage.setItem("codeblock-progress", JSON.stringify(newProgress));
+    setCompletedLessons(allLessonIds);
+    alert("全レッスンを完了状態にしました！");
+  };
+
+  // デバッグ用：進捗をリセットする
+  const debugResetAll = () => {
+    const progress = getProgress();
+    const newProgress = {
+      ...progress,
+      completedLessons: [],
+    };
+    localStorage.setItem("codeblock-progress", JSON.stringify(newProgress));
+    setCompletedLessons([]);
+    setCurrentIndex(0);
+    alert("進捗をリセットしました！");
+  };
+
+  // デバッグ用：XPを設定
+  const debugSetXP = () => {
+    const xp = parseInt(debugXP);
+    if (isNaN(xp) || xp < 0) {
+      alert("正しいXP値を入力してください");
+      return;
+    }
+    const progress = getProgress();
+    const newProgress = {
+      ...progress,
+      totalXP: xp,
+    };
+    localStorage.setItem("codeblock-progress", JSON.stringify(newProgress));
+    setTotalXP(xp);
+    setLevelInfo(getLevelInfo(xp));
+    setLevelProgress(getLevelProgress(xp));
+    alert(`XPを ${xp} に設定しました！`);
+    setDebugXP("");
+  };
+
+  // デバッグ用：特定レッスンまで完了
+  const debugCompleteUpTo = () => {
+    if (!debugLessonId) {
+      alert("レッスンIDを入力してください（例: 1-3）");
+      return;
+    }
+    const targetIndex = lessons.findIndex(l => l.id === debugLessonId);
+    if (targetIndex === -1) {
+      alert(`レッスン ${debugLessonId} が見つかりません`);
+      return;
+    }
+    const completedIds = lessons.slice(0, targetIndex + 1).map(l => l.id);
+    const progress = getProgress();
+    const newProgress = {
+      ...progress,
+      completedLessons: completedIds,
+    };
+    localStorage.setItem("codeblock-progress", JSON.stringify(newProgress));
+    setCompletedLessons(completedIds);
+    setCurrentIndex(Math.min(targetIndex + 1, lessons.length - 1));
+    alert(`${debugLessonId} まで完了状態にしました！`);
+    setDebugLessonId("");
+  };
+
+  // デバッグ用：現在の進捗を取得
+  const getDebugInfo = () => {
+    const progress = getProgress();
+    return JSON.stringify(progress, null, 2);
   };
 
   const goToPrevious = () => {
@@ -292,6 +371,90 @@ export default function Home() {
 
       {/* 下部の余白 */}
       <div className="h-24" />
+
+      {/* デバッグ用パネル（開発時のみ表示） */}
+      {process.env.NODE_ENV === "development" && (
+        <div className="fixed top-2 right-2 z-50">
+          {/* トグルボタン */}
+          <button
+            onClick={() => setShowDebugPanel(!showDebugPanel)}
+            className="bg-gray-800 text-white text-xs px-2 py-1 rounded shadow hover:bg-gray-700"
+          >
+            🛠️ {showDebugPanel ? "閉じる" : "デバッグ"}
+          </button>
+
+          {/* デバッグパネル */}
+          {showDebugPanel && (
+            <div className="mt-2 bg-white border-2 border-gray-800 rounded-lg p-3 shadow-lg w-64">
+              <h3 className="font-bold text-sm mb-2 text-gray-800">🛠️ デバッグパネル</h3>
+              
+              {/* 基本操作 */}
+              <div className="flex gap-2 mb-3">
+                <button
+                  onClick={debugCompleteAll}
+                  className="flex-1 bg-green-500 text-white text-xs px-2 py-1 rounded hover:bg-green-600"
+                >
+                  全完了
+                </button>
+                <button
+                  onClick={debugResetAll}
+                  className="flex-1 bg-red-500 text-white text-xs px-2 py-1 rounded hover:bg-red-600"
+                >
+                  リセット
+                </button>
+              </div>
+
+              {/* XP設定 */}
+              <div className="mb-3">
+                <label className="text-xs text-gray-600 block mb-1">XP設定</label>
+                <div className="flex gap-1">
+                  <input
+                    type="number"
+                    value={debugXP}
+                    onChange={(e) => setDebugXP(e.target.value)}
+                    placeholder="例: 500"
+                    className="flex-1 border rounded px-2 py-1 text-xs"
+                  />
+                  <button
+                    onClick={debugSetXP}
+                    className="bg-yellow-500 text-white text-xs px-2 py-1 rounded hover:bg-yellow-600"
+                  >
+                    設定
+                  </button>
+                </div>
+              </div>
+
+              {/* 特定レッスンまで完了 */}
+              <div className="mb-3">
+                <label className="text-xs text-gray-600 block mb-1">〜まで完了</label>
+                <div className="flex gap-1">
+                  <input
+                    type="text"
+                    value={debugLessonId}
+                    onChange={(e) => setDebugLessonId(e.target.value)}
+                    placeholder="例: 1-3"
+                    className="flex-1 border rounded px-2 py-1 text-xs"
+                  />
+                  <button
+                    onClick={debugCompleteUpTo}
+                    className="bg-blue-500 text-white text-xs px-2 py-1 rounded hover:bg-blue-600"
+                  >
+                    完了
+                  </button>
+                </div>
+              </div>
+
+              {/* 現在の進捗 */}
+              <div>
+                <label className="text-xs text-gray-600 block mb-1">現在の進捗データ</label>
+                <pre className="bg-gray-100 p-2 rounded text-xs overflow-auto max-h-32">
+                  {getDebugInfo()}
+                </pre>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* フッター */}
       <Footer />

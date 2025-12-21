@@ -119,7 +119,7 @@ export default function LessonPage({ params }: LessonPageProps) {
               </span>
             )}
           </div>
-          <p className="mt-4 text-gray-600">{lesson.description}</p>
+          <p className="mt-4 text-gray-600"><FuriganaText text={lesson.description} /></p>
         </div>
 
         {/* チュートリアルスライド */}
@@ -273,7 +273,7 @@ export default function LessonPage({ params }: LessonPageProps) {
             </div>
             <div>
               <span className="font-semibold text-gray-700">説明:</span>
-              <p className="text-gray-600 mt-1">{lesson.description}</p>
+              <p className="text-gray-600 mt-1"><FuriganaText text={lesson.description} /></p>
             </div>
           </div>
         </div>
