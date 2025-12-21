@@ -36,7 +36,7 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { playBlockAddSound, playBlockRemoveSound } from "@/utils/sounds";
+import { playBlockAddSound, playBlockRemoveSound, playCorrectSound, playIncorrectSound } from "@/utils/sounds";
 
 type EditorPageProps = {
   params: Promise<{
@@ -387,6 +387,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           error: `エラー: ${error}`,
         });
         setIsExecuting(false);
+        playIncorrectSound(); // 不正解音を再生
         return;
       }
 
@@ -418,26 +419,46 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           codeIsValid = false;
           codeErrorMessage = "変数を使って値を入れてね！「=」を使おう！";
         } else {
-          // 変数名を抽出（= の前にある単語）
-          const variableMatch = code.match(/(\w+)\s*=/);
-          if (variableMatch) {
-            const variableName = variableMatch[1];
-            // print()内で変数が使用されているかチェック
-            // print(変数名) の形式をチェック（文字列内は除外）
-            const printMatches = code.matchAll(/print\s*\([^)]*\)/g);
-            let variableUsedInPrint = false;
-            for (const printMatch of printMatches) {
-              const printContent = printMatch[0];
-              // 文字列（"..." または '...'）を除去してから変数名をチェック
-              const withoutStrings = printContent.replace(/["'][^"']*["']/g, '');
-              if (withoutStrings.includes(variableName)) {
-                variableUsedInPrint = true;
-                break;
-              }
-            }
-            if (!variableUsedInPrint) {
+          // レッスン2-4（変数の上書き）の場合、=が2回以上使われているかチェック
+          if (lessonId === "2-4") {
+            const equalsCount = (code.match(/=/g) || []).length;
+            if (equalsCount < 2) {
               codeIsValid = false;
-              codeErrorMessage = "変数をprint()内で使ってね！";
+              codeErrorMessage = "変数に値を入れた後、もう一度値を入れ直してね！";
+            }
+          }
+
+          // レッスン2-5（変数同士を組み合わせよう）の場合、=が2回以上使われているかチェック
+          if (lessonId === "2-5") {
+            const equalsCount = (code.match(/=/g) || []).length;
+            if (equalsCount < 2) {
+              codeIsValid = false;
+              codeErrorMessage = "2つ以上の変数を作って組み合わせてね！";
+            }
+          }
+          
+          // 変数名を抽出（= の前にある単語）
+          if (codeIsValid) {
+            const variableMatch = code.match(/(\w+)\s*=/);
+            if (variableMatch) {
+              const variableName = variableMatch[1];
+              // print()内で変数が使用されているかチェック
+              // print(変数名) の形式をチェック（文字列内は除外）
+              const printMatches = code.matchAll(/print\s*\([^)]*\)/g);
+              let variableUsedInPrint = false;
+              for (const printMatch of printMatches) {
+                const printContent = printMatch[0];
+                // 文字列（"..." または '...'）を除去してから変数名をチェック
+                const withoutStrings = printContent.replace(/["'][^"']*["']/g, '');
+                if (withoutStrings.includes(variableName)) {
+                  variableUsedInPrint = true;
+                  break;
+                }
+              }
+              if (!variableUsedInPrint) {
+                codeIsValid = false;
+                codeErrorMessage = "変数をprint()内で使ってね！";
+              }
             }
           }
         }
@@ -450,6 +471,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           success: true,
           output: actualOutput,
         });
+
+        playCorrectSound(); // 正解音を再生
 
         // XP計算（再出題モードでなければXPを加算）
         if (!isRetryMode) {
@@ -531,6 +554,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           error: errorMessage,
         });
         
+        playIncorrectSound(); // 不正解音を再生
+        
         // 間違えた問題を記録（まだ記録されていなければ、通常モードのみ）
         if (!isRetryMode && currentMission && !wrongMissionIds.includes(currentMission.id)) {
           setWrongMissionIds(prev => [...prev, currentMission.id]);
@@ -546,6 +571,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           error instanceof Error ? error.message : "不明なエラー"
         }`,
       });
+      playIncorrectSound(); // エラー時も不正解音を再生
     } finally {
       setIsExecuting(false);
     }

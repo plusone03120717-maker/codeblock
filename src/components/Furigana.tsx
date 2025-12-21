@@ -135,3 +135,5 @@ export function FuriganaText({ text }: { text: string }) {
 
   return <>{result}</>;
 }
+
+
