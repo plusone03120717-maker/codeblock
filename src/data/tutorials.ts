@@ -413,6 +413,37 @@ export const tutorials: LessonTutorial[] = [
     ],
   },
   {
+    lessonId: "2-6",
+    characterName: "リリー",
+    characterEmoji: "👩‍🏫",
+    characterImage: "/images/characters/lily.png",
+    slides: [
+      {
+        title: "変数クイズに挑戦！",
+        content: "ここまでよく頑張ったわね！今度はコードを読んで、何が表示されるか当てるクイズよ。",
+        characterMessage: "落ち着いて考えれば大丈夫！",
+      },
+      {
+        title: "クイズの解き方",
+        content: "コードを上から順番に読んで、変数の中身がどう変わるか追いかけてみてね。",
+        characterMessage: "紙に書きながら考えるのもいい方法よ。",
+      },
+      {
+        title: "例題をやってみよう",
+        content: "例えば、このコードだと何が表示されるかな？",
+        characterMessage: "x は最初 3、次に 3 + 2 = 5 になるわね。",
+        codeExample: {
+          good: "x = 3\nx = x + 2\nprint(x)  # 答えは 5",
+        },
+      },
+      {
+        title: "さあ、クイズスタート！",
+        content: "4つの選択肢から正しい答えを選んでね。間違えても大丈夫、何度でも挑戦できるわ！",
+        characterMessage: "自信を持って！きっとできるわ！",
+      },
+    ],
+  },
+  {
     lessonId: "3-1",
     characterName: "ウィズ",
     characterEmoji: "🦉",

@@ -184,7 +184,7 @@ function DraggableBlock({ block, index, onRemove }: DraggableBlockProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className="inline-block relative touch-none"
+      className="inline-block relative touch-none group"
     >
       {/* メインブロック（ドラッグ用） */}
       <div
@@ -195,14 +195,14 @@ function DraggableBlock({ block, index, onRemove }: DraggableBlockProps) {
         {block.text}
       </div>
       
-      {/* 削除ボタン */}
+      {/* 削除ボタン（スマホは常に表示、PCはホバー時のみ表示） */}
       <button
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
           onRemove(index);
         }}
-        className="absolute -top-1 -right-1 bg-red-400 hover:bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-md hover:shadow-lg transition-all border-2 border-white z-10"
+        className="absolute -top-1 -right-1 bg-red-400 hover:bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-md hover:shadow-lg transition-all border-2 border-white z-10 opacity-100 md:opacity-0 md:group-hover:opacity-100"
         type="button"
       >
         ×
@@ -231,6 +231,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   const [isRetryMode, setIsRetryMode] = useState(false);
   const [retryIndex, setRetryIndex] = useState(0);
   const wrongMissionIdsRef = useRef<number[]>([]);
+  const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -358,12 +359,111 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     setSelectedBlocks([]);
     setGeneratedCode("");
     setExecutionResult(null);
+    setSelectedChoice(null);
     
     // ミッションIDをローカルストレージに保存
     if (lessonId) {
       localStorage.setItem(`lesson-${lessonId}-mission`, currentMissionId.toString());
     }
   }, [currentMissionId, lessonId]);
+
+  // 選択式問題の判定
+  const handleQuizAnswer = (choiceIndex: number) => {
+    if (!currentMission || executionResult) return;
+    
+    setSelectedChoice(choiceIndex);
+    
+    const isCorrect = choiceIndex === currentMission.correctAnswer;
+    
+    if (isCorrect) {
+      setExecutionResult({
+        success: true,
+        output: currentMission.expectedOutput,
+      });
+
+      playCorrectSound(); // 正解音を再生
+
+      // XP計算（再出題モードでなければXPを加算）
+      if (!isRetryMode) {
+        const { xp, streakBonus: bonus, newStreak } = calculateMissionXP(true, currentStreak);
+        setCurrentStreak(newStreak);
+        setEarnedXP(xp);
+        setStreakBonus(bonus);
+        setShowXPAnimation(true);
+        updateStreak(newStreak);
+
+        const { newTotal, leveledUp, newLevel } = addXP(xp);
+        setTotalXP(newTotal);
+        setLevelInfo(newLevel);
+        setLevelProgress(getLevelProgress(newTotal));
+
+        setTimeout(() => {
+          setShowXPAnimation(false);
+          setEarnedXP(null);
+          setStreakBonus(0);
+        }, 1500);
+      }
+
+      // 次の問題へ進む処理
+      setTimeout(() => {
+        setExecutionResult(null);
+        setSelectedChoice(null);
+        
+        if (isRetryMode) {
+          if (retryIndex + 1 < wrongMissionIdsRef.current.length) {
+            setRetryIndex(retryIndex + 1);
+          } else {
+            if (lessonId) {
+              localStorage.removeItem(`lesson-${lessonId}-mission`);
+            }
+            router.push(`/lesson/${lessonId}/complete`);
+          }
+        } else {
+          if (currentMissionId < (missions?.length || 0)) {
+            const nextMissionId = currentMissionId + 1;
+            setCurrentMissionId(nextMissionId);
+            if (lessonId) {
+              localStorage.setItem(`lesson-${lessonId}-mission`, nextMissionId.toString());
+            }
+          } else {
+            setTimeout(() => {
+              if (wrongMissionIdsRef.current.length > 0) {
+                setIsRetryMode(true);
+                setRetryIndex(0);
+              } else {
+                if (lessonId) {
+                  localStorage.removeItem(`lesson-${lessonId}-mission`);
+                }
+                router.push(`/lesson/${lessonId}/complete`);
+              }
+            }, 100);
+          }
+        }
+      }, 2000);
+    } else {
+      setExecutionResult({
+        success: false,
+        output: currentMission.choices?.[choiceIndex] || "",
+        error: "残念！もう一度考えてみよう！",
+      });
+      
+      playIncorrectSound(); // 不正解音を再生
+      
+      // 間違えた問題を記録
+      if (!isRetryMode && currentMission && !wrongMissionIds.includes(currentMission.id)) {
+        setWrongMissionIds(prev => [...prev, currentMission.id]);
+      }
+      
+      setCurrentStreak(0);
+      resetStreak();
+      
+      // 不正解の場合、少し待ってからリセット
+      setTimeout(() => {
+        setExecutionResult(null);
+        setSelectedChoice(null);
+      }, 2000);
+    }
+  };
 
   // 確認ボタンの処理
   const handleCheck = async () => {
@@ -764,164 +864,240 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           </div>
         </div>
 
-        {/* 回答エリア */}
-        <div className="mb-3">
-          <h3 className="text-sm font-bold mb-1 text-gray-700">あなたの<F reading="こた">答</F>え</h3>
-          <div className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-xl p-3 min-h-[60px]">
-            {selectedBlocks.length === 0 ? (
-              <p className="text-gray-400 text-center py-2 text-sm"><F reading="たんご">単語</F>を<F reading="えら">選</F>んでください</p>
-            ) : (
-              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                <SortableContext items={selectedBlocks.map((_, i) => `block-${i}`)} strategy={horizontalListSortingStrategy}>
-                  <div className="flex flex-col gap-1">
-                    {(() => {
-                      const lines: { blocks: { block: typeof selectedBlocks[0]; index: number }[] }[] = [];
-                      let currentLine: { block: typeof selectedBlocks[0]; index: number }[] = [];
-                      
-                      selectedBlocks.forEach((block, index) => {
-                        if (block.text === "↵") {
-                          // 改行ブロックを現在の行の最後に追加
-                          currentLine.push({ block, index });
-                          // 行を確定して新しい行を開始
-                          lines.push({ blocks: currentLine });
-                          currentLine = [];
-                        } else {
-                          currentLine.push({ block, index });
-                        }
-                      });
-                      
-                      // 残りのブロックがあれば追加
-                      if (currentLine.length > 0) {
-                        lines.push({ blocks: currentLine });
-                      }
-                      
-                      return lines.map((line, lineIndex) => (
-                        <div key={`line-${lineIndex}`} className="flex flex-wrap gap-1 items-center">
-                          {line.blocks.map(({ block, index }) => (
-                            <DraggableBlock
-                              key={`block-${index}`}
-                              block={block}
-                              index={index}
-                              onRemove={removeBlock}
-                            />
-                          ))}
-                        </div>
-                      ));
-                    })()}
-                  </div>
-                </SortableContext>
-              </DndContext>
-            )}
-          </div>
-        </div>
-
-        {/* 単語選択 */}
-        <div className="mb-3">
-          <h3 className="text-sm font-bold mb-1 text-gray-700"><F reading="たんご">単語</F>を<F reading="えら">選</F>んでね</h3>
-          <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-3">
-            <div className="flex flex-wrap gap-2">
-              {availableBlocks.map((block) => (
+        {/* 回答エリア - 問題タイプによって分岐 */}
+        {currentMission?.type === "quiz" ? (
+          // 選択式問題のUI
+          <div className="mb-3">
+            {/* コード表示 */}
+            <div className="bg-gray-900 rounded-xl p-4 mb-4">
+              <pre className="text-green-400 font-mono text-sm whitespace-pre-wrap">{currentMission.codeToRead}</pre>
+            </div>
+            
+            {/* 選択肢 */}
+            <h3 className="text-sm font-bold mb-2 text-gray-700"><F reading="せんたくし">選択肢</F>から<F reading="えら">選</F>んでね</h3>
+            <div className="grid grid-cols-2 gap-2">
+              {currentMission.choices?.map((choice, index) => (
                 <button
-                  key={block.id}
-                  type="button"
-                  onClick={() => selectBlock(block)}
-                  className={`${block.color} text-gray-700 px-3 py-2 rounded-xl text-sm font-mono shadow hover:shadow-md hover:scale-105 transition-all border border-white`}
+                  key={index}
+                  onClick={() => handleQuizAnswer(index)}
+                  disabled={executionResult !== null}
+                  className={`p-3 rounded-xl font-bold text-left transition-all border-2 ${
+                    selectedChoice === index
+                      ? executionResult?.success
+                        ? "bg-green-100 border-green-500 text-green-700"
+                        : "bg-red-100 border-red-500 text-red-700"
+                      : "bg-white border-gray-200 hover:border-purple-400 hover:bg-purple-50"
+                  } ${executionResult !== null ? "cursor-not-allowed" : "cursor-pointer"}`}
                 >
-                  {block.text}
+                  <span className="text-purple-500 mr-2">{String.fromCharCode(65 + index)}.</span>
+                  {choice}
                 </button>
               ))}
             </div>
           </div>
-        </div>
+        ) : (
+          // 従来のブロック形式のUI
+          <>
+            {/* 回答エリア */}
+            <div className="mb-3">
+              <h3 className="text-sm font-bold mb-1 text-gray-700">あなたの<F reading="こた">答</F>え</h3>
+              <div className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-xl p-3 min-h-[60px]">
+                {selectedBlocks.length === 0 ? (
+                  <p className="text-gray-400 text-center py-2 text-sm"><F reading="たんご">単語</F>を<F reading="えら">選</F>んでください</p>
+                ) : (
+                  <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                    <SortableContext items={selectedBlocks.map((_, i) => `block-${i}`)} strategy={horizontalListSortingStrategy}>
+                      <div className="flex flex-col gap-1">
+                        {(() => {
+                          const lines: { blocks: { block: typeof selectedBlocks[0]; index: number }[] }[] = [];
+                          let currentLine: { block: typeof selectedBlocks[0]; index: number }[] = [];
+                          
+                          selectedBlocks.forEach((block, index) => {
+                            if (block.text === "↵") {
+                              // 改行ブロックを現在の行の最後に追加
+                              currentLine.push({ block, index });
+                              // 行を確定して新しい行を開始
+                              lines.push({ blocks: currentLine });
+                              currentLine = [];
+                            } else {
+                              currentLine.push({ block, index });
+                            }
+                          });
+                          
+                          // 残りのブロックがあれば追加
+                          if (currentLine.length > 0) {
+                            lines.push({ blocks: currentLine });
+                          }
+                          
+                          return lines.map((line, lineIndex) => (
+                            <div key={`line-${lineIndex}`} className="flex flex-wrap gap-1 items-center">
+                              {line.blocks.map(({ block, index }) => (
+                                <DraggableBlock
+                                  key={`block-${index}`}
+                                  block={block}
+                                  index={index}
+                                  onRemove={removeBlock}
+                                />
+                              ))}
+                            </div>
+                          ));
+                        })()}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
+                )}
+              </div>
+            </div>
 
-        {/* 固定ボタン分の余白 */}
-        <div className="h-40"></div>
+            {/* 単語選択 */}
+            <div className="mb-3">
+              <h3 className="text-sm font-bold mb-1 text-gray-700"><F reading="たんご">単語</F>を<F reading="えら">選</F>んでね</h3>
+              <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-3">
+                <div className="flex flex-wrap gap-2">
+                  {availableBlocks.map((block) => (
+                    <button
+                      key={block.id}
+                      type="button"
+                      onClick={() => selectBlock(block)}
+                      className={`${block.color} text-gray-700 px-3 py-2 rounded-xl text-sm font-mono shadow hover:shadow-md hover:scale-105 transition-all border border-white`}
+                    >
+                      {block.text}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* 固定ボタン分の余白 - 選択式でない場合のみ */}
+        {currentMission?.type !== "quiz" && (
+          <div className="h-40"></div>
+        )}
       </div>
 
-      {/* ボタンと結果表示（画面下部に固定） */}
-      <div 
-        style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          zIndex: 9999,
-          backgroundColor: 'white',
-          borderTop: '2px solid #e5e7eb',
-          boxShadow: '0 -4px 6px -1px rgba(0, 0, 0, 0.1)',
-        }}
-      >
-        {/* 実行結果 */}
-        {executionResult && (
-          <div className="p-2 border-b">
-            {executionResult.success ? (
-              <div className="bg-green-100 border-2 border-green-500 rounded-xl p-2 flex items-center gap-2">
-                <span className="text-xl">🎉</span>
-                <div className="flex-1">
-                  <p className="text-green-800 font-bold text-sm"><FW word="正解" />！</p>
-                  <p className="text-green-700 text-xs">出力: {executionResult.output}</p>
+      {/* ボタンと結果表示（画面下部に固定）- 選択式でない場合のみ表示 */}
+      {currentMission?.type !== "quiz" && (
+        <div 
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 9999,
+            backgroundColor: 'white',
+            borderTop: '2px solid #e5e7eb',
+            boxShadow: '0 -4px 6px -1px rgba(0, 0, 0, 0.1)',
+          }}
+        >
+          {/* 実行結果 */}
+          {executionResult && (
+            <div className="p-2 border-b">
+              {executionResult.success ? (
+                <div className="bg-green-100 border-2 border-green-500 rounded-xl p-2 flex items-center gap-2">
+                  <span className="text-xl">🎉</span>
+                  <div className="flex-1">
+                    <p className="text-green-800 font-bold text-sm"><FW word="正解" />！</p>
+                    <p className="text-green-700 text-xs">出力: {executionResult.output}</p>
+                  </div>
+                  <p className="text-green-600 font-bold text-xs">
+                    {currentMissionId < (missions?.length || 0) ? "次へ..." : <>🎊 <FW word="完了" />！</>}
+                  </p>
                 </div>
-                <p className="text-green-600 font-bold text-xs">
-                  {currentMissionId < (missions?.length || 0) ? "次へ..." : <>🎊 <FW word="完了" />！</>}
-                </p>
+              ) : (
+                <div className="bg-red-100 border-2 border-red-500 rounded-xl p-2 flex items-center gap-2">
+                  <span className="text-xl">🤔</span>
+                  <div>
+                    <p className="text-red-800 font-bold text-sm">もう一度！</p>
+                    {executionResult.error && (
+                      <p className="text-red-700 text-xs font-bold">{executionResult.error}</p>
+                    )}
+                    {executionResult.output && (
+                      <p className="text-red-700 text-xs">出力: {executionResult.output}</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          
+          {/* ボタン */}
+          <div className="p-3">
+            <div className="flex justify-center gap-3">
+              <button
+                type="button"
+                onClick={reset}
+                style={{
+                  background: 'linear-gradient(to right, #e5e7eb, #d1d5db)',
+                  color: '#374151',
+                  padding: '12px 20px',
+                  borderRadius: '9999px',
+                  fontWeight: 'bold',
+                  fontSize: '14px',
+                  border: '2px solid white',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                }}
+              >
+                やり直す
+              </button>
+              <button
+                type="button"
+                onClick={handleCheck}
+                disabled={isExecuting}
+                style={{
+                  background: isExecuting ? '#9ca3af' : 'linear-gradient(to right, #86efac, #34d399)',
+                  color: 'white',
+                  padding: '12px 24px',
+                  borderRadius: '9999px',
+                  fontWeight: 'bold',
+                  fontSize: '14px',
+                  border: '2px solid white',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  opacity: isExecuting ? 0.5 : 1,
+                }}
+              >
+                {isExecuting ? <><F reading="じっこう">実行</F><F reading="ちゅう">中</F>...</> : <><FW word="確認" />する 🎯</>}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 選択式問題の結果表示 */}
+      {currentMission?.type === "quiz" && executionResult && (
+        <div 
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 9999,
+            backgroundColor: 'white',
+            borderTop: '2px solid #e5e7eb',
+            boxShadow: '0 -4px 6px -1px rgba(0, 0, 0, 0.1)',
+          }}
+        >
+          <div className="p-3">
+            {executionResult.success ? (
+              <div className="bg-green-100 border-2 border-green-500 rounded-xl p-3 flex items-center gap-2">
+                <span className="text-2xl">🎉</span>
+                <div>
+                  <p className="text-green-800 font-bold"><FW word="正解" />！</p>
+                  <p className="text-green-700 text-sm">答えは「{executionResult.output}」</p>
+                </div>
               </div>
             ) : (
-              <div className="bg-red-100 border-2 border-red-500 rounded-xl p-2 flex items-center gap-2">
-                <span className="text-xl">🤔</span>
+              <div className="bg-red-100 border-2 border-red-500 rounded-xl p-3 flex items-center gap-2">
+                <span className="text-2xl">🤔</span>
                 <div>
-                  <p className="text-red-800 font-bold text-sm">もう一度！</p>
-                  {executionResult.error && (
-                    <p className="text-red-700 text-xs font-bold">{executionResult.error}</p>
-                  )}
-                  {executionResult.output && (
-                    <p className="text-red-700 text-xs">出力: {executionResult.output}</p>
-                  )}
+                  <p className="text-red-800 font-bold">もう一度！</p>
+                  <p className="text-red-700 text-sm">{executionResult.error}</p>
                 </div>
               </div>
             )}
           </div>
-        )}
-        
-        {/* ボタン */}
-        <div className="p-3">
-          <div className="flex justify-center gap-3">
-            <button
-              type="button"
-              onClick={reset}
-              style={{
-                background: 'linear-gradient(to right, #e5e7eb, #d1d5db)',
-                color: '#374151',
-                padding: '12px 20px',
-                borderRadius: '9999px',
-                fontWeight: 'bold',
-                fontSize: '14px',
-                border: '2px solid white',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-              }}
-            >
-              やり直す
-            </button>
-            <button
-              type="button"
-              onClick={handleCheck}
-              disabled={isExecuting}
-              style={{
-                background: isExecuting ? '#9ca3af' : 'linear-gradient(to right, #86efac, #34d399)',
-                color: 'white',
-                padding: '12px 24px',
-                borderRadius: '9999px',
-                fontWeight: 'bold',
-                fontSize: '14px',
-                border: '2px solid white',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                opacity: isExecuting ? 0.5 : 1,
-              }}
-            >
-              {isExecuting ? <><F reading="じっこう">実行</F><F reading="ちゅう">中</F>...</> : <><FW word="確認" />する 🎯</>}
-            </button>
-          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

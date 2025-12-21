@@ -29,5 +29,10 @@ export interface Mission {
   description: string;
   expectedOutput: string;
   availableBlocks: WordBlock[];
+  // 選択式問題用（オプション）
+  type?: "blocks" | "quiz";
+  codeToRead?: string;
+  choices?: string[];
+  correctAnswer?: number;
 }
 
