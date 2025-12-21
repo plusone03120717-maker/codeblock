@@ -1,5 +1,6 @@
 "use client";
 
+import { ReactNode } from "react";
 import { useFurigana } from "@/contexts/FuriganaContext";
 
 interface FuriganaProps {
@@ -59,6 +60,18 @@ export const words = {
   解答: { text: "解答", reading: "かいとう" },
   累計: { text: "累計", reading: "るいけい" },
   連続: { text: "連続", reading: "れんぞく" },
+  命令: { text: "命令", reading: "めいれい" },
+  画面: { text: "画面", reading: "がめん" },
+  文字: { text: "文字", reading: "もじ" },
+  使い方: { text: "使い方", reading: "つかいかた" },
+  改行: { text: "改行", reading: "かいぎょう" },
+  方法: { text: "方法", reading: "ほうほう" },
+  数字: { text: "数字", reading: "すうじ" },
+  計算: { text: "計算", reading: "けいさん" },
+  意味: { text: "意味", reading: "いみ" },
+  準備: { text: "準備", reading: "じゅんび" },
+  実際: { text: "実際", reading: "じっさい" },
+  第一歩: { text: "第一歩", reading: "だいいっぽ" },
 };
 
 // 単語キーから直接ふりがな付きテキストを返すヘルパー
@@ -71,4 +84,47 @@ export function FW({ word }: { word: keyof typeof words }) {
   }
 
   return <>{w.text}</>;
+}
+
+// テキスト内の既知の単語にふりがなを付けるコンポーネント
+export function FuriganaText({ text }: { text: string }) {
+  const { furiganaEnabled } = useFurigana();
+  
+  if (!furiganaEnabled) {
+    return <>{text}</>;
+  }
+
+  // 長い単語から順にマッチさせるため、文字数の降順でソート
+  const sortedWords = Object.entries(words).sort((a, b) => b[0].length - a[0].length);
+  
+  let result: ReactNode[] = [];
+  let remainingText = text;
+  let key = 0;
+
+  while (remainingText.length > 0) {
+    let matched = false;
+    
+    // 既知の単語を探す
+    for (const [word, data] of sortedWords) {
+      if (remainingText.startsWith(word)) {
+        // 単語が見つかった
+        result.push(
+          <span key={key++}>
+            {data.text}（{data.reading}）
+          </span>
+        );
+        remainingText = remainingText.slice(word.length);
+        matched = true;
+        break;
+      }
+    }
+    
+    if (!matched) {
+      // マッチしなかった場合は1文字ずつ追加
+      result.push(<span key={key++}>{remainingText[0]}</span>);
+      remainingText = remainingText.slice(1);
+    }
+  }
+
+  return <>{result}</>;
 }

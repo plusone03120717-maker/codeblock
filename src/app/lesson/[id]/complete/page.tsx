@@ -14,6 +14,7 @@ import {
   getLevelProgress,
   getProgress
 } from "@/utils/progress";
+import { F, FW } from "@/components/Furigana";
 
 type CompletePageProps = {
   params: Promise<{
@@ -130,7 +131,7 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
           <div className="text-center mb-8">
             <div className="text-8xl mb-4">🎉</div>
             <h1 className="text-4xl font-bold text-green-800 mb-4">
-              レッスン完了！
+              レッスン<FW word="完了" />！
             </h1>
             <h2 className="text-2xl font-semibold text-gray-700 mb-2">
               レッスン {lessonId}: {currentLesson.title}
@@ -188,7 +189,7 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
               <div className="flex items-center justify-center gap-4">
                 <span className="text-3xl">⭐</span>
                 <div className="text-center">
-                  <p className="text-sm text-gray-600 mb-1">獲得経験値</p>
+                  <p className="text-sm text-gray-600 mb-1"><F reading="かくとく">獲得</F><F reading="けいけんち">経験値</F></p>
                   <p className="text-3xl font-bold text-orange-700">
                     +{earnedXP} XP
                   </p>
@@ -197,7 +198,7 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
               </div>
             </div>
             <p className="text-gray-500 mt-2 text-center">
-              {isReview ? "🔄 復習ボーナス" : "🎉 初回クリアボーナス"}
+              {isReview ? <>🔄 <FW word="復習" />ボーナス</> : <>🎉 <F reading="しょかい">初回</F><F reading="くりあ">クリア</F>ボーナス</>}
             </p>
           </div>
 
@@ -206,7 +207,7 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
             <div className="bg-gradient-to-r from-yellow-200 to-orange-200 rounded-2xl p-6 mb-4 animate-pulse border-4 border-yellow-400 shadow-lg">
               <div className="text-4xl mb-2 text-center">🎊</div>
               <p className="text-2xl font-bold text-orange-600 mb-2 text-center">
-                レベルアップ！
+                <F reading="れべる">レベル</F><F reading="あっぷ">アップ</F>！
               </p>
               <p className="text-3xl font-bold text-orange-500 text-center">
                 Lv.{newLevelInfo.level} {newLevelInfo.name}
@@ -228,12 +229,12 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
                 onClick={() => router.push(`/lesson/${nextLesson?.id}`)}
                 className="bg-gradient-to-r from-green-300 to-emerald-400 hover:from-green-400 hover:to-emerald-500 text-white px-8 py-3 rounded-full text-lg font-bold shadow-lg hover:shadow-xl transition-all"
               >
-                次のレッスンへ →
+                <F reading="つぎ">次</F>のレッスンへ →
               </button>
             ) : (
               <div className="bg-gray-100 rounded-full px-8 py-3 text-center">
                 <p className="text-gray-600 font-semibold">
-                  すべてのレッスンを完了しました！
+                  すべてのレッスンを<FW word="完了" />しました！
                 </p>
               </div>
             )}
@@ -245,7 +246,7 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div className="bg-white rounded-xl p-3">
               <div className="text-2xl">✅</div>
-              <div className="text-gray-500">クリア</div>
+              <div className="text-gray-500"><F reading="くりあ">クリア</F></div>
               <div className="font-bold text-lg text-green-500">10/10</div>
             </div>
             <div className="bg-white rounded-xl p-3">
@@ -256,7 +257,7 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
             <div className="bg-white rounded-xl p-3">
               <div className="text-2xl">💎</div>
               <div className="text-gray-500">
-                <ruby>累計<rt>るいけい</rt></ruby>XP
+                <FW word="累計" />XP
               </div>
               <div className="font-bold text-lg text-purple-500">{totalXP}</div>
             </div>
@@ -265,14 +266,14 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
 
         {/* レッスン情報 */}
         <div className="bg-white rounded-2xl shadow-lg p-6 border-2 border-purple-200">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">レッスン情報</h3>
+          <h3 className="text-xl font-bold text-gray-800 mb-4">レッスン<F reading="じょうほう">情報</F></h3>
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <span className="font-semibold text-gray-700">レッスンID:</span>
               <span className="text-gray-600">{lessonId}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-gray-700">難易度:</span>
+              <span className="font-semibold text-gray-700"><F reading="なんいど">難易度</F>:</span>
               <span
                 className={`px-3 py-1 rounded-full text-sm font-semibold ${
                   currentLesson.difficulty === "かんたん"
@@ -287,7 +288,7 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
             </div>
             {nextLesson && (
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-gray-700">次のレッスン:</span>
+                <span className="font-semibold text-gray-700"><F reading="つぎ">次</F>のレッスン:</span>
                 <span className="text-gray-600">
                   {nextLesson.id}: {nextLesson.title}
                 </span>

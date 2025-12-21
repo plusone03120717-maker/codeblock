@@ -7,7 +7,7 @@ import Image from "next/image";
 import { lessons, getLesson } from "@/data/lessons";
 import { getTutorial } from "@/data/tutorials";
 import { isLessonCompleted } from "@/utils/progress";
-import { F, FW } from "@/components/Furigana";
+import { F, FW, FuriganaText } from "@/components/Furigana";
 
 type LessonPageProps = {
   params: Promise<{
@@ -192,17 +192,17 @@ export default function LessonPage({ params }: LessonPageProps) {
                 <div className="absolute left-0 top-4 transform -translate-x-2">
                   <div className="w-0 h-0 border-t-6 border-t-transparent border-r-8 border-r-purple-100 border-b-6 border-b-transparent"></div>
                 </div>
-                <p className="text-sm text-gray-700">{currentSlide.characterMessage}</p>
+                <p className="text-sm text-gray-700"><FuriganaText text={currentSlide.characterMessage} /></p>
               </div>
             </div>
 
             {/* スライドタイトル */}
             <h2 className="text-lg font-bold text-purple-800 mb-2">
-              {currentSlide.title}
+              <FuriganaText text={currentSlide.title} />
             </h2>
             
             {/* 説明 */}
-            <p className="text-sm text-gray-600 mb-2">{currentSlide.content}</p>
+            <p className="text-sm text-gray-600 mb-2"><FuriganaText text={currentSlide.content} /></p>
             
             {/* 画像 */}
             {currentSlide.image && (

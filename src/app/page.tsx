@@ -10,7 +10,7 @@ import {
   getXPToNextLevel 
 } from "@/utils/progress";
 import Footer from "@/components/Footer";
-import { F, FW } from "@/components/Furigana";
+import { F, FW, FuriganaText } from "@/components/Furigana";
 
 export default function Home() {
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
@@ -171,7 +171,7 @@ export default function Home() {
                   {/* 完了バッジ */}
                   {isCompleted && (
                     <div className="absolute top-0 right-0 bg-green-500 px-4 py-1 rounded-bl-2xl font-bold text-sm">
-                      ✓ 完了
+                      ✓ <FW word="完了" />
                     </div>
                   )}
 
@@ -191,15 +191,15 @@ export default function Home() {
                   </div>
 
                   {/* タイトル */}
-                  <h2 className="text-xl font-bold mb-2">{lesson.title}</h2>
+                  <h2 className="text-xl font-bold mb-2"><FuriganaText text={lesson.title} /></h2>
 
                   {/* 説明 */}
-                  <p className="text-sm opacity-90 mb-4">{lesson.description}</p>
+                  <p className="text-sm opacity-90 mb-4"><FuriganaText text={lesson.description} /></p>
 
                   {/* ボタン */}
                   {isLocked ? (
                     <div className="block text-center py-3 rounded-full font-bold text-lg bg-gray-600/50 text-gray-300 cursor-not-allowed">
-                      🔒 前のレッスンをクリアしよう
+                      🔒 前のレッスンを<F reading="くりあ">クリア</F>しよう
                     </div>
                   ) : (
                     <Link
@@ -210,7 +210,7 @@ export default function Home() {
                           : "bg-white text-purple-600 hover:scale-105 shadow-lg"
                       }`}
                     >
-                      {isCompleted ? "🔄 復習する" : "🚀 学習する"}
+                      {isCompleted ? <>🔄 <FW word="復習" />する</> : "🚀 学習する"}
                     </Link>
                   )}
                 </div>

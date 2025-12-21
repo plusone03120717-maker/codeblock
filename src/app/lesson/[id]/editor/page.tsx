@@ -17,7 +17,7 @@ import {
   getLevelInfo,
   getLevelProgress
 } from "@/utils/progress";
-import { F, FW } from "@/components/Furigana";
+import { F, FW, FuriganaText } from "@/components/Furigana";
 import {
   DndContext,
   closestCenter,
@@ -692,7 +692,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
             
             {/* 説明 */}
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-gray-700 mb-1">{currentMission.description}</p>
+              <p className="text-sm text-gray-700 mb-1"><FuriganaText text={currentMission.description} /></p>
               <div className="bg-gray-800 rounded-lg p-2">
                 <p className="text-xs text-gray-400 mb-1"><F reading="きたい">期待</F>される<F reading="しゅつりょく">出力</F>:</p>
                 <pre className="text-green-400 font-mono text-sm">{currentMission.expectedOutput}</pre>
