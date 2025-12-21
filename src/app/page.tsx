@@ -220,7 +220,7 @@ export default function Home() {
           <button
             onClick={goToPrevious}
             disabled={currentIndex === 0}
-            className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all ${
+            className={`absolute left-0 top-28 z-10 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all ${
               currentIndex === 0
                 ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                 : "bg-white text-purple-600 hover:bg-purple-100"
@@ -246,7 +246,7 @@ export default function Home() {
 
             return (
               <div className="mx-12">
-                <div className={`bg-gradient-to-br ${bgColor} rounded-3xl p-6 shadow-xl text-white relative overflow-hidden`}>
+                <div className={`bg-gradient-to-br ${bgColor} rounded-3xl p-6 shadow-xl text-white relative overflow-hidden min-h-[220px] flex flex-col`}>
                   {/* 完了バッジ */}
                   {isCompleted && (
                     <div className="absolute top-0 right-0 bg-green-500 px-4 py-1 rounded-bl-2xl font-bold text-sm">
@@ -276,22 +276,24 @@ export default function Home() {
                   <p className="text-sm opacity-90 mb-4"><FuriganaText text={lesson.description} /></p>
 
                   {/* ボタン */}
-                  {isLocked ? (
-                    <div className="block text-center py-3 rounded-full font-bold text-lg bg-gray-600/50 text-gray-300 cursor-not-allowed">
-                      🔒 前のレッスンを<F reading="くりあ">クリア</F>しよう
-                    </div>
-                  ) : (
-                    <Link
-                      href={`/lesson/${lesson.id}`}
-                      className={`block text-center py-3 rounded-full font-bold text-lg transition-all ${
-                        isCompleted
-                          ? "bg-white/30 hover:bg-white/40 text-white"
-                          : "bg-white text-purple-600 hover:scale-105 shadow-lg"
-                      }`}
-                    >
-                      {isCompleted ? <>🔄 <FW word="復習" />する</> : "🚀 学習する"}
-                    </Link>
-                  )}
+                  <div className="mt-auto">
+                    {isLocked ? (
+                      <div className="block text-center py-3 rounded-full font-bold text-lg bg-gray-600/50 text-gray-300 cursor-not-allowed">
+                        🔒 前のレッスンを<F reading="くりあ">クリア</F>しよう
+                      </div>
+                    ) : (
+                      <Link
+                        href={`/lesson/${lesson.id}`}
+                        className={`block text-center py-3 rounded-full font-bold text-lg transition-all ${
+                          isCompleted
+                            ? "bg-white/30 hover:bg-white/40 text-white"
+                            : "bg-white text-purple-600 hover:scale-105 shadow-lg"
+                        }`}
+                      >
+                        {isCompleted ? <>🔄 <FW word="復習" />する</> : "🚀 学習する"}
+                      </Link>
+                    )}
+                  </div>
                 </div>
 
                 {/* ユニット表示 */}
@@ -316,7 +318,7 @@ export default function Home() {
               <button
                 onClick={goToNext}
                 disabled={isDisabled}
-                className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all ${
+                className={`absolute right-0 top-28 z-10 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all ${
                   isDisabled
                     ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                     : "bg-white text-purple-600 hover:bg-purple-100"
