@@ -7,6 +7,7 @@ import Image from "next/image";
 import { lessons, getLesson } from "@/data/lessons";
 import { getTutorial } from "@/data/tutorials";
 import { isLessonCompleted } from "@/utils/progress";
+import { F, FW } from "@/components/Furigana";
 
 type LessonPageProps = {
   params: Promise<{
@@ -163,7 +164,7 @@ export default function LessonPage({ params }: LessonPageProps) {
                   onClick={() => router.push(`/lesson/${lessonId}/editor`)}
                   className="px-4 py-2 bg-gradient-to-r from-green-400 to-emerald-500 text-white rounded-full font-bold text-sm transition-all"
                 >
-                  開始 🚀
+                  <F reading="かいし">開始</F> 🚀
                 </button>
               )}
             </div>
@@ -221,7 +222,7 @@ export default function LessonPage({ params }: LessonPageProps) {
               <div className="space-y-2">
                 {currentSlide.codeExample.bad && (
                   <div className="bg-red-50 border border-red-300 rounded-lg p-2">
-                    <div className="text-red-600 font-bold text-xs mb-1">❌ ダメな例</div>
+                    <div className="text-red-600 font-bold text-xs mb-1">❌ ダメな<F reading="れい">例</F></div>
                     <pre className="bg-red-100 rounded p-2 text-red-800 font-mono text-xs overflow-x-auto">
                       {currentSlide.codeExample.bad}
                     </pre>
@@ -229,7 +230,7 @@ export default function LessonPage({ params }: LessonPageProps) {
                 )}
                 {currentSlide.codeExample.good && (
                   <div className="bg-green-50 border border-green-300 rounded-lg p-2">
-                    <div className="text-green-600 font-bold text-xs mb-1">✅ 正しい例</div>
+                    <div className="text-green-600 font-bold text-xs mb-1">✅ 正しい<F reading="れい">例</F></div>
                     <pre className="bg-green-100 rounded p-2 text-green-800 font-mono text-xs overflow-x-auto">
                       {currentSlide.codeExample.good}
                     </pre>

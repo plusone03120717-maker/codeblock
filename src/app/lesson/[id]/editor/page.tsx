@@ -17,6 +17,7 @@ import {
   getLevelInfo,
   getLevelProgress
 } from "@/utils/progress";
+import { F, FW } from "@/components/Furigana";
 import {
   DndContext,
   closestCenter,
@@ -618,7 +619,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
             {isRetryMode ? (
               <>
                 <span className="text-sm font-bold text-orange-600">
-                  🔄 復習 {retryIndex + 1}/{wrongMissionIds.length}
+                  🔄 <FW word="復習" /> {retryIndex + 1}/{wrongMissionIds.length}
                 </span>
                 <span className="text-xs text-orange-500">間違えた問題をもう一度！</span>
               </>
@@ -693,7 +694,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
             <div className="flex-1 min-w-0">
               <p className="text-sm text-gray-700 mb-1">{currentMission.description}</p>
               <div className="bg-gray-800 rounded-lg p-2">
-                <p className="text-xs text-gray-400 mb-1">期待される出力:</p>
+                <p className="text-xs text-gray-400 mb-1"><F reading="きたい">期待</F>される<F reading="しゅつりょく">出力</F>:</p>
                 <pre className="text-green-400 font-mono text-sm">{currentMission.expectedOutput}</pre>
               </div>
             </div>
@@ -702,10 +703,10 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
 
         {/* 回答エリア */}
         <div className="mb-3">
-          <h3 className="text-sm font-bold mb-1 text-gray-700">あなたの答え</h3>
+          <h3 className="text-sm font-bold mb-1 text-gray-700">あなたの<F reading="こた">答</F>え</h3>
           <div className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-xl p-3 min-h-[60px]">
             {selectedBlocks.length === 0 ? (
-              <p className="text-gray-400 text-center py-2 text-sm">単語を選んでください</p>
+              <p className="text-gray-400 text-center py-2 text-sm"><F reading="たんご">単語</F>を<F reading="えら">選</F>んでください</p>
             ) : (
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext items={selectedBlocks.map((_, i) => `block-${i}`)} strategy={horizontalListSortingStrategy}>
@@ -752,7 +753,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
 
         {/* 単語選択 */}
         <div className="mb-3">
-          <h3 className="text-sm font-bold mb-1 text-gray-700">単語を選んでね</h3>
+          <h3 className="text-sm font-bold mb-1 text-gray-700"><F reading="たんご">単語</F>を<F reading="えら">選</F>んでね</h3>
           <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-3">
             <div className="flex flex-wrap gap-2">
               {availableBlocks.map((block) => (
@@ -793,11 +794,11 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
               <div className="bg-green-100 border-2 border-green-500 rounded-xl p-2 flex items-center gap-2">
                 <span className="text-xl">🎉</span>
                 <div className="flex-1">
-                  <p className="text-green-800 font-bold text-sm">正解！</p>
+                  <p className="text-green-800 font-bold text-sm"><FW word="正解" />！</p>
                   <p className="text-green-700 text-xs">出力: {executionResult.output}</p>
                 </div>
                 <p className="text-green-600 font-bold text-xs">
-                  {currentMissionId < (missions?.length || 0) ? "次へ..." : "🎊 完了！"}
+                  {currentMissionId < (missions?.length || 0) ? "次へ..." : <>🎊 <FW word="完了" />！</>}
                 </p>
               </div>
             ) : (
@@ -849,7 +850,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                 opacity: isExecuting ? 0.5 : 1,
               }}
             >
-              {isExecuting ? "実行中..." : "確認する 🎯"}
+              {isExecuting ? <><F reading="じっこう">実行</F><F reading="ちゅう">中</F>...</> : <><FW word="確認" />する 🎯</>}
             </button>
           </div>
         </div>
