@@ -228,17 +228,25 @@ export default function Home() {
           })()}
 
           {/* 右矢印 */}
-          <button
-            onClick={goToNext}
-            disabled={currentIndex === lessons.length - 1}
-            className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all ${
-              currentIndex === lessons.length - 1
-                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                : "bg-white text-purple-600 hover:bg-purple-100"
-            }`}
-          >
-            ▶
-          </button>
+          {(() => {
+            const isLastLesson = currentIndex === lessons.length - 1;
+            const nextLessonLocked = !isLastLesson && isLessonLocked(currentIndex + 1);
+            const isDisabled = isLastLesson || nextLessonLocked;
+            
+            return (
+              <button
+                onClick={goToNext}
+                disabled={isDisabled}
+                className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all ${
+                  isDisabled
+                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                    : "bg-white text-purple-600 hover:bg-purple-100"
+                }`}
+              >
+                {nextLessonLocked ? "🔒" : "▶"}
+              </button>
+            );
+          })()}
         </div>
       </div>
 
