@@ -266,7 +266,6 @@ export default function Home() {
                     <span className="bg-white/30 px-3 py-1 rounded-full text-sm font-bold">
                       {lesson.id}
                     </span>
-                    <span className="text-sm opacity-80">{lesson.difficulty}</span>
                   </div>
 
                   {/* タイトル */}

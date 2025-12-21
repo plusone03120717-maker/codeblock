@@ -172,15 +172,6 @@ export default function LessonsPage() {
                               <p className="text-xs text-gray-500">
                                 {furiganaEnabled && lessonDescWithFurigana[lesson.id] ? lessonDescWithFurigana[lesson.id] : lesson.description}
                               </p>
-                              <span className={`inline-block mt-1 px-2 py-0.5 rounded text-xs ${
-                                lesson.difficulty === "かんたん"
-                                  ? "bg-green-100 text-green-700"
-                                  : lesson.difficulty === "ふつう"
-                                  ? "bg-yellow-100 text-yellow-700"
-                                  : "bg-red-100 text-red-700"
-                              }`}>
-                                {lesson.difficulty}
-                              </span>
                             </div>
                             <div className="text-gray-400">
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

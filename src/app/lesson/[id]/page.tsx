@@ -257,20 +257,6 @@ export default function LessonPage({ params }: LessonPageProps) {
         <div className="bg-white rounded-2xl shadow-lg p-6 border-2 border-purple-200">
           <h3 className="text-xl font-bold text-gray-800 mb-4">レッスン情報</h3>
           <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-gray-700">難易度:</span>
-              <span
-                className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                  lesson.difficulty === "かんたん"
-                    ? "bg-emerald-100 text-emerald-700"
-                    : lesson.difficulty === "ふつう"
-                    ? "bg-amber-100 text-amber-700"
-                    : "bg-rose-100 text-rose-700"
-                }`}
-              >
-                {lesson.difficulty}
-              </span>
-            </div>
             <div>
               <span className="font-semibold text-gray-700">説明:</span>
               <p className="text-gray-600 mt-1"><FuriganaText text={lesson.description} /></p>
