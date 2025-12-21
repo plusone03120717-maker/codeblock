@@ -9,6 +9,7 @@ import {
   getLevelProgress, 
   getXPToNextLevel 
 } from "@/utils/progress";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
@@ -17,6 +18,7 @@ export default function Home() {
   const [levelProgress, setLevelProgress] = useState(0);
   const [xpToNext, setXpToNext] = useState(100);
   const [highestStreak, setHighestStreak] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     const progress = getProgress();
@@ -28,124 +30,262 @@ export default function Home() {
     setHighestStreak(progress.highestStreak);
   }, []);
 
-  // ユニットごとの色定義
-  const colors = [
-    "from-purple-200 to-purple-300",  // ユニット1（print）
-    "from-pink-200 to-pink-300",      // ユニット2（変数）
-    "from-blue-200 to-blue-300",      // ユニット3（条件分岐）
-  ];
+  useEffect(() => {
+    // 未完了の最初のレッスンを見つける
+    const firstIncompleteIndex = lessons.findIndex(
+      lesson => !completedLessons.includes(lesson.id)
+    );
+    if (firstIncompleteIndex !== -1) {
+      setCurrentIndex(firstIncompleteIndex);
+    } else {
+      // 全部完了していたら最後のレッスン
+      setCurrentIndex(lessons.length - 1);
+    }
+  }, [completedLessons]);
+
+  const isLessonLocked = (lessonIndex: number): boolean => {
+    // 最初のレッスン（1-1）は常にアンロック
+    if (lessonIndex === 0) return false;
+    
+    // 前のレッスンが完了していればアンロック
+    const previousLesson = lessons[lessonIndex - 1];
+    return !completedLessons.includes(previousLesson.id);
+  };
+
+  const goToPrevious = () => {
+    setCurrentIndex(prev => Math.max(0, prev - 1));
+  };
+
+  const goToNext = () => {
+    setCurrentIndex(prev => Math.min(lessons.length - 1, prev + 1));
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-50 to-indigo-100 px-4 py-8 font-sans">
-      <main className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 md:px-6">
-        <header className="text-center md:text-left">
-          <h1 className="text-2xl font-bold text-sky-900 md:text-3xl">
-            CodeBlock - Python学習
-          </h1>
-          <p className="mt-2 text-sm text-sky-800 md:text-base">
-            ブロックを組み立てながら、Python プログラムの考え方を楽しく学びましょう。
-          </p>
-        </header>
-
+    <div className="min-h-screen bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100">
+      {/* ヘッダー */}
+      <div className="pt-6 pb-4 px-4">
+        <h1 className="text-2xl font-bold text-center text-purple-800 mb-2">
+          🐍 CodeBlock
+        </h1>
+        
         {/* ステータスカード */}
-        <div className="bg-white rounded-3xl shadow-xl p-6 mb-8 border-2 border-yellow-200">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            {/* レベルとXP */}
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-2xl font-bold text-white">{levelInfo.level}</span>
+        <div className="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-4 border-2 border-yellow-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center shadow">
+                <span className="text-lg font-bold text-white">{levelInfo.level}</span>
               </div>
               <div>
-                <p className="text-lg font-bold text-gray-800">{levelInfo.name}</p>
-                <p className="text-yellow-600 font-bold">{totalXP} XP</p>
+                <p className="font-bold text-gray-800">{levelInfo.name}</p>
+                <p className="text-yellow-600 text-sm font-bold">{totalXP} XP</p>
               </div>
             </div>
-            
-            {/* 最高連続正解 */}
             {highestStreak > 0 && (
-              <div className="flex items-center gap-2 bg-orange-100 px-4 py-2 rounded-full">
-                <span className="text-xl">🔥</span>
-                <span className="font-bold text-orange-600">
-                  <ruby>最高<rt>さいこう</rt></ruby>{highestStreak}<ruby>連続<rt>れんぞく</rt></ruby>
-                </span>
+              <div className="flex items-center gap-1 bg-orange-100 px-3 py-1 rounded-full">
+                <span>🔥</span>
+                <span className="font-bold text-orange-600 text-sm">{highestStreak}</span>
               </div>
             )}
           </div>
-          
-          {/* XPプログレスバー */}
-          <div className="mt-4">
-            <div className="flex justify-between text-sm text-gray-600 mb-1">
+          <div className="mt-3">
+            <div className="flex justify-between text-xs text-gray-500 mb-1">
               <span>Lv.{levelInfo.level}</span>
-              <span>
-                <ruby>次<rt>つぎ</rt></ruby>のレベルまで {xpToNext} XP
-              </span>
+              <span>次まで {xpToNext} XP</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-4">
+            <div className="w-full bg-gray-200 rounded-full h-2">
               <div 
-                className="bg-gradient-to-r from-yellow-400 to-orange-400 h-4 rounded-full transition-all duration-500"
+                className="bg-gradient-to-r from-yellow-400 to-orange-400 h-2 rounded-full transition-all"
                 style={{ width: `${levelProgress * 100}%` }}
               />
             </div>
           </div>
         </div>
+      </div>
 
-        <section>
-          <h2 className="text-lg font-semibold text-sky-900 md:text-xl">
-            レッスン一覧
-          </h2>
-          <p className="mt-1 text-xs text-sky-800 md:text-sm">
-            まずはレッスン1から順番に、少しずつレベルアップしていきましょう。
-          </p>
-
-          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {lessons.map((lesson) => {
+      {/* 進捗マップ */}
+      <div className="px-4 mb-4">
+        <div className="max-w-md mx-auto">
+          <div className="flex justify-center items-center gap-1">
+            {lessons.map((lesson, index) => {
               const isCompleted = completedLessons.includes(lesson.id);
-              const colorIndex = (lesson.unitNumber - 1) % colors.length;
-              const bgColor = colors[colorIndex];
-
+              const isCurrent = index === currentIndex;
+              const isLocked = isLessonLocked(index);
               return (
-                <Link
+                <div
                   key={lesson.id}
-                  href={`/lesson/${lesson.id}`}
-                  className={`block bg-gradient-to-br ${bgColor} rounded-2xl p-5 shadow-lg hover:shadow-xl hover:scale-105 transition-all relative overflow-hidden flex flex-col h-full`}
-                >
+                  onClick={() => setCurrentIndex(index)}
+                  className={`w-3 h-3 rounded-full cursor-pointer transition-all ${
+                    isCompleted
+                      ? "bg-green-400"
+                      : isLocked
+                      ? "bg-gray-300"
+                      : isCurrent
+                      ? "bg-purple-500 scale-125"
+                      : "bg-yellow-400"
+                  }`}
+                />
+              );
+            })}
+          </div>
+          <p className="text-center text-sm text-gray-500 mt-2">
+            {currentIndex + 1} / {lessons.length} レッスン
+          </p>
+        </div>
+      </div>
+
+      {/* レッスンカルーセル */}
+      <div className="relative px-4">
+        <div className="max-w-md mx-auto">
+          {/* 左矢印 */}
+          <button
+            onClick={goToPrevious}
+            disabled={currentIndex === 0}
+            className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all ${
+              currentIndex === 0
+                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                : "bg-white text-purple-600 hover:bg-purple-100"
+            }`}
+          >
+            ◀
+          </button>
+
+          {/* 現在のレッスンカード */}
+          {(() => {
+            const lesson = lessons[currentIndex];
+            const isCompleted = completedLessons.includes(lesson.id);
+            const isLocked = isLessonLocked(currentIndex);
+            const colors = [
+              "from-purple-400 to-purple-500",
+              "from-pink-400 to-pink-500",
+              "from-blue-400 to-blue-500",
+              "from-green-400 to-green-500",
+              "from-orange-400 to-orange-500",
+            ];
+            const colorIndex = (lesson.unitNumber - 1) % colors.length;
+            const bgColor = isLocked ? "from-gray-400 to-gray-500" : colors[colorIndex];
+
+            return (
+              <div className="mx-12">
+                <div className={`bg-gradient-to-br ${bgColor} rounded-3xl p-6 shadow-xl text-white relative overflow-hidden`}>
                   {/* 完了バッジ */}
                   {isCompleted && (
-                    <div className="absolute top-0 right-0 bg-green-500 text-white px-3 py-1 text-xs font-bold rounded-bl-xl">
+                    <div className="absolute top-0 right-0 bg-green-500 px-4 py-1 rounded-bl-2xl font-bold text-sm">
                       ✓ 完了
                     </div>
                   )}
 
+                  {/* ロックアイコン */}
+                  {isLocked && (
+                    <div className="absolute top-0 right-0 bg-gray-600 px-4 py-1 rounded-bl-2xl font-bold text-sm">
+                      🔒 ロック
+                    </div>
+                  )}
+
                   {/* レッスン番号 */}
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className={`text-sm font-bold px-2 py-1 rounded-full ${isCompleted ? 'bg-green-100 text-green-700' : 'bg-white/50 text-gray-700'}`}>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="bg-white/30 px-3 py-1 rounded-full text-sm font-bold">
                       {lesson.id}
                     </span>
-                    <span className="text-xs text-gray-600">{lesson.difficulty}</span>
+                    <span className="text-sm opacity-80">{lesson.difficulty}</span>
                   </div>
 
                   {/* タイトル */}
-                  <h2 className="text-lg font-bold text-gray-800 mb-1">{lesson.title}</h2>
+                  <h2 className="text-xl font-bold mb-2">{lesson.title}</h2>
 
                   {/* 説明 */}
-                  <p className="text-sm text-gray-600 mb-3 flex-grow">{lesson.description}</p>
+                  <p className="text-sm opacity-90 mb-4">{lesson.description}</p>
 
                   {/* ボタン */}
-                  {isCompleted ? (
-                    <div className="bg-blue-500 text-white text-center py-2 rounded-full font-bold text-sm mt-auto">
-                      🔄 復習する
+                  {isLocked ? (
+                    <div className="block text-center py-3 rounded-full font-bold text-lg bg-gray-600/50 text-gray-300 cursor-not-allowed">
+                      🔒 前のレッスンをクリアしよう
                     </div>
                   ) : (
-                    <div className="bg-green-500 text-white text-center py-2 rounded-full font-bold text-sm mt-auto">
-                      🚀 学習する
-                    </div>
+                    <Link
+                      href={`/lesson/${lesson.id}`}
+                      className={`block text-center py-3 rounded-full font-bold text-lg transition-all ${
+                        isCompleted
+                          ? "bg-white/30 hover:bg-white/40 text-white"
+                          : "bg-white text-purple-600 hover:scale-105 shadow-lg"
+                      }`}
+                    >
+                      {isCompleted ? "🔄 復習する" : "🚀 学習する"}
+                    </Link>
                   )}
-                </Link>
-              );
-            })}
+                </div>
+
+                {/* ユニット表示 */}
+                <p className="text-center text-gray-500 text-sm mt-3">
+                  ユニット {lesson.unitNumber}: {
+                    lesson.unitNumber === 1 ? "print関数" :
+                    lesson.unitNumber === 2 ? "変数" :
+                    lesson.unitNumber === 3 ? "条件分岐" : ""
+                  }
+                </p>
+              </div>
+            );
+          })()}
+
+          {/* 右矢印 */}
+          <button
+            onClick={goToNext}
+            disabled={currentIndex === lessons.length - 1}
+            className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all ${
+              currentIndex === lessons.length - 1
+                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                : "bg-white text-purple-600 hover:bg-purple-100"
+            }`}
+          >
+            ▶
+          </button>
+        </div>
+      </div>
+
+      {/* 道のり表示（RPG風） */}
+      <div className="mt-8 px-4">
+        <div className="max-w-md mx-auto">
+          <div className="relative">
+            {/* 道のライン */}
+            <div className="absolute top-1/2 left-0 right-0 h-2 bg-gray-200 rounded-full -translate-y-1/2" />
+            <div 
+              className="absolute top-1/2 left-0 h-2 bg-gradient-to-r from-green-400 to-green-500 rounded-full -translate-y-1/2 transition-all"
+              style={{ width: `${(completedLessons.length / lessons.length) * 100}%` }}
+            />
+            
+            {/* ポイント */}
+            <div className="relative flex justify-between">
+              {[1, 2, 3].map((unit) => {
+                const unitLessons = lessons.filter(l => l.unitNumber === unit);
+                const completedInUnit = unitLessons.filter(l => completedLessons.includes(l.id)).length;
+                const isUnitComplete = completedInUnit === unitLessons.length && unitLessons.length > 0;
+                
+                return (
+                  <div key={unit} className="flex flex-col items-center">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow ${
+                      isUnitComplete
+                        ? "bg-green-500 text-white"
+                        : completedInUnit > 0
+                        ? "bg-yellow-400 text-white"
+                        : "bg-gray-300 text-gray-600"
+                    }`}>
+                      {isUnitComplete ? "✓" : unit}
+                    </div>
+                    <span className="text-xs text-gray-500 mt-1">
+                      {unit === 1 ? "print" : unit === 2 ? "変数" : "条件分岐"}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </section>
-      </main>
+        </div>
+      </div>
+
+      {/* 下部の余白 */}
+      <div className="h-24" />
+
+      {/* フッター */}
+      <Footer />
     </div>
   );
 }
