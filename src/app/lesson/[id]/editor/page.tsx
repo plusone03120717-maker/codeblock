@@ -400,12 +400,46 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       // 出力結果の比較
       const outputMatches = normalizedActual === normalizedExpected;
 
-      // レッスン1-4（文字列連結）の場合、「+」を使っているかもチェック
+      // 特定レッスンでの追加チェック
       let codeIsValid = true;
+      let codeErrorMessage = "";
+
+      // レッスン1-4（文字列連結）の場合、「+」を使っているかチェック
       if (lessonId === "1-4") {
-        // 生成されたコードに「+」が含まれているか確認
         if (!code.includes("+")) {
           codeIsValid = false;
+          codeErrorMessage = "「+」を使って文字列をつなげてね！";
+        }
+      }
+
+      // レッスン2（変数）の場合、変数を定義してprint内で使っているかチェック
+      if (lessonId?.startsWith("2-")) {
+        if (!code.includes("=")) {
+          codeIsValid = false;
+          codeErrorMessage = "変数を使って値を入れてね！「=」を使おう！";
+        } else {
+          // 変数名を抽出（= の前にある単語）
+          const variableMatch = code.match(/(\w+)\s*=/);
+          if (variableMatch) {
+            const variableName = variableMatch[1];
+            // print()内で変数が使用されているかチェック
+            // print(変数名) の形式をチェック（文字列内は除外）
+            const printMatches = code.matchAll(/print\s*\([^)]*\)/g);
+            let variableUsedInPrint = false;
+            for (const printMatch of printMatches) {
+              const printContent = printMatch[0];
+              // 文字列（"..." または '...'）を除去してから変数名をチェック
+              const withoutStrings = printContent.replace(/["'][^"']*["']/g, '');
+              if (withoutStrings.includes(variableName)) {
+                variableUsedInPrint = true;
+                break;
+              }
+            }
+            if (!variableUsedInPrint) {
+              codeIsValid = false;
+              codeErrorMessage = "変数をprint()内で使ってね！";
+            }
+          }
         }
       }
 
@@ -488,8 +522,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       } else {
         // 不正解
         let errorMessage = "期待される出力と異なります。もう一度試してみましょう！";
-        if (!codeIsValid) {
-          errorMessage = "「+」を使って文字列をつなげてね！";
+        if (!codeIsValid && codeErrorMessage) {
+          errorMessage = codeErrorMessage;
         }
         setExecutionResult({
           success: false,
@@ -720,16 +754,17 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                       
                       selectedBlocks.forEach((block, index) => {
                         if (block.text === "↵") {
-                          if (currentLine.length > 0) {
-                            lines.push({ blocks: currentLine });
-                            currentLine = [];
-                          }
-                          lines.push({ blocks: [{ block, index }] });
+                          // 改行ブロックを現在の行の最後に追加
+                          currentLine.push({ block, index });
+                          // 行を確定して新しい行を開始
+                          lines.push({ blocks: currentLine });
+                          currentLine = [];
                         } else {
                           currentLine.push({ block, index });
                         }
                       });
                       
+                      // 残りのブロックがあれば追加
                       if (currentLine.length > 0) {
                         lines.push({ blocks: currentLine });
                       }
@@ -809,6 +844,9 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                 <span className="text-xl">🤔</span>
                 <div>
                   <p className="text-red-800 font-bold text-sm">もう一度！</p>
+                  {executionResult.error && (
+                    <p className="text-red-700 text-xs font-bold">{executionResult.error}</p>
+                  )}
                   {executionResult.output && (
                     <p className="text-red-700 text-xs">出力: {executionResult.output}</p>
                   )}

@@ -6,8 +6,41 @@ import { lessons } from "@/data/lessons";
 import { getProgress } from "@/utils/progress";
 import Footer from "@/components/Footer";
 import { F, FW } from "@/components/Furigana";
+import { useFurigana } from "@/contexts/FuriganaContext";
+
+// レッスンタイトルにふりがなを適用
+const lessonTitleWithFurigana: Record<string, ReactNode> = {
+  "1-1": <>文字列（もじれつ）を表示（ひょうじ）しよう</>,
+  "1-2": <>数字を表示（ひょうじ）しよう</>,
+  "1-3": <>四則演算（しそくえんざん）を学ぼう</>,
+  "1-4": <>文字列（もじれつ）をつなげよう</>,
+  "1-5": <>余（あま）りを計算（けいさん）しよう</>,
+  "1-6": <>複数（ふくすう）の値（あたい）を表示（ひょうじ）しよう</>,
+  "2-1": <>変数（へんすう）に名前をつけよう</>,
+  "2-2": <>変数（へんすう）を表示（ひょうじ）しよう</>,
+  "2-3": <>変数（へんすう）を計算（けいさん）に使おう</>,
+  "2-4": <>変数（へんすう）の中身を変えよう</>,
+  "2-5": <>変数（へんすう）同士を組み合わせよう</>,
+  "3-1": <>条件分岐（じょうけんぶんき）を学ぼう</>,
+};
+
+const lessonDescWithFurigana: Record<string, ReactNode> = {
+  "1-1": <>print()を使って文字を画面に表示（ひょうじ）する方法（ほうほう）を学ぼう</>,
+  "1-2": <>print()を使って数字を表示（ひょうじ）する方法（ほうほう）を学ぼう</>,
+  "1-3": <>足し算、引き算、掛（か）け算、割（わ）り算をやってみよう</>,
+  "1-4": <>「+」を使って文字列（もじれつ）を連結（れんけつ）する方法（ほうほう）を学ぼう</>,
+  "1-5": <>「%」を使って割（わ）り算の余（あま）りを求（もと）める方法（ほうほう）を学ぼう</>,
+  "1-6": <>print()で複数（ふくすう）の値（あたい）をまとめて表示（ひょうじ）する方法（ほうほう）を学ぼう</>,
+  "2-1": <>データを入れる「箱（はこ）」に名前をつける方法（ほうほう）を学ぼう</>,
+  "2-2": <>変数（へんすう）の中身をprint()で表示（ひょうじ）する方法（ほうほう）を学ぼう</>,
+  "2-3": <>数字を変数（へんすう）に入れて計算（けいさん）してみよう</>,
+  "2-4": <>変数（へんすう）の値（あたい）を上書（うわが）きする方法（ほうほう）を学ぼう</>,
+  "2-5": <>複数（ふくすう）の変数（へんすう）を使って計算（けいさん）や連結（れんけつ）をしてみよう</>,
+  "3-1": <>if文を使って条件（じょうけん）によって処理を変える方法（ほうほう）を学ぼう</>,
+};
 
 export default function LessonsPage() {
+  const { furiganaEnabled } = useFurigana();
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
 
   useEffect(() => {
@@ -106,8 +139,12 @@ export default function LessonsPage() {
                               🔒
                             </div>
                             <div className="flex-1">
-                              <p className="font-bold text-gray-500">{lesson.id} {lesson.title}</p>
-                              <p className="text-xs text-gray-400">{lesson.description}</p>
+                              <p className="font-bold text-gray-500">
+                                {lesson.id} {furiganaEnabled && lessonTitleWithFurigana[lesson.id] ? lessonTitleWithFurigana[lesson.id] : lesson.title}
+                              </p>
+                              <p className="text-xs text-gray-400">
+                                {furiganaEnabled && lessonDescWithFurigana[lesson.id] ? lessonDescWithFurigana[lesson.id] : lesson.description}
+                              </p>
                             </div>
                           </div>
                         ) : (
@@ -129,8 +166,12 @@ export default function LessonsPage() {
                               )}
                             </div>
                             <div className="flex-1">
-                              <p className="font-bold text-gray-800">{lesson.title}</p>
-                              <p className="text-xs text-gray-500">{lesson.description}</p>
+                              <p className="font-bold text-gray-800">
+                                {furiganaEnabled && lessonTitleWithFurigana[lesson.id] ? lessonTitleWithFurigana[lesson.id] : lesson.title}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {furiganaEnabled && lessonDescWithFurigana[lesson.id] ? lessonDescWithFurigana[lesson.id] : lesson.description}
+                              </p>
                               <span className={`inline-block mt-1 px-2 py-0.5 rounded text-xs ${
                                 lesson.difficulty === "かんたん"
                                   ? "bg-green-100 text-green-700"
