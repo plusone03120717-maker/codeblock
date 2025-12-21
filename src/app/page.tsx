@@ -10,6 +10,7 @@ import {
   getXPToNextLevel 
 } from "@/utils/progress";
 import Footer from "@/components/Footer";
+import { F, FW } from "@/components/Furigana";
 
 export default function Home() {
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
@@ -217,9 +218,9 @@ export default function Home() {
                 {/* ユニット表示 */}
                 <p className="text-center text-gray-500 text-sm mt-3">
                   ユニット {lesson.unitNumber}: {
-                    lesson.unitNumber === 1 ? "print関数" :
-                    lesson.unitNumber === 2 ? "変数" :
-                    lesson.unitNumber === 3 ? "条件分岐" : ""
+                    lesson.unitNumber === 1 ? <>print<FW word="関数" /></> :
+                    lesson.unitNumber === 2 ? <FW word="変数" /> :
+                    lesson.unitNumber === 3 ? <><FW word="条件" /><FW word="分岐" /></> : ""
                   }
                 </p>
               </div>
@@ -271,7 +272,7 @@ export default function Home() {
                       {isUnitComplete ? "✓" : unit}
                     </div>
                     <span className="text-xs text-gray-500 mt-1">
-                      {unit === 1 ? "print" : unit === 2 ? "変数" : "条件分岐"}
+                      {unit === 1 ? "print" : unit === 2 ? <FW word="変数" /> : <><FW word="条件" /><FW word="分岐" /></>}
                     </span>
                   </div>
                 );

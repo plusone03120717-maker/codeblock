@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactNode } from "react";
 import Link from "next/link";
 import { lessons } from "@/data/lessons";
 import { getProgress } from "@/utils/progress";
 import Footer from "@/components/Footer";
+import { F, FW } from "@/components/Furigana";
 
 export default function LessonsPage() {
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
@@ -30,10 +31,10 @@ export default function LessonsPage() {
     return acc;
   }, {} as Record<number, typeof lessons>);
 
-  const unitNames: Record<number, string> = {
-    1: "print関数",
-    2: "変数",
-    3: "条件分岐",
+  const unitNames: Record<number, ReactNode> = {
+    1: <>print<FW word="関数" /></>,
+    2: <FW word="変数" />,
+    3: <><FW word="条件" /><FW word="分岐" /></>,
   };
 
   const unitColors: Record<number, string> = {
@@ -50,7 +51,7 @@ export default function LessonsPage() {
           📚 レッスン一覧
         </h1>
         <p className="text-center text-gray-600 text-sm mt-1">
-          {completedLessons.length} / {lessons.length} 完了
+          {completedLessons.length} / {lessons.length} <FW word="完了" />
         </p>
       </div>
 
