@@ -505,6 +505,81 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       let codeIsValid = true;
       let codeErrorMessage = "";
 
+      // レッスン3-1（データ型を知ろう）の場合、正しいデータ型を使っているかチェック
+      if (lessonId === "3-1") {
+        const missionId = currentMission?.id;
+        
+        // 問2: 整数42を表示（"42"を使っていたら不正解）
+        if (missionId === 2) {
+          if (code.includes('"42"') || code.includes("'42'")) {
+            codeIsValid = false;
+            codeErrorMessage = "整数（int型）の 42 を使ってね！「\"42\"」は文字列だよ！";
+          }
+        }
+        
+        // 問3: 真偽値Trueを表示（"True"を使っていたら不正解）
+        if (missionId === 3) {
+          if (code.includes('"True"') || code.includes("'True'")) {
+            codeIsValid = false;
+            codeErrorMessage = "真偽値（bool型）の True を使ってね！「\"True\"」は文字列だよ！";
+          }
+        }
+        
+        // 問4: 真偽値Falseを表示（"False"を使っていたら不正解）
+        if (missionId === 4) {
+          if (code.includes('"False"') || code.includes("'False'")) {
+            codeIsValid = false;
+            codeErrorMessage = "真偽値（bool型）の False を使ってね！「\"False\"」は文字列だよ！";
+          }
+        }
+        
+        // 問5: 小数3.14を表示（"3.14"を使っていたら不正解）
+        if (missionId === 5) {
+          if (code.includes('"3.14"') || code.includes("'3.14'")) {
+            codeIsValid = false;
+            codeErrorMessage = "小数（float型）の 3.14 を使ってね！「\"3.14\"」は文字列だよ！";
+          }
+        }
+        
+        // 問6: 整数100を表示（"100"を使っていたら不正解）
+        if (missionId === 6) {
+          if (code.includes('"100"') || code.includes("'100'")) {
+            codeIsValid = false;
+            codeErrorMessage = "整数（int型）の 100 を使ってね！「\"100\"」は文字列だよ！";
+          }
+        }
+      }
+
+      // レッスン3-2（型を調べよう）の場合、type()を使っているかチェック
+      if (lessonId === "3-2") {
+        if (!code.includes("type(")) {
+          codeIsValid = false;
+          codeErrorMessage = "type()を使ってデータの型を調べてね！";
+        }
+      }
+
+      // レッスン3-3（型を変換しよう）の場合、int()/str()/float()のいずれかを使っているかチェック
+      if (lessonId === "3-3") {
+        // print()を除外してからチェック（"print(" の中に "int(" が含まれるため）
+        const codeForCheck = code.replace(/print\s*\(/g, "___PRINT___(");
+        console.log("=== レッスン3-3チェック開始 ===");
+        console.log("生成されたコード:", code);
+        console.log("チェック用コード:", codeForCheck);
+        
+        const hasIntConversion = codeForCheck.includes("int(");
+        const hasStrConversion = codeForCheck.includes("str(");
+        const hasFloatConversion = codeForCheck.includes("float(");
+        console.log("int()あり:", hasIntConversion, "str()あり:", hasStrConversion, "float()あり:", hasFloatConversion);
+        
+        if (!hasIntConversion && !hasStrConversion && !hasFloatConversion) {
+          console.log("型変換関数なし → 不正解にする");
+          codeIsValid = false;
+          codeErrorMessage = "int()、str()、float()のどれかを使って型を変換してね！";
+        } else {
+          console.log("型変換関数あり → OK");
+        }
+      }
+
       // レッスン1-4（文字列連結）の場合、「+」を使っているかチェック
       if (lessonId === "1-4") {
         if (!code.includes("+")) {
