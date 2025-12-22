@@ -443,28 +443,134 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  // ユニット3: データ型（デックス担当）
   {
     lessonId: "3-1",
-    characterName: "ウィズ",
-    characterEmoji: "🦉",
+    characterName: "デックス",
+    characterEmoji: "🤖",
+    characterImage: "/images/characters/dex.png",
     slides: [
       {
-        title: "条件分岐とは？",
-        content: "if文は、条件によって処理を変える命令です。",
-        characterMessage: "条件によって違う結果を出せるようになるよ。",
+        title: "はじめまして！",
+        content: "私はデックス。データ変換スペシャリストのロボットだ。データ型について教えよう。",
+        characterMessage: "どんなデータも、正しい形に変換できる。",
       },
       {
-        title: "if文の書き方",
-        content: "if 条件: の後にインデント（字下げ）をして処理を書きます。",
-        characterMessage: "条件が正しい時だけ、中の処理が実行されるんだ。",
+        title: "データ型ってなに？",
+        content: "Pythonでは、データにはいろいろな「型」がある。文字、数字、True/Falseなど、それぞれ種類が違うんだ。",
+        characterMessage: "型を理解することが、プログラミングの基礎だ。",
+      },
+      {
+        title: "3つの基本の型",
+        content: "まずは3つの型を覚えよう。str（文字列）、int（整数）、bool（真偽値）だ。",
+        characterMessage: "str は文字、int は数字、bool は True か False。",
         codeExample: {
-          good: "if age >= 10:\n    print(\"10歳以上です\")",
+          good: '"Hello"  → str（文字列）\n42       → int（整数）\nTrue     → bool（真偽値）',
         },
       },
       {
-        title: "挑戦してみよう！",
-        content: "実際に条件分岐を使ってみましょう。",
-        characterMessage: "さあ、やってみよう！",
+        title: "さあ、始めよう！",
+        content: "データ型を正しく理解すれば、エラーを防げる。一緒に学んでいこう。",
+        characterMessage: "型を制する者、コードを制す。",
+      },
+    ],
+  },
+  {
+    lessonId: "3-2",
+    characterName: "デックス",
+    characterEmoji: "🤖",
+    characterImage: "/images/characters/dex.png",
+    slides: [
+      {
+        title: "型を調べよう",
+        content: "データの型を調べるには、type() という関数を使う。",
+        characterMessage: "まず、このデータが何型か確認しよう。",
+      },
+      {
+        title: "type()の使い方",
+        content: "type(データ) と書くと、そのデータの型がわかる。",
+        characterMessage: "type() は型を教えてくれる便利な関数だ。",
+        codeExample: {
+          good: 'type("Hello")  → <class \'str\'>\ntype(42)       → <class \'int\'>\ntype(True)     → <class \'bool\'>',
+        },
+      },
+      {
+        title: "printと組み合わせる",
+        content: "print(type(データ)) で、型を画面に表示できる。",
+        characterMessage: "確認することが、エラー防止の第一歩。",
+        codeExample: {
+          good: 'print(type("Hello"))\n# 出力: <class \'str\'>',
+        },
+      },
+      {
+        title: "さあ、調べてみよう！",
+        content: "いろいろなデータの型を調べてみよう。",
+        characterMessage: "型を知ることで、コードがもっと理解しやすくなる。",
+      },
+    ],
+  },
+  {
+    lessonId: "3-3",
+    characterName: "デックス",
+    characterEmoji: "🤖",
+    characterImage: "/images/characters/dex.png",
+    slides: [
+      {
+        title: "型を変換しよう",
+        content: "データの型を変えることを「型変換」という。int()やstr()を使えば変換できるんだ。",
+        characterMessage: "型変換は、データを扱いやすくするための技術だ。",
+      },
+      {
+        title: "文字列を数値に変換",
+        content: "str()で文字列に、int()で整数に変換できる。\"123\"を123に変えることもできるんだ。",
+        characterMessage: "文字列の数字を、計算できる数字に変えられる。",
+        codeExample: {
+          good: 'x = "123"\ny = int(x)\nprint(y + 1)  # 124',
+        },
+      },
+      {
+        title: "数値を文字列に変換",
+        content: "str()を使えば、数字を文字列に変えられる。計算結果を文字列とつなげるときに便利だ。",
+        characterMessage: "数字と文字列は直接つなげられない。str()で変換してからつなげよう。",
+        codeExample: {
+          good: 'age = 10\nmessage = "私は" + str(age) + "歳です"\nprint(message)  # 私は10歳です',
+        },
+      },
+      {
+        title: "型変換をマスターしよう",
+        content: "型変換を使いこなせば、いろいろなデータを自由に扱えるようになる。",
+        characterMessage: "変換は、データを自由に操る鍵だ。",
+      },
+    ],
+  },
+  {
+    lessonId: "3-4",
+    characterName: "デックス",
+    characterEmoji: "🤖",
+    characterImage: "/images/characters/dex.png",
+    slides: [
+      {
+        title: "データ型クイズに挑戦！",
+        content: "ここまでよく学んだな。今度はコードを読んで、データの型を予測するクイズだ。",
+        characterMessage: "型を見極める目を養おう。",
+      },
+      {
+        title: "クイズの解き方",
+        content: "コードを見て、各データが何型かを考えよう。type()で確認できることを思い出して。",
+        characterMessage: "落ち着いて、一つずつ確認していけば大丈夫だ。",
+      },
+      {
+        title: "例題をやってみよう",
+        content: "例えば、このコードの型は何かな？",
+        characterMessage: '"Hello" は str、42 は int、True は bool だ。',
+        codeExample: {
+          good: 'type("Hello")  # <class \'str\'>\ntype(42)       # <class \'int\'>\ntype(True)     # <class \'bool\'>',
+        },
+      },
+      {
+        title: "さあ、クイズスタート！",
+        content: "4つの選択肢から正しい型を選んでくれ。間違えても大丈夫、何度でも挑戦できる。",
+        characterMessage: "型を制する者、コードを制す。自信を持って挑戦しよう。",
       },
     ],
   },

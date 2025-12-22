@@ -21,7 +21,11 @@ const lessonTitleWithFurigana: Record<string, ReactNode> = {
   "2-3": <>変数（へんすう）を計算（けいさん）に使おう</>,
   "2-4": <>変数（へんすう）の中身を変えよう</>,
   "2-5": <>変数（へんすう）同士を組み合わせよう</>,
-  "3-1": <>条件分岐（じょうけんぶんき）を学ぼう</>,
+  "2-6": <>変数（へんすう）クイズに<F reading="ちょうせん">挑戦</F>！</>,
+  "3-1": <>データ<F reading="がた">型</F>を知ろう</>,
+  "3-2": <><F reading="かた">型</F>を<F reading="しら">調</F>べよう</>,
+  "3-3": <><F reading="かた">型</F>を<F reading="へんかん">変換</F>しよう</>,
+  "3-4": <>データ<F reading="がた">型</F>クイズ！</>,
 };
 
 const lessonDescWithFurigana: Record<string, ReactNode> = {
@@ -36,7 +40,11 @@ const lessonDescWithFurigana: Record<string, ReactNode> = {
   "2-3": <>数字を変数（へんすう）に入れて計算（けいさん）してみよう</>,
   "2-4": <>変数（へんすう）の値（あたい）を上書（うわが）きする方法（ほうほう）を学ぼう</>,
   "2-5": <>複数（ふくすう）の変数（へんすう）を使って計算（けいさん）や連結（れんけつ）をしてみよう</>,
-  "3-1": <>if文を使って条件（じょうけん）によって処理を変える方法（ほうほう）を学ぼう</>,
+  "2-6": <>コードを読んで出力（しゅつりょく）を<F reading="よそく">予測</F>しよう</>,
+  "3-1": <>文字列（もじれつ）・数値（すうち）・<F reading="しんぎち">真偽値</F>の<F reading="ちが">違</F>いを学ぼう</>,
+  "3-2": <>type()を使ってデータの<F reading="かた">型</F>を<F reading="かくにん">確認</F>しよう</>,
+  "3-3": <>int()やstr()を使って<F reading="かた">型</F>を<F reading="へんかん">変換</F>しよう</>,
+  "3-4": <>コードを読んで<F reading="かた">型</F>を<F reading="よそく">予測</F>しよう</>,
 };
 
 export default function LessonsPage() {
@@ -67,7 +75,7 @@ export default function LessonsPage() {
   const unitNames: Record<number, ReactNode> = {
     1: <>print<FW word="関数" /></>,
     2: <FW word="変数" />,
-    3: <><FW word="条件" /><FW word="分岐" /></>,
+    3: <>データ<F reading="がた">型</F></>,
   };
 
   const unitColors: Record<number, string> = {
