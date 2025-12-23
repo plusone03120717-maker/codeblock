@@ -451,27 +451,38 @@ export const tutorials: LessonTutorial[] = [
     characterImage: "/images/characters/dex.png",
     slides: [
       {
-        title: "はじめまして！",
-        content: "私はデックス。データ変換スペシャリストのロボットだ。データ型について教えよう。",
-        characterMessage: "どんなデータも、正しい形に変換できる。",
+        title: "データには種類がある",
+        content: "コンピュータは、すべての情報を「種類」で分けて記憶している。この種類のことを「データ型」と呼ぶ。型を正しく使うと、計算やデータ処理がうまくいく。",
+        characterMessage: "データ型は、情報を整理するための分類だ。",
       },
       {
-        title: "データ型ってなに？",
-        content: "Pythonでは、データにはいろいろな「型」がある。文字、数字、True/Falseなど、それぞれ種類が違うんだ。",
-        characterMessage: "型を理解することが、プログラミングの基礎だ。",
-      },
-      {
-        title: "3つの基本の型",
-        content: "まずは3つの型を覚えよう。str（文字列）、int（整数）、bool（真偽値）だ。",
-        characterMessage: "str は文字、int は数字、bool は True か False。",
+        title: "ゲームのキャラクターで考えてみよう",
+        content: "ゲームのキャラクターを例にすると、理解しやすい。名前 → \"ピクセル\" → str（文字）。HP → 100 → int（整数）。生きてる？ → True → bool（Yes/No）。スピード → 2.5 → float（小数）。それぞれの情報に、適切な「型」がある。",
+        characterMessage: "現実世界の情報も、型で分類できる。",
         codeExample: {
-          good: '"Hello"  → str（文字列）\n42       → int（整数）\nTrue     → bool（真偽値）',
+          good: '名前: "ピクセル"  → str（文字）\nHP: 100          → int（整数）\n生きてる？: True → bool（Yes/No）\nスピード: 2.5    → float（小数）',
         },
       },
       {
-        title: "さあ、始めよう！",
-        content: "データ型を正しく理解すれば、エラーを防げる。一緒に学んでいこう。",
-        characterMessage: "型を制する者、コードを制す。",
+        title: "型がちがうと、結果が変わる",
+        content: "\"5\" + \"3\" = \"53\"　← 文字として連結される。5 + 3 = 8　← 数値として計算される。コンピュータに「これは数値だ」と正しく伝えることが重要だ。",
+        characterMessage: "同じ見た目でも、型が違えば処理結果が変わる。",
+        codeExample: {
+          good: '"5" + "3"  → "53"（文字列連結）\n5 + 3      → 8（数値計算）',
+        },
+      },
+      {
+        title: "4つのデータ型",
+        content: "str（文字）: \"こんにちは\" → 名前やメッセージに使う。int（整数）: 100 → HPやスコア、個数に使う。bool（真偽値）: True / False → 「〜かどうか」を表す。float（小数）: 3.14 → タイムやスピードに使う。",
+        characterMessage: "4つの型を覚えれば、ほとんどのデータを扱える。",
+        codeExample: {
+          good: '"こんにちは" → str（文字）\n100         → int（整数）\nTrue        → bool（真偽値）\n3.14        → float（小数）',
+        },
+      },
+      {
+        title: "データ型を使ってみよう",
+        content: "正しいデータ型を選ぶ練習をする。型を正しく使えば、プログラムは正しく動く。実践で理解を深めよう。",
+        characterMessage: "実践で型を理解していく。",
       },
     ],
   },
