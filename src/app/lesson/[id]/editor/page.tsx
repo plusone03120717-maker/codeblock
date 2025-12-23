@@ -746,6 +746,41 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         }
       }
 
+      // レッスン4-2（比較演算子を使おう）の場合、比較演算子を使っているかチェック
+      if (lessonId === "4-2") {
+        // 比較演算子のリスト（<= や >= を先にチェックするため、長いものから順に）
+        const comparisonOperators = ["!=", "<=", ">=", "==", "<", ">"];
+        const hasComparisonOperator = comparisonOperators.some(op => code.includes(op));
+        
+        if (!hasComparisonOperator) {
+          codeIsValid = false;
+          // 「=」が含まれているが「==」ではない場合のメッセージ
+          if (code.includes("=") && !code.includes("==")) {
+            codeErrorMessage = "「=」ではなく「==」を使って比較しよう！「=」は代入、「==」は比較だよ";
+          } else {
+            codeErrorMessage = "比較演算子（==, !=, <, >, <=, >=）を使って条件を書こう";
+          }
+        }
+      }
+
+      // レッスン4-4（elifを使おう）の場合、if, elif, elseすべてを使っているかチェック
+      if (lessonId === "4-4") {
+        const hasIf = code.includes("if ");
+        const hasElif = code.includes("elif ");
+        const hasElse = code.includes("else:");
+        
+        if (!hasIf) {
+          codeIsValid = false;
+          codeErrorMessage = "if文を使って条件分岐を書こう";
+        } else if (!hasElif) {
+          codeIsValid = false;
+          codeErrorMessage = "elifを使って複数の条件を書こう";
+        } else if (!hasElse) {
+          codeIsValid = false;
+          codeErrorMessage = "elseを使ってどれにも当てはまらない場合を書こう";
+        }
+      }
+
       // レッスン1-4（文字列連結）の場合、「+」を使っているかチェック
       if (lessonId === "1-4") {
         if (!code.includes("+")) {

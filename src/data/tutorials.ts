@@ -721,6 +721,48 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "4-4",
+    characterName: "ジャッジ",
+    characterEmoji: "🦉",
+    characterImage: "/images/characters/judge.png",
+    slides: [
+      {
+        title: "elifとは",
+        content: "if-elseでは、条件が2つしか分岐できなかった。だが、3つ以上に分岐したい場合もある。そんな時に使うのが elif だ。",
+        characterMessage: "elifは、複数の条件を判定する構文である。",
+      },
+      {
+        title: "if-elif-elseの書き方",
+        content: "if 条件1:\n    条件1がTrueの時の処理\nelif 条件2:\n    条件2がTrueの時の処理\nelse:\n    どれもFalseの時の処理\nelifは「else if」の略だ。",
+        characterMessage: "if-elif-elseは、3つ以上の結果を分岐させる構文だ。",
+        codeExample: {
+          good: "if score >= 80:\n    print(\"A\")\nelif score >= 60:\n    print(\"B\")\nelse:\n    print(\"C\")",
+        },
+      },
+      {
+        title: "具体例を見てみよう",
+        content: "点数が80以上なら「A」。点数が60以上なら「B」。それ以外なら「C」。このように、3つ以上の結果に分岐できる。",
+        characterMessage: "複数の条件で判定を下す。",
+        codeExample: {
+          good: "if score >= 80:\n    print(\"A\")\nelif score >= 60:\n    print(\"B\")\nelse:\n    print(\"C\")",
+        },
+      },
+      {
+        title: "上から順に判定される",
+        content: "条件は上から順にチェックされる。最初にTrueになった条件だけが実行される。一度実行されたら、残りの条件はスキップされる。この順番が重要だ。覚えておこう。",
+        characterMessage: "判定は順番が重要である。",
+        codeExample: {
+          good: "上から順にチェック → 最初のTrueで実行 → 残りはスキップ",
+        },
+      },
+      {
+        title: "if-elif-elseを使ってみよう",
+        content: "では、複数の条件で分岐させてみよう。上から順に判定を下すのだ。さあ、始めよう。",
+        characterMessage: "実践で判定力を身につける。",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {

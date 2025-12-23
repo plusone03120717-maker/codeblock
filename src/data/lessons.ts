@@ -160,6 +160,14 @@ export const lessons: Lesson[] = [
     description: "条件がFalseの時の処理を書こう",
     difficulty: "ふつう",
   },
+  {
+    id: "4-4",
+    unitNumber: 4,
+    subNumber: 4,
+    title: "elifを使おう",
+    description: "複数の条件で分岐しよう",
+    difficulty: "ふつう",
+  },
 ]
 
 // レッスンIDでレッスンを取得
