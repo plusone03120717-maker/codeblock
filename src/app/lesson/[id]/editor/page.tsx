@@ -213,6 +213,60 @@ function DraggableBlock({ block, index, onRemove }: DraggableBlockProps) {
   );
 }
 
+interface LineDraggableBlockProps {
+  block: WordBlock;
+  globalIndex: number;
+  lineIndex: number;
+  onRemove: (index: number) => void;
+}
+
+function LineDraggableBlock({ block, globalIndex, lineIndex, onRemove }: LineDraggableBlockProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: `line-${lineIndex}-block-${globalIndex}` });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="inline-block relative touch-none group"
+    >
+      <div
+        {...attributes}
+        {...listeners}
+        className={`${block.color} text-gray-700 px-3 py-2 rounded-xl text-sm font-mono shadow-md hover:shadow-lg transition-all border-2 border-white cursor-grab active:cursor-grabbing select-none ${
+          block.text === "    " ? "bg-gray-300 border-gray-400" : ""
+        }`}
+      >
+        {block.text === "    " ? "→" : block.text}
+      </div>
+      
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onRemove(globalIndex);
+        }}
+        className="absolute -top-1 -right-1 bg-red-400 hover:bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-md hover:shadow-lg transition-all border-2 border-white z-10 opacity-100 md:opacity-0 md:group-hover:opacity-100"
+        type="button"
+      >
+        ×
+      </button>
+    </div>
+  );
+}
+
 export default function LessonEditorPage({ params }: EditorPageProps) {
   const router = useRouter();
   const [lessonId, setLessonId] = useState<string | null>(null);
@@ -395,16 +449,43 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     playBlockRemoveSound(); // ブロック削除時のSE
   };
 
-  // ドラッグ終了時のハンドラ
-  const handleDragEnd = (event: DragEndEvent) => {
+  // 行ごとにブロックをグループ化
+  const blockLines = useMemo(() => {
+    const lines: { blocks: { block: WordBlock; globalIndex: number }[] }[] = [];
+    let currentLine: { block: WordBlock; globalIndex: number }[] = [];
+    
+    selectedBlocks.forEach((block, index) => {
+      currentLine.push({ block, globalIndex: index });
+      if (block.text === "↵") {
+        lines.push({ blocks: [...currentLine] });
+        currentLine = [];
+      }
+    });
+    
+    if (currentLine.length > 0) {
+      lines.push({ blocks: currentLine });
+    }
+    
+    return lines;
+  }, [selectedBlocks]);
+
+  // 行ごとのドラッグ終了ハンドラを作成
+  const createHandleDragEnd = (lineIndex: number) => (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      setSelectedBlocks((blocks) => {
-        const oldIndex = blocks.findIndex((_, i) => `block-${i}` === active.id);
-        const newIndex = blocks.findIndex((_, i) => `block-${i}` === over.id);
-        return arrayMove(blocks, oldIndex, newIndex);
-      });
+      const line = blockLines[lineIndex];
+      if (!line) return;
+
+      // activeとoverのグローバルインデックスを取得
+      const activeItem = line.blocks.find((b) => `line-${lineIndex}-block-${b.globalIndex}` === active.id);
+      const overItem = line.blocks.find((b) => `line-${lineIndex}-block-${b.globalIndex}` === over.id);
+
+      if (activeItem && overItem) {
+        setSelectedBlocks((blocks) => {
+          return arrayMove(blocks, activeItem.globalIndex, overItem.globalIndex);
+        });
+      }
     }
   };
 
@@ -1070,46 +1151,33 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                 {selectedBlocks.length === 0 ? (
                   <p className="text-gray-400 text-center py-2 text-sm"><F reading="たんご">単語</F>を<F reading="えら">選</F>んでください</p>
                 ) : (
-                  <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                    <SortableContext items={selectedBlocks.map((_, i) => `block-${i}`)} strategy={horizontalListSortingStrategy}>
-                      <div className="flex flex-col gap-1">
-                        {(() => {
-                          const lines: { blocks: { block: typeof selectedBlocks[0]; index: number }[] }[] = [];
-                          let currentLine: { block: typeof selectedBlocks[0]; index: number }[] = [];
-                          
-                          selectedBlocks.forEach((block, index) => {
-                            if (block.text === "↵") {
-                              // 改行ブロックを現在の行の最後に追加
-                              currentLine.push({ block, index });
-                              // 行を確定して新しい行を開始
-                              lines.push({ blocks: currentLine });
-                              currentLine = [];
-                            } else {
-                              currentLine.push({ block, index });
-                            }
-                          });
-                          
-                          // 残りのブロックがあれば追加
-                          if (currentLine.length > 0) {
-                            lines.push({ blocks: currentLine });
-                          }
-                          
-                          return lines.map((line, lineIndex) => (
-                            <div key={`line-${lineIndex}`} className="flex flex-wrap gap-1 items-center">
-                              {line.blocks.map(({ block, index }) => (
-                                <DraggableBlock
-                                  key={`block-${index}`}
-                                  block={block}
-                                  index={index}
-                                  onRemove={removeBlock}
-                                />
-                              ))}
-                            </div>
-                          ));
-                        })()}
-                      </div>
-                    </SortableContext>
-                  </DndContext>
+                  <div className="flex flex-col gap-1">
+                    {blockLines.map((line, lineIndex) => (
+                      <DndContext
+                        key={`dnd-line-${lineIndex}`}
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={createHandleDragEnd(lineIndex)}
+                      >
+                        <SortableContext
+                          items={line.blocks.map((b) => `line-${lineIndex}-block-${b.globalIndex}`)}
+                          strategy={horizontalListSortingStrategy}
+                        >
+                          <div className="flex flex-wrap gap-1 items-center min-h-[36px]">
+                            {line.blocks.map(({ block, globalIndex }) => (
+                              <LineDraggableBlock
+                                key={`line-${lineIndex}-block-${globalIndex}`}
+                                block={block}
+                                globalIndex={globalIndex}
+                                lineIndex={lineIndex}
+                                onRemove={removeBlock}
+                              />
+                            ))}
+                          </div>
+                        </SortableContext>
+                      </DndContext>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
