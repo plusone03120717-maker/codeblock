@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { lessons } from "@/data/lessons";
 import { useState, useEffect } from "react";
 import { 
@@ -13,6 +14,7 @@ import Footer from "@/components/Footer";
 import { F, FW, FuriganaText } from "@/components/Furigana";
 
 export default function Home() {
+  const router = useRouter();
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
   const [totalXP, setTotalXP] = useState(0);
   const [levelInfo, setLevelInfo] = useState({ level: 1, name: "ビギナー", minXP: 0, maxXP: 99 });
@@ -23,6 +25,7 @@ export default function Home() {
   const [showDebugPanel, setShowDebugPanel] = useState(false);
   const [debugXP, setDebugXP] = useState("");
   const [debugLessonId, setDebugLessonId] = useState("");
+  const [resumeStatus, setResumeStatus] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const progress = getProgress();
@@ -47,6 +50,18 @@ export default function Home() {
     }
   }, [completedLessons]);
 
+  useEffect(() => {
+    // 各レッスンの途中データ有無をチェック
+    if (typeof window === "undefined") return;
+    
+    const status: Record<string, boolean> = {};
+    lessons.forEach((lesson) => {
+      const savedMission = localStorage.getItem(`lesson-${lesson.id}-mission`);
+      status[lesson.id] = savedMission !== null && parseInt(savedMission) > 0;
+    });
+    setResumeStatus(status);
+  }, []);
+
   const isLessonLocked = (lessonIndex: number): boolean => {
     // 最初のレッスン（1-1）は常にアンロック
     if (lessonIndex === 0) return false;
@@ -54,6 +69,21 @@ export default function Home() {
     // 前のレッスンが完了していればアンロック
     const previousLesson = lessons[lessonIndex - 1];
     return !completedLessons.includes(previousLesson.id);
+  };
+
+  // レッスンカードクリック時の処理（途中データがある場合はエディターに直接遷移）
+  const handleLessonClick = (lessonId: string) => {
+    if (typeof window === "undefined") return;
+    
+    const savedMission = localStorage.getItem(`lesson-${lessonId}-mission`);
+    
+    if (savedMission && parseInt(savedMission) > 0) {
+      // 途中データあり → 直接エディターへ
+      router.push(`/lesson/${lessonId}/editor`);
+    } else {
+      // 新規 → チュートリアルへ
+      router.push(`/lesson/${lessonId}`);
+    }
   };
 
   // デバッグ用：全レッスンを完了にする
@@ -299,13 +329,23 @@ export default function Home() {
                     ) : (
                       <Link
                         href={`/lesson/${lesson.id}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleLessonClick(lesson.id);
+                        }}
                         className={`block text-center py-3 rounded-full font-bold text-lg transition-all ${
                           isCompleted
                             ? "bg-white/30 hover:bg-white/40 text-white"
                             : "bg-white text-purple-600 hover:scale-105 shadow-lg"
                         }`}
                       >
-                        {isCompleted ? <>🔄 <FW word="復習" />する</> : "🚀 学習する"}
+                        {isCompleted ? (
+                          <>🔄 <FW word="復習" />する</>
+                        ) : resumeStatus[lesson.id] ? (
+                          "📖 続きから"
+                        ) : (
+                          "🚀 学習する"
+                        )}
                       </Link>
                     )}
                   </div>
