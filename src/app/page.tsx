@@ -26,6 +26,8 @@ export default function Home() {
   const [debugXP, setDebugXP] = useState("");
   const [debugLessonId, setDebugLessonId] = useState("");
   const [resumeStatus, setResumeStatus] = useState<Record<string, boolean>>({});
+  const [debugStartLessonId, setDebugStartLessonId] = useState("");
+  const [debugStartMission, setDebugStartMission] = useState("");
 
   useEffect(() => {
     const progress = getProgress();
@@ -170,6 +172,36 @@ export default function Home() {
     setCurrentIndex(Math.min(targetIndex + 1, lessons.length - 1));
     alert(`${debugLessonId} まで完了状態にしました！`);
     setDebugLessonId("");
+  };
+
+  // デバッグ用：任意のミッションから開始
+  const debugStartFromMission = () => {
+    if (!debugStartLessonId) {
+      alert("レッスンIDを選択してください");
+      return;
+    }
+    
+    const missionNum = parseInt(debugStartMission);
+    if (isNaN(missionNum) || missionNum < 1) {
+      alert("正しいミッション番号を入力してください（1以上）");
+      return;
+    }
+    
+    // レッスンIDの存在確認
+    const lessonExists = lessons.some(l => l.id === debugStartLessonId);
+    if (!lessonExists) {
+      alert(`レッスン ${debugStartLessonId} が見つかりません`);
+      return;
+    }
+    
+    // localStorageに設定（ミッション番号は0始まりなので-1）
+    localStorage.setItem(`lesson-${debugStartLessonId}-mission`, String(missionNum));
+    localStorage.setItem(`lesson-${debugStartLessonId}-wrong`, JSON.stringify([]));
+    localStorage.removeItem(`lesson-${debugStartLessonId}-retryMode`);
+    localStorage.removeItem(`lesson-${debugStartLessonId}-retryIndex`);
+    
+    // エディター画面に遷移
+    router.push(`/lesson/${debugStartLessonId}/editor`);
   };
 
   // デバッグ用：現在の進捗を取得
@@ -497,6 +529,41 @@ export default function Home() {
                     className="bg-blue-500 text-white text-xs px-2 py-1 rounded hover:bg-blue-600"
                   >
                     完了
+                  </button>
+                </div>
+              </div>
+
+              {/* 任意のミッションから開始 */}
+              <div className="mb-3">
+                <label className="text-xs text-gray-600 block mb-1">任意のミッションから開始</label>
+                <div className="flex gap-1 mb-1">
+                  <select
+                    value={debugStartLessonId}
+                    onChange={(e) => setDebugStartLessonId(e.target.value)}
+                    className="flex-1 border rounded px-2 py-1 text-xs"
+                  >
+                    <option value="">レッスンを選択</option>
+                    {lessons.map((lesson) => (
+                      <option key={lesson.id} value={lesson.id}>
+                        {lesson.id}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex gap-1">
+                  <input
+                    type="number"
+                    value={debugStartMission}
+                    onChange={(e) => setDebugStartMission(e.target.value)}
+                    placeholder="ミッション番号（例: 3）"
+                    min="1"
+                    className="flex-1 border rounded px-2 py-1 text-xs"
+                  />
+                  <button
+                    onClick={debugStartFromMission}
+                    className="bg-purple-500 text-white text-xs px-2 py-1 rounded hover:bg-purple-600"
+                  >
+                    開始
                   </button>
                 </div>
               </div>
