@@ -315,11 +315,23 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   
   const tutorial = lessonId ? getTutorial(lessonId) : undefined;
   
-  // ブロックをランダムに並べ替える
+  // ブロックをランダムに並べ替える（重複除去）
   const availableBlocks = useMemo(() => {
     if (!currentMission?.availableBlocks) return [];
-    // 配列をコピーしてランダムに並べ替え
-    const shuffled = [...currentMission.availableBlocks];
+    
+    // 重複を除去（同じtextを持つブロックは1つだけ残す）
+    const uniqueBlocks: WordBlock[] = [];
+    const seenTexts = new Set<string>();
+    
+    for (const block of currentMission.availableBlocks) {
+      if (!seenTexts.has(block.text)) {
+        seenTexts.add(block.text);
+        uniqueBlocks.push(block);
+      }
+    }
+    
+    // 配列をランダムに並べ替え
+    const shuffled = [...uniqueBlocks];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
@@ -347,18 +359,28 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
 
   // 単語ブロックを選択
   const selectBlock = (block: WordBlock) => {
-    let newBlocks = [...selectedBlocks, block];
+    // ブロックのコピーを作成（新しいIDを付与）
+    const newBlock: WordBlock = {
+      ...block,
+      id: `${block.id}-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
+    };
+    
+    let newBlocks = [...selectedBlocks, newBlock];
     
     // 改行ブロックを追加した場合、かつレッスン4以降の場合
-    if (block.text === "↵" && lessonId && lessonId.startsWith("4-")) {
+    if (newBlock.text === "↵" && lessonId && lessonId.startsWith("4-")) {
       // 直前の行がコロンで終わっているかチェック
       // if文、else文、elif文、for文、while文など、「:」で終わる行の後に自動インデントを追加
       if (isPreviousLineEndsWithColon(selectedBlocks)) {
         // インデントブロックを取得
         const indentBlock = getIndentBlock();
         if (indentBlock) {
-          // 改行ブロックの後にインデントブロックを自動追加
-          newBlocks.push(indentBlock);
+          // インデントブロックも新しいIDで作成
+          const newIndentBlock: WordBlock = {
+            ...indentBlock,
+            id: `${indentBlock.id}-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
+          };
+          newBlocks.push(newIndentBlock);
         }
       }
     }
