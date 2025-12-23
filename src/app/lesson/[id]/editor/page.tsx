@@ -800,6 +800,11 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       if (e.key === "Enter") {
         e.preventDefault();
         
+        // 現在のフォーカスを外す
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
+        
         if (showNextButton) {
           // 「次へ」ボタンが表示されている場合は次の問題へ
           goToNextMissionRef.current?.();
@@ -997,7 +1002,13 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
               <p className="text-sm text-gray-700 mb-1"><FuriganaText text={currentMission.description} /></p>
               <div className="bg-gray-800 rounded-lg p-2">
                 <p className="text-xs text-gray-400 mb-1"><F reading="きたい">期待</F>される<F reading="しゅつりょく">出力</F>:</p>
-                <pre className="text-green-400 font-mono text-sm">{currentMission.expectedOutput}</pre>
+                <pre className="text-green-400 font-mono text-sm">
+                  {currentMission.hideExpectedOutput ? (
+                    <span className="text-gray-400">？？？</span>
+                  ) : (
+                    currentMission.expectedOutput
+                  )}
+                </pre>
               </div>
             </div>
           </div>
@@ -1133,12 +1144,19 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           {executionResult && (
             <div className="p-2 border-b">
               {executionResult.success ? (
-                <div className="bg-green-100 border-2 border-green-500 rounded-xl p-2 flex items-center gap-2">
-                  <span className="text-xl">🎉</span>
-                  <div className="flex-1">
-                    <p className="text-green-800 font-bold text-sm"><FW word="正解" />！</p>
-                    <p className="text-green-700 text-xs">出力: {executionResult.output}</p>
+                <div>
+                  <div className="bg-green-100 border-2 border-green-500 rounded-xl p-2 flex items-center gap-2">
+                    <span className="text-xl">🎉</span>
+                    <div className="flex-1">
+                      <p className="text-green-800 font-bold text-sm"><FW word="正解" />！</p>
+                      <p className="text-green-700 text-xs">出力: {executionResult.output}</p>
+                    </div>
                   </div>
+                  {currentMission?.explanation && (
+                    <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <p className="text-blue-800 text-sm">💡 {currentMission.explanation}</p>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="bg-red-100 border-2 border-red-500 rounded-xl p-2 flex items-center gap-2">
@@ -1259,6 +1277,11 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                     <p className="text-green-700 text-sm">答えは「{executionResult.output}」</p>
                   </div>
                 </div>
+                {currentMission?.explanation && (
+                  <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-blue-800 text-sm">💡 {currentMission.explanation}</p>
+                  </div>
+                )}
                 {showNextButton && (
                   <button
                     type="button"

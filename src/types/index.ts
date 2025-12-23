@@ -34,5 +34,9 @@ export interface Mission {
   codeToRead?: string;
   choices?: string[];
   correctAnswer?: number;
+  // 期待出力を隠すフラグ（オプション）
+  hideExpectedOutput?: boolean;
+  // 正解時の説明（オプション）
+  explanation?: string;
 }
 

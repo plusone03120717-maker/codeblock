@@ -2486,6 +2486,8 @@ const missionsByLesson: Record<string, Mission[]> = {
       title: "if Falseで表示",
       description: "if False: を使って \"Hello\" と出力しよう（何が起こるかな？）",
       expectedOutput: "",
+      hideExpectedOutput: true,
+      explanation: "条件が False の時、if文の中の処理は実行されない。だから何も出力されなかった。これが条件分岐の基本だ。",
       availableBlocks: [
         { id: "if", text: "if", type: "keyword", color: "bg-blue-200" },
         { id: "false", text: "False", type: "boolean", color: "bg-purple-200" },
@@ -2541,6 +2543,8 @@ const missionsByLesson: Record<string, Mission[]> = {
       title: "Falseになる条件",
       description: "1 > 10 の条件で \"大きい\" と出力しよう（何が起こるかな？）",
       expectedOutput: "",
+      hideExpectedOutput: true,
+      explanation: "1 > 10 は False だ。1は10より大きくない。条件が False なので、print文は実行されなかった。",
       availableBlocks: [
         { id: "if", text: "if", type: "keyword", color: "bg-blue-200" },
         { id: "num1", text: "1", type: "number", color: "bg-blue-200" },
@@ -2582,6 +2586,8 @@ const missionsByLesson: Record<string, Mission[]> = {
       title: "Falseになる変数条件",
       description: "変数xが5より大きい時、\"OK\" と出力しよう（x = 3）",
       expectedOutput: "",
+      hideExpectedOutput: true,
+      explanation: "x = 3 の時、x > 5 は False になる。3は5より大きくないからだ。条件が False なので、何も出力されない。",
       availableBlocks: [
         { id: "x", text: "x", type: "variable", color: "bg-red-200" },
         { id: "equals", text: "=", type: "operator", color: "bg-orange-200" },
