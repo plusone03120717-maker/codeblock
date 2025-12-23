@@ -152,6 +152,14 @@ export const lessons: Lesson[] = [
     description: "2つの値を比べてみよう",
     difficulty: "ふつう",
   },
+  {
+    id: "4-3",
+    unitNumber: 4,
+    subNumber: 3,
+    title: "elseを使おう",
+    description: "条件がFalseの時の処理を書こう",
+    difficulty: "ふつう",
+  },
 ]
 
 // レッスンIDでレッスンを取得

@@ -679,6 +679,48 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "4-3",
+    characterName: "ジャッジ",
+    characterEmoji: "🦉",
+    characterImage: "/images/characters/judge.png",
+    slides: [
+      {
+        title: "elseとは",
+        content: "if文の条件がFalseの時、何も起きなかった。だが、Falseの時にも処理をしたい場合がある。そんな時に使うのが else だ。",
+        characterMessage: "elseは、Falseの時の処理を書く構文である。",
+      },
+      {
+        title: "if-elseの書き方",
+        content: "if 条件:\n    Trueの時の処理\nelse:\n    Falseの時の処理\nelseの後にもコロン「:」を忘れないこと。",
+        characterMessage: "if-elseは、2つの結果を分岐させる構文だ。",
+        codeExample: {
+          good: "if age >= 18:\n    print(\"大人\")\nelse:\n    print(\"子ども\")",
+        },
+      },
+      {
+        title: "具体例を見てみよう",
+        content: "点数が60以上なら「合格」、そうでなければ「不合格」。HPが0より大きければ「生存」、そうでなければ「ゲームオーバー」。このように、2つの結果を分岐させることができる。",
+        characterMessage: "2つの結果を明確に分岐させる。",
+        codeExample: {
+          good: "if score >= 60:\n    print(\"合格\")\nelse:\n    print(\"不合格\")",
+        },
+      },
+      {
+        title: "必ずどちらかが実行される",
+        content: "if-elseでは、必ずどちらか一方が実行される。条件がTrueならifブロック、Falseならelseブロック。両方実行されることも、両方スキップされることもない。",
+        characterMessage: "判定は明確でなければならない。",
+        codeExample: {
+          good: "if True → ifブロック実行\nif False → elseブロック実行",
+        },
+      },
+      {
+        title: "if-elseを使ってみよう",
+        content: "では、if-elseを使って2つの結果を分岐させよう。TrueとFalse、両方の判定を下すのだ。さあ、始めよう。",
+        characterMessage: "実践で判定力を身につける。",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {

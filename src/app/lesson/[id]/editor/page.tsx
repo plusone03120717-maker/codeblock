@@ -235,8 +235,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   const wrongMissionIdsRef = useRef<number[]>([]);
   const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
   const [showNextButton, setShowNextButton] = useState(false);
-  const handleCheckRef = useRef<() => Promise<void>>();
-  const goToNextMissionRef = useRef<() => void>();
+  const handleCheckRef = useRef<(() => Promise<void>) | undefined>(undefined);
+  const goToNextMissionRef = useRef<(() => void) | undefined>(undefined);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -328,22 +328,14 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   }, [currentMission?.availableBlocks, currentMissionId]);
 
   // 直前の行がコロンで終わっているかチェック
+  // if文、else文、elif文、for文、while文など、「:」で終わる行すべてに対応
   const isPreviousLineEndsWithColon = (blocks: WordBlock[]): boolean => {
     if (blocks.length === 0) return false;
     
-    // 最後のブロックから逆順に検索
-    // 改行ブロック（「↵」）が見つかるまで遡り、その直前のブロックが「:」かチェック
-    for (let i = blocks.length - 1; i >= 0; i--) {
-      if (blocks[i].text === "↵") {
-        // 改行ブロックが見つかった場合、その前のブロックをチェック
-        if (i > 0) {
-          return blocks[i - 1]?.text === ":";
-        }
-        return false;
-      }
-    }
-    
-    // 改行ブロックが見つからない場合（最初の行）、最後のブロックをチェック
+    // シンプルに最後のブロックが「:」かどうかをチェック
+    // 改行ブロックを追加するタイミングでは、selectedBlocksの最後のブロックが現在の行の最後のブロック
+    // つまり、最後のブロックが「:」なら、その後に自動インデントを追加すべき
+    // これにより、if:、else:、elif:、for:、while: などすべてのケースで正しく動作する
     return blocks[blocks.length - 1]?.text === ":";
   };
 
@@ -360,6 +352,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     // 改行ブロックを追加した場合、かつレッスン4以降の場合
     if (block.text === "↵" && lessonId && lessonId.startsWith("4-")) {
       // 直前の行がコロンで終わっているかチェック
+      // if文、else文、elif文、for文、while文など、「:」で終わる行の後に自動インデントを追加
       if (isPreviousLineEndsWithColon(selectedBlocks)) {
         // インデントブロックを取得
         const indentBlock = getIndentBlock();
