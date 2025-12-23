@@ -585,6 +585,58 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  // ユニット4: 条件分岐（ジャッジ担当）
+  {
+    lessonId: "4-1",
+    characterName: "ジャッジ",
+    characterEmoji: "🦉",
+    characterImage: "/images/characters/judge.png",
+    slides: [
+      {
+        title: "条件分岐の法廷へようこそ",
+        content: "私はジャッジ。条件分岐の判定者だ。これから君には、TrueとFalseを見極める力を身につけてもらう。準備はいいかな？判定を始めよう。",
+        characterMessage: "条件分岐の法廷へようこそ。私が判定を下す。",
+      },
+      {
+        title: "条件分岐とは何か",
+        content: "条件によって、処理を分けることを「条件分岐」と呼ぶ。例：信号が青なら渡る、赤なら止まる。プログラムも同じように、条件で行動を変えられる。",
+        characterMessage: "条件分岐は、判断の基本だ。",
+        codeExample: {
+          good: "信号が青 → 渡る\n信号が赤 → 止まる",
+        },
+      },
+      {
+        title: "if文の書き方",
+        content: "if 条件:\n    処理\n条件がTrueなら、処理が実行される。コロン「:」を忘れないこと。",
+        characterMessage: "if文は、条件を判定する構文だ。",
+        codeExample: {
+          good: "if age >= 10:\n    print(\"10歳以上です\")",
+        },
+      },
+      {
+        title: "TrueとFalse",
+        content: "条件は必ず True か False のどちらかになる。True = 条件が正しい → 処理を実行。False = 条件が正しくない → 処理をスキップ。曖昧さは許されない。それがプログラムの世界だ。",
+        characterMessage: "判定は明確でなければならない。",
+        codeExample: {
+          good: "age >= 10  → True なら処理実行\nage < 10   → False なら処理スキップ",
+        },
+      },
+      {
+        title: "インデント（字下げ）",
+        content: "if文の中の処理は、スペース4つ分下げる。これを「インデント」と呼ぶ。インデントがないと、エラーになる。整ったコードは、正しい判定の第一歩だ。",
+        characterMessage: "インデントは、コードの構造を示す。",
+        codeExample: {
+          good: "if age >= 10:\n    print(\"10歳以上です\")  # 4スペース下げる",
+          bad: "if age >= 10:\nprint(\"10歳以上です\")  # エラー：インデントなし",
+        },
+      },
+      {
+        title: "判定者になろう",
+        content: "では、実際にif文を書いてみよう。条件を正しく設定し、判定を下すのだ。さあ、始めよう。",
+        characterMessage: "実践で判定力を身につける。",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {

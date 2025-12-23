@@ -136,6 +136,14 @@ export const lessons: Lesson[] = [
     description: "コードを読んで型を予測しよう",
     difficulty: "ふつう",
   },
+  {
+    id: "4-1",
+    unitNumber: 4,
+    subNumber: 1,
+    title: "条件分岐を知ろう",
+    description: "if文の基本を学ぼう",
+    difficulty: "ふつう",
+  },
 ]
 
 // レッスンIDでレッスンを取得

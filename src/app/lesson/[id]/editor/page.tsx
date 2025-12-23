@@ -190,9 +190,11 @@ function DraggableBlock({ block, index, onRemove }: DraggableBlockProps) {
       <div
         {...attributes}
         {...listeners}
-        className={`${block.color} text-gray-700 px-3 py-2 rounded-xl text-sm font-mono shadow-md hover:shadow-lg transition-all border-2 border-white cursor-grab active:cursor-grabbing select-none`}
+        className={`${block.color} text-gray-700 px-3 py-2 rounded-xl text-sm font-mono shadow-md hover:shadow-lg transition-all border-2 border-white cursor-grab active:cursor-grabbing select-none ${
+          block.text === "    " ? "bg-gray-300 border-gray-400" : ""
+        }`}
       >
-        {block.text}
+        {block.text === "    " ? "→" : block.text}
       </div>
       
       {/* 削除ボタン（スマホは常に表示、PCはホバー時のみ表示） */}
@@ -232,6 +234,9 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   const [retryIndex, setRetryIndex] = useState(0);
   const wrongMissionIdsRef = useRef<number[]>([]);
   const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
+  const [showNextButton, setShowNextButton] = useState(false);
+  const handleCheckRef = useRef<() => Promise<void>>();
+  const goToNextMissionRef = useRef<() => void>();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -322,9 +327,50 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     return shuffled;
   }, [currentMission?.availableBlocks, currentMissionId]);
 
+  // 直前の行がコロンで終わっているかチェック
+  const isPreviousLineEndsWithColon = (blocks: WordBlock[]): boolean => {
+    if (blocks.length === 0) return false;
+    
+    // 最後のブロックから逆順に検索
+    // 改行ブロック（「↵」）が見つかるまで遡り、その直前のブロックが「:」かチェック
+    for (let i = blocks.length - 1; i >= 0; i--) {
+      if (blocks[i].text === "↵") {
+        // 改行ブロックが見つかった場合、その前のブロックをチェック
+        if (i > 0) {
+          return blocks[i - 1]?.text === ":";
+        }
+        return false;
+      }
+    }
+    
+    // 改行ブロックが見つからない場合（最初の行）、最後のブロックをチェック
+    return blocks[blocks.length - 1]?.text === ":";
+  };
+
+  // インデントブロックを取得（利用可能な場合）
+  const getIndentBlock = (): WordBlock | null => {
+    if (!availableBlocks) return null;
+    return availableBlocks.find(block => block.text === "    ") || null;
+  };
+
   // 単語ブロックを選択
   const selectBlock = (block: WordBlock) => {
-    setSelectedBlocks([...selectedBlocks, block]);
+    let newBlocks = [...selectedBlocks, block];
+    
+    // 改行ブロックを追加した場合、かつレッスン4以降の場合
+    if (block.text === "↵" && lessonId && lessonId.startsWith("4-")) {
+      // 直前の行がコロンで終わっているかチェック
+      if (isPreviousLineEndsWithColon(selectedBlocks)) {
+        // インデントブロックを取得
+        const indentBlock = getIndentBlock();
+        if (indentBlock) {
+          // 改行ブロックの後にインデントブロックを自動追加
+          newBlocks.push(indentBlock);
+        }
+      }
+    }
+    
+    setSelectedBlocks(newBlocks);
     playBlockAddSound(); // ブロック配置時のSE
   };
 
@@ -352,6 +398,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     setSelectedBlocks([]);
     setGeneratedCode("");
     setExecutionResult(null);
+    setShowNextButton(false);
   };
 
   // ミッション変更時にリセットと保存
@@ -360,12 +407,61 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     setGeneratedCode("");
     setExecutionResult(null);
     setSelectedChoice(null);
+    setShowNextButton(false);
     
     // ミッションIDをローカルストレージに保存
     if (lessonId) {
       localStorage.setItem(`lesson-${lessonId}-mission`, currentMissionId.toString());
     }
   }, [currentMissionId, lessonId]);
+
+  // 次の問題へ進む処理（共通関数）
+  const goToNextMission = () => {
+    setExecutionResult(null);
+    setSelectedBlocks([]);
+    setSelectedChoice(null);
+    setShowNextButton(false);
+    
+    if (isRetryMode) {
+      // 再出題モード
+      if (retryIndex + 1 < wrongMissionIdsRef.current.length) {
+        // 次の間違えた問題へ
+        setRetryIndex(retryIndex + 1);
+      } else {
+        // 全ての再出題が完了 → 完了画面へ
+        if (lessonId) {
+          localStorage.removeItem(`lesson-${lessonId}-mission`);
+        }
+        router.push(`/lesson/${lessonId}/complete`);
+      }
+    } else {
+      // 通常モード
+      if (currentMissionId < (missions?.length || 0)) {
+        // 次の問題へ
+        const nextMissionId = currentMissionId + 1;
+        setCurrentMissionId(nextMissionId);
+        // 次のミッションIDを保存
+        if (lessonId) {
+          localStorage.setItem(`lesson-${lessonId}-mission`, nextMissionId.toString());
+        }
+      } else {
+        // 全問終了 - 少し待ってから最新のwrongMissionIdsを確認
+        setTimeout(() => {
+          if (wrongMissionIdsRef.current.length > 0) {
+            // 間違えた問題がある → 再出題モードへ
+            setIsRetryMode(true);
+            setRetryIndex(0);
+          } else {
+            // 全問正解 → 完了画面へ
+            if (lessonId) {
+              localStorage.removeItem(`lesson-${lessonId}-mission`);
+            }
+            router.push(`/lesson/${lessonId}/complete`);
+          }
+        }, 100);
+      }
+    }
+  };
 
   // 選択式問題の判定
   const handleQuizAnswer = (choiceIndex: number) => {
@@ -404,42 +500,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         }, 1500);
       }
 
-      // 次の問題へ進む処理
-      setTimeout(() => {
-        setExecutionResult(null);
-        setSelectedChoice(null);
-        
-        if (isRetryMode) {
-          if (retryIndex + 1 < wrongMissionIdsRef.current.length) {
-            setRetryIndex(retryIndex + 1);
-          } else {
-            if (lessonId) {
-              localStorage.removeItem(`lesson-${lessonId}-mission`);
-            }
-            router.push(`/lesson/${lessonId}/complete`);
-          }
-        } else {
-          if (currentMissionId < (missions?.length || 0)) {
-            const nextMissionId = currentMissionId + 1;
-            setCurrentMissionId(nextMissionId);
-            if (lessonId) {
-              localStorage.setItem(`lesson-${lessonId}-mission`, nextMissionId.toString());
-            }
-          } else {
-            setTimeout(() => {
-              if (wrongMissionIdsRef.current.length > 0) {
-                setIsRetryMode(true);
-                setRetryIndex(0);
-              } else {
-                if (lessonId) {
-                  localStorage.removeItem(`lesson-${lessonId}-mission`);
-                }
-                router.push(`/lesson/${lessonId}/complete`);
-              }
-            }, 100);
-          }
-        }
-      }, 2000);
+      // 「次へ」ボタンを表示
+      setShowNextButton(true);
     } else {
       setExecutionResult({
         success: false,
@@ -580,6 +642,14 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         }
       }
 
+      // レッスン4-1（条件分岐を知ろう）の場合、if文を使っているかチェック
+      if (lessonId === "4-1") {
+        if (!code.includes("if ")) {
+          codeIsValid = false;
+          codeErrorMessage = "if文を使って条件分岐を書こう";
+        }
+      }
+
       // レッスン1-4（文字列連結）の場合、「+」を使っているかチェック
       if (lessonId === "1-4") {
         if (!code.includes("+")) {
@@ -672,51 +742,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           }, 1500);
         }
 
-        // 次の問題へ進む処理
-        setTimeout(() => {
-          setExecutionResult(null);
-          setSelectedBlocks([]);
-          
-          if (isRetryMode) {
-            // 再出題モード
-            if (retryIndex + 1 < wrongMissionIdsRef.current.length) {
-              // 次の間違えた問題へ
-              setRetryIndex(retryIndex + 1);
-            } else {
-              // 全ての再出題が完了 → 完了画面へ
-              if (lessonId) {
-                localStorage.removeItem(`lesson-${lessonId}-mission`);
-              }
-              router.push(`/lesson/${lessonId}/complete`);
-            }
-          } else {
-            // 通常モード
-            if (currentMissionId < (missions?.length || 0)) {
-              // 次の問題へ
-              const nextMissionId = currentMissionId + 1;
-              setCurrentMissionId(nextMissionId);
-              // 次のミッションIDを保存
-              if (lessonId) {
-                localStorage.setItem(`lesson-${lessonId}-mission`, nextMissionId.toString());
-              }
-            } else {
-              // 全問終了 - 少し待ってから最新のwrongMissionIdsを確認
-              setTimeout(() => {
-                if (wrongMissionIdsRef.current.length > 0) {
-                  // 間違えた問題がある → 再出題モードへ
-                  setIsRetryMode(true);
-                  setRetryIndex(0);
-                } else {
-                  // 全問正解 → 完了画面へ
-                  if (lessonId) {
-                    localStorage.removeItem(`lesson-${lessonId}-mission`);
-                  }
-                  router.push(`/lesson/${lessonId}/complete`);
-                }
-              }, 100);
-            }
-          }
-        }, 2000);
+        // 「次へ」ボタンを表示
+        setShowNextButton(true);
       } else {
         // 不正解
         let errorMessage = "期待される出力と異なります。もう一度試してみましょう！";
@@ -751,6 +778,43 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       setIsExecuting(false);
     }
   };
+
+  // handleCheckとgoToNextMissionをrefに保存
+  useEffect(() => {
+    handleCheckRef.current = handleCheck;
+  }, [handleCheck]);
+
+  useEffect(() => {
+    goToNextMissionRef.current = goToNextMission;
+  }, [goToNextMission]);
+
+  // Enterキーで「確認する」または「次へ」を実行
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 入力フィールド（input, textarea）内でのEnterキーは無視
+      const target = e.target as HTMLElement;
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
+        return;
+      }
+
+      if (e.key === "Enter") {
+        e.preventDefault();
+        
+        if (showNextButton) {
+          // 「次へ」ボタンが表示されている場合は次の問題へ
+          goToNextMissionRef.current?.();
+        } else {
+          // それ以外は「確認する」を実行（ただし、選択式問題の場合は実行しない）
+          if (currentMission?.type !== "quiz" && !isExecuting) {
+            handleCheckRef.current?.();
+          }
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showNextButton, currentMission?.type, isExecuting]);
 
   if (!lessonId) {
     return (
@@ -1075,9 +1139,6 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                     <p className="text-green-800 font-bold text-sm"><FW word="正解" />！</p>
                     <p className="text-green-700 text-xs">出力: {executionResult.output}</p>
                   </div>
-                  <p className="text-green-600 font-bold text-xs">
-                    {currentMissionId < (missions?.length || 0) ? "次へ..." : <>🎊 <FW word="完了" />！</>}
-                  </p>
                 </div>
               ) : (
                 <div className="bg-red-100 border-2 border-red-500 rounded-xl p-2 flex items-center gap-2">
@@ -1098,42 +1159,78 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           
           {/* ボタン */}
           <div className="p-3">
-            <div className="flex justify-center gap-3">
-              <button
-                type="button"
-                onClick={reset}
-                style={{
-                  background: 'linear-gradient(to right, #e5e7eb, #d1d5db)',
-                  color: '#374151',
-                  padding: '12px 20px',
-                  borderRadius: '9999px',
-                  fontWeight: 'bold',
-                  fontSize: '14px',
-                  border: '2px solid white',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                }}
-              >
-                やり直す
-              </button>
-              <button
-                type="button"
-                onClick={handleCheck}
-                disabled={isExecuting}
-                style={{
-                  background: isExecuting ? '#9ca3af' : 'linear-gradient(to right, #86efac, #34d399)',
-                  color: 'white',
-                  padding: '12px 24px',
-                  borderRadius: '9999px',
-                  fontWeight: 'bold',
-                  fontSize: '14px',
-                  border: '2px solid white',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                  opacity: isExecuting ? 0.5 : 1,
-                }}
-              >
-                {isExecuting ? <><F reading="じっこう">実行</F><F reading="ちゅう">中</F>...</> : <><FW word="確認" />する 🎯</>}
-              </button>
-            </div>
+            {showNextButton ? (
+              // 正解時：「次へ」ボタンを表示
+              <div className="flex justify-center">
+                <button
+                  type="button"
+                  onClick={goToNextMission}
+                  style={{
+                    background: 'linear-gradient(to right, #10b981, #059669)',
+                    color: 'white',
+                    padding: '14px 32px',
+                    borderRadius: '9999px',
+                    fontWeight: 'bold',
+                    fontSize: '16px',
+                    border: '2px solid white',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                    width: '100%',
+                    maxWidth: '300px',
+                  }}
+                >
+                  {(() => {
+                    if (isRetryMode) {
+                      return retryIndex + 1 < wrongMissionIdsRef.current.length ? "次へ →" : "🎊 完了！";
+                    } else {
+                      if (currentMissionId < (missions?.length || 0)) {
+                        return "次へ →";
+                      } else {
+                        // 全問終了の場合
+                        return wrongMissionIdsRef.current.length > 0 ? "次へ →" : "🎊 完了！";
+                      }
+                    }
+                  })()}
+                </button>
+              </div>
+            ) : (
+              // 通常時：「やり直す」と「確認する」ボタンを表示
+              <div className="flex justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={reset}
+                  style={{
+                    background: 'linear-gradient(to right, #e5e7eb, #d1d5db)',
+                    color: '#374151',
+                    padding: '12px 20px',
+                    borderRadius: '9999px',
+                    fontWeight: 'bold',
+                    fontSize: '14px',
+                    border: '2px solid white',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  }}
+                >
+                  やり直す
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCheck}
+                  disabled={isExecuting}
+                  style={{
+                    background: isExecuting ? '#9ca3af' : 'linear-gradient(to right, #86efac, #34d399)',
+                    color: 'white',
+                    padding: '12px 24px',
+                    borderRadius: '9999px',
+                    fontWeight: 'bold',
+                    fontSize: '14px',
+                    border: '2px solid white',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                    opacity: isExecuting ? 0.5 : 1,
+                  }}
+                >
+                  {isExecuting ? <><F reading="じっこう">実行</F><F reading="ちゅう">中</F>...</> : <><FW word="確認" />する 🎯</>}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -1154,13 +1251,45 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         >
           <div className="p-3">
             {executionResult.success ? (
-              <div className="bg-green-100 border-2 border-green-500 rounded-xl p-3 flex items-center gap-2">
-                <span className="text-2xl">🎉</span>
-                <div>
-                  <p className="text-green-800 font-bold"><FW word="正解" />！</p>
-                  <p className="text-green-700 text-sm">答えは「{executionResult.output}」</p>
+              <>
+                <div className="bg-green-100 border-2 border-green-500 rounded-xl p-3 flex items-center gap-2 mb-3">
+                  <span className="text-2xl">🎉</span>
+                  <div>
+                    <p className="text-green-800 font-bold"><FW word="正解" />！</p>
+                    <p className="text-green-700 text-sm">答えは「{executionResult.output}」</p>
+                  </div>
                 </div>
-              </div>
+                {showNextButton && (
+                  <button
+                    type="button"
+                    onClick={goToNextMission}
+                    style={{
+                      background: 'linear-gradient(to right, #10b981, #059669)',
+                      color: 'white',
+                      padding: '14px 32px',
+                      borderRadius: '9999px',
+                      fontWeight: 'bold',
+                      fontSize: '16px',
+                      border: '2px solid white',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                      width: '100%',
+                    }}
+                  >
+                    {(() => {
+                      if (isRetryMode) {
+                        return retryIndex + 1 < wrongMissionIdsRef.current.length ? "次へ →" : "🎊 完了！";
+                      } else {
+                        if (currentMissionId < (missions?.length || 0)) {
+                          return "次へ →";
+                        } else {
+                          // 全問終了の場合
+                          return wrongMissionIdsRef.current.length > 0 ? "次へ →" : "🎊 完了！";
+                        }
+                      }
+                    })()}
+                  </button>
+                )}
+              </>
             ) : (
               <div className="bg-red-100 border-2 border-red-500 rounded-xl p-3 flex items-center gap-2">
                 <span className="text-2xl">🤔</span>
