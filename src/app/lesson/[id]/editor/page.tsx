@@ -763,7 +763,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         }
       }
 
-      // レッスン4-4（elifを使おう）の場合、if, elif, elseすべてを使っているかチェック
+      // レッスン4-4（elifを使おう）の場合、より厳密なチェック
       if (lessonId === "4-4") {
         const hasIf = code.includes("if ");
         const hasElif = code.includes("elif ");
@@ -778,6 +778,104 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         } else if (!hasElse) {
           codeIsValid = false;
           codeErrorMessage = "elseを使ってどれにも当てはまらない場合を書こう";
+        } else if (currentMission?.correctCode) {
+          // 正解コードが定義されている場合、構造をチェック
+          const normalizeCode = (codeStr: string) => {
+            return codeStr
+              .replace(/\s+/g, " ")
+              .replace(/\s*:\s*/g, ":")
+              .replace(/\s*\(\s*/g, "(")
+              .replace(/\s*\)\s*/g, ")")
+              .trim();
+          };
+          
+          const normalizedUserCode = normalizeCode(code);
+          const normalizedCorrectCode = normalizeCode(currentMission.correctCode);
+          
+          // 完全一致チェック
+          if (normalizedUserCode !== normalizedCorrectCode) {
+            // if/elif/elseの構造を抽出してチェック
+            const extractIfElifElseStructure = (codeStr: string) => {
+              const structure: Array<{ type: "if" | "elif" | "else"; condition: string | null; print: string }> = [];
+              
+              // if文を抽出
+              const ifMatch = codeStr.match(/if\s+(.+?):/);
+              if (ifMatch) {
+                const condition = ifMatch[1].trim().replace(/\s+/g, " ");
+                const printMatch = codeStr.substring(ifMatch.index || 0).match(/print\s*\(\s*"([^"]+)"\s*\)/);
+                structure.push({
+                  type: "if",
+                  condition: condition,
+                  print: printMatch ? printMatch[1] : ""
+                });
+              }
+              
+              // elif文を抽出
+              const elifMatches = Array.from(codeStr.matchAll(/elif\s+(.+?):/g));
+              for (const match of elifMatches) {
+                const condition = match[1].trim().replace(/\s+/g, " ");
+                const printMatch = codeStr.substring(match.index || 0).match(/print\s*\(\s*"([^"]+)"\s*\)/);
+                structure.push({
+                  type: "elif",
+                  condition: condition,
+                  print: printMatch ? printMatch[1] : ""
+                });
+              }
+              
+              // else文を抽出
+              const elseMatch = codeStr.match(/else\s*:/);
+              if (elseMatch) {
+                const printMatch = codeStr.substring(elseMatch.index || 0).match(/print\s*\(\s*"([^"]+)"\s*\)/);
+                structure.push({
+                  type: "else",
+                  condition: null,
+                  print: printMatch ? printMatch[1] : ""
+                });
+              }
+              
+              return structure;
+            };
+            
+            const userStructure = extractIfElifElseStructure(code);
+            const correctStructure = extractIfElifElseStructure(currentMission.correctCode);
+            
+            // 構造の数が一致しているか
+            if (userStructure.length !== correctStructure.length) {
+              codeIsValid = false;
+              codeErrorMessage = "if、elif、elseの構造が正しくありません。もう一度確認してね！";
+            } else {
+              // 各ブロックをチェック
+              for (let i = 0; i < correctStructure.length; i++) {
+                const correct = correctStructure[i];
+                const user = userStructure[i];
+                
+                // タイプが一致しているか
+                if (correct.type !== user.type) {
+                  codeIsValid = false;
+                  codeErrorMessage = `正しい順序でif、elif、elseを使ってね！`;
+                  break;
+                }
+                
+                // 条件が一致しているか（ifとelifの場合）
+                if (correct.condition && user.condition) {
+                  if (correct.condition !== user.condition) {
+                    codeIsValid = false;
+                    codeErrorMessage = `条件式が正しくありません。「${correct.condition}」を使ってね！`;
+                    break;
+                  }
+                }
+                
+                // 出力文字列が一致しているか
+                if (correct.print && user.print) {
+                  if (correct.print !== user.print) {
+                    codeIsValid = false;
+                    codeErrorMessage = `出力する文字列が正しくありません。「${correct.print}」を出力してね！`;
+                    break;
+                  }
+                }
+              }
+            }
+          }
         }
       }
 

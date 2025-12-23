@@ -38,5 +38,7 @@ export interface Mission {
   hideExpectedOutput?: boolean;
   // 正解時の説明（オプション）
   explanation?: string;
+  // 正解コード（厳密なチェック用）
+  correctCode?: string;
 }
 

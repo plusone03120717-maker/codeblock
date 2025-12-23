@@ -3204,6 +3204,7 @@ const missionsByLesson: Record<string, Mission[]> = {
         { id: "rparen3", text: ")", type: "bracket", color: "bg-gray-200" },
         { id: "c", text: '"C"', type: "string", color: "bg-green-200" },
       ],
+      correctCode: "score = 90\nif score >= 80:\n    print(\"A\")\nelif score >= 60:\n    print(\"B\")\nelse:\n    print(\"C\")",
     },
     {
       id: 2,
@@ -3246,6 +3247,7 @@ const missionsByLesson: Record<string, Mission[]> = {
         { id: "rparen3", text: ")", type: "bracket", color: "bg-gray-200" },
         { id: "c", text: '"C"', type: "string", color: "bg-green-200" },
       ],
+      correctCode: "score = 70\nif score >= 80:\n    print(\"A\")\nelif score >= 60:\n    print(\"B\")\nelse:\n    print(\"C\")",
     },
     {
       id: 3,
@@ -3288,6 +3290,7 @@ const missionsByLesson: Record<string, Mission[]> = {
         { id: "rparen3", text: ")", type: "bracket", color: "bg-gray-200" },
         { id: "c", text: '"C"', type: "string", color: "bg-green-200" },
       ],
+      correctCode: "score = 50\nif score >= 80:\n    print(\"A\")\nelif score >= 60:\n    print(\"B\")\nelse:\n    print(\"C\")",
     },
     {
       id: 4,
@@ -3330,6 +3333,7 @@ const missionsByLesson: Record<string, Mission[]> = {
         { id: "rparen3", text: ")", type: "bracket", color: "bg-gray-200" },
         { id: "child", text: '"子ども"', type: "string", color: "bg-green-200" },
       ],
+      correctCode: "age = 20\nif age >= 18:\n    print(\"大人\")\nelif age >= 12:\n    print(\"中高生\")\nelse:\n    print(\"子ども\")",
     },
     {
       id: 5,
@@ -3372,6 +3376,7 @@ const missionsByLesson: Record<string, Mission[]> = {
         { id: "rparen3", text: ")", type: "bracket", color: "bg-gray-200" },
         { id: "child", text: '"子ども"', type: "string", color: "bg-green-200" },
       ],
+      correctCode: "age = 15\nif age >= 18:\n    print(\"大人\")\nelif age >= 12:\n    print(\"中高生\")\nelse:\n    print(\"子ども\")",
     },
     {
       id: 6,
@@ -3414,6 +3419,7 @@ const missionsByLesson: Record<string, Mission[]> = {
         { id: "rparen3", text: ")", type: "bracket", color: "bg-gray-200" },
         { id: "child", text: '"子ども"', type: "string", color: "bg-green-200" },
       ],
+      correctCode: "age = 8\nif age >= 18:\n    print(\"大人\")\nelif age >= 12:\n    print(\"中高生\")\nelse:\n    print(\"子ども\")",
     },
     {
       id: 7,
@@ -3456,6 +3462,7 @@ const missionsByLesson: Record<string, Mission[]> = {
         { id: "rparen3", text: ")", type: "bracket", color: "bg-gray-200" },
         { id: "gameover", text: '"ゲームオーバー"', type: "string", color: "bg-green-200" },
       ],
+      correctCode: "hp = 100\nif hp >= 50:\n    print(\"元気\")\nelif hp >= 1:\n    print(\"ピンチ\")\nelse:\n    print(\"ゲームオーバー\")",
     },
     {
       id: 8,
@@ -3498,6 +3505,7 @@ const missionsByLesson: Record<string, Mission[]> = {
         { id: "rparen3", text: ")", type: "bracket", color: "bg-gray-200" },
         { id: "gameover", text: '"ゲームオーバー"', type: "string", color: "bg-green-200" },
       ],
+      correctCode: "hp = 30\nif hp >= 50:\n    print(\"元気\")\nelif hp >= 1:\n    print(\"ピンチ\")\nelse:\n    print(\"ゲームオーバー\")",
     },
     {
       id: 9,
@@ -3540,6 +3548,7 @@ const missionsByLesson: Record<string, Mission[]> = {
         { id: "rparen3", text: ")", type: "bracket", color: "bg-gray-200" },
         { id: "gameover", text: '"ゲームオーバー"', type: "string", color: "bg-green-200" },
       ],
+      correctCode: "hp = 0\nif hp >= 50:\n    print(\"元気\")\nelif hp >= 1:\n    print(\"ピンチ\")\nelse:\n    print(\"ゲームオーバー\")",
     },
     {
       id: 10,
@@ -3582,6 +3591,7 @@ const missionsByLesson: Record<string, Mission[]> = {
         { id: "rparen3", text: ")", type: "bracket", color: "bg-gray-200" },
         { id: "beginner", text: '"初級"', type: "string", color: "bg-green-200" },
       ],
+      correctCode: "level = 5\nif level >= 10:\n    print(\"上級\")\nelif level >= 5:\n    print(\"中級\")\nelse:\n    print(\"初級\")",
     },
   ],
 };
