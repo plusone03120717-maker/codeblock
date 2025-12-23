@@ -71,6 +71,22 @@ export default function Home() {
 
   // デバッグ用：進捗をリセットする
   const debugResetAll = () => {
+    // localStorageをクリアする処理
+    // 進捗データをリセット
+    localStorage.removeItem("codeblock-progress");
+
+    // 完了したレッスンをリセット
+    localStorage.removeItem("completedLessons");
+
+    // 全レッスンのミッション進捗をリセット
+    const lessonIds = ["1-1", "1-2", "1-3", "1-4", "1-5", "1-6", "2-1", "2-2", "2-3", "2-4", "2-5", "2-6", "3-1", "3-2", "3-3", "3-4"];
+    lessonIds.forEach(id => {
+      localStorage.removeItem(`lesson-${id}-mission`);
+      localStorage.removeItem(`lesson-${id}-wrong`);
+      localStorage.removeItem(`lesson-${id}-retryMode`);
+      localStorage.removeItem(`lesson-${id}-retryIndex`);
+    });
+
     const progress = getProgress();
     const newProgress = {
       ...progress,
