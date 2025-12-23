@@ -637,6 +637,48 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "4-2",
+    characterName: "ジャッジ",
+    characterEmoji: "🦉",
+    characterImage: "/images/characters/judge.png",
+    slides: [
+      {
+        title: "比較演算子とは",
+        content: "比較演算子は、2つの値を比べるための記号だ。比べた結果は、必ず True か False になる。これを使って、条件を作ることができる。",
+        characterMessage: "比較演算子は、判定の基本である。",
+      },
+      {
+        title: "等しい・等しくない",
+        content: "== は「等しいか？」を判定する。!= は「等しくないか？」を判定する。例: 5 == 5 は True、5 != 3 も True。",
+        characterMessage: "等しいか、等しくないか。判定は明確だ。",
+        codeExample: {
+          good: "5 == 5  → True\n5 != 3  → True",
+        },
+      },
+      {
+        title: "大小を比べる",
+        content: "< は「より小さい」を判定する。> は「より大きい」を判定する。例: 3 < 5 は True、10 > 5 も True。",
+        characterMessage: "大小の判定も、明確でなければならない。",
+        codeExample: {
+          good: "3 < 5   → True\n10 > 5  → True",
+        },
+      },
+      {
+        title: "以上・以下",
+        content: "<= は「以下（同じか小さい）」を判定する。>= は「以上（同じか大きい）」を判定する。例: 5 <= 5 は True、10 >= 5 も True。",
+        characterMessage: "以上・以下は、境界を含む判定だ。",
+        codeExample: {
+          good: "5 <= 5  → True\n10 >= 5 → True",
+        },
+      },
+      {
+        title: "比較演算子を使ってみよう",
+        content: "では、比較演算子を使って条件を作ってみよう。正しく比較できれば、判定は成功する。さあ、始めよう。",
+        characterMessage: "実践で判定力を身につける。",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {
