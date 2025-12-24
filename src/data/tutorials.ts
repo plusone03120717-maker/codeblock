@@ -939,6 +939,48 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "5-3",
+    characterName: "ルーピー",
+    characterEmoji: "🐹",
+    characterImage: "/images/characters/cody.png",
+    slides: [
+      {
+        title: "iのヒミツを教えるよ！",
+        content: "今まで何気なく書いていた「i」には、実は特別な役割があります。ループが今何周目かを覚えてくれる変数なんです！",
+        characterMessage: "ねえねえ、for i in range(3): の『i』って何だと思う？ 実はすごい秘密があるんだ！",
+      },
+      {
+        title: "iは0からスタート！",
+        content: "プログラミングでは、数を数えるとき0から始めるのがルールです。最初の1周目は i = 0、2周目は i = 1 になります。",
+        characterMessage: "「え、1からじゃないの？」って思うよね。でもプログラムの世界では0から数えるんだ！",
+        codeExample: {
+          good: "for i in range(3):\n    print(i)\n# 結果: 0\n#     1\n#     2",
+        },
+      },
+      {
+        title: "iは毎回1ずつ増える！",
+        content: "ループが1回実行されるごとに、iの値は自動的に1増えます。回し車の周回カウンターみたいに、何周目かを教えてくれます。",
+        characterMessage: "ループが1回終わるたびに、iは1増えるよ！ 0 → 1 → 2 → 3 ってね！",
+        codeExample: {
+          good: "for i in range(3):\n    print(i)\n# 1周目: i = 0\n# 2周目: i = 1\n# 3周目: i = 2",
+        },
+      },
+      {
+        title: "range(5)だとiはどうなる？",
+        content: "range(5) では、iは 0, 1, 2, 3, 4 の5つの値を取ります。「0から始めて、指定した数の手前で止まる」と覚えましょう！",
+        characterMessage: "range(5) だと、i は 0, 1, 2, 3, 4 って変わるよ。5にはならないのがポイント！",
+        codeExample: {
+          good: "for i in range(5):\n    print(i)\n# 結果: 0\n#     1\n#     2\n#     3\n#     4\n# 5にはならない！",
+        },
+      },
+      {
+        title: "iを出力してみよう！",
+        content: "print(i) と書くと、ループの中でiの値を出力できます。何が出てくるか予想しながらやってみましょう！",
+        characterMessage: "print(i) で今のiの値を出力できるよ！ 準備はいい？ いっくよー！",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {

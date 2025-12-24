@@ -208,6 +208,14 @@ export const lessons: Lesson[] = [
     description: "range()の数字を変えてみよう",
     difficulty: "かんたん",
   },
+  {
+    id: "5-3",
+    unitNumber: 5,
+    subNumber: 3,
+    title: "変数iを使おう",
+    description: "ループカウンターを出力してみよう",
+    difficulty: "かんたん",
+  },
 ]
 
 // レッスンIDでレッスンを取得
