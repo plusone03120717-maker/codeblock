@@ -373,7 +373,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     let newBlocks = [...selectedBlocks, newBlock];
     
     // 改行ブロックを追加した場合、かつレッスン4以降の場合
-    if (newBlock.text === "↵" && lessonId && lessonId.startsWith("4-")) {
+    if (newBlock.text === "↵" && lessonId && (lessonId.startsWith("4-") || lessonId.startsWith("5-"))) {
       // 直前の行がコロンで終わっているかチェック
       // if文、else文、elif文、for文、while文など、「:」で終わる行の後に自動インデントを追加
       if (isPreviousLineEndsWithColon(selectedBlocks)) {
@@ -900,6 +900,20 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         if (!hasStringMultiplyPattern) {
           codeIsValid = false;
           codeErrorMessage = "文字列と「*」と数字を使って文字列を繰り返してね！例: \"Hi\" * 3";
+        }
+      }
+
+      // レッスン5-1（繰り返しを知ろう）の場合、for文とrange()を使っているかチェック
+      if (lessonId === "5-1") {
+        const hasFor = code.includes("for ");
+        const hasRange = code.includes("range(");
+        
+        if (!hasFor) {
+          codeIsValid = false;
+          codeErrorMessage = "for文を使って繰り返しを書こう！";
+        } else if (!hasRange) {
+          codeIsValid = false;
+          codeErrorMessage = "range()を使って繰り返す回数を指定しよう！";
         }
       }
 

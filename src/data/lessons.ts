@@ -192,6 +192,14 @@ export const lessons: Lesson[] = [
     description: "コードを読んで出力を予測しよう",
     difficulty: "ふつう",
   },
+  {
+    id: "5-1",
+    unitNumber: 5,
+    subNumber: 1,
+    title: "繰り返しを知ろう",
+    description: "for文とrange()の基本を学ぼう",
+    difficulty: "かんたん",
+  },
 ]
 
 // レッスンIDでレッスンを取得

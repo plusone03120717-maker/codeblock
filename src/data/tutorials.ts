@@ -862,6 +862,49 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "5-1",
+    characterName: "ルーピー",
+    characterEmoji: "🐹",
+    characterImage: "/images/characters/cody.png",
+    slides: [
+      {
+        title: "やっほー！ルーピーだよ！",
+        content: "僕はルーピー！繰り返しが大好きなハムスターだよ！回し車をぐるぐる回すみたいに、プログラムも繰り返せるんだ！一緒にループの世界を冒険しよう！",
+        characterMessage: "やっほー！僕はルーピー！繰り返しが大好きなハムスターだよ！一緒にループを学ぼう！",
+      },
+      {
+        title: "繰り返しって何？",
+        content: "同じことを何回もやりたい時、どうする？「print(\"Hello\")」を5回書く？ 大変だよね！ループを使えば、1回書くだけで何回でも繰り返せるんだ！",
+        characterMessage: "繰り返しって便利だよ！1回書くだけで、何回でも実行できるんだ！",
+        codeExample: {
+          good: "# ループなし（大変！）\nprint(\"Hello\")\nprint(\"Hello\")\nprint(\"Hello\")\nprint(\"Hello\")\nprint(\"Hello\")\n\n# ループあり（簡単！）\nfor i in range(5):\n    print(\"Hello\")",
+        },
+      },
+      {
+        title: "for文の書き方",
+        content: "for i in range(3):\n    print(\"Hello\")\nこれで「Hello」が3回出力されるよ！range(3)は「3回繰り返してね」という意味だよ！",
+        characterMessage: "for文は簡単だよ！for i in range(3): で3回繰り返せるんだ！",
+        codeExample: {
+          good: "for i in range(3):\n    print(\"Hello\")\n# 結果: Hello\n#      Hello\n#      Hello",
+        },
+      },
+      {
+        title: "インデントを忘れずに！",
+        content: "for文の中の処理は、スペース4つ分下げるよ。これを「インデント」って言うんだ。if文と同じだね！覚えてる？",
+        characterMessage: "インデントを忘れないで！4スペース下げるんだよ！",
+        codeExample: {
+          good: "for i in range(3):\n    print(\"Hello\")  # 4スペース下げる",
+          bad: "for i in range(3):\nprint(\"Hello\")  # エラー：インデントなし",
+        },
+      },
+      {
+        title: "ぐるぐる回そう！",
+        content: "さあ、for文を使って繰り返しに挑戦だ！最初は3回から、だんだん増やしていくよ！準備はいい？ いっくよー！",
+        characterMessage: "ぐるぐる回そう！for文で繰り返しをマスターするよ！もう一回！",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {
