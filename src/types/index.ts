@@ -19,7 +19,7 @@ export interface Lesson {
 export interface WordBlock {
   id: string;
   text: string;
-  type: "keyword" | "operator" | "string" | "number" | "variable";
+  type: "keyword" | "operator" | "string" | "number" | "variable" | "indent";
   color: string;
 }
 
@@ -40,5 +40,7 @@ export interface Mission {
   explanation?: string;
   // 正解コード（厳密なチェック用）
   correctCode?: string;
+  // ユーザーのコードの前に自動で追加されるコード
+  prefixCode?: string;
 }
 

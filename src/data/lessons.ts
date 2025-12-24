@@ -168,6 +168,14 @@ export const lessons: Lesson[] = [
     description: "複数の条件で分岐しよう",
     difficulty: "ふつう",
   },
+  {
+    id: "4-5",
+    unitNumber: 4,
+    subNumber: 5,
+    title: "論理演算子を使おう",
+    description: "and, or, notで条件を組み合わせよう",
+    difficulty: "ふつう",
+  },
 ]
 
 // レッスンIDでレッスンを取得

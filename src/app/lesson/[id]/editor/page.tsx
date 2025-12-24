@@ -213,60 +213,6 @@ function DraggableBlock({ block, index, onRemove }: DraggableBlockProps) {
   );
 }
 
-interface LineDraggableBlockProps {
-  block: WordBlock;
-  globalIndex: number;
-  lineIndex: number;
-  onRemove: (index: number) => void;
-}
-
-function LineDraggableBlock({ block, globalIndex, lineIndex, onRemove }: LineDraggableBlockProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: `line-${lineIndex}-block-${globalIndex}` });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="inline-block relative touch-none group"
-    >
-      <div
-        {...attributes}
-        {...listeners}
-        className={`${block.color} text-gray-700 px-3 py-2 rounded-xl text-sm font-mono shadow-md hover:shadow-lg transition-all border-2 border-white cursor-grab active:cursor-grabbing select-none ${
-          block.text === "    " ? "bg-gray-300 border-gray-400" : ""
-        }`}
-      >
-        {block.text === "    " ? "→" : block.text}
-      </div>
-      
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          onRemove(globalIndex);
-        }}
-        className="absolute -top-1 -right-1 bg-red-400 hover:bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-md hover:shadow-lg transition-all border-2 border-white z-10 opacity-100 md:opacity-0 md:group-hover:opacity-100"
-        type="button"
-      >
-        ×
-      </button>
-    </div>
-  );
-}
-
 export default function LessonEditorPage({ params }: EditorPageProps) {
   const router = useRouter();
   const [lessonId, setLessonId] = useState<string | null>(null);
@@ -449,16 +395,31 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     playBlockRemoveSound(); // ブロック削除時のSE
   };
 
-  // 行ごとにブロックをグループ化
+  // ドラッグ終了ハンドラ
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setSelectedBlocks((blocks) => {
+        const oldIndex = blocks.findIndex((_, i) => `block-${i}` === active.id);
+        const newIndex = blocks.findIndex((_, i) => `block-${i}` === over.id);
+        return arrayMove(blocks, oldIndex, newIndex);
+      });
+    }
+  };
+
+  // 表示用に行ごとにブロックをグループ化
   const blockLines = useMemo(() => {
-    const lines: { blocks: { block: WordBlock; globalIndex: number }[] }[] = [];
-    let currentLine: { block: WordBlock; globalIndex: number }[] = [];
+    const lines: { blocks: { block: WordBlock; index: number }[] }[] = [];
+    let currentLine: { block: WordBlock; index: number }[] = [];
     
     selectedBlocks.forEach((block, index) => {
-      currentLine.push({ block, globalIndex: index });
       if (block.text === "↵") {
-        lines.push({ blocks: [...currentLine] });
+        currentLine.push({ block, index });
+        lines.push({ blocks: currentLine });
         currentLine = [];
+      } else {
+        currentLine.push({ block, index });
       }
     });
     
@@ -468,26 +429,6 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     
     return lines;
   }, [selectedBlocks]);
-
-  // 行ごとのドラッグ終了ハンドラを作成
-  const createHandleDragEnd = (lineIndex: number) => (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (over && active.id !== over.id) {
-      const line = blockLines[lineIndex];
-      if (!line) return;
-
-      // activeとoverのグローバルインデックスを取得
-      const activeItem = line.blocks.find((b) => `line-${lineIndex}-block-${b.globalIndex}` === active.id);
-      const overItem = line.blocks.find((b) => `line-${lineIndex}-block-${b.globalIndex}` === over.id);
-
-      if (activeItem && overItem) {
-        setSelectedBlocks((blocks) => {
-          return arrayMove(blocks, activeItem.globalIndex, overItem.globalIndex);
-        });
-      }
-    }
-  };
 
   // リセット
   const reset = () => {
@@ -638,7 +579,12 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     setGeneratedCode(code);
 
     try {
-      const { output, error } = await executePythonCode(code);
+      // コード実行前にprefixCodeを追加
+      let codeToExecute = code;
+      if (currentMission?.prefixCode) {
+        codeToExecute = currentMission.prefixCode + "\n" + code;
+      }
+      const { output, error } = await executePythonCode(codeToExecute);
       if (error) {
         setExecutionResult({
           success: false,
@@ -763,16 +709,12 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         }
       }
 
-      // レッスン4-4（elifを使おう）の場合、より厳密なチェック
+      // レッスン4-4（elifを使おう）の場合、elif, elseを使っているかチェック
       if (lessonId === "4-4") {
-        const hasIf = code.includes("if ");
         const hasElif = code.includes("elif ");
         const hasElse = code.includes("else:");
         
-        if (!hasIf) {
-          codeIsValid = false;
-          codeErrorMessage = "if文を使って条件分岐を書こう";
-        } else if (!hasElif) {
+        if (!hasElif) {
           codeIsValid = false;
           codeErrorMessage = "elifを使って複数の条件を書こう";
         } else if (!hasElse) {
@@ -842,7 +784,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
             // 構造の数が一致しているか
             if (userStructure.length !== correctStructure.length) {
               codeIsValid = false;
-              codeErrorMessage = "if、elif、elseの構造が正しくありません。もう一度確認してね！";
+              codeErrorMessage = "elifとelseの構造が正しくありません。もう一度確認してね！";
             } else {
               // 各ブロックをチェック
               for (let i = 0; i < correctStructure.length; i++) {
@@ -852,7 +794,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                 // タイプが一致しているか
                 if (correct.type !== user.type) {
                   codeIsValid = false;
-                  codeErrorMessage = `正しい順序でif、elif、elseを使ってね！`;
+                  codeErrorMessage = `正しい順序でelifとelseを使ってね！`;
                   break;
                 }
                 
@@ -874,6 +816,65 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                   }
                 }
               }
+            }
+          }
+        }
+      }
+
+      // レッスン4-5（論理演算子を使おう）の場合、and, or, notのいずれかを使っているかチェック
+      if (lessonId === "4-5") {
+        const hasAnd = code.includes(" and ");
+        const hasOr = code.includes(" or ");
+        const hasNot = code.includes("not ");
+        
+        if (!hasAnd && !hasOr && !hasNot) {
+          codeIsValid = false;
+          codeErrorMessage = "論理演算子（and, or, not）を使って条件を組み合わせよう";
+        } else if (currentMission?.correctCode) {
+          // 正解コードが定義されている場合、より厳密なチェック
+          const normalizeCode = (codeStr: string) => {
+            return codeStr
+              .replace(/\s+/g, " ")
+              .replace(/\s*:\s*/g, ":")
+              .replace(/\s*\(\s*/g, "(")
+              .replace(/\s*\)\s*/g, ")")
+              .trim();
+          };
+          
+          const normalizedUserCode = normalizeCode(code);
+          const normalizedCorrectCode = normalizeCode(currentMission.correctCode);
+          
+          if (normalizedUserCode !== normalizedCorrectCode) {
+            const extractCondition = (codeStr: string) => {
+              const match = codeStr.match(/if\s+(.+?):/);
+              if (!match) return null;
+              const condition = match[1].trim();
+              
+              // and, or, notを検出
+              const parts = condition.split(/\s+(and|or)\s+/);
+              const hasNotOp = condition.includes("not ");
+              
+              return {
+                op: parts.find(p => p === "and" || p === "or") || (hasNotOp ? "not" : null),
+                conditions: parts.filter((_, i) => i % 2 === 0).map(c => c.trim().replace(/^not\s+/, "")).sort()
+              };
+            };
+            
+            const userCond = extractCondition(code);
+            const correctCond = extractCondition(currentMission.correctCode);
+            
+            if (userCond && correctCond) {
+              if (userCond.op !== correctCond.op) {
+                codeIsValid = false;
+                const expectedOp = correctCond.op === "and" ? "and" : correctCond.op === "or" ? "or" : "not";
+                codeErrorMessage = `正しい論理演算子（${expectedOp}）を使ってね！`;
+              } else if (userCond.conditions.join("|") !== correctCond.conditions.join("|")) {
+                codeIsValid = false;
+                codeErrorMessage = "条件式が正しくありません。もう一度確認してね！";
+              }
+            } else {
+              codeIsValid = false;
+              codeErrorMessage = "if文の構造が正しくありません。もう一度確認してね！";
             }
           }
         }
@@ -1229,16 +1230,20 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
             {/* 説明 */}
             <div className="flex-1 min-w-0">
               <p className="text-sm text-gray-700 mb-1"><FuriganaText text={currentMission.description} /></p>
-              <div className="bg-gray-800 rounded-lg p-2">
-                <p className="text-xs text-gray-400 mb-1"><F reading="きたい">期待</F>される<F reading="しゅつりょく">出力</F>:</p>
-                <pre className="text-green-400 font-mono text-sm">
-                  {currentMission.hideExpectedOutput ? (
-                    <span className="text-gray-400">？？？</span>
-                  ) : (
-                    currentMission.expectedOutput
-                  )}
-                </pre>
-              </div>
+              {currentMission?.prefixCode && (
+                <div className="bg-gray-700 rounded-lg p-2 mt-2">
+                  <p className="text-xs text-gray-400 mb-1">変数の設定（自動で入力されます）:</p>
+                  <pre className="text-yellow-400 font-mono text-sm">{currentMission.prefixCode}</pre>
+                </div>
+              )}
+              {!currentMission?.hideExpectedOutput && (
+                <div className="bg-gray-800 rounded-lg p-2 mt-2">
+                  <p className="text-xs text-gray-400 mb-1"><F reading="きたい">期待</F>される<F reading="しゅつりょく">出力</F>:</p>
+                  <pre className="text-green-400 font-mono text-sm">
+                    {currentMission.expectedOutput}
+                  </pre>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1284,33 +1289,31 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                 {selectedBlocks.length === 0 ? (
                   <p className="text-gray-400 text-center py-2 text-sm"><F reading="たんご">単語</F>を<F reading="えら">選</F>んでください</p>
                 ) : (
-                  <div className="flex flex-col gap-1">
-                    {blockLines.map((line, lineIndex) => (
-                      <DndContext
-                        key={`dnd-line-${lineIndex}`}
-                        sensors={sensors}
-                        collisionDetection={closestCenter}
-                        onDragEnd={createHandleDragEnd(lineIndex)}
-                      >
-                        <SortableContext
-                          items={line.blocks.map((b) => `line-${lineIndex}-block-${b.globalIndex}`)}
-                          strategy={horizontalListSortingStrategy}
-                        >
-                          <div className="flex flex-wrap gap-1 items-center min-h-[36px]">
-                            {line.blocks.map(({ block, globalIndex }) => (
-                              <LineDraggableBlock
-                                key={`line-${lineIndex}-block-${globalIndex}`}
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={selectedBlocks.map((_, i) => `block-${i}`)}
+                      strategy={horizontalListSortingStrategy}
+                    >
+                      <div className="flex flex-col gap-1">
+                        {blockLines.map((line, lineIndex) => (
+                          <div key={`line-${lineIndex}`} className="flex flex-wrap gap-1 items-center min-h-[36px]">
+                            {line.blocks.map(({ block, index }) => (
+                              <DraggableBlock
+                                key={`block-${index}`}
                                 block={block}
-                                globalIndex={globalIndex}
-                                lineIndex={lineIndex}
+                                index={index}
                                 onRemove={removeBlock}
                               />
                             ))}
                           </div>
-                        </SortableContext>
-                      </DndContext>
-                    ))}
-                  </div>
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
                 )}
               </div>
             </div>

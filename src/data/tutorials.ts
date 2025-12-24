@@ -763,6 +763,48 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "4-5",
+    characterName: "ジャッジ",
+    characterEmoji: "⚖️",
+    characterImage: "/images/characters/judge.png",
+    slides: [
+      {
+        title: "論理演算子とは",
+        content: "複数の条件を組み合わせたい時がある。例えば「HPが50以上 かつ MPが30以上」のような条件だ。そんな時に使うのが論理演算子だ。",
+        characterMessage: "論理演算子は条件を組み合わせるための道具である。",
+      },
+      {
+        title: "and（かつ）",
+        content: "and は「両方の条件がTrue」の時だけTrueになる。例: hp >= 50 and mp >= 30。HPもMPも条件を満たさないと、Trueにならない。",
+        characterMessage: "and は厳格だ。両方とも満たさなければならない。",
+        codeExample: {
+          good: "if hp >= 50 and mp >= 30:\n    print(\"戦える\")",
+        },
+      },
+      {
+        title: "or（または）",
+        content: "or は「どちらかの条件がTrue」ならTrueになる。例: hp > 0 or mp > 0。どちらか一方でも条件を満たせば、Trueになる。",
+        characterMessage: "or は柔軟だ。どちらか一つでも満たせばよい。",
+        codeExample: {
+          good: "if hp > 0 or mp > 0:\n    print(\"まだ動ける\")",
+        },
+      },
+      {
+        title: "not（〜でない）",
+        content: "not は条件の結果を反転させる。True は False に、False は True になる。例: not isGameOver は「ゲームオーバーでない」という意味だ。",
+        characterMessage: "not は反転の力を持つ。TrueとFalseを逆転させる。",
+        codeExample: {
+          good: "if not isGameOver:\n    print(\"続行\")",
+        },
+      },
+      {
+        title: "論理演算子を使ってみよう",
+        content: "では、and, or, not を使って複雑な条件を作ってみよう。複数の条件を組み合わせて判定を下すのだ。",
+        characterMessage: "さあ、始めよう。論理演算子の力を見せてもらおう。",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {
