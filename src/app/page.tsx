@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { lessons } from "@/data/lessons";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import type { ReactNode } from "react";
 import { 
   getProgress, 
   getLevelInfo, 
@@ -429,64 +430,135 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 道のり表示（RPG風） */}
+      {/* 道のり表示（ゲーミフィケーション風） */}
       <div className="mt-8 px-4">
         <div className="max-w-md mx-auto">
           {/* すべてのユニット番号を取得 */}
-          {(() => {
+          {useMemo(() => {
             const allUnits = Array.from(new Set(lessons.map(l => l.unitNumber))).sort((a, b) => a - b);
             const firstRowUnits = allUnits.slice(0, 3);
             const secondRowUnits = allUnits.slice(3);
             
+            // ユニットポイントクリック時の処理
+            const handleUnitPointClick = (unit: number) => {
+              // そのユニットに属するレッスンで、完了したレッスンを探す
+              const completedLessonsInUnit = lessons
+                .map((lesson, index) => ({ lesson, index }))
+                .filter(({ lesson }) => lesson.unitNumber === unit && completedLessons.includes(lesson.id));
+              
+              // 完了したレッスンがある場合、最初のレッスンにカードを切り替え
+              if (completedLessonsInUnit.length > 0) {
+                const targetIndex = completedLessonsInUnit[0].index;
+                setCurrentIndex(targetIndex);
+              }
+            };
+
+            // ユニットポイントコンポーネント（ヘルパー関数）
+            const renderUnitPoint = (unit: number, unitLessons: typeof lessons, completedInUnit: number, isUnitComplete: boolean, unitProgress: number, unitName: ReactNode) => {
+              // 星評価を計算（0-3つ）
+              let starCount = 0;
+              if (isUnitComplete) {
+                starCount = 3;
+              } else if (completedInUnit > 0) {
+                starCount = Math.max(1, Math.floor((completedInUnit / unitLessons.length) * 2) + 1);
+              } else {
+                starCount = 0;
+              }
+
+              // ユニットごとの色を定義（レッスンカードと同じ）
+              const unitColors = [
+                "from-purple-400 to-purple-500",  // unit 1
+                "from-pink-400 to-pink-500",      // unit 2
+                "from-blue-400 to-blue-500",      // unit 3
+                "from-green-400 to-green-500",    // unit 4
+                "from-orange-400 to-orange-500",  // unit 5
+              ];
+              const unitColorIndex = (unit - 1) % unitColors.length;
+              const unitColor = unitColors[unitColorIndex];
+
+              // そのユニットに完了したレッスンがあるかチェック
+              const hasCompletedLessons = completedLessons.some(lessonId => 
+                lessons.find(l => l.id === lessonId)?.unitNumber === unit
+              );
+
+              return (
+                <div 
+                  key={unit} 
+                  className={`flex flex-col items-center group relative ${hasCompletedLessons ? 'cursor-pointer' : ''}`}
+                  onClick={() => hasCompletedLessons && handleUnitPointClick(unit)}
+                >
+                  {/* ホバー時のツールチップ */}
+                  <div className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 invisible group-hover:visible z-10 px-3 py-2 bg-gray-200 text-gray-800 text-xs rounded-lg shadow-lg whitespace-nowrap transition-all duration-200 pointer-events-none group-hover:pointer-events-auto border border-gray-300">
+                    <div className="font-semibold mb-1">{unitName}</div>
+                    <div>進捗: {completedInUnit}/{unitLessons.length}完了</div>
+                    <div className="text-xs text-gray-600 mt-0.5">{unitProgress.toFixed(0)}%</div>
+                    {/* ツールチップの矢印 */}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-200"></div>
+                  </div>
+
+                  {/* ユニットポイント */}
+                  <div className={`w-12 h-12 rounded-full flex flex-col items-center justify-center font-bold text-xs shadow-lg transition-all duration-300 ease-out ${hasCompletedLessons ? 'group-hover:scale-110' : ''} ${
+                    isUnitComplete
+                      ? `bg-gradient-to-br ${unitColor} text-white`
+                      : completedInUnit > 0
+                      ? "bg-gradient-to-br from-yellow-400 to-amber-500 text-white"
+                      : "bg-gradient-to-br from-gray-300 to-gray-400 text-gray-600"
+                  }`}>
+                    {isUnitComplete ? (
+                      <span className="text-lg">✓</span>
+                    ) : (
+                      <span>{unit}</span>
+                    )}
+                  </div>
+
+                  {/* 星評価 */}
+                  <div className="flex gap-0.5 mt-1">
+                    {[1, 2, 3].map((star) => (
+                      <span
+                        key={star}
+                        className={`text-xs transition-all duration-300 ${
+                          star <= starCount
+                            ? isUnitComplete
+                              ? "text-yellow-300"
+                              : "text-yellow-400"
+                            : "text-gray-300"
+                        }`}
+                      >
+                        ⭐
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* 進捗パーセンテージ */}
+                  <span className="text-xs text-gray-500 mt-0.5 font-medium">
+                    {unitProgress.toFixed(0)}%
+                  </span>
+
+                  {/* ユニット名 */}
+                  <span className="text-xs text-gray-500 mt-1">
+                    {unitName}
+                  </span>
+                </div>
+              );
+            };
+
             return (
               <div className="space-y-6">
                 {/* 1行目: ユニット1-3 */}
                 <div className="relative">
-                  {/* 道のライン */}
-                  <div className="absolute top-1/2 left-0 right-0 h-2 bg-gray-200 rounded-full -translate-y-1/2" />
-                  {firstRowUnits.length > 0 && (() => {
-                    // 1行目のユニットの進捗を計算
-                    const firstRowCompleted = lessons.filter(l => 
-                      firstRowUnits.includes(l.unitNumber) && completedLessons.includes(l.id)
-                    ).length;
-                    const firstRowTotal = lessons.filter(l => firstRowUnits.includes(l.unitNumber)).length;
-                    const firstRowProgress = firstRowTotal > 0 ? (firstRowCompleted / firstRowTotal) * 100 : 0;
-                    
-                    return (
-                      <div 
-                        className="absolute top-1/2 left-0 h-2 bg-gradient-to-r from-green-400 to-green-500 rounded-full -translate-y-1/2 transition-all"
-                        style={{ 
-                          width: `${firstRowProgress}%`
-                        }}
-                      />
-                    );
-                  })()}
-                  
                   {/* ポイント */}
                   <div className="relative flex justify-between">
                     {firstRowUnits.map((unit) => {
                       const unitLessons = lessons.filter(l => l.unitNumber === unit);
                       const completedInUnit = unitLessons.filter(l => completedLessons.includes(l.id)).length;
                       const isUnitComplete = completedInUnit === unitLessons.length && unitLessons.length > 0;
+                      const unitProgress = unitLessons.length > 0 ? (completedInUnit / unitLessons.length) * 100 : 0;
                       
-                      return (
-                        <div key={unit} className="flex flex-col items-center">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow ${
-                            isUnitComplete
-                              ? "bg-green-500 text-white"
-                              : completedInUnit > 0
-                              ? "bg-yellow-400 text-white"
-                              : "bg-gray-300 text-gray-600"
-                          }`}>
-                            {isUnitComplete ? "✓" : unit}
-                          </div>
-                          <span className="text-xs text-gray-500 mt-1">
-                            {unit === 1 ? "print" : 
-                             unit === 2 ? <FW word="変数" /> : 
-                             unit === 3 ? <>データ<F reading="がた">型</F></> : ""}
-                          </span>
-                        </div>
-                      );
+                      const unitName = unit === 1 ? "print" :
+                                      unit === 2 ? <FW word="変数" /> :
+                                      unit === 3 ? <>データ<F reading="がた">型</F></> : "";
+                      
+                      return renderUnitPoint(unit, unitLessons, completedInUnit, isUnitComplete, unitProgress, unitName);
                     })}
                   </div>
                 </div>
@@ -494,52 +566,41 @@ export default function Home() {
                 {/* 2行目: ユニット4-5（折り返し） */}
                 {secondRowUnits.length > 0 && (
                   <div className="relative">
-                    {/* 折り返しの接続線（1行目の右端から下へ、そして左へ、2行目の左端から上へ） */}
-                    {/* 1行目右端から下への線 */}
-                    <div className="absolute -top-6 right-0 w-0.5 h-6 bg-gray-200" />
-                    {/* 横線（右から左へ） */}
-                    <div className="absolute -top-6 right-0 left-0 h-0.5 bg-gray-200" />
-                    {/* 2行目左端から上への線 */}
-                    <div className="absolute -top-6 left-0 w-0.5 h-6 bg-gray-200" />
-                    
-                    {/* 道のライン */}
-                    <div className="absolute top-1/2 left-0 right-0 h-2 bg-gray-200 rounded-full -translate-y-1/2" />
-                    <div 
-                      className="absolute top-1/2 left-0 h-2 bg-gradient-to-r from-green-400 to-green-500 rounded-full -translate-y-1/2 transition-all"
-                      style={{ width: `${(completedLessons.length / lessons.length) * 100}%` }}
-                    />
-                    
                     {/* ポイント */}
                     <div className="relative flex justify-between">
+                      {/* ユニット4を左に配置 */}
                       {secondRowUnits.map((unit) => {
+                        if (unit === 5) return null; // ユニット5は後で配置
+                        
                         const unitLessons = lessons.filter(l => l.unitNumber === unit);
                         const completedInUnit = unitLessons.filter(l => completedLessons.includes(l.id)).length;
                         const isUnitComplete = completedInUnit === unitLessons.length && unitLessons.length > 0;
+                        const unitProgress = unitLessons.length > 0 ? (completedInUnit / unitLessons.length) * 100 : 0;
                         
-                        return (
-                          <div key={unit} className="flex flex-col items-center">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow ${
-                              isUnitComplete
-                                ? "bg-green-500 text-white"
-                                : completedInUnit > 0
-                                ? "bg-yellow-400 text-white"
-                                : "bg-gray-300 text-gray-600"
-                            }`}>
-                              {isUnitComplete ? "✓" : unit}
-                            </div>
-                            <span className="text-xs text-gray-500 mt-1">
-                              {unit === 4 ? <>条件<F reading="ぶんき">分岐</F></> : 
-                               unit === 5 ? "ループ" : ""}
-                            </span>
-                          </div>
-                        );
+                        const unitName = unit === 4 ? <>条件<F reading="ぶんき">分岐</F></> : "";
+                        
+                        return renderUnitPoint(unit, unitLessons, completedInUnit, isUnitComplete, unitProgress, unitName);
                       })}
+                      
+                      {/* 中央にユニット5を配置（ユニット2とx軸を合わせる） */}
+                      {secondRowUnits.includes(5) && (() => {
+                        const unit = 5;
+                        const unitLessons = lessons.filter(l => l.unitNumber === unit);
+                        const completedInUnit = unitLessons.filter(l => completedLessons.includes(l.id)).length;
+                        const isUnitComplete = completedInUnit === unitLessons.length && unitLessons.length > 0;
+                        const unitProgress = unitLessons.length > 0 ? (completedInUnit / unitLessons.length) * 100 : 0;
+                        
+                        return renderUnitPoint(unit, unitLessons, completedInUnit, isUnitComplete, unitProgress, "ループ");
+                      })()}
+                      
+                      {/* 右側のスペーサー（ユニット3と同じ位置を空ける） */}
+                      <div className="w-12"></div>
                     </div>
                   </div>
                 )}
               </div>
             );
-          })()}
+          }, [completedLessons, lessons])}
         </div>
       </div>
 
