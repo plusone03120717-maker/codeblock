@@ -119,14 +119,23 @@ export default function Home() {
       localStorage.removeItem(`lesson-${id}-retryIndex`);
     });
 
-    const progress = getProgress();
+    // 新しい空の進捗データを設定
     const newProgress = {
-      ...progress,
+      totalXP: 0,
       completedLessons: [],
+      currentStreak: 0,
+      highestStreak: 0,
     };
     localStorage.setItem("codeblock-progress", JSON.stringify(newProgress));
+    
+    // 状態をリセット
+    setTotalXP(0);
     setCompletedLessons([]);
     setCurrentIndex(0);
+    setLevelInfo(getLevelInfo(0));
+    setLevelProgress(getLevelProgress(0));
+    setXpToNext(getXPToNextLevel(0));
+    setHighestStreak(0);
     alert("進捗をリセットしました！");
   };
 
@@ -388,7 +397,9 @@ export default function Home() {
                   ユニット {lesson.unitNumber}: {
                     lesson.unitNumber === 1 ? <>print<FW word="関数" /></> :
                     lesson.unitNumber === 2 ? <FW word="変数" /> :
-                    lesson.unitNumber === 3 ? <>データ<F reading="がた">型</F></> : ""
+                    lesson.unitNumber === 3 ? <>データ<F reading="がた">型</F></> :
+                    lesson.unitNumber === 4 ? <>条件<F reading="ぶんき">分岐</F></> :
+                    lesson.unitNumber === 5 ? "ループ" : ""
                   }
                 </p>
               </div>
@@ -421,40 +432,114 @@ export default function Home() {
       {/* 道のり表示（RPG風） */}
       <div className="mt-8 px-4">
         <div className="max-w-md mx-auto">
-          <div className="relative">
-            {/* 道のライン */}
-            <div className="absolute top-1/2 left-0 right-0 h-2 bg-gray-200 rounded-full -translate-y-1/2" />
-            <div 
-              className="absolute top-1/2 left-0 h-2 bg-gradient-to-r from-green-400 to-green-500 rounded-full -translate-y-1/2 transition-all"
-              style={{ width: `${(completedLessons.length / lessons.length) * 100}%` }}
-            />
+          {/* すべてのユニット番号を取得 */}
+          {(() => {
+            const allUnits = Array.from(new Set(lessons.map(l => l.unitNumber))).sort((a, b) => a - b);
+            const firstRowUnits = allUnits.slice(0, 3);
+            const secondRowUnits = allUnits.slice(3);
             
-            {/* ポイント */}
-            <div className="relative flex justify-between">
-              {[1, 2, 3].map((unit) => {
-                const unitLessons = lessons.filter(l => l.unitNumber === unit);
-                const completedInUnit = unitLessons.filter(l => completedLessons.includes(l.id)).length;
-                const isUnitComplete = completedInUnit === unitLessons.length && unitLessons.length > 0;
-                
-                return (
-                  <div key={unit} className="flex flex-col items-center">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow ${
-                      isUnitComplete
-                        ? "bg-green-500 text-white"
-                        : completedInUnit > 0
-                        ? "bg-yellow-400 text-white"
-                        : "bg-gray-300 text-gray-600"
-                    }`}>
-                      {isUnitComplete ? "✓" : unit}
-                    </div>
-                    <span className="text-xs text-gray-500 mt-1">
-                      {unit === 1 ? "print" : unit === 2 ? <FW word="変数" /> : <>データ<F reading="がた">型</F></>}
-                    </span>
+            return (
+              <div className="space-y-6">
+                {/* 1行目: ユニット1-3 */}
+                <div className="relative">
+                  {/* 道のライン */}
+                  <div className="absolute top-1/2 left-0 right-0 h-2 bg-gray-200 rounded-full -translate-y-1/2" />
+                  {firstRowUnits.length > 0 && (() => {
+                    // 1行目のユニットの進捗を計算
+                    const firstRowCompleted = lessons.filter(l => 
+                      firstRowUnits.includes(l.unitNumber) && completedLessons.includes(l.id)
+                    ).length;
+                    const firstRowTotal = lessons.filter(l => firstRowUnits.includes(l.unitNumber)).length;
+                    const firstRowProgress = firstRowTotal > 0 ? (firstRowCompleted / firstRowTotal) * 100 : 0;
+                    
+                    return (
+                      <div 
+                        className="absolute top-1/2 left-0 h-2 bg-gradient-to-r from-green-400 to-green-500 rounded-full -translate-y-1/2 transition-all"
+                        style={{ 
+                          width: `${firstRowProgress}%`
+                        }}
+                      />
+                    );
+                  })()}
+                  
+                  {/* ポイント */}
+                  <div className="relative flex justify-between">
+                    {firstRowUnits.map((unit) => {
+                      const unitLessons = lessons.filter(l => l.unitNumber === unit);
+                      const completedInUnit = unitLessons.filter(l => completedLessons.includes(l.id)).length;
+                      const isUnitComplete = completedInUnit === unitLessons.length && unitLessons.length > 0;
+                      
+                      return (
+                        <div key={unit} className="flex flex-col items-center">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow ${
+                            isUnitComplete
+                              ? "bg-green-500 text-white"
+                              : completedInUnit > 0
+                              ? "bg-yellow-400 text-white"
+                              : "bg-gray-300 text-gray-600"
+                          }`}>
+                            {isUnitComplete ? "✓" : unit}
+                          </div>
+                          <span className="text-xs text-gray-500 mt-1">
+                            {unit === 1 ? "print" : 
+                             unit === 2 ? <FW word="変数" /> : 
+                             unit === 3 ? <>データ<F reading="がた">型</F></> : ""}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
-                );
-              })}
-            </div>
-          </div>
+                </div>
+
+                {/* 2行目: ユニット4-5（折り返し） */}
+                {secondRowUnits.length > 0 && (
+                  <div className="relative">
+                    {/* 折り返しの接続線（1行目の右端から下へ、そして左へ、2行目の左端から上へ） */}
+                    {/* 1行目右端から下への線 */}
+                    <div className="absolute -top-6 right-0 w-0.5 h-6 bg-gray-200" />
+                    {/* 横線（右から左へ） */}
+                    <div className="absolute -top-6 right-0 left-0 h-0.5 bg-gray-200" />
+                    {/* 2行目左端から上への線 */}
+                    <div className="absolute -top-6 left-0 w-0.5 h-6 bg-gray-200" />
+                    
+                    {/* 道のライン */}
+                    <div className="absolute top-1/2 left-0 right-0 h-2 bg-gray-200 rounded-full -translate-y-1/2" />
+                    <div 
+                      className="absolute top-1/2 left-0 h-2 bg-gradient-to-r from-green-400 to-green-500 rounded-full -translate-y-1/2 transition-all"
+                      style={{ width: `${(completedLessons.length / lessons.length) * 100}%` }}
+                    />
+                    
+                    {/* ポイント */}
+                    <div className="relative flex justify-between">
+                      {secondRowUnits.map((unit) => {
+                        const unitLessons = lessons.filter(l => l.unitNumber === unit);
+                        const completedInUnit = unitLessons.filter(l => completedLessons.includes(l.id)).length;
+                        const isUnitComplete = completedInUnit === unitLessons.length && unitLessons.length > 0;
+                        
+                        return (
+                          <div key={unit} className="flex flex-col items-center">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow ${
+                              isUnitComplete
+                                ? "bg-green-500 text-white"
+                                : completedInUnit > 0
+                                ? "bg-yellow-400 text-white"
+                                : "bg-gray-300 text-gray-600"
+                            }`}>
+                              {isUnitComplete ? "✓" : unit}
+                            </div>
+                            <span className="text-xs text-gray-500 mt-1">
+                              {unit === 4 ? <>条件<F reading="ぶんき">分岐</F></> : 
+                               unit === 5 ? "ループ" : ""}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </div>
       </div>
 
