@@ -200,6 +200,14 @@ export const lessons: Lesson[] = [
     description: "for文とrange()の基本を学ぼう",
     difficulty: "かんたん",
   },
+  {
+    id: "5-2",
+    unitNumber: 5,
+    subNumber: 2,
+    title: "何回繰り返す？",
+    description: "range()の数字を変えてみよう",
+    difficulty: "かんたん",
+  },
 ]
 
 // レッスンIDでレッスンを取得

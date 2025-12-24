@@ -905,6 +905,40 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "5-2",
+    characterName: "ルーピー",
+    characterEmoji: "🐹",
+    characterImage: "/images/characters/cody.png",
+    slides: [
+      {
+        title: "range()のヒミツ",
+        content: "range(3)で3回、range(5)で5回繰り返せたよね！そう、カッコの中の数字が繰り返す回数なんだ！この数字を変えれば、何回でも繰り返せるよ！",
+        characterMessage: "range(3)で3回、range(5)で5回繰り返せたよね！カッコの中の数字が繰り返す回数なんだ！",
+      },
+      {
+        title: "いろんな回数",
+        content: "range(1) → 1回だけ\nrange(10) → 10回\nrange(100) → 100回だって楽勝！回し車と同じで、何周でも回れるんだ！",
+        characterMessage: "range(1)で1回、range(10)で10回、range(100)で100回だって楽勝だよ！回し車と同じで、何周でも回れるんだ！",
+        codeExample: {
+          good: "for i in range(1):\n    print(\"スタート\")\n# 1回だけ\n\nfor i in range(10):\n    print(\"やったー\")\n# 10回繰り返す",
+        },
+      },
+      {
+        title: "0回ってある？",
+        content: "じゃあ range(0) は？実は0回、つまり何も実行されないんだ！ちょっと寂しいけど、そういう時もあるよね",
+        characterMessage: "range(0)は0回、つまり何も実行されないんだ！ちょっと寂しいけど、そういう時もあるよね！",
+        codeExample: {
+          good: "for i in range(0):\n    print(\"Hello\")\n# 何も出力されない（0回）",
+        },
+      },
+      {
+        title: "回数ぴったりに挑戦！",
+        content: "さあ、いろんな回数で繰り返してみよう！1回から10回まで、ぴったり合わせてね！準備はいい？ いっくよー！",
+        characterMessage: "さあ、いろんな回数で繰り返してみよう！1回から10回まで、ぴったり合わせてね！準備はいい？ いっくよー！もう一回！",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {
