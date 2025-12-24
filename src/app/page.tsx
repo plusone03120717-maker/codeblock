@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { lessons } from "@/data/lessons";
+import { getTutorial } from "@/data/tutorials";
 import { useState, useEffect, useMemo } from "react";
 import type { ReactNode } from "react";
 import { 
@@ -471,6 +473,14 @@ export default function Home() {
                 lessons.find(l => l.id === lessonId)?.unitNumber === unit
               );
 
+              // ユニットが完了した場合、最初のレッスンのキャラクター画像を取得
+              let characterImage: string | undefined;
+              if (isUnitComplete && unitLessons.length > 0) {
+                const firstLesson = unitLessons[0];
+                const tutorial = getTutorial(firstLesson.id);
+                characterImage = tutorial?.characterImage;
+              }
+
               return (
                 <div 
                   key={unit} 
@@ -488,13 +498,20 @@ export default function Home() {
                   {/* ユニットポイント */}
                   <div className={`w-12 h-12 rounded-full flex flex-col items-center justify-center font-bold text-xs shadow-lg transition-all duration-300 ease-out ${hasCompletedLessons ? 'group-hover:scale-110' : ''} ${
                     isUnitComplete
-                      ? `bg-gradient-to-br ${unitColor} text-white`
+                      ? `bg-gradient-to-br ${unitColor} text-white overflow-hidden`
                       : completedInUnit > 0
                       ? "bg-gradient-to-br from-yellow-400 to-amber-500 text-white"
                       : "bg-gradient-to-br from-gray-300 to-gray-400 text-gray-600"
                   }`}>
-                    {isUnitComplete ? (
-                      <span className="text-lg">✓</span>
+                    {isUnitComplete && characterImage ? (
+                      <Image
+                        src={characterImage}
+                        alt="Character"
+                        width={48}
+                        height={48}
+                        className="object-contain w-full h-full"
+                        unoptimized
+                      />
                     ) : (
                       <span>{unit}</span>
                     )}
