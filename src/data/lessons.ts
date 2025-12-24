@@ -216,6 +216,14 @@ export const lessons: Lesson[] = [
     description: "ループカウンターを出力してみよう",
     difficulty: "かんたん",
   },
+  {
+    id: "5-4",
+    unitNumber: 5,
+    subNumber: 4,
+    title: "繰り返しで計算しよう",
+    description: "ループで合計を求めてみよう",
+    difficulty: "かんたん",
+  },
 ]
 
 // レッスンIDでレッスンを取得

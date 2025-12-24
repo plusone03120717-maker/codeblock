@@ -981,6 +981,49 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "5-4",
+    characterName: "ルーピー",
+    characterEmoji: "🐹",
+    characterImage: "/images/characters/cody.png",
+    slides: [
+      {
+        title: "ループで計算できるよ！",
+        content: "ループを使うと、繰り返しながら計算することができます。例えば、0から4までの合計を求めたりできます！",
+        characterMessage: "ループって繰り返すだけじゃないんだ！ 計算もできるんだよ！",
+      },
+      {
+        title: "合計を求めてみよう！",
+        content: "変数totalを用意して、ループの中で total = total + i と書くと、iの値が毎回totalに足されていきます。",
+        characterMessage: "total = total + i って書くと、iの値をどんどん足していけるんだ！",
+        codeExample: {
+          good: "total = 0\nfor i in range(3):\n    total = total + i\nprint(total)",
+        },
+      },
+      {
+        title: "どうやって計算されるの？",
+        content: "total=0から始めて、i=0のとき total=0+0=0、i=1のとき total=0+1=1、i=2のとき total=1+2=3 となります。",
+        characterMessage: "range(3)だと、total は 0 → 1 → 3 って変わるよ！ 0+0=0、0+1=1、1+2=3 だね！",
+        codeExample: {
+          good: "total = 0\nfor i in range(3):\n    total = total + i\n    # i=0: total = 0+0 = 0\n    # i=1: total = 0+1 = 1\n    # i=2: total = 1+2 = 3\nprint(total)  # 結果: 3",
+        },
+      },
+      {
+        title: "計算結果を出力しよう！",
+        content: "print(total)はループの外（インデントなし）に書きます。ループが全部終わった後の合計値が出力されます。",
+        characterMessage: "ループの外で print(total) すると、最終結果が出るよ！",
+        codeExample: {
+          good: "total = 0\nfor i in range(3):\n    total = total + i\nprint(total)  # ループの外",
+          bad: "total = 0\nfor i in range(3):\n    total = total + i\n    print(total)  # ループの中（間違い）",
+        },
+      },
+      {
+        title: "計算に挑戦！",
+        content: "変数totalを使って、iの合計を求めてみましょう。ループの外でprint(total)するのを忘れずに！",
+        characterMessage: "さあ、ループで計算してみよう！ 準備はいい？ いっくよー！",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {
