@@ -176,6 +176,14 @@ export const lessons: Lesson[] = [
     description: "and, or, notで条件を組み合わせよう",
     difficulty: "ふつう",
   },
+  {
+    id: "4-6",
+    unitNumber: 4,
+    subNumber: 6,
+    title: "条件分岐クイズ！",
+    description: "コードを読んで出力を予測しよう",
+    difficulty: "ふつう",
+  },
 ]
 
 // レッスンIDでレッスンを取得

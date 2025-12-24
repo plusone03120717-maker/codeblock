@@ -805,6 +805,29 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "4-6",
+    characterName: "ジャッジ",
+    characterEmoji: "⚖️",
+    characterImage: "/images/characters/judge.png",
+    slides: [
+      {
+        title: "総復習の時間だ",
+        content: "ここまでif、elif、else、論理演算子を学んできた。条件分岐の基本は身についたはずだ。最後に、総復習のクイズに挑戦しよう。",
+        characterMessage: "総復習の時間だ。これまでの知識を試す。",
+      },
+      {
+        title: "クイズ形式",
+        content: "コードを読んで、何が出力されるか予測する。選択肢の中から正しい答えを選ぶのだ。条件をよく読み、判定を下そう。",
+        characterMessage: "コードを読んで判定を下す。冷静に。",
+      },
+      {
+        title: "全問正解を目指そう",
+        content: "では、最終テストを始めよう。落ち着いて、一つずつ判定するのだ。",
+        characterMessage: "健闘を祈る。全問正解を目指せ。",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {

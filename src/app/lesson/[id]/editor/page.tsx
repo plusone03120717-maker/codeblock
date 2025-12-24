@@ -1236,7 +1236,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                   <pre className="text-yellow-400 font-mono text-sm">{currentMission.prefixCode}</pre>
                 </div>
               )}
-              {!currentMission?.hideExpectedOutput && (
+              {/* 期待される出力 - クイズ形式以外の場合のみ表示 */}
+              {currentMission?.type !== "quiz" && !currentMission?.hideExpectedOutput && (
                 <div className="bg-gray-800 rounded-lg p-2 mt-2">
                   <p className="text-xs text-gray-400 mb-1"><F reading="きたい">期待</F>される<F reading="しゅつりょく">出力</F>:</p>
                   <pre className="text-green-400 font-mono text-sm">
