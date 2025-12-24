@@ -455,16 +455,6 @@ export default function Home() {
 
             // ユニットポイントコンポーネント（ヘルパー関数）
             const renderUnitPoint = (unit: number, unitLessons: typeof lessons, completedInUnit: number, isUnitComplete: boolean, unitProgress: number, unitName: ReactNode) => {
-              // 星評価を計算（0-3つ）
-              let starCount = 0;
-              if (isUnitComplete) {
-                starCount = 3;
-              } else if (completedInUnit > 0) {
-                starCount = Math.max(1, Math.floor((completedInUnit / unitLessons.length) * 2) + 1);
-              } else {
-                starCount = 0;
-              }
-
               // ユニットごとの色を定義（レッスンカードと同じ）
               const unitColors = [
                 "from-purple-400 to-purple-500",  // unit 1
@@ -491,7 +481,6 @@ export default function Home() {
                   <div className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 invisible group-hover:visible z-10 px-3 py-2 bg-gray-200 text-gray-800 text-xs rounded-lg shadow-lg whitespace-nowrap transition-all duration-200 pointer-events-none group-hover:pointer-events-auto border border-gray-300">
                     <div className="font-semibold mb-1">{unitName}</div>
                     <div>進捗: {completedInUnit}/{unitLessons.length}完了</div>
-                    <div className="text-xs text-gray-600 mt-0.5">{unitProgress.toFixed(0)}%</div>
                     {/* ツールチップの矢印 */}
                     <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-200"></div>
                   </div>
@@ -510,29 +499,6 @@ export default function Home() {
                       <span>{unit}</span>
                     )}
                   </div>
-
-                  {/* 星評価 */}
-                  <div className="flex gap-0.5 mt-1">
-                    {[1, 2, 3].map((star) => (
-                      <span
-                        key={star}
-                        className={`text-xs transition-all duration-300 ${
-                          star <= starCount
-                            ? isUnitComplete
-                              ? "text-yellow-300"
-                              : "text-yellow-400"
-                            : "text-gray-300"
-                        }`}
-                      >
-                        ⭐
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* 進捗パーセンテージ */}
-                  <span className="text-xs text-gray-500 mt-0.5 font-medium">
-                    {unitProgress.toFixed(0)}%
-                  </span>
 
                   {/* ユニット名 */}
                   <span className="text-xs text-gray-500 mt-1">
