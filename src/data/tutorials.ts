@@ -177,6 +177,40 @@ export const tutorials: LessonTutorial[] = [
     characterImage: "/images/characters/cody.png",
     slides: [
       {
+        title: "文字列を繰り返そう",
+        content: "文字列に「*」と数字を使うと、文字列を繰り返すことができるよ！",
+        characterMessage: "文字列の繰り返しをマスターしよう！",
+      },
+      {
+        title: "文字列繰り返しの書き方",
+        content: "「文字列 * 数字」で、文字列を数字の回数だけ繰り返すことができるんだ。",
+        characterMessage: "\"Hi\" * 3 で \"HiHiHi\" になるよ！",
+        codeExample: {
+          good: "print(\"Hi\" * 3)  # 結果: HiHiHi",
+        },
+      },
+      {
+        title: "記号を繰り返そう",
+        content: "記号やマークを繰り返して、飾りを作ることもできるよ！",
+        characterMessage: "\"*\" * 5 で \"*****\" になるんだ！",
+        codeExample: {
+          good: "print(\"*\" * 5)  # 結果: *****",
+        },
+      },
+      {
+        title: "さあ、挑戦だ！",
+        content: "文字列を繰り返すミッションに挑戦しよう！",
+        characterMessage: "準備はいいか？やってみよう！",
+      },
+    ],
+  },
+  {
+    lessonId: "1-6",
+    characterName: "コーディ",
+    characterEmoji: "🐍",
+    characterImage: "/images/characters/cody.png",
+    slides: [
+      {
         title: "余りを計算しよう",
         content: "「%」を使うと、割り算の余りを求めることができるよ！",
         characterMessage: "余りの計算はプログラミングでよく使うんだ！",
@@ -205,7 +239,7 @@ export const tutorials: LessonTutorial[] = [
     ],
   },
   {
-    lessonId: "1-6",
+    lessonId: "1-7",
     characterName: "コーディ",
     characterEmoji: "🐍",
     characterImage: "/images/characters/cody.png",
@@ -589,7 +623,7 @@ export const tutorials: LessonTutorial[] = [
   {
     lessonId: "4-1",
     characterName: "ジャッジ",
-    characterEmoji: "🦉",
+    characterEmoji: "⚖️",
     characterImage: "/images/characters/judge.png",
     slides: [
       {
@@ -640,7 +674,7 @@ export const tutorials: LessonTutorial[] = [
   {
     lessonId: "4-2",
     characterName: "ジャッジ",
-    characterEmoji: "🦉",
+    characterEmoji: "⚖️",
     characterImage: "/images/characters/judge.png",
     slides: [
       {
@@ -682,7 +716,7 @@ export const tutorials: LessonTutorial[] = [
   {
     lessonId: "4-3",
     characterName: "ジャッジ",
-    characterEmoji: "🦉",
+    characterEmoji: "⚖️",
     characterImage: "/images/characters/judge.png",
     slides: [
       {
@@ -724,7 +758,7 @@ export const tutorials: LessonTutorial[] = [
   {
     lessonId: "4-4",
     characterName: "ジャッジ",
-    characterEmoji: "🦉",
+    characterEmoji: "⚖️",
     characterImage: "/images/characters/judge.png",
     slides: [
       {

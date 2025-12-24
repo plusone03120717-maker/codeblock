@@ -34,6 +34,11 @@ export default function LessonPage({ params }: LessonPageProps) {
 
   const lesson = lessonId ? getLesson(lessonId) : undefined;
   const tutorial = lessonId ? getTutorial(lessonId) : undefined;
+
+  // チュートリアルが変わったときにも画像エラーをリセット
+  useEffect(() => {
+    setImageError(false);
+  }, [tutorial]);
   const completed = lessonId ? isLessonCompleted(lessonId) : false;
 
   if (!lessonId) {
@@ -180,7 +185,11 @@ export default function LessonPage({ params }: LessonPageProps) {
                     width={112}
                     height={112}
                     className="object-contain"
-                    onError={() => setImageError(true)}
+                    unoptimized
+                    onError={() => {
+                      console.error("画像の読み込みエラー:", tutorial.characterImage);
+                      setImageError(true);
+                    }}
                   />
                 ) : (
                   <span className="text-4xl">{tutorial.characterEmoji}</span>

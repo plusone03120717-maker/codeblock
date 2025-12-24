@@ -314,6 +314,11 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   }, [missions, currentMissionId, isRetryMode, wrongMissionIds, retryIndex]);
   
   const tutorial = lessonId ? getTutorial(lessonId) : undefined;
+
+  // チュートリアルが変わったときにも画像エラーをリセット
+  useEffect(() => {
+    setImageError(false);
+  }, [tutorial]);
   
   // ブロックをランダムに並べ替える（重複除去）
   const availableBlocks = useMemo(() => {
@@ -888,6 +893,16 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         }
       }
 
+      // レッスン1-5（文字列を繰り返そう）の場合、文字列 * 数字のパターンを使っているかチェック
+      if (lessonId === "1-5") {
+        // 文字列（"..."または'...'）の後に * が来て、その後に数字が来るパターンをチェック
+        const hasStringMultiplyPattern = /["'][^"']*["']\s*\*\s*\d+/.test(code) || /\d+\s*\*\s*["'][^"']*["']/.test(code);
+        if (!hasStringMultiplyPattern) {
+          codeIsValid = false;
+          codeErrorMessage = "文字列と「*」と数字を使って文字列を繰り返してね！例: \"Hi\" * 3";
+        }
+      }
+
       // レッスン2（変数）の場合、変数を定義してprint内で使っているかチェック
       if (lessonId?.startsWith("2-")) {
         if (!code.includes("=")) {
@@ -1219,7 +1234,11 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                     width={96}
                     height={96}
                     className="object-contain"
-                    onError={() => setImageError(true)}
+                    unoptimized
+                    onError={() => {
+                      console.error("画像の読み込みエラー:", tutorial.characterImage);
+                      setImageError(true);
+                    }}
                   />
                 ) : (
                   <span className="text-4xl">{tutorial.characterEmoji}</span>
