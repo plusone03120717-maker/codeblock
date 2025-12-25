@@ -79,6 +79,7 @@ export default function LessonsPage() {
     4: <>条件<F reading="ぶんき">分岐</F></>,
     5: <>繰り返し</>,
     6: <>リスト</>,
+    7: <>関数の基本</>,
   };
 
   const unitColors: Record<number, string> = {
@@ -88,6 +89,7 @@ export default function LessonsPage() {
     4: "from-orange-400 to-orange-500",
     5: "from-green-400 to-green-500",
     6: "from-indigo-400 to-indigo-500",
+    7: "from-cyan-400 to-cyan-500",
   };
 
   return (

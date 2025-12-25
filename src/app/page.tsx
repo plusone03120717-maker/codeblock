@@ -351,6 +351,7 @@ export default function Home() {
                       "bg-orange-500",   // unit 4
                       "bg-green-500",    // unit 5
                       "bg-indigo-500",   // unit 6
+                      "bg-cyan-500",     // unit 7
                     ];
                     const colorIndex = (lesson.unitNumber - 1) % colors.length;
                     const lessonColor = colors[colorIndex];
@@ -402,6 +403,7 @@ export default function Home() {
               "from-orange-400 to-orange-500",
               "from-green-400 to-green-500",
               "from-indigo-400 to-indigo-500",
+              "from-cyan-400 to-cyan-500",
             ];
             const colorIndex = (lesson.unitNumber - 1) % colors.length;
             const bgColor = isLocked ? "from-gray-400 to-gray-500" : colors[colorIndex];
@@ -541,6 +543,7 @@ export default function Home() {
                 "from-orange-400 to-orange-500",  // unit 4
                 "from-green-400 to-green-500",    // unit 5
                 "from-indigo-400 to-indigo-500",  // unit 6
+                "from-cyan-400 to-cyan-500",      // unit 7
               ];
               const unitColorIndex = (unit - 1) % unitColors.length;
               const unitColor = unitColors[unitColorIndex];
@@ -620,7 +623,8 @@ export default function Home() {
                       
                       const unitName = unit === 1 ? "print" :
                                       unit === 2 ? <FW word="変数" /> :
-                                      unit === 3 ? <>データ<F reading="がた">型</F></> : "";
+                                      unit === 3 ? <>データ<F reading="がた">型</F></> :
+                                      unit === 7 ? <>関数の基本</> : "";
                       
                       return (
                         <div key={unit} className="flex justify-center">
@@ -645,7 +649,8 @@ export default function Home() {
                         const isUnitComplete = completedInUnit === unitLessons.length && unitLessons.length > 0;
                         const unitProgress = unitLessons.length > 0 ? (completedInUnit / unitLessons.length) * 100 : 0;
                         
-                        const unitName = unit === 4 ? <>条件<F reading="ぶんき">分岐</F></> : "";
+                        const unitName = unit === 4 ? <>条件<F reading="ぶんき">分岐</F></> :
+                                        unit === 7 ? <>関数の基本</> : "";
                         
                         return (
                           <div key={unit} className="flex justify-center">

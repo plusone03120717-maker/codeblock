@@ -1269,6 +1269,44 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "7-1",
+    characterName: "ニコ",
+    characterEmoji: "🐱",
+    slides: [
+      {
+        title: "ニコのキッチンへようこそ！",
+        content: "ニコはシェフのネコ。関数という「レシピ」を使って、プログラミングの料理を作る達人です。",
+        characterMessage: "いらっしゃい！僕はニコ、プログラミング料理のシェフさ！",
+      },
+      {
+        title: "関数って何？",
+        content: "関数は、処理をまとめたものです。同じ処理を何度も書かなくても、関数を呼び出すだけで実行できます。",
+        characterMessage: "関数はね、『レシピ』みたいなものなんだ。一度作れば、何度でも使えるよ！",
+      },
+      {
+        title: "defでレシピを作ろう",
+        content: "defは「define（定義する）」の略です。def say_hello(): のように書いて、その下にインデントして処理を書きます。",
+        characterMessage: "def 関数名(): って書くと、新しいレシピが作れるよ！",
+        codeExample: {
+          good: "def say_hello():\n    print(\"こんにちは\")",
+        },
+      },
+      {
+        title: "レシピの中身を書こう",
+        content: "関数の中に書いた処理は、関数を呼び出すまで実行されません。defで作って、後から呼び出して使います。",
+        characterMessage: "関数の中にprint()を書くと、呼び出した時に実行されるんだ！",
+        codeExample: {
+          good: "def say_hello():\n    print(\"こんにちは\")\n\n# 関数を呼び出す\nsay_hello()  # こんにちは",
+        },
+      },
+      {
+        title: "レシピを作ってみよう！",
+        content: "defを使って関数を作る練習をしましょう。まずは簡単なprintから始めます。",
+        characterMessage: "さあ、自分だけのレシピ（関数）を作ってみよう！ 材料を揃えて、調理開始だ！",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {

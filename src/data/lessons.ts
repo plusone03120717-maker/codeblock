@@ -288,6 +288,14 @@ export const lessons: Lesson[] = [
     description: "リストの知識を総復習しよう",
     difficulty: "ふつう",
   },
+  {
+    id: "7-1",
+    unitNumber: 7,
+    subNumber: 1,
+    title: "関数って何？",
+    description: "自分だけのレシピを作ろう",
+    difficulty: "かんたん",
+  },
 ]
 
 // レッスンIDでレッスンを取得
