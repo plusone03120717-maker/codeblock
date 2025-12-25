@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { lessons } from "@/data/lessons";
+import { lessons, getLesson } from "@/data/lessons";
 import { getTutorial } from "@/data/tutorials";
 import { useState, useEffect, useMemo } from "react";
 import type { ReactNode } from "react";
@@ -11,7 +11,9 @@ import {
   getProgress, 
   getLevelInfo, 
   getLevelProgress, 
-  getXPToNextLevel 
+  getXPToNextLevel,
+  getLastOpenedMission,
+  type LastOpenedMission
 } from "@/utils/progress";
 import Footer from "@/components/Footer";
 import { F, FW, FuriganaText } from "@/components/Furigana";
@@ -31,6 +33,8 @@ export default function Home() {
   const [resumeStatus, setResumeStatus] = useState<Record<string, boolean>>({});
   const [debugStartLessonId, setDebugStartLessonId] = useState("");
   const [debugStartMission, setDebugStartMission] = useState("");
+  const [lastOpenedMission, setLastOpenedMission] = useState<LastOpenedMission | null>(null);
+  const [unitImageErrors, setUnitImageErrors] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     const progress = getProgress();
@@ -65,6 +69,11 @@ export default function Home() {
       status[lesson.id] = savedMission !== null && parseInt(savedMission) > 0;
     });
     setResumeStatus(status);
+  }, []);
+
+  useEffect(() => {
+    const lastMission = getLastOpenedMission();
+    setLastOpenedMission(lastMission);
   }, []);
 
   const isLessonLocked = (lessonIndex: number): boolean => {
@@ -230,6 +239,21 @@ export default function Home() {
     setCurrentIndex(prev => Math.min(lessons.length - 1, prev + 1));
   };
 
+  // 経過時間を計算する関数
+  const getTimeAgo = (timestamp: number): string => {
+    const now = Date.now();
+    const diff = now - timestamp;
+    
+    const minutes = Math.floor(diff / (1000 * 60));
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    
+    if (days > 0) return `${days}日前`;
+    if (hours > 0) return `${hours}時間前`;
+    if (minutes > 0) return `${minutes}分前`;
+    return "たった今";
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100">
       {/* ヘッダー */}
@@ -237,84 +261,121 @@ export default function Home() {
         <h1 className="text-2xl font-bold text-center text-purple-800 mb-2">
           🐍 CodeBlock
         </h1>
-        
-        {/* ステータスカード */}
-        <div className="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-4 border-2 border-yellow-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center shadow">
-                <span className="text-lg font-bold text-white">{levelInfo.level}</span>
-              </div>
-              <div>
-                <p className="font-bold text-gray-800">{levelInfo.name}</p>
-                <p className="text-yellow-600 text-sm font-bold">{totalXP} XP</p>
-              </div>
-            </div>
-            {highestStreak > 0 && (
-              <div className="flex items-center gap-1 bg-orange-100 px-3 py-1 rounded-full">
-                <span>🔥</span>
-                <span className="font-bold text-orange-600 text-sm">{highestStreak}</span>
-              </div>
-            )}
-          </div>
-          <div className="mt-3">
-            <div className="flex justify-between text-xs text-gray-500 mb-1">
-              <span>Lv.{levelInfo.level}</span>
-              <span>次まで {xpToNext} XP</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-gradient-to-r from-yellow-400 to-orange-400 h-2 rounded-full transition-all"
-                style={{ width: `${levelProgress * 100}%` }}
-              />
-            </div>
-          </div>
-        </div>
       </div>
 
-      {/* 進捗マップ */}
-      <div className="px-4 mb-4">
-        <div className="max-w-md mx-auto">
-          <div className="flex justify-center items-center gap-1">
-            {lessons.map((lesson, index) => {
-              const isCompleted = completedLessons.includes(lesson.id);
-              const isCurrent = index === currentIndex;
-              const isLocked = isLessonLocked(index);
-              
-              // レッスンカードと同じ色を定義
-              const colors = [
-                "bg-purple-500",   // unit 1
-                "bg-pink-500",     // unit 2
-                "bg-blue-500",     // unit 3
-                "bg-green-500",    // unit 4
-                "bg-orange-500",   // unit 5
-              ];
-              const colorIndex = (lesson.unitNumber - 1) % colors.length;
-              const lessonColor = colors[colorIndex];
-              
-              return (
-                <div
-                  key={lesson.id}
-                  onClick={() => setCurrentIndex(index)}
-                  className={`w-3 h-3 rounded-full cursor-pointer transition-all ${
-                    isLocked
-                      ? "bg-gray-300"
-                      : isCompleted
-                      ? isCurrent
-                        ? `${lessonColor} scale-125`
-                        : lessonColor
-                      : "bg-gray-400"
-                  }`}
-                />
-              );
-            })}
-          </div>
-        </div>
-      </div>
+      {/* 2カラムレイアウト（デスクトップ） */}
+      <div className="px-4 pb-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* 左カラム：ステータスカード + 前回の続き（1/3幅） */}
+            <div className="space-y-4 md:col-span-1">
+              {/* ステータスカード */}
+              <div className="bg-white rounded-2xl shadow-lg p-4 border-2 border-yellow-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center shadow">
+                      <span className="text-lg font-bold text-white">{levelInfo.level}</span>
+                    </div>
+                    <div>
+                      <p className="font-bold text-gray-800">{levelInfo.name}</p>
+                      <p className="text-yellow-600 text-sm font-bold">{totalXP} XP</p>
+                    </div>
+                  </div>
+                  {highestStreak > 0 && (
+                    <div className="flex items-center gap-1 bg-orange-100 px-3 py-1 rounded-full">
+                      <span>🔥</span>
+                      <span className="font-bold text-orange-600 text-sm">{highestStreak}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="mt-3">
+                  <div className="flex justify-between text-xs text-gray-500 mb-1">
+                    <span>Lv.{levelInfo.level}</span>
+                    <span>次まで {xpToNext} XP</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-gradient-to-r from-yellow-400 to-orange-400 h-2 rounded-full transition-all"
+                      style={{ width: `${levelProgress * 100}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
 
-      {/* レッスンカルーセル */}
-      <div className="relative px-4">
-        <div className="max-w-md mx-auto">
+              {/* 最後に学習したミッションへのショートカット */}
+              {lastOpenedMission && (() => {
+                const lesson = getLesson(lastOpenedMission.lessonId);
+                if (!lesson) return null;
+
+                return (
+                  <div className="bg-gradient-to-r from-yellow-100 to-orange-100 border-2 border-yellow-300 rounded-2xl p-4 shadow-md">
+                    <div className="flex flex-col gap-3">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">📚</span>
+                        <div className="flex-1">
+                          <p className="text-sm text-gray-600">前回の続き</p>
+                          <p className="font-bold text-gray-800">
+                            レッスン {lastOpenedMission.lessonId} - ミッション {lastOpenedMission.missionId}
+                            {lesson ? ` 「${lesson.title}」` : ""}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">{getTimeAgo(lastOpenedMission.timestamp)}</p>
+                        </div>
+                      </div>
+                      <Link
+                        href={`/lesson/${lastOpenedMission.lessonId}/editor`}
+                        className="bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 text-white px-6 py-2 rounded-full font-bold shadow-md hover:shadow-lg transition-all text-center"
+                      >
+                        続きから学習する →
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* 右カラム：進捗マップ + レッスンカルーセル + ユニットボタン（2/3幅） */}
+            <div className="space-y-4 md:col-span-2">
+              {/* 進捗マップ */}
+              <div className="px-4">
+                <div className="flex justify-center items-center gap-1">
+                  {lessons.map((lesson, index) => {
+                    const isCompleted = completedLessons.includes(lesson.id);
+                    const isCurrent = index === currentIndex;
+                    const isLocked = isLessonLocked(index);
+                    
+                    // レッスンカードと同じ色を定義
+                    const colors = [
+                      "bg-purple-500",   // unit 1
+                      "bg-pink-500",     // unit 2
+                      "bg-blue-500",     // unit 3
+                      "bg-green-500",    // unit 4
+                      "bg-orange-500",   // unit 5
+                    ];
+                    const colorIndex = (lesson.unitNumber - 1) % colors.length;
+                    const lessonColor = colors[colorIndex];
+                    
+                    return (
+                      <div
+                        key={lesson.id}
+                        onClick={() => setCurrentIndex(index)}
+                        className={`w-3 h-3 rounded-full cursor-pointer transition-all ${
+                          isLocked
+                            ? "bg-gray-300"
+                            : isCompleted
+                            ? isCurrent
+                              ? `${lessonColor} scale-125`
+                              : lessonColor
+                            : "bg-gray-400"
+                        }`}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* レッスンカルーセル */}
+              <div className="relative px-4">
+                <div className="max-w-md mx-auto md:max-w-full">
           {/* 左矢印 */}
           <button
             onClick={goToPrevious}
@@ -442,13 +503,13 @@ export default function Home() {
               </button>
             );
           })()}
-        </div>
-      </div>
+                </div>
+              </div>
 
-      {/* 道のり表示（ゲーミフィケーション風） */}
-      <div className="mt-8 px-4">
-        <div className="max-w-md mx-auto">
-          {/* すべてのユニット番号を取得 */}
+              {/* 道のり表示（ゲーミフィケーション風） */}
+              <div className="mt-8">
+                <div className="max-w-md mx-auto md:max-w-full">
+                  {/* すべてのユニット番号を取得 */}
           {useMemo(() => {
             const allUnits = Array.from(new Set(lessons.map(l => l.unitNumber))).sort((a, b) => a - b);
             const firstRowUnits = allUnits.slice(0, 3);
@@ -488,10 +549,12 @@ export default function Home() {
 
               // ユニットが完了した場合、最初のレッスンのキャラクター画像を取得
               let characterImage: string | undefined;
+              let characterEmoji: string | undefined;
               if (isUnitComplete && unitLessons.length > 0) {
                 const firstLesson = unitLessons[0];
                 const tutorial = getTutorial(firstLesson.id);
                 characterImage = tutorial?.characterImage;
+                characterEmoji = tutorial?.characterEmoji;
               }
 
               return (
@@ -517,7 +580,7 @@ export default function Home() {
                         ? "bg-gradient-to-br from-yellow-400 to-amber-500 text-white"
                         : "bg-gradient-to-br from-gray-300 to-gray-400 text-gray-600"
                     }`}>
-                      {isUnitComplete && characterImage ? (
+                      {isUnitComplete && characterImage && !unitImageErrors[unit] ? (
                         <Image
                           src={characterImage}
                           alt="Character"
@@ -525,7 +588,12 @@ export default function Home() {
                           height={48}
                           className="object-contain w-full h-full"
                           unoptimized
+                          onError={() => {
+                            setUnitImageErrors(prev => ({ ...prev, [unit]: true }));
+                          }}
                         />
+                      ) : isUnitComplete && characterEmoji ? (
+                        <span className="text-2xl">{characterEmoji}</span>
                       ) : (
                         <span>{unit}</span>
                       )}
@@ -606,6 +674,10 @@ export default function Home() {
               </div>
             );
           }, [completedLessons, lessons])}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

@@ -1022,6 +1022,29 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "5-6",
+    characterName: "ルーピー",
+    characterEmoji: "🐹",
+    characterImage: "/images/characters/loopy.png",
+    slides: [
+      {
+        title: "ループの総復習だよ！",
+        content: "ここまで学んだループの知識を総復習します。コードを読んで、何が出力されるか予測しましょう！",
+        characterMessage: "for文、range()、変数i、while文...たくさん学んだね！ 最後にクイズで確認しよう！",
+      },
+      {
+        title: "クイズ形式だよ！",
+        content: "選択肢の中から正しい答えを選びます。ループが何回実行されるか、変数がどう変わるかに注目しましょう！",
+        characterMessage: "コードをよく読んで、答えを選んでね！ 落ち着いて考えれば大丈夫！",
+      },
+      {
+        title: "全問正解を目指そう！",
+        content: "全10問のクイズに挑戦します。これが終わればループマスター！頑張りましょう！",
+        characterMessage: "準備はいい？ ループマスターへの最終テストだよ！ いっくよー！",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {

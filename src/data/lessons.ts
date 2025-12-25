@@ -232,6 +232,14 @@ export const lessons: Lesson[] = [
     description: "条件がTrueの間、繰り返そう",
     difficulty: "かんたん",
   },
+  {
+    id: "5-6",
+    unitNumber: 5,
+    subNumber: 6,
+    title: "ループクイズ！",
+    description: "コードを読んで出力を予測しよう",
+    difficulty: "ふつう",
+  },
 ]
 
 // レッスンIDでレッスンを取得
