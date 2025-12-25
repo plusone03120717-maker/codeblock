@@ -224,6 +224,14 @@ export const lessons: Lesson[] = [
     description: "ループで合計を求めてみよう",
     difficulty: "かんたん",
   },
+  {
+    id: "5-5",
+    unitNumber: 5,
+    subNumber: 5,
+    title: "while文を使おう",
+    description: "条件がTrueの間、繰り返そう",
+    difficulty: "かんたん",
+  },
 ]
 
 // レッスンIDでレッスンを取得

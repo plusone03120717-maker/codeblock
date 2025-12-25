@@ -344,16 +344,38 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     return shuffled;
   }, [currentMission?.availableBlocks, currentMissionId]);
 
-  // 直前の行がコロンで終わっているかチェック
-  // if文、else文、elif文、for文、while文など、「:」で終わる行すべてに対応
-  const isPreviousLineEndsWithColon = (blocks: WordBlock[]): boolean => {
-    if (blocks.length === 0) return false;
+  // 現在のインデントレベルを計算する関数
+  const getCurrentIndentLevel = (blocks: WordBlock[]): number => {
+    if (blocks.length === 0) return 0;
     
-    // シンプルに最後のブロックが「:」かどうかをチェック
-    // 改行ブロックを追加するタイミングでは、selectedBlocksの最後のブロックが現在の行の最後のブロック
-    // つまり、最後のブロックが「:」なら、その後に自動インデントを追加すべき
-    // これにより、if:、else:、elif:、for:、while: などすべてのケースで正しく動作する
-    return blocks[blocks.length - 1]?.text === ":";
+    // 最後の改行以降のインデント数を数える
+    let lastNewlineIndex = -1;
+    for (let i = blocks.length - 1; i >= 0; i--) {
+      if (blocks[i].text === "↵") {
+        lastNewlineIndex = i;
+        break;
+      }
+    }
+    
+    // 最後の改行以降のインデント数
+    let currentIndent = 0;
+    if (lastNewlineIndex >= 0) {
+      for (let i = lastNewlineIndex + 1; i < blocks.length; i++) {
+        if (blocks[i].text === "    ") {
+          currentIndent++;
+        } else {
+          break; // インデント以外のブロックが来たら終了
+        }
+      }
+    }
+    
+    // 最後のブロックが「:」なら+1（新しいネストレベル）
+    const lastBlock = blocks[blocks.length - 1];
+    if (lastBlock?.text === ":") {
+      currentIndent++;
+    }
+    
+    return currentIndent;
   };
 
   // インデントブロックを取得（利用可能な場合）
@@ -372,20 +394,23 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     
     let newBlocks = [...selectedBlocks, newBlock];
     
-    // 改行ブロックを追加した場合、かつレッスン4以降の場合
-    if (newBlock.text === "↵" && lessonId && (lessonId.startsWith("4-") || lessonId.startsWith("5-"))) {
-      // 直前の行がコロンで終わっているかチェック
-      // if文、else文、elif文、for文、while文など、「:」で終わる行の後に自動インデントを追加
-      if (isPreviousLineEndsWithColon(selectedBlocks)) {
-        // インデントブロックを取得
-        const indentBlock = getIndentBlock();
-        if (indentBlock) {
-          // インデントブロックも新しいIDで作成
-          const newIndentBlock: WordBlock = {
-            ...indentBlock,
-            id: `${indentBlock.id}-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
-          };
-          newBlocks.push(newIndentBlock);
+    // 改行ブロックを追加した場合、インデントブロックが利用可能な場合（if文、for文、while文など）
+    if (newBlock.text === "↵") {
+      const indentBlock = getIndentBlock();
+      // インデントブロックが利用可能な場合のみ自動インデントを有効化
+      if (indentBlock) {
+        // 現在のインデントレベルを計算
+        const indentLevel = getCurrentIndentLevel(selectedBlocks);
+        
+        // インデントレベル分のインデントブロックを追加
+        if (indentLevel > 0) {
+          for (let i = 0; i < indentLevel; i++) {
+            const newIndentBlock: WordBlock = {
+              ...indentBlock,
+              id: `${indentBlock.id}-${Date.now()}-${Math.random().toString(36).substring(2, 11)}-${i}`,
+            };
+            newBlocks.push(newIndentBlock);
+          }
         }
       }
     }
@@ -914,6 +939,16 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         } else if (!hasRange) {
           codeIsValid = false;
           codeErrorMessage = "range()を使って繰り返す回数を指定しよう！";
+        }
+      }
+
+      // レッスン5-5（while文を使おう）の場合、while文を使っているかチェック
+      if (lessonId === "5-5") {
+        const hasWhile = code.includes("while ");
+        
+        if (!hasWhile) {
+          codeIsValid = false;
+          codeErrorMessage = "while文を使って繰り返しを書こう！";
         }
       }
 

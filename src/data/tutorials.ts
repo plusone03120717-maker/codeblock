@@ -1024,6 +1024,49 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "5-5",
+    characterName: "ルーピー",
+    characterEmoji: "🐹",
+    characterImage: "/images/characters/cody.png",
+    slides: [
+      {
+        title: "while文って何？",
+        content: "while文は、条件がTrueである限り繰り返し続けます。「〜の間、繰り返す」という意味です。",
+        characterMessage: "for文は回数を決めて繰り返したよね。while文は条件がTrueの間ずっと繰り返すんだ！",
+      },
+      {
+        title: "for文とどう違うの？",
+        content: "for文は繰り返す回数が決まっているとき、while文は条件を満たす間繰り返したいときに使います。",
+        characterMessage: "for文は『3回繰り返す』、while文は『HPが0になるまで繰り返す』って感じ！",
+        codeExample: {
+          good: "# for文：回数が決まっている\nfor i in range(3):\n    print(i)\n\n# while文：条件がTrueの間繰り返す\ncount = 3\nwhile count > 0:\n    print(count)\n    count = count - 1",
+        },
+      },
+      {
+        title: "while文の書き方",
+        content: "while 条件: と書き、その下にインデントして繰り返す処理を書きます。条件がFalseになると、ループが終わります。",
+        characterMessage: "while 条件: って書くよ！ if文と似てるでしょ？",
+        codeExample: {
+          good: "count = 3\nwhile count > 0:\n    print(count)\n    count = count - 1\n# 条件がFalseになったら終了",
+        },
+      },
+      {
+        title: "無限ループに注意！",
+        content: "ループの中で条件が変わるようにしないと、無限ループになります。変数を変化させることを忘れずに！",
+        characterMessage: "あわわ！ 条件がずっとTrueだと、永遠に止まらなくなっちゃう！",
+        codeExample: {
+          good: "count = 3\nwhile count > 0:\n    print(count)\n    count = count - 1  # 変数を変化させる！",
+          bad: "count = 3\nwhile count > 0:\n    print(count)\n    # countを変化させない → 無限ループ！",
+        },
+      },
+      {
+        title: "while文に挑戦！",
+        content: "while文を使って、条件を満たす間繰り返してみましょう。変数の値を変えるのを忘れずに！",
+        characterMessage: "条件がFalseになるまで繰り返すよ！ 準備はいい？ いっくよー！",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {
