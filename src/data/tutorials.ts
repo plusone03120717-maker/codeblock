@@ -1247,6 +1247,28 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "6-6",
+    characterName: "アリー",
+    characterEmoji: "🐜",
+    slides: [
+      {
+        title: "リストの総復習だよ！",
+        content: "ここまで学んだリストの知識を総復習します。コードを読んで、何が出力されるか予測しましょう！",
+        characterMessage: "リストの作り方、インデックス、append、len、ループ...たくさん学んだね！",
+      },
+      {
+        title: "クイズ形式だよ！",
+        content: "選択肢の中から正しい答えを選びます。インデックスは0から始まることを忘れないでね！",
+        characterMessage: "コードをよく読んで、答えを選んでね！ 落ち着いて考えれば大丈夫！",
+      },
+      {
+        title: "全問正解を目指そう！",
+        content: "全10問のクイズに挑戦します。これが終わればリストマスター！",
+        characterMessage: "準備はいい？ リストマスターへの最終テストだよ！ チームワークで頑張ろう！",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {

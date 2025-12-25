@@ -280,6 +280,14 @@ export const lessons: Lesson[] = [
     description: "for文でリストの要素を順番に処理しよう",
     difficulty: "かんたん",
   },
+  {
+    id: "6-6",
+    unitNumber: 6,
+    subNumber: 6,
+    title: "リストクイズ！",
+    description: "リストの知識を総復習しよう",
+    difficulty: "ふつう",
+  },
 ]
 
 // レッスンIDでレッスンを取得
