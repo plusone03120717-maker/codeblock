@@ -76,12 +76,18 @@ export default function LessonsPage() {
     1: <>print<FW word="関数" /></>,
     2: <FW word="変数" />,
     3: <>データ<F reading="がた">型</F></>,
+    4: <>条件<F reading="ぶんき">分岐</F></>,
+    5: <>繰り返し</>,
+    6: <>リスト</>,
   };
 
   const unitColors: Record<number, string> = {
     1: "from-purple-400 to-purple-500",
     2: "from-pink-400 to-pink-500",
     3: "from-blue-400 to-blue-500",
+    4: "from-orange-400 to-orange-500",
+    5: "from-green-400 to-green-500",
+    6: "from-teal-400 to-teal-500",
   };
 
   return (

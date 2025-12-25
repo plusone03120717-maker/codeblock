@@ -240,6 +240,22 @@ export const lessons: Lesson[] = [
     description: "コードを読んで出力を予測しよう",
     difficulty: "ふつう",
   },
+  {
+    id: "6-1",
+    unitNumber: 6,
+    subNumber: 1,
+    title: "リストって何？",
+    description: "データを順番に並べて管理しよう",
+    difficulty: "かんたん",
+  },
+  {
+    id: "6-2",
+    unitNumber: 6,
+    subNumber: 2,
+    title: "インデックスを使おう",
+    description: "リストの要素に番号でアクセスしよう",
+    difficulty: "かんたん",
+  },
 ]
 
 // レッスンIDでレッスンを取得

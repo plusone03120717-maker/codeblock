@@ -1045,6 +1045,85 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "6-1",
+    characterName: "アリー",
+    characterEmoji: "🐜",
+    slides: [
+      {
+        title: "はじめまして！アリーだよ！",
+        content: "アリーは働きアリ。仲間と協力して、たくさんのデータを順番に並べて管理するエキスパートです。",
+        characterMessage: "こんにちは！私はアリー。データを整列させるのが得意なの！",
+      },
+      {
+        title: "リストって何？",
+        content: "リストを使うと、複数のデータをひとまとめにして管理できます。名前のリスト、数字のリストなど、いろんなデータを並べられます。",
+        characterMessage: "リストは、データを順番に並べたものだよ。私たちアリが列を作るみたいにね！",
+      },
+      {
+        title: "リストの書き方",
+        content: "Pythonでは、角カッコ [ ] の中にデータを入れてリストを作ります。例：[\"りんご\", \"バナナ\", \"みかん\"]",
+        characterMessage: "リストは [ ] で囲んで、データを , で区切るよ！",
+        codeExample: {
+          good: '["りんご", "バナナ", "みかん"]',
+        },
+      },
+      {
+        title: "リストを変数に入れよう",
+        content: "リストを変数に入れると、後から使いやすくなります。変数名は中身が分かりやすい名前にしましょう。",
+        characterMessage: "リストも変数に入れられるよ。fruits = [\"りんご\", \"バナナ\"] こんな感じ！",
+        codeExample: {
+          good: 'fruits = ["りんご", "バナナ"]',
+        },
+      },
+      {
+        title: "さあ、整列しよう！",
+        content: "リストを作って、printで出力してみましょう。チームワークで頑張ろうね！",
+        characterMessage: "さあ、みんな整列〜！ 一緒にリストを作ってみよう！",
+      },
+    ],
+  },
+  {
+    lessonId: "6-2",
+    characterName: "アリー",
+    characterEmoji: "🐜",
+    slides: [
+      {
+        title: "インデックスって何？",
+        content: "インデックスは、リストの中の位置を表す番号です。これを使うと、リストの特定の要素を取り出せます。",
+        characterMessage: "列に並んだら、自分が何番目か知りたいよね？ それがインデックス！",
+      },
+      {
+        title: "インデックスは0から！",
+        content: "プログラミングでは、最初の要素は0番目です。[\"A\", \"B\", \"C\"] なら、Aは0番、Bは1番、Cは2番になります。",
+        characterMessage: "ここ大事！ インデックスは0から始まるの。先頭は0番だよ！",
+        codeExample: {
+          good: '["A", "B", "C"]\n# Aは0番、Bは1番、Cは2番',
+        },
+      },
+      {
+        title: "要素を取り出そう",
+        content: "例えば fruits = [\"りんご\", \"バナナ\", \"みかん\"] の場合、fruits[0] は \"りんご\"、fruits[1] は \"バナナ\" になります。",
+        characterMessage: "リスト名[番号] で、その番号の要素を取り出せるよ！",
+        codeExample: {
+          good: 'fruits = ["りんご", "バナナ", "みかん"]\nprint(fruits[0])  # りんご\nprint(fruits[1])  # バナナ',
+        },
+      },
+      {
+        title: "やってみよう",
+        content: "リスト名の後ろに [インデックス] をつけると、その位置の要素だけを取り出せます。printと組み合わせて出力してみましょう。",
+        characterMessage: "fruits[0] で先頭のりんごが取れるよ。fruits[2] なら3番目のみかんだね！",
+        codeExample: {
+          good: 'fruits = ["りんご", "バナナ", "みかん"]\nprint(fruits[0])  # りんご\nprint(fruits[2])  # みかん',
+        },
+      },
+      {
+        title: "位置を指定して取り出そう！",
+        content: "prefixCodeで用意されたリストから、指定された要素をインデックスで取り出しましょう。",
+        characterMessage: "さあ、インデックスを使って要素を取り出してみよう！ 0から数えるのを忘れないでね！",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {
