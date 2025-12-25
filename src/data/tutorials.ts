@@ -177,40 +177,6 @@ export const tutorials: LessonTutorial[] = [
     characterImage: "/images/characters/cody.png",
     slides: [
       {
-        title: "文字列を繰り返そう",
-        content: "文字列に「*」と数字を使うと、文字列を繰り返すことができるよ！",
-        characterMessage: "文字列の繰り返しをマスターしよう！",
-      },
-      {
-        title: "文字列繰り返しの書き方",
-        content: "「文字列 * 数字」で、文字列を数字の回数だけ繰り返すことができるんだ。",
-        characterMessage: "\"Hi\" * 3 で \"HiHiHi\" になるよ！",
-        codeExample: {
-          good: "print(\"Hi\" * 3)  # 結果: HiHiHi",
-        },
-      },
-      {
-        title: "記号を繰り返そう",
-        content: "記号やマークを繰り返して、飾りを作ることもできるよ！",
-        characterMessage: "\"*\" * 5 で \"*****\" になるんだ！",
-        codeExample: {
-          good: "print(\"*\" * 5)  # 結果: *****",
-        },
-      },
-      {
-        title: "さあ、挑戦だ！",
-        content: "文字列を繰り返すミッションに挑戦しよう！",
-        characterMessage: "準備はいいか？やってみよう！",
-      },
-    ],
-  },
-  {
-    lessonId: "1-6",
-    characterName: "コーディ",
-    characterEmoji: "🐍",
-    characterImage: "/images/characters/cody.png",
-    slides: [
-      {
         title: "余りを計算しよう",
         content: "「%」を使うと、割り算の余りを求めることができるよ！",
         characterMessage: "余りの計算はプログラミングでよく使うんだ！",
@@ -239,7 +205,7 @@ export const tutorials: LessonTutorial[] = [
     ],
   },
   {
-    lessonId: "1-7",
+    lessonId: "1-6",
     characterName: "コーディ",
     characterEmoji: "🐍",
     characterImage: "/images/characters/cody.png",
@@ -485,38 +451,27 @@ export const tutorials: LessonTutorial[] = [
     characterImage: "/images/characters/dex.png",
     slides: [
       {
-        title: "データには種類がある",
-        content: "コンピュータは、すべての情報を「種類」で分けて記憶している。この種類のことを「データ型」と呼ぶ。型を正しく使うと、計算やデータ処理がうまくいく。",
-        characterMessage: "データ型は、情報を整理するための分類だ。",
+        title: "はじめまして！",
+        content: "私はデックス。データ変換スペシャリストのロボットだ。データ型について教えよう。",
+        characterMessage: "どんなデータも、正しい形に変換できる。",
       },
       {
-        title: "ゲームのキャラクターで考えてみよう",
-        content: "ゲームのキャラクターを例にすると、理解しやすい。名前 → \"ピクセル\" → str（文字）。HP → 100 → int（整数）。生きてる？ → True → bool（Yes/No）。スピード → 2.5 → float（小数）。それぞれの情報に、適切な「型」がある。",
-        characterMessage: "現実世界の情報も、型で分類できる。",
+        title: "データ型ってなに？",
+        content: "Pythonでは、データにはいろいろな「型」がある。文字、数字、True/Falseなど、それぞれ種類が違うんだ。",
+        characterMessage: "型を理解することが、プログラミングの基礎だ。",
+      },
+      {
+        title: "3つの基本の型",
+        content: "まずは3つの型を覚えよう。str（文字列）、int（整数）、bool（真偽値）だ。",
+        characterMessage: "str は文字、int は数字、bool は True か False。",
         codeExample: {
-          good: '名前: "ピクセル"  → str（文字）\nHP: 100          → int（整数）\n生きてる？: True → bool（Yes/No）\nスピード: 2.5    → float（小数）',
+          good: '"Hello"  → str（文字列）\n42       → int（整数）\nTrue     → bool（真偽値）',
         },
       },
       {
-        title: "型がちがうと、結果が変わる",
-        content: "\"5\" + \"3\" = \"53\"　← 文字として連結される。5 + 3 = 8　← 数値として計算される。コンピュータに「これは数値だ」と正しく伝えることが重要だ。",
-        characterMessage: "同じ見た目でも、型が違えば処理結果が変わる。",
-        codeExample: {
-          good: '"5" + "3"  → "53"（文字列連結）\n5 + 3      → 8（数値計算）',
-        },
-      },
-      {
-        title: "4つのデータ型",
-        content: "str（文字）: \"こんにちは\" → 名前やメッセージに使う。int（整数）: 100 → HPやスコア、個数に使う。bool（真偽値）: True / False → 「〜かどうか」を表す。float（小数）: 3.14 → タイムやスピードに使う。",
-        characterMessage: "4つの型を覚えれば、ほとんどのデータを扱える。",
-        codeExample: {
-          good: '"こんにちは" → str（文字）\n100         → int（整数）\nTrue        → bool（真偽値）\n3.14        → float（小数）',
-        },
-      },
-      {
-        title: "データ型を使ってみよう",
-        content: "正しいデータ型を選ぶ練習をする。型を正しく使えば、プログラムは正しく動く。実践で理解を深めよう。",
-        characterMessage: "実践で型を理解していく。",
+        title: "さあ、始めよう！",
+        content: "データ型を正しく理解すれば、エラーを防げる。一緒に学んでいこう。",
+        characterMessage: "型を制する者、コードを制す。",
       },
     ],
   },
@@ -866,7 +821,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "5-1",
     characterName: "ルーピー",
     characterEmoji: "🐹",
-    characterImage: "/images/characters/cody.png",
+    characterImage: "/images/characters/loopy.png",
     slides: [
       {
         title: "やっほー！ルーピーだよ！",
@@ -909,7 +864,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "5-2",
     characterName: "ルーピー",
     characterEmoji: "🐹",
-    characterImage: "/images/characters/cody.png",
+    characterImage: "/images/characters/loopy.png",
     slides: [
       {
         title: "range()のヒミツ",
@@ -943,7 +898,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "5-3",
     characterName: "ルーピー",
     characterEmoji: "🐹",
-    characterImage: "/images/characters/cody.png",
+    characterImage: "/images/characters/loopy.png",
     slides: [
       {
         title: "iのヒミツを教えるよ！",
@@ -985,7 +940,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "5-4",
     characterName: "ルーピー",
     characterEmoji: "🐹",
-    characterImage: "/images/characters/cody.png",
+    characterImage: "/images/characters/loopy.png",
     slides: [
       {
         title: "ループで計算できるよ！",
@@ -1028,7 +983,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "5-5",
     characterName: "ルーピー",
     characterEmoji: "🐹",
-    characterImage: "/images/characters/cody.png",
+    characterImage: "/images/characters/loopy.png",
     slides: [
       {
         title: "while文って何？",
