@@ -256,6 +256,14 @@ export const lessons: Lesson[] = [
     description: "リストの要素に番号でアクセスしよう",
     difficulty: "かんたん",
   },
+  {
+    id: "6-3",
+    unitNumber: 6,
+    subNumber: 3,
+    title: "リストに追加しよう",
+    description: "appendで要素を追加しよう",
+    difficulty: "かんたん",
+  },
 ]
 
 // レッスンIDでレッスンを取得
