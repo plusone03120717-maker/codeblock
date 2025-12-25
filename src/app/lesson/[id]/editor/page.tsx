@@ -109,6 +109,33 @@ function generateCode(selectedBlocks: WordBlock[]): string {
   return code.trim();
 }
 
+// コードを正規化する関数（省略形を展開形に変換して比較できるようにする）
+const normalizeCode = (code: string): string => {
+  let normalized = code;
+  
+  // 各行を処理
+  const lines = normalized.split('\n');
+  const normalizedLines = lines.map(line => {
+    // -= の変換: variable -= value → variable = variable - value
+    // 例: count -= 1 → count = count - 1
+    line = line.replace(/^(\s*)(\w+)\s*-=\s*(.+)$/gm, '$1$2 = $2 - $3');
+    
+    // += の変換: variable += value → variable = variable + value
+    // 例: total += i → total = total + i
+    line = line.replace(/^(\s*)(\w+)\s*\+=\s*(.+)$/gm, '$1$2 = $2 + $3');
+    
+    // *= の変換: variable *= value → variable = variable * value
+    line = line.replace(/^(\s*)(\w+)\s*\*=\s*(.+)$/gm, '$1$2 = $2 * $3');
+    
+    // /= の変換: variable /= value → variable = variable / value
+    line = line.replace(/^(\s*)(\w+)\s*\/=\s*(.+)$/gm, '$1$2 = $2 / $3');
+    
+    return line;
+  });
+  
+  return normalizedLines.join('\n');
+};
+
 // 期待されるコードを取得
 function getExpectedCode(lessonId: string): string {
   if (lessonId === "1-1") return 'print("Hello World")';
@@ -609,10 +636,15 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     setGeneratedCode(code);
 
     try {
+      // コードを正規化（省略形を展開形に変換）
+      // 注: Pythonは += や -= を正しく解釈するため、実際には正規化は不要ですが、
+      // 将来的にコード比較が必要になった場合に備えて正規化を適用
+      const normalizedCode = normalizeCode(code);
+      
       // コード実行前にprefixCodeを追加
-      let codeToExecute = code;
+      let codeToExecute = normalizedCode;
       if (currentMission?.prefixCode) {
-        codeToExecute = currentMission.prefixCode + "\n" + code;
+        codeToExecute = currentMission.prefixCode + "\n" + normalizedCode;
       }
       const { output, error } = await executePythonCode(codeToExecute);
       if (error) {
