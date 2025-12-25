@@ -19,7 +19,7 @@ export interface Lesson {
 export interface WordBlock {
   id: string;
   text: string;
-  type: "keyword" | "operator" | "string" | "number" | "variable" | "indent";
+  type: "keyword" | "operator" | "string" | "number" | "variable" | "indent" | "function" | "bracket";
   color: string;
 }
 

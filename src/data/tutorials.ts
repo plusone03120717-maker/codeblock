@@ -1307,6 +1307,48 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "7-2",
+    characterName: "ニコ",
+    characterEmoji: "🐱",
+    slides: [
+      {
+        title: "レシピを実行しよう！",
+        content: "関数は定義しただけでは動きません。関数名()と書いて呼び出すと、中の処理が実行されます。",
+        characterMessage: "レシピを作っただけじゃ、料理はできないよね？ 呼び出して実行しよう！",
+      },
+      {
+        title: "関数名()で呼び出し",
+        content: "say_hello() のように、関数名の後ろにカッコをつけると呼び出せます。レストランで「これください！」と注文するイメージです。",
+        characterMessage: "関数名の後ろに () をつけるだけ！ これが『注文』だよ！",
+        codeExample: {
+          good: "say_hello()",
+        },
+      },
+      {
+        title: "定義してから呼び出す",
+        content: "関数は必ず定義してから呼び出します。定義より前に呼び出すとエラーになります。",
+        characterMessage: "まずdefでレシピを作って、その後で呼び出す。この順番が大事だよ！",
+        codeExample: {
+          good: "def say_hello():\n    print(\"こんにちは\")\n\nsay_hello()",
+          bad: "say_hello()  # エラー：定義より前に呼び出している",
+        },
+      },
+      {
+        title: "実際にやってみよう",
+        content: "関数を呼び出すと、関数の中に書いた処理が上から順に実行されます。",
+        characterMessage: "def say_hello(): で作って、say_hello() で呼び出す。これでprintが実行されるんだ！",
+        codeExample: {
+          good: "def say_hello():\n    print(\"こんにちは\")\n\nsay_hello()\n# 結果: こんにちは",
+        },
+      },
+      {
+        title: "注文してみよう！",
+        content: "関数を定義して、呼び出して、出力を確認しましょう。",
+        characterMessage: "さあ、作ったレシピに注文を出してみよう！ 関数名()で呼び出しだ！",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {
