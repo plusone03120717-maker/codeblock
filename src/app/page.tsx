@@ -380,28 +380,41 @@ export default function Home() {
                         <span>🔒 前のレッスンを<F reading="くりあ">クリア</F>しよう</span>
                       </div>
                     ) : (
-                      <Link
-                        href={`/lesson/${lesson.id}`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleLessonClick(lesson.id);
-                        }}
-                        className={`inline-flex items-center justify-center w-full py-3 rounded-full font-bold text-lg transition-all whitespace-nowrap ${
-                          isCompleted
-                            ? "bg-white/30 hover:bg-white/40 text-white"
-                            : "bg-white text-purple-600 hover:scale-105 shadow-lg"
-                        }`}
-                      >
-                        <span>
-                          {isCompleted ? (
-                            <>🔄 <FW word="復習" />する</>
-                          ) : resumeStatus[lesson.id] ? (
-                            "📖 続きから"
-                          ) : (
-                            "🚀 学習する"
-                          )}
-                        </span>
-                      </Link>
+                      <div className="flex flex-col items-center gap-1">
+                        {/* メインボタン */}
+                        {isCompleted ? (
+                          <Link
+                            href={`/lesson/${lesson.id}/editor`}
+                            className="inline-flex items-center justify-center w-full py-3 rounded-full font-bold text-lg bg-white/30 hover:bg-white/40 text-white transition-all whitespace-nowrap"
+                          >
+                            <span>🔄 <FW word="復習" />する</span>
+                          </Link>
+                        ) : resumeStatus[lesson.id] ? (
+                          <Link
+                            href={`/lesson/${lesson.id}/editor`}
+                            className="inline-flex items-center justify-center w-full py-3 rounded-full font-bold text-lg bg-white text-purple-600 hover:scale-105 shadow-lg transition-all whitespace-nowrap"
+                          >
+                            <span>📖 続きから</span>
+                          </Link>
+                        ) : (
+                          <Link
+                            href={`/lesson/${lesson.id}`}
+                            className="inline-flex items-center justify-center w-full py-3 rounded-full font-bold text-lg bg-white text-purple-600 hover:scale-105 shadow-lg transition-all whitespace-nowrap"
+                          >
+                            <span>🚀 学習する</span>
+                          </Link>
+                        )}
+                        
+                        {/* チュートリアルを見るボタン（途中または完了の場合のみ表示） */}
+                        {(resumeStatus[lesson.id] || isCompleted) && (
+                          <Link
+                            href={`/lesson/${lesson.id}`}
+                            className="text-white/80 hover:text-white text-sm font-medium mt-1 inline-block hover:underline transition-all"
+                          >
+                            📖 チュートリアルを見る
+                          </Link>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
