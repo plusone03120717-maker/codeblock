@@ -15,7 +15,8 @@ import {
   updateStreak, 
   resetStreak,
   getLevelInfo,
-  getLevelProgress
+  getLevelProgress,
+  saveLastOpenedMission
 } from "@/utils/progress";
 import { F, FW, FuriganaText } from "@/components/Furigana";
 import {
@@ -310,6 +311,13 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       }
     });
   }, [params]);
+
+  // 最後に開いたミッション情報を保存
+  useEffect(() => {
+    if (lessonId && currentMissionId !== undefined) {
+      saveLastOpenedMission(lessonId, currentMissionId);
+    }
+  }, [lessonId, currentMissionId]);
 
   useEffect(() => {
     const progress = getProgress();

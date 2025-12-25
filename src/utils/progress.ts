@@ -175,3 +175,43 @@ export function resetProgress(): void {
   if (typeof window === "undefined") return
   localStorage.removeItem(PROGRESS_KEY)
 }
+
+// 最後に開いたミッション情報
+export interface LastOpenedMission {
+  lessonId: string;
+  missionId: number;
+  timestamp: number;
+}
+
+// 最後に開いたミッションを保存
+export const saveLastOpenedMission = (lessonId: string, missionId: number): void => {
+  if (typeof window === "undefined") return;
+  
+  const data: LastOpenedMission = {
+    lessonId,
+    missionId,
+    timestamp: Date.now(),
+  };
+  
+  localStorage.setItem("codeblock_last_opened_mission", JSON.stringify(data));
+};
+
+// 最後に開いたミッションを取得
+export const getLastOpenedMission = (): LastOpenedMission | null => {
+  if (typeof window === "undefined") return null;
+  
+  const data = localStorage.getItem("codeblock_last_opened_mission");
+  if (!data) return null;
+  
+  try {
+    return JSON.parse(data) as LastOpenedMission;
+  } catch {
+    return null;
+  }
+};
+
+// 最後に開いたミッションをクリア
+export const clearLastOpenedMission = (): void => {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem("codeblock_last_opened_mission");
+};

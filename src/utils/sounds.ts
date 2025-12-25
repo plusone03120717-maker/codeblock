@@ -8,6 +8,8 @@
 //    - incorrect.mp3 (または .wav, .ogg): 不正解時の効果音
 // 2. 音声ファイルが存在しない場合、自動的に生成音にフォールバックします
 
+import { isSoundEnabled } from "./settings";
+
 // 音声オブジェクトをキャッシュ（パフォーマンス向上のため）
 const audioCache: { [key: string]: HTMLAudioElement } = {};
 
@@ -179,6 +181,8 @@ function playGeneratedIncorrectSound() {
  * 音声ファイルが存在する場合はそれを使用し、存在しない場合は生成音にフォールバック
  */
 export function playBlockAddSound() {
+  if (!isSoundEnabled()) return; // ミュート時は再生しない
+  
   // 音声ファイルのパス（複数の拡張子を試す）
   // 優先順位: mp3 > wav > ogg
   const soundPath = "/sounds/block-add.mp3";
@@ -192,6 +196,8 @@ export function playBlockAddSound() {
  * 音声ファイルが存在する場合はそれを使用し、存在しない場合は生成音にフォールバック
  */
 export function playBlockRemoveSound() {
+  if (!isSoundEnabled()) return; // ミュート時は再生しない
+  
   // 音声ファイルのパス
   const soundPath = "/sounds/block-remove.mp3";
   
@@ -204,6 +210,8 @@ export function playBlockRemoveSound() {
  * 音声ファイルが存在する場合はそれを使用し、存在しない場合は生成音にフォールバック
  */
 export function playCorrectSound() {
+  if (!isSoundEnabled()) return; // ミュート時は再生しない
+  
   const soundPath = "/sounds/correct.mp3";
   playSoundFile(soundPath, playGeneratedCorrectSound);
 }
@@ -213,9 +221,12 @@ export function playCorrectSound() {
  * 音声ファイルが存在する場合はそれを使用し、存在しない場合は生成音にフォールバック
  */
 export function playIncorrectSound() {
+  if (!isSoundEnabled()) return; // ミュート時は再生しない
+  
   const soundPath = "/sounds/incorrect.mp3";
   playSoundFile(soundPath, playGeneratedIncorrectSound);
 }
+
 
 
 
