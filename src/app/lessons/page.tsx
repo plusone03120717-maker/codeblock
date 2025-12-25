@@ -87,7 +87,7 @@ export default function LessonsPage() {
     3: "from-blue-400 to-blue-500",
     4: "from-orange-400 to-orange-500",
     5: "from-green-400 to-green-500",
-    6: "from-teal-400 to-teal-500",
+    6: "from-indigo-400 to-indigo-500",
   };
 
   return (

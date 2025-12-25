@@ -348,8 +348,9 @@ export default function Home() {
                       "bg-purple-500",   // unit 1
                       "bg-pink-500",     // unit 2
                       "bg-blue-500",     // unit 3
-                      "bg-green-500",    // unit 4
-                      "bg-orange-500",   // unit 5
+                      "bg-orange-500",   // unit 4
+                      "bg-green-500",    // unit 5
+                      "bg-indigo-500",   // unit 6
                     ];
                     const colorIndex = (lesson.unitNumber - 1) % colors.length;
                     const lessonColor = colors[colorIndex];
@@ -398,8 +399,9 @@ export default function Home() {
               "from-purple-400 to-purple-500",
               "from-pink-400 to-pink-500",
               "from-blue-400 to-blue-500",
-              "from-green-400 to-green-500",
               "from-orange-400 to-orange-500",
+              "from-green-400 to-green-500",
+              "from-indigo-400 to-indigo-500",
             ];
             const colorIndex = (lesson.unitNumber - 1) % colors.length;
             const bgColor = isLocked ? "from-gray-400 to-gray-500" : colors[colorIndex];
@@ -536,8 +538,9 @@ export default function Home() {
                 "from-purple-400 to-purple-500",  // unit 1
                 "from-pink-400 to-pink-500",      // unit 2
                 "from-blue-400 to-blue-500",      // unit 3
-                "from-green-400 to-green-500",    // unit 4
-                "from-orange-400 to-orange-500",  // unit 5
+                "from-orange-400 to-orange-500",  // unit 4
+                "from-green-400 to-green-500",    // unit 5
+                "from-indigo-400 to-indigo-500",  // unit 6
               ];
               const unitColorIndex = (unit - 1) % unitColors.length;
               const unitColor = unitColors[unitColorIndex];
@@ -628,14 +631,14 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* 2行目: ユニット4-5（折り返し） */}
+                {/* 2行目: ユニット4-6（折り返し） */}
                 {secondRowUnits.length > 0 && (
                   <div className="relative">
                     {/* ポイント */}
                     <div className="relative grid grid-cols-3 gap-0">
                       {/* ユニット4を左に配置 */}
                       {secondRowUnits.map((unit) => {
-                        if (unit === 5) return null; // ユニット5は後で配置
+                        if (unit === 5 || unit === 6) return null; // ユニット5と6は後で配置
                         
                         const unitLessons = lessons.filter(l => l.unitNumber === unit);
                         const completedInUnit = unitLessons.filter(l => completedLessons.includes(l.id)).length;
@@ -666,8 +669,20 @@ export default function Home() {
                         );
                       })()}
                       
-                      {/* 右側のスペーサー（1行目と同じレイアウトにするため） */}
-                      <div></div>
+                      {/* 右にユニット6を配置 */}
+                      {secondRowUnits.includes(6) && (() => {
+                        const unit = 6;
+                        const unitLessons = lessons.filter(l => l.unitNumber === unit);
+                        const completedInUnit = unitLessons.filter(l => completedLessons.includes(l.id)).length;
+                        const isUnitComplete = completedInUnit === unitLessons.length && unitLessons.length > 0;
+                        const unitProgress = unitLessons.length > 0 ? (completedInUnit / unitLessons.length) * 100 : 0;
+                        
+                        return (
+                          <div key={unit} className="flex justify-center">
+                            {renderUnitPoint(unit, unitLessons, completedInUnit, isUnitComplete, unitProgress, "リスト")}
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                 )}

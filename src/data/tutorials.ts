@@ -1165,6 +1165,47 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "6-4",
+    characterName: "アリー",
+    characterEmoji: "🐜",
+    slides: [
+      {
+        title: "lenって何？",
+        content: "lenは「length（長さ）」の略で、リストに入っている要素の数を教えてくれます。",
+        characterMessage: "列に何匹並んでるか数えたい時、lenを使うよ！",
+      },
+      {
+        title: "lenの書き方",
+        content: "len()のカッコの中にリスト名を入れると、要素の数が返ってきます。例：len(fruits) は fruits の要素数を返します。",
+        characterMessage: "len(リスト名) って書くと、中に何個入ってるか分かるよ！",
+        codeExample: {
+          good: 'fruits = ["りんご", "バナナ", "みかん"]\nprint(len(fruits))  # 3',
+        },
+      },
+      {
+        title: "やってみよう",
+        content: "リストに3つの要素があれば3、5つあれば5が返ってきます。空のリスト [] なら0です。",
+        characterMessage: "fruits = [\"りんご\", \"バナナ\", \"みかん\"] なら、len(fruits) は 3 になるよ！",
+        codeExample: {
+          good: 'fruits = ["りんご", "バナナ", "みかん"]\nprint(len(fruits))  # 3\n\nempty = []\nprint(len(empty))  # 0',
+        },
+      },
+      {
+        title: "結果を出力しよう",
+        content: "lenの結果をprintで出力すると、リストに何個の要素があるか確認できます。",
+        characterMessage: "print(len(リスト名)) で、要素数を出力できるよ！",
+        codeExample: {
+          good: 'numbers = [1, 2, 3, 4, 5]\nprint(len(numbers))  # 5',
+        },
+      },
+      {
+        title: "仲間を数えよう！",
+        content: "lenを使って、リストの要素数を調べてみましょう。",
+        characterMessage: "さあ、リストの仲間が何匹いるか数えてみよう！",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {
