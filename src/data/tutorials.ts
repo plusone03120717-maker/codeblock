@@ -1206,6 +1206,47 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "6-5",
+    characterName: "アリー",
+    characterEmoji: "🐜",
+    slides: [
+      {
+        title: "リストとループは最強コンビ！",
+        content: "for文を使うと、リストの要素を一つずつ順番に取り出して処理できます。これがプログラミングでとても便利な技です。",
+        characterMessage: "ルーピーと私が一緒になると、すごいことができるんだよ！",
+      },
+      {
+        title: "for文でリストを回そう",
+        content: "for fruit in fruits: と書くと、fruitsリストから一つずつfruitに入れて処理できます。rangeの代わりにリストを使うイメージです。",
+        characterMessage: "for 変数 in リスト: って書くと、リストの中身を一つずつ取り出せるよ！",
+        codeExample: {
+          good: 'fruits = ["りんご", "バナナ", "みかん"]\nfor fruit in fruits:\n    print(fruit)',
+        },
+      },
+      {
+        title: "どう動くの？",
+        content: "fruits = [\"りんご\", \"バナナ\"] なら、1回目はfruit=\"りんご\"、2回目はfruit=\"バナナ\"になります。",
+        characterMessage: "リストの先頭から順番に、一匹ずつ呼び出すの。『次の方どうぞ〜！』ってね！",
+        codeExample: {
+          good: 'fruits = ["りんご", "バナナ"]\nfor fruit in fruits:\n    print(fruit)\n# 1回目: fruit = "りんご"\n# 2回目: fruit = "バナナ"',
+        },
+      },
+      {
+        title: "全員に同じ処理",
+        content: "for文の中にprint(fruit)を書くと、リストの要素が一つずつ出力されます。全員に同じ処理ができて便利です。",
+        characterMessage: "ループの中でprintすると、リストの全員を出力できるよ！",
+        codeExample: {
+          good: 'fruits = ["りんご", "バナナ", "みかん"]\nfor fruit in fruits:\n    print(fruit)\n# りんご\n# バナナ\n# みかん',
+        },
+      },
+      {
+        title: "全員集合！",
+        content: "for文を使って、リストの要素を一つずつ出力してみましょう。",
+        characterMessage: "さあ、リストの仲間全員を呼び出してみよう！ チームワークの見せ所だよ！",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {

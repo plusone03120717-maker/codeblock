@@ -272,6 +272,14 @@ export const lessons: Lesson[] = [
     description: "lenでリストの要素数を数えよう",
     difficulty: "かんたん",
   },
+  {
+    id: "6-5",
+    unitNumber: 6,
+    subNumber: 5,
+    title: "リストとループ",
+    description: "for文でリストの要素を順番に処理しよう",
+    difficulty: "かんたん",
+  },
 ]
 
 // レッスンIDでレッスンを取得
