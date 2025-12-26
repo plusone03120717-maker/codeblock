@@ -7,6 +7,7 @@ import { getProgress } from "@/utils/progress";
 import Footer from "@/components/Footer";
 import { F, FW } from "@/components/Furigana";
 import { useFurigana } from "@/contexts/FuriganaContext";
+import { getUnitGradient } from "@/utils/unitColors";
 
 // レッスンタイトルにふりがなを適用
 const lessonTitleWithFurigana: Record<string, ReactNode> = {
@@ -80,16 +81,7 @@ export default function LessonsPage() {
     5: <>繰り返し</>,
     6: <>リスト</>,
     7: <>関数の基本</>,
-  };
-
-  const unitColors: Record<number, string> = {
-    1: "from-purple-400 to-purple-500",
-    2: "from-pink-400 to-pink-500",
-    3: "from-blue-400 to-blue-500",
-    4: "from-orange-400 to-orange-500",
-    5: "from-green-400 to-green-500",
-    6: "from-indigo-400 to-indigo-500",
-    7: "from-cyan-400 to-cyan-500",
+    8: <>戻り値と応用</>,
   };
 
   return (
@@ -126,7 +118,7 @@ export default function LessonsPage() {
             return (
               <div key={unit}>
                 {/* ユニットヘッダー */}
-                <div className={`bg-gradient-to-r ${unitColors[unitNum] || "from-gray-400 to-gray-500"} rounded-t-2xl p-3`}>
+                <div className={`bg-gradient-to-r ${getUnitGradient(unitNum)} rounded-t-2xl p-3`}>
                   <div className="flex items-center justify-between text-white">
                     <h2 className="font-bold">
                       ユニット {unit}: {unitNames[unitNum] || "その他"}

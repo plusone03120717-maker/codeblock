@@ -17,6 +17,7 @@ import {
 } from "@/utils/progress";
 import Footer from "@/components/Footer";
 import { F, FW, FuriganaText } from "@/components/Furigana";
+import { UNIT_COLORS, getUnitGradient, getUnitSolid } from "@/utils/unitColors";
 
 export default function Home() {
   const router = useRouter();
@@ -329,19 +330,8 @@ export default function Home() {
                     const isCurrent = index === currentIndex;
                     const isLocked = isLessonLocked(index);
                     
-                    // レッスンカードと同じ色を定義
-                    const colors = [
-                      "bg-purple-500",   // unit 1
-                      "bg-pink-500",     // unit 2
-                      "bg-blue-500",     // unit 3
-                      "bg-orange-500",   // unit 4
-                      "bg-green-500",    // unit 5
-                      "bg-indigo-500",   // unit 6
-                      "bg-cyan-500",     // unit 7
-                      "bg-teal-500",     // unit 8
-                    ];
-                    const colorIndex = (lesson.unitNumber - 1) % colors.length;
-                    const lessonColor = colors[colorIndex];
+                    // ユニットボタンの色定義を使用
+                    const lessonColor = getUnitSolid(lesson.unitNumber);
                     
                     return (
                       <div
@@ -383,18 +373,8 @@ export default function Home() {
             const lesson = lessons[currentIndex];
             const isCompleted = completedLessons.includes(lesson.id);
             const isLocked = isLessonLocked(currentIndex);
-            const colors = [
-              "from-purple-400 to-purple-500",
-              "from-pink-400 to-pink-500",
-              "from-blue-400 to-blue-500",
-              "from-orange-400 to-orange-500",
-              "from-green-400 to-green-500",
-              "from-indigo-400 to-indigo-500",
-              "from-cyan-400 to-cyan-500",
-              "from-teal-400 to-teal-500",
-            ];
-            const colorIndex = (lesson.unitNumber - 1) % colors.length;
-            const bgColor = isLocked ? "from-gray-400 to-gray-500" : colors[colorIndex];
+            // ユニットボタンの色定義を使用
+            const bgColor = isLocked ? "from-gray-400 to-gray-500" : getUnitGradient(lesson.unitNumber);
 
             return (
               <div className="mx-12">
@@ -523,19 +503,8 @@ export default function Home() {
 
             // ユニットポイントコンポーネント（ヘルパー関数）
             const renderUnitPoint = (unit: number, unitLessons: typeof lessons, completedInUnit: number, isUnitComplete: boolean, unitProgress: number, unitName: ReactNode) => {
-              // ユニットごとの色を定義（レッスンカードと同じ）
-              const unitColors = [
-                "from-purple-400 to-purple-500",  // unit 1
-                "from-pink-400 to-pink-500",      // unit 2
-                "from-blue-400 to-blue-500",      // unit 3
-                "from-orange-400 to-orange-500",  // unit 4
-                "from-green-400 to-green-500",    // unit 5
-                "from-indigo-400 to-indigo-500",  // unit 6
-                "from-cyan-400 to-cyan-500",      // unit 7
-                "from-teal-400 to-teal-500",      // unit 8
-              ];
-              const unitColorIndex = (unit - 1) % unitColors.length;
-              const unitColor = unitColors[unitColorIndex];
+              // ユニットボタンの色定義を使用
+              const unitColor = getUnitGradient(unit);
 
               // そのユニットに完了したレッスンがあるかチェック
               const hasCompletedLessons = completedLessons.some(lessonId => 
