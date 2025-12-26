@@ -1656,6 +1656,28 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "8-6",
+    characterName: "リコ",
+    characterEmoji: "🐭",
+    slides: [
+      {
+        title: "戻り値の総復習よ！",
+        content: "ここまで学んだ戻り値の知識を総復習します。コードを読んで、何が出力されるか予測しましょう！",
+        characterMessage: "return、変数への格納、計算、リスト、ループ...たくさん学んだわね",
+      },
+      {
+        title: "クイズ形式よ！",
+        content: "選択肢の中から正しい答えを選びます。returnが何を返すか、変数に何が入るかに注目しましょう！",
+        characterMessage: "コードをよく読んで、答えを選んでね。落ち着いて考えれば大丈夫よ",
+      },
+      {
+        title: "全問正解を目指しましょう！",
+        content: "全10問のクイズに挑戦します。これが終われば戻り値マスター！",
+        characterMessage: "準備はいいかしら？ 戻り値マスターへの最終テストよ！",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {
