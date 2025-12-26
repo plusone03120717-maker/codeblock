@@ -320,6 +320,14 @@ export const lessons: Lesson[] = [
     description: "関数に材料を渡そう",
     difficulty: "かんたん",
   },
+  {
+    id: "7-6",
+    unitNumber: 7,
+    subNumber: 6,
+    title: "関数クイズ！",
+    description: "関数の知識を総復習しよう",
+    difficulty: "ふつう",
+  },
 ]
 
 // レッスンIDでレッスンを取得

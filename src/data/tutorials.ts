@@ -1431,6 +1431,28 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "7-6",
+    characterName: "ニコ",
+    characterEmoji: "🐱",
+    slides: [
+      {
+        title: "関数の総復習だよ！",
+        content: "ここまで学んだ関数の知識を総復習します。コードを読んで、何が出力されるか予測しましょう！",
+        characterMessage: "def、呼び出し、引数...たくさん学んだね！ 最後にクイズで確認しよう！",
+      },
+      {
+        title: "クイズ形式だよ！",
+        content: "選択肢の中から正しい答えを選びます。関数の定義と呼び出しに注目しましょう！",
+        characterMessage: "コードをよく読んで、答えを選んでね！ レシピ通りに考えれば大丈夫さ！",
+      },
+      {
+        title: "全問正解を目指そう！",
+        content: "全10問のクイズに挑戦します。これが終われば関数の基本はマスター！",
+        characterMessage: "準備はいい？ 関数マスターへの最終テストだよ！ 材料を揃えて、いざ挑戦！",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {
