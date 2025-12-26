@@ -352,6 +352,7 @@ export default function Home() {
                       "bg-green-500",    // unit 5
                       "bg-indigo-500",   // unit 6
                       "bg-cyan-500",     // unit 7
+                      "bg-teal-500",     // unit 8
                     ];
                     const colorIndex = (lesson.unitNumber - 1) % colors.length;
                     const lessonColor = colors[colorIndex];
@@ -404,6 +405,7 @@ export default function Home() {
               "from-green-400 to-green-500",
               "from-indigo-400 to-indigo-500",
               "from-cyan-400 to-cyan-500",
+              "from-teal-400 to-teal-500",
             ];
             const colorIndex = (lesson.unitNumber - 1) % colors.length;
             const bgColor = isLocked ? "from-gray-400 to-gray-500" : colors[colorIndex];
@@ -544,6 +546,7 @@ export default function Home() {
                 "from-green-400 to-green-500",    // unit 5
                 "from-indigo-400 to-indigo-500",  // unit 6
                 "from-cyan-400 to-cyan-500",      // unit 7
+                "from-teal-400 to-teal-500",      // unit 8
               ];
               const unitColorIndex = (unit - 1) % unitColors.length;
               const unitColor = unitColors[unitColorIndex];
@@ -609,11 +612,23 @@ export default function Home() {
               );
             };
 
+            // ユニット名を取得するヘルパー関数
+            const getUnitName = (unit: number) => {
+              if (unit === 1) return "print";
+              if (unit === 2) return <FW word="変数" />;
+              if (unit === 3) return <>データ<F reading="がた">型</F></>;
+              if (unit === 4) return <>条件<F reading="ぶんき">分岐</F></>;
+              if (unit === 5) return "ループ";
+              if (unit === 6) return "リスト";
+              if (unit === 7) return <>関数の基本</>;
+              if (unit === 8) return <>戻り値と応用</>;
+              return "";
+            };
+
             return (
               <div className="space-y-6">
                 {/* 1行目: ユニット1-3 */}
                 <div className="relative">
-                  {/* ポイント */}
                   <div className="relative grid grid-cols-3 gap-0">
                     {firstRowUnits.map((unit) => {
                       const unitLessons = lessons.filter(l => l.unitNumber === unit);
@@ -621,47 +636,40 @@ export default function Home() {
                       const isUnitComplete = completedInUnit === unitLessons.length && unitLessons.length > 0;
                       const unitProgress = unitLessons.length > 0 ? (completedInUnit / unitLessons.length) * 100 : 0;
                       
-                      const unitName = unit === 1 ? "print" :
-                                      unit === 2 ? <FW word="変数" /> :
-                                      unit === 3 ? <>データ<F reading="がた">型</F></> :
-                                      unit === 7 ? <>関数の基本</> : "";
-                      
                       return (
                         <div key={unit} className="flex justify-center">
-                          {renderUnitPoint(unit, unitLessons, completedInUnit, isUnitComplete, unitProgress, unitName)}
+                          {renderUnitPoint(unit, unitLessons, completedInUnit, isUnitComplete, unitProgress, getUnitName(unit))}
                         </div>
                       );
                     })}
                   </div>
                 </div>
 
-                {/* 2行目: ユニット4-6（折り返し） */}
+                {/* 2行目: ユニット4-6 */}
                 {secondRowUnits.length > 0 && (
                   <div className="relative">
-                    {/* ポイント */}
                     <div className="relative grid grid-cols-3 gap-0">
-                      {/* ユニット4を左に配置 */}
-                      {secondRowUnits.map((unit) => {
-                        if (unit === 5 || unit === 6) return null; // ユニット5と6は後で配置
-                        
+                      {secondRowUnits.slice(0, 3).map((unit) => {
                         const unitLessons = lessons.filter(l => l.unitNumber === unit);
                         const completedInUnit = unitLessons.filter(l => completedLessons.includes(l.id)).length;
                         const isUnitComplete = completedInUnit === unitLessons.length && unitLessons.length > 0;
                         const unitProgress = unitLessons.length > 0 ? (completedInUnit / unitLessons.length) * 100 : 0;
                         
-                        const unitName = unit === 4 ? <>条件<F reading="ぶんき">分岐</F></> :
-                                        unit === 7 ? <>関数の基本</> : "";
-                        
                         return (
                           <div key={unit} className="flex justify-center">
-                            {renderUnitPoint(unit, unitLessons, completedInUnit, isUnitComplete, unitProgress, unitName)}
+                            {renderUnitPoint(unit, unitLessons, completedInUnit, isUnitComplete, unitProgress, getUnitName(unit))}
                           </div>
                         );
                       })}
-                      
-                      {/* 中央にユニット5を配置 */}
-                      {secondRowUnits.includes(5) && (() => {
-                        const unit = 5;
+                    </div>
+                  </div>
+                )}
+
+                {/* 3行目: ユニット7以降（ある場合） */}
+                {secondRowUnits.length > 3 && (
+                  <div className="relative">
+                    <div className="relative grid grid-cols-3 gap-0">
+                      {secondRowUnits.slice(3, 6).map((unit) => {
                         const unitLessons = lessons.filter(l => l.unitNumber === unit);
                         const completedInUnit = unitLessons.filter(l => completedLessons.includes(l.id)).length;
                         const isUnitComplete = completedInUnit === unitLessons.length && unitLessons.length > 0;
@@ -669,25 +677,10 @@ export default function Home() {
                         
                         return (
                           <div key={unit} className="flex justify-center">
-                            {renderUnitPoint(unit, unitLessons, completedInUnit, isUnitComplete, unitProgress, "ループ")}
+                            {renderUnitPoint(unit, unitLessons, completedInUnit, isUnitComplete, unitProgress, getUnitName(unit))}
                           </div>
                         );
-                      })()}
-                      
-                      {/* 右にユニット6を配置 */}
-                      {secondRowUnits.includes(6) && (() => {
-                        const unit = 6;
-                        const unitLessons = lessons.filter(l => l.unitNumber === unit);
-                        const completedInUnit = unitLessons.filter(l => completedLessons.includes(l.id)).length;
-                        const isUnitComplete = completedInUnit === unitLessons.length && unitLessons.length > 0;
-                        const unitProgress = unitLessons.length > 0 ? (completedInUnit / unitLessons.length) * 100 : 0;
-                        
-                        return (
-                          <div key={unit} className="flex justify-center">
-                            {renderUnitPoint(unit, unitLessons, completedInUnit, isUnitComplete, unitProgress, "リスト")}
-                          </div>
-                        );
-                      })()}
+                      })}
                     </div>
                   </div>
                 )}
