@@ -1453,6 +1453,44 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "8-1",
+    characterName: "リコ",
+    characterEmoji: "🐭",
+    slides: [
+      {
+        title: "リコのテイスティングルームへようこそ",
+        content: "リコはソムリエのネズミ。ニコが作った料理（関数）の結果を受け取って、評価するエキスパートです。",
+        characterMessage: "私はリコ。関数から返ってくる『結果』を見極めるのが得意なの",
+      },
+      {
+        title: "戻り値って何？",
+        content: "関数はreturn文を使って値を返すことができます。この返ってくる値のことを「戻り値」と言います。",
+        characterMessage: "シェフが料理を差し出す瞬間、それが『return』。受け取った料理が『戻り値』よ",
+      },
+      {
+        title: "returnの書き方",
+        content: "return文は関数の中で使います。return \"カレー\" と書くと、\"カレー\"という値が返されます。",
+        characterMessage: "return 値 と書くと、その値が関数の呼び出し元に返されるわ",
+        codeExample: {
+          good: 'def get_dish():\n    return "カレー"',
+        },
+      },
+      {
+        title: "printとの違い",
+        content: "printは画面に表示するだけで、値は消えてしまいます。returnは値を呼び出し元に渡すので、後から使えます。",
+        characterMessage: "printは『見せる』だけ。returnは『渡す』の。この違い、とても大事よ",
+        codeExample: {
+          good: '# print: 表示するだけ\nprint("カレー")\n\n# return: 値を返す\nresult = get_dish()\nprint(result)',
+        },
+      },
+      {
+        title: "結果を返してみましょう",
+        content: "returnを使って値を返す関数を作ってみましょう。",
+        characterMessage: "さて、関数から結果を返す練習をしましょう。私が受け取って評価するわ",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {
