@@ -1478,7 +1478,7 @@ export const tutorials: LessonTutorial[] = [
       },
       {
         title: "printとの違い",
-        content: "printは画面に表示するだけで、値は消えてしまいます。returnは値を呼び出し元に渡すので、後から使えます。",
+        content: "printは、先生が黒板に答えを書いて見せるだけ。書いたら消されちゃうわ。returnは、答えをノートに書いて渡してくれること。だから後から見返せるし、次の計算にも使えるの。",
         characterMessage: "printは『見せる』だけ。returnは『渡す』の。この違い、とても大事よ",
         codeExample: {
           good: '# print: 表示するだけ\nprint("カレー")\n\n# return: 値を返す\nresult = get_dish()\nprint(result)',
