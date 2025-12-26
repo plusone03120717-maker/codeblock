@@ -23,7 +23,7 @@ import { logout } from "@/lib/auth";
 
 export default function Home() {
   const router = useRouter();
-  const { user, username, loading } = useAuth();
+  const { user, username, loading, progressLoaded } = useAuth();
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
   const [totalXP, setTotalXP] = useState(0);
   const [levelInfo, setLevelInfo] = useState({ level: 1, name: "ビギナー", minXP: 0, maxXP: 99 });
@@ -49,6 +49,8 @@ export default function Home() {
   };
 
   useEffect(() => {
+    if (!progressLoaded) return;
+    
     const progress = getProgress();
     setTotalXP(progress.totalXP);
     setCompletedLessons(progress.completedLessons);
@@ -56,7 +58,7 @@ export default function Home() {
     setLevelProgress(getLevelProgress(progress.totalXP));
     setXpToNext(getXPToNextLevel(progress.totalXP));
     setHighestStreak(progress.highestStreak);
-  }, []);
+  }, [progressLoaded]);
 
   useEffect(() => {
     // 未完了の最初のレッスンを見つける
@@ -72,21 +74,27 @@ export default function Home() {
   }, [completedLessons]);
 
   useEffect(() => {
+    if (!progressLoaded) return;
+    
     // 各レッスンの途中データ有無をチェック
     if (typeof window === "undefined") return;
     
     const status: Record<string, boolean> = {};
     lessons.forEach((lesson) => {
-      const savedMission = localStorage.getItem(`lesson-${lesson.id}-mission`);
-      status[lesson.id] = savedMission !== null && parseInt(savedMission) > 0;
+      // missionProgress_キーから進捗を確認
+      const progressKey = `missionProgress_${lesson.id}`;
+      const savedProgress = parseInt(localStorage.getItem(progressKey) || "0", 10);
+      status[lesson.id] = savedProgress > 0;
     });
     setResumeStatus(status);
-  }, []);
+  }, [progressLoaded]);
 
   useEffect(() => {
+    if (!progressLoaded) return;
+    
     const lastMission = getLastOpenedMission();
     setLastOpenedMission(lastMission);
-  }, []);
+  }, [progressLoaded]);
 
   const isLessonLocked = (lessonIndex: number): boolean => {
     // 最初のレッスン（1-1）は常にアンロック
@@ -265,6 +273,15 @@ export default function Home() {
     if (minutes > 0) return `${minutes}分前`;
     return "たった今";
   };
+
+  // ローディング中の表示
+  if (loading || !progressLoaded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100">
+        <div className="text-xl text-gray-700">読み込み中...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100">
