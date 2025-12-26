@@ -18,9 +18,12 @@ import {
 import Footer from "@/components/Footer";
 import { F, FW, FuriganaText } from "@/components/Furigana";
 import { UNIT_COLORS, getUnitGradient, getUnitSolid } from "@/utils/unitColors";
+import { useAuth } from "@/contexts/AuthContext";
+import { logout } from "@/lib/auth";
 
 export default function Home() {
   const router = useRouter();
+  const { user, username, loading } = useAuth();
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
   const [totalXP, setTotalXP] = useState(0);
   const [levelInfo, setLevelInfo] = useState({ level: 1, name: "ビギナー", minXP: 0, maxXP: 99 });
@@ -36,6 +39,14 @@ export default function Home() {
   const [debugStartMission, setDebugStartMission] = useState("");
   const [lastOpenedMission, setLastOpenedMission] = useState<LastOpenedMission | null>(null);
   const [unitImageErrors, setUnitImageErrors] = useState<Record<number, boolean>>({});
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("ログアウトエラー:", error);
+    }
+  };
 
   useEffect(() => {
     const progress = getProgress();
@@ -263,10 +274,32 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* 左カラム：ロゴ + ステータスカード + 前回の続き（1/3幅） */}
             <div className="space-y-4 md:col-span-1">
-              {/* コードブロックロゴ */}
-              <h1 className="text-2xl font-bold text-left text-purple-800">
-                🐍 CodeBlock
-              </h1>
+              {/* ヘッダー：ロゴとユーザー情報 */}
+              <div className="flex justify-between items-center mb-4">
+                <h1 className="text-2xl font-bold text-left text-purple-800">
+                  🐍 CodeBlock
+                </h1>
+                {!loading && (
+                  user ? (
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-600">{username || "ユーザー"}</span>
+                      <button
+                        onClick={handleLogout}
+                        className="text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-full transition-colors"
+                      >
+                        ログアウト
+                      </button>
+                    </div>
+                  ) : (
+                    <Link
+                      href="/login"
+                      className="text-sm bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full transition-colors"
+                    >
+                      ログイン
+                    </Link>
+                  )
+                )}
+              </div>
               
               {/* ステータスカード */}
               <div className="bg-white rounded-2xl shadow-lg p-4 border-2 border-yellow-200">
