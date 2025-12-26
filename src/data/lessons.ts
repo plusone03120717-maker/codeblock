@@ -321,6 +321,14 @@ export const lessons: Lesson[] = [
     difficulty: "かんたん",
   },
   {
+    id: "7-5",
+    unitNumber: 7,
+    subNumber: 5,
+    title: "引数を使おう②",
+    description: "複数の材料を渡そう",
+    difficulty: "かんたん",
+  },
+  {
     id: "7-6",
     unitNumber: 7,
     subNumber: 6,

@@ -1432,6 +1432,47 @@ export const tutorials: LessonTutorial[] = [
     ],
   },
   {
+    lessonId: "7-5",
+    characterName: "ニコ",
+    characterEmoji: "🐱",
+    slides: [
+      {
+        title: "複数の材料を渡そう",
+        content: "関数には1つだけでなく、複数の引数を渡すことができます。カンマで区切って複数の値を渡せます。",
+        characterMessage: "料理には材料が1つだけじゃないでしょ？ 複数の材料を渡せるんだ！",
+      },
+      {
+        title: "複数の引数の書き方",
+        content: "関数定義では def 関数名(引数1, 引数2): のように、カンマで区切って複数のパラメータを書きます。",
+        characterMessage: "def add(a, b): って書くと、aとbの2つの材料を受け取れるよ！",
+        codeExample: {
+          good: "def add(a, b):\n    print(a + b)",
+        },
+      },
+      {
+        title: "複数の引数を渡す",
+        content: "関数を呼び出す時も、カンマで区切って複数の値を渡します。add(3, 5) のように。",
+        characterMessage: "add(3, 5) って呼び出すと、aに3、bに5が入るんだ！",
+        codeExample: {
+          good: "def add(a, b):\n    print(a + b)\n\nadd(3, 5)\n# 結果: 8",
+        },
+      },
+      {
+        title: "引数の順番が大事",
+        content: "引数は渡す順番が重要です。最初の値が最初のパラメータに、2番目の値が2番目のパラメータに入ります。",
+        characterMessage: "順番を間違えると、違う材料が入っちゃうから気をつけてね！",
+        codeExample: {
+          good: "def greet(first, last):\n    print(first + \" \" + last)\n\ngreet(\"太郎\", \"田中\")\n# 結果: 太郎 田中",
+        },
+      },
+      {
+        title: "複数の材料を渡してみよう！",
+        content: "複数の引数を使った関数を呼び出して、いろいろな値を渡してみましょう。",
+        characterMessage: "さあ、複数の材料を渡してみよう！ 料理がもっと楽しくなるよ！",
+      },
+    ],
+  },
+  {
     lessonId: "7-6",
     characterName: "ニコ",
     characterEmoji: "🐱",
