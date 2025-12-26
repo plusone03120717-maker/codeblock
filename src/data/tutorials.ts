@@ -1533,6 +1533,47 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "8-3",
+    characterName: "リコ",
+    characterEmoji: "🐭",
+    slides: [
+      {
+        title: "材料を受け取って、料理を返す",
+        content: "引数で値を受け取り、計算して、その結果をreturnで返す。これが関数の本当の力です。",
+        characterMessage: "ニコが教えた引数と、私が教える戻り値。組み合わせると最強よ",
+      },
+      {
+        title: "計算して返す",
+        content: "引数を使って計算した結果をreturnで返します。同じ関数でも、引数によって違う結果を返せます。",
+        characterMessage: "def double(x): return x * 2 で、受け取った数を2倍にして返せるわ",
+        codeExample: {
+          good: "def double(x):\n    return x * 2",
+        },
+      },
+      {
+        title: "実際の流れ",
+        content: "1. 関数を呼び出す 2. 引数が渡される 3. 計算される 4. 結果がreturnで返る",
+        characterMessage: "double(5)と呼ぶと、xに5が入って、5*2=10が返ってくるの",
+        codeExample: {
+          good: "def double(x):\n    return x * 2\n\nresult = double(5)\nprint(result)  # 10",
+        },
+      },
+      {
+        title: "受け取って使う",
+        content: "計算結果を変数で受け取れば、後から何度でも使えます。",
+        characterMessage: "result = double(5) で10を受け取って、print(result)で表示できるわ",
+        codeExample: {
+          good: "result = double(5)\nprint(result)  # 10\nprint(result + 5)  # 15",
+        },
+      },
+      {
+        title: "計算関数を使いましょう",
+        content: "計算する関数を呼び出して、結果を受け取って出力してみましょう。",
+        characterMessage: "さて、引数を計算して戻り値を返す関数を使ってみましょう。結果を見届けるわ",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {
