@@ -1349,6 +1349,47 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "7-3",
+    characterName: "ニコ",
+    characterEmoji: "🐱",
+    slides: [
+      {
+        title: "レシピは何度でも使える！",
+        content: "関数は一度定義すれば、何度でも呼び出せます。同じ処理を繰り返し書く必要がなくなります。",
+        characterMessage: "一度作ったレシピは、何度でも使えるんだ。これが関数の便利なところさ！",
+      },
+      {
+        title: "同じ関数を何度も呼び出す",
+        content: "関数名()を複数回書くと、その回数だけ関数が実行されます。コードがスッキリして読みやすくなります。",
+        characterMessage: "say_hello() を3回書けば、3回挨拶できるよ！",
+        codeExample: {
+          good: "say_hello()\nsay_hello()\nsay_hello()",
+        },
+      },
+      {
+        title: "コードの再利用",
+        content: "長い処理も関数にまとめておけば、呼び出すだけで実行できます。これを「コードの再利用」と言います。",
+        characterMessage: "毎回print()を書くより、関数を呼び出す方が楽でしょ？",
+        codeExample: {
+          good: "def greet():\n    print(\"こんにちは\")\n    print(\"よろしく\")\n\ngreet()\ngreet()",
+        },
+      },
+      {
+        title: "やってみよう",
+        content: "同じ関数を複数行に分けて呼び出すと、順番に実行されます。",
+        characterMessage: "greet()を2回呼び出すと、2回挨拶できる。簡単でしょ？",
+        codeExample: {
+          good: "def greet():\n    print(\"こんにちは\")\n\ngreet()\ngreet()\n# 結果: こんにちは\n#     こんにちは",
+        },
+      },
+      {
+        title: "何度も注文しよう！",
+        content: "関数を複数回呼び出して、同じ処理を繰り返してみましょう。",
+        characterMessage: "さあ、同じレシピを何度も注文してみよう！ 繰り返しの力を感じてね！",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {
