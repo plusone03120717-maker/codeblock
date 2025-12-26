@@ -11,6 +11,19 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
+// 環境変数のバリデーション
+if (
+  !firebaseConfig.apiKey ||
+  !firebaseConfig.authDomain ||
+  !firebaseConfig.projectId ||
+  firebaseConfig.apiKey === "your-api-key-here" ||
+  firebaseConfig.authDomain === "your-project-id.firebaseapp.com"
+) {
+  throw new Error(
+    "Firebaseの環境変数が正しく設定されていません。.env.localファイルを確認し、Firebase Consoleから取得した実際の値を設定してください。"
+  );
+}
+
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
 export const auth = getAuth(app);
