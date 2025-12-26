@@ -18,6 +18,8 @@ import {
   getLevelProgress,
   saveLastOpenedMission
 } from "@/utils/progress";
+import { useAuth } from "@/contexts/AuthContext";
+import { saveLocalProgressToCloud } from "@/lib/progressSync";
 import { F, FW, FuriganaText } from "@/components/Furigana";
 import {
   DndContext,
@@ -243,6 +245,7 @@ function DraggableBlock({ block, index, onRemove }: DraggableBlockProps) {
 
 export default function LessonEditorPage({ params }: EditorPageProps) {
   const router = useRouter();
+  const { user } = useAuth();
   const [lessonId, setLessonId] = useState<string | null>(null);
   const [currentMissionId, setCurrentMissionId] = useState(1);
   const [selectedBlocks, setSelectedBlocks] = useState<WordBlock[]>([]);
@@ -541,6 +544,10 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         if (lessonId) {
           localStorage.removeItem(`lesson-${lessonId}-mission`);
         }
+        // クラウドに進捗を保存
+        if (user) {
+          saveLocalProgressToCloud(user.uid);
+        }
         router.push(`/lesson/${lessonId}/complete`);
       }
     } else {
@@ -564,6 +571,10 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
             // 全問正解 → 完了画面へ
             if (lessonId) {
               localStorage.removeItem(`lesson-${lessonId}-mission`);
+            }
+            // クラウドに進捗を保存
+            if (user) {
+              saveLocalProgressToCloud(user.uid);
             }
             router.push(`/lesson/${lessonId}/complete`);
           }
@@ -607,6 +618,11 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           setEarnedXP(null);
           setStreakBonus(0);
         }, 1500);
+
+        // クラウドに進捗を保存
+        if (user) {
+          saveLocalProgressToCloud(user.uid);
+        }
       }
 
       // 「次へ」ボタンを表示
@@ -1081,6 +1097,11 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
             setEarnedXP(null);
             setStreakBonus(0);
           }, 1500);
+
+          // クラウドに進捗を保存
+          if (user) {
+            saveLocalProgressToCloud(user.uid);
+          }
         }
 
         // 「次へ」ボタンを表示

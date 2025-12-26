@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import { User, onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { getUsername } from "@/lib/auth";
+import { syncProgressOnLogin } from "@/lib/progressSync";
 
 interface AuthContextType {
   user: User | null;
@@ -30,6 +31,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (user) {
         const name = await getUsername(user.uid);
         setUsername(name);
+        await syncProgressOnLogin(user.uid);
       } else {
         setUsername(null);
       }
