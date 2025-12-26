@@ -1,5 +1,6 @@
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "./firebase";
+import { getLevelInfo } from "@/utils/progress";
 
 export interface ProgressData {
   visibleLessons: string[];
@@ -55,26 +56,23 @@ export const syncProgressOnLogin = async (uid: string): Promise<void> => {
   const cloudProgress = await loadProgressFromCloud(uid);
   
   if (cloudProgress) {
-    if (cloudProgress.visibleLessons) {
-      localStorage.setItem("visibleLessons", JSON.stringify(cloudProgress.visibleLessons));
-    }
-    if (cloudProgress.completedLessons) {
-      localStorage.setItem("completedLessons", JSON.stringify(cloudProgress.completedLessons));
-    }
-    if (cloudProgress.xp !== undefined) {
-      localStorage.setItem("xp", cloudProgress.xp.toString());
-    }
-    if (cloudProgress.level !== undefined) {
-      localStorage.setItem("level", cloudProgress.level.toString());
-    }
-    if (cloudProgress.streak !== undefined) {
-      localStorage.setItem("streak", cloudProgress.streak.toString());
-    }
-    if (cloudProgress.lastStudyDate) {
-      localStorage.setItem("lastStudyDate", cloudProgress.lastStudyDate);
-    }
+    // codeblock-progress形式で保存
+    const localProgress = {
+      totalXP: cloudProgress.xp || 0,
+      completedLessons: cloudProgress.completedLessons || [],
+      currentStreak: cloudProgress.streak || 0,
+      highestStreak: cloudProgress.streak || 0,
+      visibleLessons: cloudProgress.visibleLessons || ["1-1"],
+      level: cloudProgress.level || 1,
+      lastStudyDate: cloudProgress.lastStudyDate || null,
+    };
+    localStorage.setItem("codeblock-progress", JSON.stringify(localProgress));
+    
+    // missionProgressを個別に保存
     if (cloudProgress.missionProgress) {
-      localStorage.setItem("missionProgress", JSON.stringify(cloudProgress.missionProgress));
+      Object.entries(cloudProgress.missionProgress).forEach(([lessonId, progress]) => {
+        localStorage.setItem(`missionProgress_${lessonId}`, progress.toString());
+      });
     }
   }
 };
@@ -84,15 +82,36 @@ export const getLocalProgress = (): ProgressData => {
     return DEFAULT_PROGRESS;
   }
   
+  // codeblock-progressから読み込む
+  const progressJson = localStorage.getItem("codeblock-progress");
+  const progress = progressJson ? JSON.parse(progressJson) : {};
+  
+  // missionProgressを収集（missionProgress_で始まるキーをすべて取得）
+  const missionProgress: { [key: string]: number } = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith("missionProgress_")) {
+      const lessonId = key.replace("missionProgress_", "");
+      const value = localStorage.getItem(key);
+      if (value) {
+        missionProgress[lessonId] = parseInt(value, 10);
+      }
+    }
+  }
+  
+  // レベル情報を計算（totalXPから）
+  const totalXP = progress.totalXP || 0;
+  const levelInfo = getLevelInfo(totalXP);
+  
   return {
-    visibleLessons: JSON.parse(localStorage.getItem("visibleLessons") || '["1-1"]'),
-    completedLessons: JSON.parse(localStorage.getItem("completedLessons") || "[]"),
-    currentLesson: localStorage.getItem("currentLesson"),
-    xp: parseInt(localStorage.getItem("xp") || "0", 10),
-    level: parseInt(localStorage.getItem("level") || "1", 10),
-    streak: parseInt(localStorage.getItem("streak") || "0", 10),
-    lastStudyDate: localStorage.getItem("lastStudyDate"),
-    missionProgress: JSON.parse(localStorage.getItem("missionProgress") || "{}"),
+    visibleLessons: progress.visibleLessons || ["1-1"],
+    completedLessons: progress.completedLessons || [],
+    currentLesson: progress.currentLesson || null,
+    xp: totalXP,
+    level: levelInfo.level,
+    streak: progress.currentStreak || 0,
+    lastStudyDate: progress.lastStudyDate || null,
+    missionProgress: missionProgress,
   };
 };
 
