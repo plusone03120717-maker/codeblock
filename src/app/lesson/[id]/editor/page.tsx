@@ -292,19 +292,26 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       if (id) {
         setLessonId(id);
         
-        // ローカルストレージから保存されたミッションIDを読み込む
-        const savedMissionId = localStorage.getItem(`lesson-${id}-mission`);
-        let missionId = savedMissionId ? parseInt(savedMissionId, 10) : 1;
+        // ミッション進捗を読み込む（missionProgress_{lessonId}）
+        const progressKey = `missionProgress_${id}`;
+        const savedProgress = parseInt(localStorage.getItem(progressKey) || "0", 10);
         
         // ミッションIDが有効かチェック
         const missions = getLessonMissions(id);
+        let missionId = 1;
+        
         if (missions) {
           const maxMissionId = missions.length;
-          if (missionId < 1 || missionId > maxMissionId) {
+          // 保存された進捗から次の問題を開始（進捗は0-indexed、missionIdは1-indexed）
+          // savedProgress = 3 の場合、4問目（missionId = 4）から開始
+          if (savedProgress > 0 && savedProgress < maxMissionId) {
+            missionId = savedProgress + 1;
+          } else if (savedProgress >= maxMissionId) {
+            // 全問クリア済みの場合は最初から
+            missionId = 1;
+          } else {
             missionId = 1;
           }
-        } else {
-          missionId = 1;
         }
         
         setCurrentMissionId(missionId);
@@ -599,26 +606,37 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
 
       playCorrectSound(); // 正解音を再生
 
-      // XP計算（再出題モードでなければXPを加算）
-      if (!isRetryMode) {
-        const { xp, streakBonus: bonus, newStreak } = calculateMissionXP(true, currentStreak);
-        setCurrentStreak(newStreak);
-        setEarnedXP(xp);
-        setStreakBonus(bonus);
-        setShowXPAnimation(true);
-        updateStreak(newStreak);
-
-        const { newTotal, leveledUp, newLevel } = addXP(xp);
-        setTotalXP(newTotal);
-        setLevelInfo(newLevel);
-        setLevelProgress(getLevelProgress(newTotal));
-
-        setTimeout(() => {
-          setShowXPAnimation(false);
-          setEarnedXP(null);
+      // 進捗保存とXP付与（再出題モードでなければ）
+      if (!isRetryMode && lessonId) {
+        const progressKey = `missionProgress_${lessonId}`;
+        const savedProgress = parseInt(localStorage.getItem(progressKey) || "0", 10);
+        // currentMissionIdは1-indexed、進捗は0-indexedで保存
+        const currentMissionIndex = currentMissionId - 1;
+        
+        // まだクリアしていない問題の場合のみXPを付与
+        if (currentMissionIndex >= savedProgress) {
+          // XPを付与（1問あたり10XP）
+          const { newTotal, leveledUp, newLevel } = addXP(10);
+          setTotalXP(newTotal);
+          setLevelInfo(newLevel);
+          setLevelProgress(getLevelProgress(newTotal));
+          setEarnedXP(10);
           setStreakBonus(0);
-        }, 1500);
-
+          setShowXPAnimation(true);
+          
+          // アニメーション後にリセット
+          setTimeout(() => {
+            setShowXPAnimation(false);
+            setEarnedXP(null);
+            setStreakBonus(0);
+          }, 1500);
+        }
+        
+        // 進捗を保存（現在のミッションIDを保存）
+        // currentMissionId = 3 の場合、進捗は 2（3問目までクリア済み）を保存
+        const newProgress = Math.max(savedProgress, currentMissionIndex + 1);
+        localStorage.setItem(progressKey, newProgress.toString());
+        
         // クラウドに進捗を保存
         if (user) {
           saveLocalProgressToCloud(user.uid);
@@ -1076,28 +1094,37 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
 
         playCorrectSound(); // 正解音を再生
 
-        // XP計算（再出題モードでなければXPを加算）
-        if (!isRetryMode) {
-          const { xp, streakBonus: bonus, newStreak } = calculateMissionXP(true, currentStreak);
-          setCurrentStreak(newStreak);
-          setEarnedXP(xp);
-          setStreakBonus(bonus);
-          setShowXPAnimation(true);
-          updateStreak(newStreak);
-
-          // XPを加算
-          const { newTotal, leveledUp, newLevel } = addXP(xp);
-          setTotalXP(newTotal);
-          setLevelInfo(newLevel);
-          setLevelProgress(getLevelProgress(newTotal));
-
-          // アニメーション後にリセット
-          setTimeout(() => {
-            setShowXPAnimation(false);
-            setEarnedXP(null);
+        // 進捗保存とXP付与（再出題モードでなければ）
+        if (!isRetryMode && lessonId) {
+          const progressKey = `missionProgress_${lessonId}`;
+          const savedProgress = parseInt(localStorage.getItem(progressKey) || "0", 10);
+          // currentMissionIdは1-indexed、進捗は0-indexedで保存
+          const currentMissionIndex = currentMissionId - 1;
+          
+          // まだクリアしていない問題の場合のみXPを付与
+          if (currentMissionIndex >= savedProgress) {
+            // XPを付与（1問あたり10XP）
+            const { newTotal, leveledUp, newLevel } = addXP(10);
+            setTotalXP(newTotal);
+            setLevelInfo(newLevel);
+            setLevelProgress(getLevelProgress(newTotal));
+            setEarnedXP(10);
             setStreakBonus(0);
-          }, 1500);
-
+            setShowXPAnimation(true);
+            
+            // アニメーション後にリセット
+            setTimeout(() => {
+              setShowXPAnimation(false);
+              setEarnedXP(null);
+              setStreakBonus(0);
+            }, 1500);
+          }
+          
+          // 進捗を保存（現在のミッションIDを保存）
+          // currentMissionId = 3 の場合、進捗は 2（3問目までクリア済み）を保存
+          const newProgress = Math.max(savedProgress, currentMissionIndex + 1);
+          localStorage.setItem(progressKey, newProgress.toString());
+          
           // クラウドに進捗を保存
           if (user) {
             saveLocalProgressToCloud(user.uid);
