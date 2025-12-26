@@ -352,6 +352,14 @@ export const lessons: Lesson[] = [
     description: "引数を計算して結果を返そう",
     difficulty: "かんたん",
   },
+  {
+    id: "8-4",
+    unitNumber: 8,
+    subNumber: 4,
+    title: "関数とリスト",
+    description: "リストを渡して、リストを受け取ろう",
+    difficulty: "かんたん",
+  },
 ]
 
 // レッスンIDでレッスンを取得

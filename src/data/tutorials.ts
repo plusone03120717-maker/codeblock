@@ -1574,6 +1574,47 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "8-4",
+    characterName: "リコ",
+    characterEmoji: "🐭",
+    slides: [
+      {
+        title: "リストも渡せるわ",
+        content: "関数の引数にはリストも渡せます。リストを渡すと、関数の中でリストを処理できます。",
+        characterMessage: "関数には数字や文字列だけじゃなく、リストも渡せるの",
+      },
+      {
+        title: "リストを処理する関数",
+        content: "関数の中でリストの長さを調べたり、要素を追加したりできます。渡されたリストを自由に処理できるのよ。",
+        characterMessage: "アリーが教えたlenやappendを、関数の中で使えるわ",
+        codeExample: {
+          good: 'def get_length(lst):\n    return len(lst)\n\nfruits = ["りんご", "バナナ"]\nprint(get_length(fruits))',
+        },
+      },
+      {
+        title: "リストを返す",
+        content: "returnでリストを返せます。新しいリストを作って返したり、加工したリストを返したりできます。",
+        characterMessage: "関数からリストを返すこともできるわ。return [1, 2, 3] みたいにね",
+        codeExample: {
+          good: 'def double_all(lst):\n    result = []\n    for num in lst:\n        result.append(num * 2)\n    return result',
+        },
+      },
+      {
+        title: "組み合わせの力",
+        content: "関数でリストを受け取り、lenで長さを調べたり、合計を計算したりして、結果を返せます。",
+        characterMessage: "リストを渡して、処理して、結果を返す。これが関数とリストの連携よ",
+        codeExample: {
+          good: 'def get_sum(lst):\n    total = 0\n    for num in lst:\n        total = total + num\n    return total',
+        },
+      },
+      {
+        title: "リストを料理しましょう",
+        content: "リストを渡して結果を受け取る練習をしましょう。",
+        characterMessage: "さて、リストを使った関数を試してみましょう。私が結果を見届けるわ",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {
