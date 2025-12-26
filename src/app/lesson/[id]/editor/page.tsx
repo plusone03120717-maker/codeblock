@@ -429,11 +429,18 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     
     let newBlocks = [...selectedBlocks, newBlock];
     
-    // 改行ブロックを追加した場合、インデントブロックが利用可能な場合（if文、for文、while文など）
+    // 改行ブロックを追加した場合、インデントブロックが利用可能な場合（if文、for文、while文、def文など）
     if (newBlock.text === "↵") {
       const indentBlock = getIndentBlock();
       // インデントブロックが利用可能な場合のみ自動インデントを有効化
-      if (indentBlock) {
+      // レッスン4, 5, 6, 7, 8で有効
+      if (indentBlock && lessonId && (
+        lessonId.startsWith("4-") || 
+        lessonId.startsWith("5-") || 
+        lessonId.startsWith("6-") || 
+        lessonId.startsWith("7-") || 
+        lessonId.startsWith("8-")
+      )) {
         // 現在のインデントレベルを計算
         const indentLevel = getCurrentIndentLevel(selectedBlocks);
         
