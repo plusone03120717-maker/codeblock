@@ -1615,6 +1615,47 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "8-5",
+    characterName: "リコ",
+    characterEmoji: "🐭",
+    slides: [
+      {
+        title: "ループの中で関数を呼ぶ",
+        content: "for文やwhile文の中で関数を呼び出すと、繰り返しのたびに関数が実行されます。",
+        characterMessage: "ルーピーが教えたループの中で、関数を何度も呼び出せるわ",
+      },
+      {
+        title: "毎回違う値を渡せる",
+        content: "ループ変数を関数に渡すと、繰り返しのたびに違う引数で関数を呼び出せます。",
+        characterMessage: "for i in range(3): で、double(i)を呼ぶと、毎回違う結果が返ってくるの",
+        codeExample: {
+          good: "def double(x):\n    return x * 2\n\nfor i in range(3):\n    print(double(i))",
+        },
+      },
+      {
+        title: "結果を集める",
+        content: "空のリストを用意して、ループの中で関数の戻り値をappendしていく使い方もあります。",
+        characterMessage: "ループで関数を呼んで、戻り値をリストに追加していくこともできるわ",
+        codeExample: {
+          good: "def square(x):\n    return x * x\n\nresults = []\nfor i in range(3):\n    results.append(square(i))",
+        },
+      },
+      {
+        title: "強力な組み合わせ",
+        content: "関数で処理を定義し、ループで繰り返し、リストで結果を保存する。プログラミングの基本パターンです。",
+        characterMessage: "関数、ループ、リスト。この3つを組み合わせると、とても強力よ",
+        codeExample: {
+          good: "def process(x):\n    return x * 2\n\nresults = []\nfor i in range(5):\n    results.append(process(i))",
+        },
+      },
+      {
+        title: "ループで関数を呼びましょう",
+        content: "for文の中で関数を呼び出して、結果を出力してみましょう。",
+        characterMessage: "さて、ループの中で関数を使う練習よ。私が結果を見届けるわ",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {
