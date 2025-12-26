@@ -257,19 +257,17 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100">
-      {/* ヘッダー */}
-      <div className="pt-6 pb-4 px-4">
-        <h1 className="text-2xl font-bold text-center text-purple-800 mb-2">
-          🐍 CodeBlock
-        </h1>
-      </div>
-
       {/* 2カラムレイアウト（デスクトップ） */}
-      <div className="px-4 pb-4">
+      <div className="pt-6 px-4 pb-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* 左カラム：ステータスカード + 前回の続き（1/3幅） */}
+            {/* 左カラム：ロゴ + ステータスカード + 前回の続き（1/3幅） */}
             <div className="space-y-4 md:col-span-1">
+              {/* コードブロックロゴ */}
+              <h1 className="text-2xl font-bold text-left text-purple-800">
+                🐍 CodeBlock
+              </h1>
+              
               {/* ステータスカード */}
               <div className="bg-white rounded-2xl shadow-lg p-4 border-2 border-yellow-200">
                 <div className="flex items-center justify-between">
@@ -418,7 +416,7 @@ export default function Home() {
                         {isCompleted ? (
                           <Link
                             href={`/lesson/${lesson.id}/editor`}
-                            className="inline-flex items-center justify-center w-full py-3 rounded-full font-bold text-lg bg-white/30 hover:bg-white/40 text-white transition-all whitespace-nowrap"
+                            className="inline-flex items-center justify-center w-full py-3 rounded-full font-bold text-xs sm:text-sm bg-white/30 hover:bg-white/40 text-white transition-all whitespace-nowrap"
                           >
                             <span>🔄 <FW word="復習" />する</span>
                           </Link>

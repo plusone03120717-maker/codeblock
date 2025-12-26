@@ -24,6 +24,7 @@ export function F({ children, reading }: FuriganaProps) {
 export const words = {
   変数: { text: "変数", reading: "へんすう" },
   関数: { text: "関数", reading: "かんすう" },
+  引数: { text: "引数", reading: "ひきすう" },
   条件: { text: "条件", reading: "じょうけん" },
   分岐: { text: "分岐", reading: "ぶんき" },
   演算: { text: "演算", reading: "えんざん" },
