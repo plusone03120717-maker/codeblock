@@ -41,6 +41,9 @@ export default function Home() {
   const [unitImageErrors, setUnitImageErrors] = useState<Record<number, boolean>>({});
 
   const handleLogout = async () => {
+    const confirmed = window.confirm("本当にログアウトしますか？");
+    if (!confirmed) return;
+    
     try {
       await logout();
     } catch (error) {
@@ -406,15 +409,12 @@ export default function Home() {
                 </h1>
                 {!loading && (
                   user ? (
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600">{username || "ユーザー"}</span>
-                      <button
-                        onClick={handleLogout}
-                        className="text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-full transition-colors"
-                      >
-                        ログアウト
-                      </button>
-                    </div>
+                    <button
+                      onClick={handleLogout}
+                      className="text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-full transition-colors"
+                    >
+                      ログアウト
+                    </button>
                   ) : (
                     <Link
                       href="/login"
@@ -438,12 +438,19 @@ export default function Home() {
                       <p className="text-yellow-600 text-sm font-bold">{totalXP} XP</p>
                     </div>
                   </div>
-                  {highestStreak > 0 && (
-                    <div className="flex items-center gap-1 bg-orange-100 px-3 py-1 rounded-full">
-                      <span>🔥</span>
-                      <span className="font-bold text-orange-600 text-sm">{highestStreak}</span>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {user && username && (
+                      <div className="text-lg font-bold text-gray-600">
+                        {username}
+                      </div>
+                    )}
+                    {highestStreak > 0 && (
+                      <div className="flex items-center gap-1 bg-orange-100 px-3 py-1 rounded-full">
+                        <span>🔥</span>
+                        <span className="font-bold text-orange-600 text-sm">{highestStreak}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="mt-3">
                   <div className="flex justify-between text-xs text-gray-500 mb-1">
