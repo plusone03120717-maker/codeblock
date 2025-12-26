@@ -302,33 +302,19 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* 最後に学習したミッションへのショートカット */}
+              {/* 前回の続き - コンパクト版 */}
               {lastOpenedMission && (() => {
                 const lesson = getLesson(lastOpenedMission.lessonId);
                 if (!lesson) return null;
 
                 return (
-                  <div className="bg-gradient-to-r from-yellow-100 to-orange-100 border-2 border-yellow-300 rounded-2xl p-4 shadow-md">
-                    <div className="flex flex-col gap-3">
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">📚</span>
-                        <div className="flex-1">
-                          <p className="text-sm text-gray-600">前回の続き</p>
-                          <p className="font-bold text-gray-800">
-                            レッスン {lastOpenedMission.lessonId} - ミッション {lastOpenedMission.missionId}
-                            {lesson ? ` 「${lesson.title}」` : ""}
-                          </p>
-                          <p className="text-xs text-gray-500 mt-1">{getTimeAgo(lastOpenedMission.timestamp)}</p>
-                        </div>
-                      </div>
-                      <Link
-                        href={`/lesson/${lastOpenedMission.lessonId}/editor`}
-                        className="bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 text-white px-6 py-2 rounded-full font-bold shadow-md hover:shadow-lg transition-all text-center"
-                      >
-                        続きから学習する →
-                      </Link>
-                    </div>
-                  </div>
+                  <Link 
+                    href={`/lesson/${lastOpenedMission.lessonId}/editor?mission=${lastOpenedMission.missionId}`}
+                    className="flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-full shadow-md transition-all"
+                  >
+                    <span>▶</span>
+                    <span>前回の続きから学習する</span>
+                  </Link>
                 );
               })()}
             </div>
