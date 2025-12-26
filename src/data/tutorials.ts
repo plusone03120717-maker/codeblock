@@ -1390,6 +1390,47 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "7-4",
+    characterName: "ニコ",
+    characterEmoji: "🐱",
+    slides: [
+      {
+        title: "引数って何？",
+        content: "引数（ひきすう）は、関数に渡すデータのことです。同じ関数でも、引数を変えると違う結果が得られます。",
+        characterMessage: "料理には材料が必要でしょ？ 関数に渡す材料のことを『引数』っていうんだ！",
+      },
+      {
+        title: "引数の書き方",
+        content: "関数名の後ろのカッコの中に変数名を書きます。これがパラメータ（材料リスト）になります。",
+        characterMessage: "def greet(name): って書くと、nameという材料を受け取れるよ！",
+        codeExample: {
+          good: "def greet(name):\n    print(name)",
+        },
+      },
+      {
+        title: "引数を使って出力",
+        content: "パラメータで受け取った値は、関数の中で変数として使えます。printで出力したり、計算に使ったりできます。",
+        characterMessage: "受け取った材料は、関数の中で自由に使えるよ！ print(name)で出力できる！",
+        codeExample: {
+          good: "def greet(name):\n    print(name)",
+        },
+      },
+      {
+        title: "呼び出す時に材料を渡す",
+        content: "関数を呼び出す時にカッコの中に値を入れると、その値がパラメータに渡されます。",
+        characterMessage: "greet(\"太郎\") って呼び出すと、nameに\"太郎\"が入るんだ！",
+        codeExample: {
+          good: 'def greet(name):\n    print(name)\n\ngreet("太郎")\n# 結果: 太郎',
+        },
+      },
+      {
+        title: "材料を渡してみよう！",
+        content: "引数を使った関数を呼び出して、いろいろな値を渡してみましょう。",
+        characterMessage: "さあ、関数に材料（引数）を渡してみよう！ 同じレシピでも材料で味が変わるよ！",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {
