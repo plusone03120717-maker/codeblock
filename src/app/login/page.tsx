@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { registerWithUsername, loginWithUsername, loginWithGoogle } from "@/lib/auth";
 
 export default function LoginPage() {
@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [rememberUserId, setRememberUserId] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const savedUserId = localStorage.getItem("rememberedUserId");
@@ -20,6 +21,13 @@ export default function LoginPage() {
       setRememberUserId(true);
     }
   }, []);
+
+  useEffect(() => {
+    const mode = searchParams.get("mode");
+    if (mode === "register") {
+      setIsRegister(true);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

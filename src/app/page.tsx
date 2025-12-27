@@ -21,6 +21,226 @@ import { UNIT_COLORS, getUnitGradient, getUnitSolid } from "@/utils/unitColors";
 import { useAuth } from "@/contexts/AuthContext";
 import { logout } from "@/lib/auth";
 
+// 簡単な多言語対応フック（ランディングページ用）
+const useLanguage = () => {
+  const [language, setLanguage] = useState<"ja" | "en">("ja");
+  
+  // localStorageから言語設定を読み込み
+  useEffect(() => {
+    const saved = localStorage.getItem("codeblock-language");
+    if (saved === "en" || saved === "ja") {
+      setLanguage(saved);
+    }
+  }, []);
+  
+  const t = (key: string): string => {
+    // 簡単な翻訳テーブル
+    const translations: Record<string, Record<string, string>> = {
+      "common.login": { ja: "ログイン", en: "Login" },
+      "common.signUp": { ja: "新規登録", en: "Sign Up" },
+      "common.loading": { ja: "読み込み中...", en: "Loading..." },
+    };
+    return translations[key]?.[language] || key;
+  };
+  
+  return { t, language, setLanguage };
+};
+
+// ランディングページコンポーネント
+const LandingPage = () => {
+  const { t, language } = useLanguage();
+  
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-purple-500 to-blue-600">
+      {/* ヘッダー */}
+      <header className="flex justify-between items-center p-4 max-w-6xl mx-auto">
+        <div className="flex items-center gap-2">
+          <span className="text-3xl">🍀</span>
+          <span className="text-2xl font-bold text-white">CodeBlock</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/login"
+            className="text-white font-medium hover:text-purple-200 transition-colors"
+          >
+            {t("common.login")}
+          </Link>
+          <Link
+            href="/login?mode=register"
+            className="bg-white text-purple-600 font-bold py-2 px-6 rounded-full hover:bg-purple-100 transition-colors"
+          >
+            {language === "ja" ? "新規登録" : "Sign Up"}
+          </Link>
+        </div>
+      </header>
+
+      {/* ヒーローセクション */}
+      <section className="text-center py-16 px-4">
+        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          {language === "ja" ? "ブロックで学ぶ" : "Learn with Blocks"}
+          <br />
+          {language === "ja" ? "はじめてのPython" : "Your First Python"}
+        </h1>
+        <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
+          {language === "ja" 
+            ? "小学生でもかんたん！ドラッグ＆ドロップでプログラミングを学ぼう" 
+            : "Easy for kids! Learn programming with drag & drop"}
+        </p>
+        <Link
+          href="/login"
+          className="inline-block bg-orange-500 hover:bg-orange-600 text-white font-bold text-xl py-4 px-10 rounded-full shadow-lg transform hover:scale-105 transition-all"
+        >
+          {language === "ja" ? "無料で始める 🚀" : "Start Free 🚀"}
+        </Link>
+      </section>
+
+      {/* 特徴セクション */}
+      <section className="py-16 px-4 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
+            {language === "ja" ? "CodeBlockの特徴" : "Features"}
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center p-6">
+              <div className="text-5xl mb-4">🧩</div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                {language === "ja" ? "ブロックで学ぶ" : "Learn with Blocks"}
+              </h3>
+              <p className="text-gray-600">
+                {language === "ja" 
+                  ? "ドラッグ＆ドロップでコードを組み立て。タイピングが苦手でも大丈夫！" 
+                  : "Build code with drag & drop. No typing skills needed!"}
+              </p>
+            </div>
+            <div className="text-center p-6">
+              <div className="text-5xl mb-4">🎮</div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                {language === "ja" ? "ゲーム感覚" : "Game-like Learning"}
+              </h3>
+              <p className="text-gray-600">
+                {language === "ja" 
+                  ? "XPを貯めてレベルアップ！楽しみながらプログラミングをマスター" 
+                  : "Earn XP and level up! Master programming while having fun"}
+              </p>
+            </div>
+            <div className="text-center p-6">
+              <div className="text-5xl mb-4">🐱</div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                {language === "ja" ? "キャラクターと一緒" : "With Characters"}
+              </h3>
+              <p className="text-gray-600">
+                {language === "ja" 
+                  ? "個性豊かなキャラクターたちがやさしく教えてくれる" 
+                  : "Friendly characters guide you through each lesson"}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* キャラクター紹介セクション */}
+      <section className="py-16 px-4 bg-purple-50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
+            {language === "ja" ? "なかまたち" : "Meet the Characters"}
+          </h2>
+          <div className="flex flex-wrap justify-center gap-6">
+            <div className="bg-white rounded-xl p-4 shadow-md text-center w-32">
+              <div className="text-4xl mb-2">🐱</div>
+              <p className="font-bold text-gray-800">{language === "ja" ? "ピクセル" : "Pixel"}</p>
+            </div>
+            <div className="bg-white rounded-xl p-4 shadow-md text-center w-32">
+              <div className="text-4xl mb-2">🤖</div>
+              <p className="font-bold text-gray-800">{language === "ja" ? "デックス" : "Dex"}</p>
+            </div>
+            <div className="bg-white rounded-xl p-4 shadow-md text-center w-32">
+              <div className="text-4xl mb-2">🦉</div>
+              <p className="font-bold text-gray-800">{language === "ja" ? "ジャッジ" : "Judge"}</p>
+            </div>
+            <div className="bg-white rounded-xl p-4 shadow-md text-center w-32">
+              <div className="text-4xl mb-2">🐹</div>
+              <p className="font-bold text-gray-800">{language === "ja" ? "ルーピー" : "Loopy"}</p>
+            </div>
+            <div className="bg-white rounded-xl p-4 shadow-md text-center w-32">
+              <div className="text-4xl mb-2">🐜</div>
+              <p className="font-bold text-gray-800">{language === "ja" ? "アリー" : "Ally"}</p>
+            </div>
+            <div className="bg-white rounded-xl p-4 shadow-md text-center w-32">
+              <div className="text-4xl mb-2">🐧</div>
+              <p className="font-bold text-gray-800">{language === "ja" ? "ディクト" : "Dicto"}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 学習内容セクション */}
+      <section className="py-16 px-4 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
+            {language === "ja" ? "学べること" : "What You'll Learn"}
+          </h2>
+          <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+            <div className="bg-green-100 rounded-lg p-4 text-center">
+              <span className="font-bold text-green-800">✓ {language === "ja" ? "print関数" : "print function"}</span>
+            </div>
+            <div className="bg-blue-100 rounded-lg p-4 text-center">
+              <span className="font-bold text-blue-800">✓ {language === "ja" ? "変数" : "Variables"}</span>
+            </div>
+            <div className="bg-purple-100 rounded-lg p-4 text-center">
+              <span className="font-bold text-purple-800">✓ {language === "ja" ? "データ型" : "Data Types"}</span>
+            </div>
+            <div className="bg-yellow-100 rounded-lg p-4 text-center">
+              <span className="font-bold text-yellow-800">✓ {language === "ja" ? "条件分岐" : "Conditionals"}</span>
+            </div>
+            <div className="bg-red-100 rounded-lg p-4 text-center">
+              <span className="font-bold text-red-800">✓ {language === "ja" ? "ループ" : "Loops"}</span>
+            </div>
+            <div className="bg-indigo-100 rounded-lg p-4 text-center">
+              <span className="font-bold text-indigo-800">✓ {language === "ja" ? "リスト" : "Lists"}</span>
+            </div>
+            <div className="bg-pink-100 rounded-lg p-4 text-center">
+              <span className="font-bold text-pink-800">✓ {language === "ja" ? "関数" : "Functions"}</span>
+            </div>
+            <div className="bg-teal-100 rounded-lg p-4 text-center">
+              <span className="font-bold text-teal-800">✓ {language === "ja" ? "辞書" : "Dictionaries"}</span>
+            </div>
+            <div className="bg-gray-100 rounded-lg p-4 text-center">
+              <span className="font-bold text-gray-800">✓ {language === "ja" ? "さらに追加予定！" : "More coming!"}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTAセクション */}
+      <section className="py-16 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-center">
+        <h2 className="text-3xl font-bold text-white mb-4">
+          {language === "ja" ? "さあ、はじめよう！" : "Let's Get Started!"}
+        </h2>
+        <p className="text-purple-100 mb-8">
+          {language === "ja" ? "無料でアカウントを作成して、今すぐ学習スタート" : "Create a free account and start learning today"}
+        </p>
+        <Link
+          href="/login"
+          className="inline-block bg-orange-500 hover:bg-orange-600 text-white font-bold text-xl py-4 px-10 rounded-full shadow-lg transform hover:scale-105 transition-all"
+        >
+          {language === "ja" ? "無料で始める 🚀" : "Start Free 🚀"}
+        </Link>
+      </section>
+
+      {/* フッター */}
+      <footer className="py-8 px-4 bg-gray-800 text-center">
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <span className="text-2xl">🍀</span>
+          <span className="text-xl font-bold text-white">CodeBlock</span>
+        </div>
+        <p className="text-gray-400 text-sm">
+          © 2024 CodeBlock. All rights reserved.
+        </p>
+      </footer>
+    </div>
+  );
+};
+
 export default function Home() {
   const router = useRouter();
   const { user, userId, displayName, contactEmail, loading, progressLoaded } = useAuth();
@@ -43,12 +263,6 @@ export default function Home() {
   const [lastOpenedMission, setLastOpenedMission] = useState<LastOpenedMission | null>(null);
   const [unitImageErrors, setUnitImageErrors] = useState<Record<number, boolean>>({});
 
-  // 未ログイン時はログインページへリダイレクト
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login");
-    }
-  }, [user, loading, router]);
 
   useEffect(() => {
     if (!progressLoaded) return;
@@ -226,12 +440,9 @@ export default function Home() {
     );
   }
 
+  // 未ログイン時はランディングページを表示
   if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
-        <div className="text-white text-xl">ログインページへ移動中...</div>
-      </div>
-    );
+    return <LandingPage />;
   }
 
   const isLessonLocked = (lessonIndex: number): boolean => {
