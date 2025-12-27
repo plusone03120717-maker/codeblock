@@ -80,6 +80,15 @@ export const words = {
   同士: { text: "同士", reading: "どうし" },
   組み合わせ: { text: "組み合わせ", reading: "くみあわせ" },
   複数: { text: "複数", reading: "ふくすう" },
+  辞書: { text: "辞書", reading: "じしょ" },
+  知識: { text: "知識", reading: "ちしき" },
+  図書館: { text: "図書館", reading: "としょかん" },
+  司書: { text: "司書", reading: "ししょ" },
+  名前: { text: "名前", reading: "なまえ" },
+  順番: { text: "順番", reading: "じゅんばん" },
+  管理: { text: "管理", reading: "かんり" },
+  波カッコ: { text: "波カッコ", reading: "なみかっこ" },
+  波: { text: "波", reading: "なみ" },
 };
 
 // 単語キーから直接ふりがな付きテキストを返すヘルパー

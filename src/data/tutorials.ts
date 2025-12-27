@@ -1719,6 +1719,56 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "9-1",
+    characterName: "ディクト",
+    characterEmoji: "🐧",
+    slides: [
+      {
+        title: "知識の図書館へようこそ",
+        content: "ディクトは司書を務めています。今日は「辞書」という新しいデータの入れ物を学びましょう。",
+        characterMessage: "ようこそ、知識の図書館へ。私はディクト、司書を務めています。",
+      },
+      {
+        title: "辞書とは？",
+        content: "今日は「辞書」という新しいデータの入れ物を学びましょう。",
+        characterMessage: "今日は「辞書」という新しいデータの入れ物を学びましょう。",
+      },
+      {
+        title: "リストとの違い",
+        content: "リストは「順番」で管理しましたが、辞書は「名前」で管理します。",
+        characterMessage: "アリーさんから「リスト」は学びましたね？リストは「順番」で管理しました。",
+      },
+      {
+        title: "名前で管理する",
+        content: "辞書は「名前」で管理します。図書館で本を探すように！",
+        characterMessage: "辞書は「名前」で管理します。図書館で本を探すように！",
+      },
+      {
+        title: "図書館の例",
+        content: "例えば、図書館では「3番目の本」ではなく「ハリーポッターという本」で探しますよね。",
+        characterMessage: "例えば、図書館では「3番目の本」ではなく「ハリーポッターという本」で探しますよね。",
+      },
+      {
+        title: "キーと値のペア",
+        content: "辞書は「キー」と「値」のペアで作ります。キーが本のタイトル、値が本の内容です。",
+        characterMessage: "辞書は「キー」と「値」のペアで作ります。キーが本のタイトル、値が本の内容です。",
+      },
+      {
+        title: "辞書の書き方",
+        content: "書き方は { \"キー\": \"値\" } です。波カッコ { } を使います。",
+        characterMessage: "書き方は { \"キー\": \"値\" } です。波カッコ { } を使います。",
+        codeExample: {
+          good: '{"name": "太郎"}',
+        },
+      },
+      {
+        title: "実際に使ってみましょう",
+        content: "さて、実際に辞書を見てみましょう。",
+        characterMessage: "さて、実際に辞書を見てみましょう。",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {

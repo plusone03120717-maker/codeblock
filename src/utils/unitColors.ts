@@ -10,6 +10,7 @@ export const UNIT_COLORS = {
     "from-yellow-400 to-yellow-500",   // unit 6: リスト（黄色系）
     "from-red-400 to-red-500",         // unit 7: 関数の基本（赤系）
     "from-violet-400 to-violet-500",   // unit 8: 戻り値と応用（紫系）
+    "from-slate-700 to-slate-800",     // unit 9: 辞書（ネイビーブラック系）
   ],
   solid: [
     "bg-green-500",    // unit 1: print関数（緑系）
@@ -20,6 +21,7 @@ export const UNIT_COLORS = {
     "bg-yellow-500",   // unit 6: リスト（黄色系）
     "bg-red-500",      // unit 7: 関数の基本（赤系）
     "bg-violet-500",   // unit 8: 戻り値と応用（紫系）
+    "bg-slate-800",    // unit 9: 辞書（ネイビーブラック系）
   ],
 };
 

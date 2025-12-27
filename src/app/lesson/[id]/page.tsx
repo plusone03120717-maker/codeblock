@@ -115,7 +115,7 @@ export default function LessonPage({ params }: LessonPageProps) {
                 レッスン {lessonId}
               </h1>
               <h2 className="text-2xl font-semibold text-gray-700">
-                {lesson.title}
+                <FuriganaText text={lesson.title} />
               </h2>
             </div>
             {completed && (
