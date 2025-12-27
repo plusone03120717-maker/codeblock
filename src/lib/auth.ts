@@ -6,7 +6,7 @@ import {
   signOut,
   User,
 } from "firebase/auth";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, deleteDoc, Timestamp } from "firebase/firestore";
 import { auth, db } from "./firebase";
 
 const usernameToEmail = (username: string): string => {
@@ -111,5 +111,95 @@ export const updateEmail = async (
   await setDoc(doc(db, "users", uid), {
     contactEmail: newEmail,
   }, { merge: true });
+};
+
+export const getContactEmailByUserId = async (userId: string): Promise<string | null> => {
+  const userIdDoc = await getDoc(doc(db, "userIds", userId.toLowerCase()));
+  if (!userIdDoc.exists()) {
+    return null;
+  }
+  
+  const uid = userIdDoc.data().uid;
+  const userDoc = await getDoc(doc(db, "users", uid));
+  if (!userDoc.exists()) {
+    return null;
+  }
+  
+  return userDoc.data().contactEmail || null;
+};
+
+export const sendPasswordReset = async (userId: string): Promise<string> => {
+  const userIdDoc = await getDoc(doc(db, "userIds", userId.toLowerCase()));
+  if (!userIdDoc.exists()) {
+    throw new Error("このユーザーIDは存在しません");
+  }
+  
+  const uid = userIdDoc.data().uid;
+  const userDoc = await getDoc(doc(db, "users", uid));
+  if (!userDoc.exists()) {
+    throw new Error("ユーザー情報が見つかりません");
+  }
+  
+  const contactEmail = userDoc.data().contactEmail;
+  if (!contactEmail) {
+    throw new Error("メールアドレスが設定されていません。先生に相談してください。");
+  }
+  
+  const resetToken = Math.random().toString(36).substring(2, 8).toUpperCase();
+  const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+  
+  await setDoc(doc(db, "passwordResets", uid), {
+    token: resetToken,
+    expiresAt: expiresAt,
+    createdAt: new Date(),
+  });
+  
+  return contactEmail;
+};
+
+export const verifyResetToken = async (userId: string, token: string): Promise<string | null> => {
+  const userIdDoc = await getDoc(doc(db, "userIds", userId.toLowerCase()));
+  if (!userIdDoc.exists()) {
+    return null;
+  }
+  
+  const uid = userIdDoc.data().uid;
+  const resetDoc = await getDoc(doc(db, "passwordResets", uid));
+  
+  if (!resetDoc.exists()) {
+    return null;
+  }
+  
+  const data = resetDoc.data();
+  const expiresAt = data.expiresAt instanceof Timestamp 
+    ? data.expiresAt.toDate() 
+    : (data.expiresAt as Date);
+  
+  if (new Date() > expiresAt) {
+    return null;
+  }
+  
+  if (data.token !== token.toUpperCase()) {
+    return null;
+  }
+  
+  return uid;
+};
+
+export const resetPassword = async (userId: string, token: string, newPassword: string): Promise<void> => {
+  if (newPassword.length < 6) {
+    throw new Error("パスワードは6文字以上にしてください");
+  }
+  
+  const uid = await verifyResetToken(userId, token);
+  if (!uid) {
+    throw new Error("リセットコードが無効または期限切れです");
+  }
+  
+  const dummyEmail = usernameToEmail(userId);
+  
+  await deleteDoc(doc(db, "passwordResets", uid));
+  
+  throw new Error("パスワードの変更にはFirebase Admin SDKが必要です。先生に新しいパスワードを設定してもらってください。");
 };
 
