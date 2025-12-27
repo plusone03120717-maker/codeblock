@@ -8,6 +8,7 @@ import { lessons, getLesson } from "@/data/lessons";
 import { getTutorial } from "@/data/tutorials";
 import { isLessonCompleted } from "@/utils/progress";
 import { F, FW, FuriganaText } from "@/components/Furigana";
+import { useAuth } from "@/contexts/AuthContext";
 
 type LessonPageProps = {
   params: Promise<{
@@ -17,9 +18,17 @@ type LessonPageProps = {
 
 export default function LessonPage({ params }: LessonPageProps) {
   const router = useRouter();
+  const { user, loading } = useAuth();
   const [lessonId, setLessonId] = useState<string | null>(null);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [imageError, setImageError] = useState(false);
+
+  // 未ログイン時はログインページへリダイレクト
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/login");
+    }
+  }, [user, loading, router]);
 
   useEffect(() => {
     params.then((p) => {
@@ -40,6 +49,15 @@ export default function LessonPage({ params }: LessonPageProps) {
     setImageError(false);
   }, [tutorial]);
   const completed = lessonId ? isLessonCompleted(lessonId) : false;
+
+  // ローディング中または未ログイン時の表示
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
+        <div className="text-white text-xl">読み込み中...</div>
+      </div>
+    );
+  }
 
   if (!lessonId) {
     return (

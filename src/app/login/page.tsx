@@ -67,7 +67,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-600 to-blue-600 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-b from-purple-600 to-blue-600 flex flex-col items-center justify-center p-4">
+      {/* ロゴ */}
+      <div className="flex items-center gap-2 mb-6">
+        <span className="text-3xl font-bold text-white">CodeBlock</span>
+      </div>
+      
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
         <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
           {isRegister ? "アカウントを作ろう！" : "ログイン"}

@@ -245,7 +245,7 @@ function DraggableBlock({ block, index, onRemove }: DraggableBlockProps) {
 
 export default function LessonEditorPage({ params }: EditorPageProps) {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [lessonId, setLessonId] = useState<string | null>(null);
   const [currentMissionId, setCurrentMissionId] = useState(1);
   const [selectedBlocks, setSelectedBlocks] = useState<WordBlock[]>([]);
@@ -285,6 +285,13 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+
+  // 未ログイン時はログインページへリダイレクト
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/login");
+    }
+  }, [user, loading, router]);
 
   useEffect(() => {
     params.then((p) => {
@@ -359,6 +366,15 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   }, [missions, currentMissionId, isRetryMode, wrongMissionIds, retryIndex]);
   
   const tutorial = lessonId ? getTutorial(lessonId) : undefined;
+
+  // ローディング中または未ログイン時の表示
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
+        <div className="text-white text-xl">読み込み中...</div>
+      </div>
+    );
+  }
 
   // チュートリアルが変わったときにも画像エラーをリセット
   useEffect(() => {

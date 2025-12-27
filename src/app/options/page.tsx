@@ -2,12 +2,22 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { getSettings, saveSettings, AppSettings } from "@/utils/settings";
 import { useAuth } from "@/contexts/AuthContext";
 import { updateDisplayName, updateEmail, changePassword, isGoogleUser } from "@/lib/auth";
 
 export default function OptionsPage() {
-  const { user, userId, displayName, contactEmail, refreshUserInfo } = useAuth();
+  const router = useRouter();
+  const { user, userId, displayName, contactEmail, loading: authLoading, refreshUserInfo } = useAuth();
+  
+  // 未ログイン時はログインページへリダイレクト
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, authLoading, router]);
+  
   const [settings, setSettings] = useState<AppSettings>({
     soundEnabled: true,
   });
@@ -39,6 +49,15 @@ export default function OptionsPage() {
   useEffect(() => {
     setIsGoogleAccount(isGoogleUser());
   }, [user]);
+
+  // ローディング中または未ログイン時の表示
+  if (authLoading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
+        <div className="text-white text-xl">読み込み中...</div>
+      </div>
+    );
+  }
 
   const handleSoundToggle = () => {
     const newSettings = { ...settings, soundEnabled: !settings.soundEnabled };

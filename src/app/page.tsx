@@ -24,6 +24,14 @@ import { logout } from "@/lib/auth";
 export default function Home() {
   const router = useRouter();
   const { user, userId, displayName, contactEmail, loading, progressLoaded } = useAuth();
+  
+  // 未ログイン時はログインページへリダイレクト
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/login");
+    }
+  }, [user, loading, router]);
+  
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
   const [totalXP, setTotalXP] = useState(0);
   const [levelInfo, setLevelInfo] = useState({ level: 1, name: "ビギナー", minXP: 0, maxXP: 99 });
@@ -51,6 +59,23 @@ export default function Home() {
       console.error("ログアウトエラー:", error);
     }
   };
+
+  // ローディング中または未ログイン時の表示
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
+        <div className="text-white text-xl">読み込み中...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
+        <div className="text-white text-xl">ログインページへ移動中...</div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     if (!progressLoaded) return;
@@ -386,8 +411,26 @@ export default function Home() {
     };
   }, [completedLessons, lessons, unitImageErrors]);
 
-  // ローディング中の表示
-  if (loading || !progressLoaded) {
+  // ローディング中または未ログイン時の表示
+  if (loading || !user) {
+    if (loading) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
+          <div className="text-white text-xl">読み込み中...</div>
+        </div>
+      );
+    }
+    if (!user) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
+          <div className="text-white text-xl">ログインページへ移動中...</div>
+        </div>
+      );
+    }
+  }
+
+  // 進捗データのローディング中の表示
+  if (!progressLoaded) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100">
         <div className="text-xl text-gray-700">読み込み中...</div>
