@@ -1049,6 +1049,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "6-1",
     characterName: "アリー",
     characterEmoji: "🐜",
+    characterImage: "/images/characters/ari.png",
     slides: [
       {
         title: "はじめまして！アリーだよ！",
@@ -1087,6 +1088,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "6-2",
     characterName: "アリー",
     characterEmoji: "🐜",
+    characterImage: "/images/characters/ari.png",
     slides: [
       {
         title: "インデックスって何？",
@@ -1128,6 +1130,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "6-3",
     characterName: "アリー",
     characterEmoji: "🐜",
+    characterImage: "/images/characters/ari.png",
     slides: [
       {
         title: "appendって何？",
@@ -1169,6 +1172,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "6-4",
     characterName: "アリー",
     characterEmoji: "🐜",
+    characterImage: "/images/characters/ari.png",
     slides: [
       {
         title: "lenって何？",
@@ -1210,6 +1214,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "6-5",
     characterName: "アリー",
     characterEmoji: "🐜",
+    characterImage: "/images/characters/ari.png",
     slides: [
       {
         title: "リストとループは最強コンビ！",
@@ -1251,6 +1256,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "6-6",
     characterName: "アリー",
     characterEmoji: "🐜",
+    characterImage: "/images/characters/ari.png",
     slides: [
       {
         title: "リストの総復習だよ！",
@@ -1273,6 +1279,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "7-1",
     characterName: "ニコ",
     characterEmoji: "🐱",
+    characterImage: "/images/characters/chef-cat.png",
     slides: [
       {
         title: "ニコのキッチンへようこそ！",
@@ -1311,6 +1318,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "7-2",
     characterName: "ニコ",
     characterEmoji: "🐱",
+    characterImage: "/images/characters/chef-cat.png",
     slides: [
       {
         title: "レシピを実行しよう！",
@@ -1353,6 +1361,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "7-3",
     characterName: "ニコ",
     characterEmoji: "🐱",
+    characterImage: "/images/characters/chef-cat.png",
     slides: [
       {
         title: "レシピは何度でも使える！",
@@ -1394,6 +1403,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "7-4",
     characterName: "ニコ",
     characterEmoji: "🐱",
+    characterImage: "/images/characters/chef-cat.png",
     slides: [
       {
         title: "引数って何？",
@@ -1435,6 +1445,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "7-5",
     characterName: "ニコ",
     characterEmoji: "🐱",
+    characterImage: "/images/characters/chef-cat.png",
     slides: [
       {
         title: "複数の材料を渡そう",
@@ -1476,6 +1487,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "7-6",
     characterName: "ニコ",
     characterEmoji: "🐱",
+    characterImage: "/images/characters/chef-cat.png",
     slides: [
       {
         title: "関数の総復習だよ！",
@@ -1498,6 +1510,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "8-1",
     characterName: "リコ",
     characterEmoji: "🐭",
+    characterImage: "/images/characters/rico.png",
     slides: [
       {
         title: "リコのテイスティングルームへようこそ",
@@ -1536,6 +1549,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "8-2",
     characterName: "リコ",
     characterEmoji: "🐭",
+    characterImage: "/images/characters/rico.png",
     slides: [
       {
         title: "結果を受け取りましょう",
@@ -1578,6 +1592,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "8-3",
     characterName: "リコ",
     characterEmoji: "🐭",
+    characterImage: "/images/characters/rico.png",
     slides: [
       {
         title: "材料を受け取って、料理を返す",
@@ -1619,6 +1634,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "8-4",
     characterName: "リコ",
     characterEmoji: "🐭",
+    characterImage: "/images/characters/rico.png",
     slides: [
       {
         title: "リストも渡せるわ",
@@ -1660,6 +1676,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "8-5",
     characterName: "リコ",
     characterEmoji: "🐭",
+    characterImage: "/images/characters/rico.png",
     slides: [
       {
         title: "ループの中で関数を呼ぶ",
@@ -1701,6 +1718,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "8-6",
     characterName: "リコ",
     characterEmoji: "🐭",
+    characterImage: "/images/characters/rico.png",
     slides: [
       {
         title: "戻り値の総復習よ！",
@@ -1723,6 +1741,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "9-1",
     characterName: "ディクト",
     characterEmoji: "🐧",
+    characterImage: "/images/characters/dict.png",
     slides: [
       {
         title: "知識の図書館へようこそ",
@@ -1773,6 +1792,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "9-2",
     characterName: "ディクト",
     characterEmoji: "🐧",
+    characterImage: "/images/characters/dict.png",
     slides: [
       {
         title: "辞書を作ってみよう",
@@ -1821,6 +1841,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "9-3",
     characterName: "ディクト",
     characterEmoji: "🐧",
+    characterImage: "/images/characters/dict.png",
     slides: [
       {
         title: "値を取り出す方法",
@@ -1869,6 +1890,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "9-4",
     characterName: "ディクト",
     characterEmoji: "🐧",
+    characterImage: "/images/characters/dict.png",
     slides: [
       {
         title: "値を追加・変更する方法",
@@ -1922,6 +1944,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "9-5",
     characterName: "ディクト",
     characterEmoji: "🐧",
+    characterImage: "/images/characters/dict.png",
     slides: [
       {
         title: "キーがあるか確認する",
@@ -1978,6 +2001,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "9-6",
     characterName: "ディクト",
     characterEmoji: "🐧",
+    characterImage: "/images/characters/dict.png",
     slides: [
       {
         title: "辞書クイズ！",

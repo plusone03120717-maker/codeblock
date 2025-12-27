@@ -25,13 +25,7 @@ export default function Home() {
   const router = useRouter();
   const { user, userId, displayName, contactEmail, loading, progressLoaded } = useAuth();
   
-  // 未ログイン時はログインページへリダイレクト
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login");
-    }
-  }, [user, loading, router]);
-  
+  // すべてのフックを先に宣言（条件分岐の前に）
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
   const [totalXP, setTotalXP] = useState(0);
   const [levelInfo, setLevelInfo] = useState({ level: 1, name: "ビギナー", minXP: 0, maxXP: 99 });
@@ -49,33 +43,12 @@ export default function Home() {
   const [lastOpenedMission, setLastOpenedMission] = useState<LastOpenedMission | null>(null);
   const [unitImageErrors, setUnitImageErrors] = useState<Record<number, boolean>>({});
 
-  const handleLogout = async () => {
-    const confirmed = window.confirm("本当にログアウトしますか？");
-    if (!confirmed) return;
-    
-    try {
-      await logout();
-    } catch (error) {
-      console.error("ログアウトエラー:", error);
+  // 未ログイン時はログインページへリダイレクト
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/login");
     }
-  };
-
-  // ローディング中または未ログイン時の表示
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
-        <div className="text-white text-xl">読み込み中...</div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
-        <div className="text-white text-xl">ログインページへ移動中...</div>
-      </div>
-    );
-  }
+  }, [user, loading, router]);
 
   useEffect(() => {
     if (!progressLoaded) return;
@@ -124,6 +97,142 @@ export default function Home() {
     const lastMission = getLastOpenedMission();
     setLastOpenedMission(lastMission);
   }, [progressLoaded]);
+
+  // ユニット行のレンダリング用のuseMemo（すべてのフックの後に、早期リターンの前に配置）
+  const unitRowsContent = useMemo(() => {
+    const allUnits = Array.from(new Set(lessons.map(l => l.unitNumber))).sort((a, b) => a - b);
+    const firstRowUnits = allUnits.slice(0, 3);
+    const secondRowUnits = allUnits.slice(3);
+    
+    // ユニットポイントクリック時の処理
+    const handleUnitPointClick = (unit: number) => {
+      // そのユニットに属するレッスンで、完了したレッスンを探す
+      const completedLessonsInUnit = lessons
+        .map((lesson, index) => ({ lesson, index }))
+        .filter(({ lesson }) => lesson.unitNumber === unit && completedLessons.includes(lesson.id));
+      
+      // 完了したレッスンがある場合、最初のレッスンにカードを切り替え
+      if (completedLessonsInUnit.length > 0) {
+        const targetIndex = completedLessonsInUnit[0].index;
+        setCurrentIndex(targetIndex);
+      }
+    };
+
+    // ユニットポイントコンポーネント（ヘルパー関数）
+    const renderUnitPoint = (unit: number, unitLessons: typeof lessons, completedInUnit: number, isUnitComplete: boolean, unitProgress: number, unitName: ReactNode) => {
+      // ユニットボタンの色定義を使用
+      const unitColor = getUnitGradient(unit);
+
+      // そのユニットに完了したレッスンがあるかチェック
+      const hasCompletedLessons = completedLessons.some(lessonId => 
+        lessons.find(l => l.id === lessonId)?.unitNumber === unit
+      );
+
+      // ユニットが完了した場合、最初のレッスンのキャラクター画像を取得
+      let characterImage: string | undefined;
+      let characterEmoji: string | undefined;
+      if (isUnitComplete && unitLessons.length > 0) {
+        const firstLesson = unitLessons[0];
+        const tutorial = getTutorial(firstLesson.id);
+        characterImage = tutorial?.characterImage;
+        characterEmoji = tutorial?.characterEmoji;
+      }
+
+      return (
+        <div 
+          key={unit} 
+          className={`flex flex-col items-center group relative h-20 ${hasCompletedLessons ? 'cursor-pointer' : ''}`}
+          onClick={() => hasCompletedLessons && handleUnitPointClick(unit)}
+        >
+          {/* ホバー時のツールチップ */}
+          <div className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 invisible group-hover:visible z-10 px-3 py-2 bg-gray-200 text-gray-800 text-xs rounded-lg shadow-lg whitespace-nowrap transition-all duration-200 pointer-events-none group-hover:pointer-events-auto border border-gray-300">
+            <div className="font-semibold mb-1">{unitName}</div>
+            <div>進捗: {completedInUnit}/{unitLessons.length}完了</div>
+            {/* ツールチップの矢印 */}
+            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-200"></div>
+          </div>
+
+          {/* ユニットポイント（ボタン）の位置を固定 - 上部に配置 */}
+          <div className="absolute top-0 flex items-center justify-center">
+            <div className={`w-12 h-12 rounded-full flex flex-col items-center justify-center font-bold text-xs shadow-lg transition-all duration-300 ease-out ${hasCompletedLessons ? 'group-hover:scale-110' : ''} ${
+              isUnitComplete
+                ? `bg-gradient-to-br ${unitColor} text-white overflow-hidden`
+                : completedInUnit > 0
+                ? "bg-gradient-to-br from-yellow-400 to-amber-500 text-white"
+                : "bg-gradient-to-br from-gray-300 to-gray-400 text-gray-600"
+            }`}>
+              {isUnitComplete && characterImage && !unitImageErrors[unit] ? (
+                <Image
+                  src={characterImage}
+                  alt="Character"
+                  width={48}
+                  height={48}
+                  className="object-contain w-full h-full"
+                  unoptimized
+                  onError={() => {
+                    setUnitImageErrors(prev => ({ ...prev, [unit]: true }));
+                  }}
+                />
+              ) : isUnitComplete && characterEmoji ? (
+                <span className="text-2xl">{characterEmoji}</span>
+              ) : (
+                <span>{unit}</span>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // ユニット名を取得するヘルパー関数
+    const getUnitName = (unit: number) => {
+      if (unit === 1) return "print";
+      if (unit === 2) return <FW word="変数" />;
+      if (unit === 3) return <>データ<F reading="がた">型</F></>;
+      if (unit === 4) return <>条件<F reading="ぶんき">分岐</F></>;
+      if (unit === 5) return "ループ";
+      if (unit === 6) return "リスト";
+      if (unit === 7) return <>関数の基本</>;
+      if (unit === 8) return <>戻り値と応用</>;
+      return "";
+    };
+
+    return {
+      allUnits,
+      firstRowUnits,
+      secondRowUnits,
+      renderUnitPoint,
+      getUnitName,
+    };
+  }, [completedLessons, lessons, unitImageErrors]);
+
+  const handleLogout = async () => {
+    const confirmed = window.confirm("本当にログアウトしますか？");
+    if (!confirmed) return;
+    
+    try {
+      await logout();
+    } catch (error) {
+      console.error("ログアウトエラー:", error);
+    }
+  };
+
+  // ローディング中または未ログイン時の表示（すべてのフックの後に配置）
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
+        <div className="text-white text-xl">読み込み中...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
+        <div className="text-white text-xl">ログインページへ移動中...</div>
+      </div>
+    );
+  }
 
   const isLessonLocked = (lessonIndex: number): boolean => {
     // 最初のレッスン（1-1）は常にアンロック
@@ -303,131 +412,6 @@ export default function Home() {
     return "たった今";
   };
 
-  // ユニット行のレンダリング用のuseMemo（Hooksのルールに従い、トップレベルに配置）
-  const unitRowsContent = useMemo(() => {
-    const allUnits = Array.from(new Set(lessons.map(l => l.unitNumber))).sort((a, b) => a - b);
-    const firstRowUnits = allUnits.slice(0, 3);
-    const secondRowUnits = allUnits.slice(3);
-    
-    // ユニットポイントクリック時の処理
-    const handleUnitPointClick = (unit: number) => {
-      // そのユニットに属するレッスンで、完了したレッスンを探す
-      const completedLessonsInUnit = lessons
-        .map((lesson, index) => ({ lesson, index }))
-        .filter(({ lesson }) => lesson.unitNumber === unit && completedLessons.includes(lesson.id));
-      
-      // 完了したレッスンがある場合、最初のレッスンにカードを切り替え
-      if (completedLessonsInUnit.length > 0) {
-        const targetIndex = completedLessonsInUnit[0].index;
-        setCurrentIndex(targetIndex);
-      }
-    };
-
-    // ユニットポイントコンポーネント（ヘルパー関数）
-    const renderUnitPoint = (unit: number, unitLessons: typeof lessons, completedInUnit: number, isUnitComplete: boolean, unitProgress: number, unitName: ReactNode) => {
-      // ユニットボタンの色定義を使用
-      const unitColor = getUnitGradient(unit);
-
-      // そのユニットに完了したレッスンがあるかチェック
-      const hasCompletedLessons = completedLessons.some(lessonId => 
-        lessons.find(l => l.id === lessonId)?.unitNumber === unit
-      );
-
-      // ユニットが完了した場合、最初のレッスンのキャラクター画像を取得
-      let characterImage: string | undefined;
-      let characterEmoji: string | undefined;
-      if (isUnitComplete && unitLessons.length > 0) {
-        const firstLesson = unitLessons[0];
-        const tutorial = getTutorial(firstLesson.id);
-        characterImage = tutorial?.characterImage;
-        characterEmoji = tutorial?.characterEmoji;
-      }
-
-      return (
-        <div 
-          key={unit} 
-          className={`flex flex-col items-center group relative h-20 ${hasCompletedLessons ? 'cursor-pointer' : ''}`}
-          onClick={() => hasCompletedLessons && handleUnitPointClick(unit)}
-        >
-          {/* ホバー時のツールチップ */}
-          <div className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 invisible group-hover:visible z-10 px-3 py-2 bg-gray-200 text-gray-800 text-xs rounded-lg shadow-lg whitespace-nowrap transition-all duration-200 pointer-events-none group-hover:pointer-events-auto border border-gray-300">
-            <div className="font-semibold mb-1">{unitName}</div>
-            <div>進捗: {completedInUnit}/{unitLessons.length}完了</div>
-            {/* ツールチップの矢印 */}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-200"></div>
-          </div>
-
-          {/* ユニットポイント（ボタン）の位置を固定 - 上部に配置 */}
-          <div className="absolute top-0 flex items-center justify-center">
-            <div className={`w-12 h-12 rounded-full flex flex-col items-center justify-center font-bold text-xs shadow-lg transition-all duration-300 ease-out ${hasCompletedLessons ? 'group-hover:scale-110' : ''} ${
-              isUnitComplete
-                ? `bg-gradient-to-br ${unitColor} text-white overflow-hidden`
-                : completedInUnit > 0
-                ? "bg-gradient-to-br from-yellow-400 to-amber-500 text-white"
-                : "bg-gradient-to-br from-gray-300 to-gray-400 text-gray-600"
-            }`}>
-              {isUnitComplete && characterImage && !unitImageErrors[unit] ? (
-                <Image
-                  src={characterImage}
-                  alt="Character"
-                  width={48}
-                  height={48}
-                  className="object-contain w-full h-full"
-                  unoptimized
-                  onError={() => {
-                    setUnitImageErrors(prev => ({ ...prev, [unit]: true }));
-                  }}
-                />
-              ) : isUnitComplete && characterEmoji ? (
-                <span className="text-2xl">{characterEmoji}</span>
-              ) : (
-                <span>{unit}</span>
-              )}
-            </div>
-          </div>
-        </div>
-      );
-    };
-
-    // ユニット名を取得するヘルパー関数
-    const getUnitName = (unit: number) => {
-      if (unit === 1) return "print";
-      if (unit === 2) return <FW word="変数" />;
-      if (unit === 3) return <>データ<F reading="がた">型</F></>;
-      if (unit === 4) return <>条件<F reading="ぶんき">分岐</F></>;
-      if (unit === 5) return "ループ";
-      if (unit === 6) return "リスト";
-      if (unit === 7) return <>関数の基本</>;
-      if (unit === 8) return <>戻り値と応用</>;
-      return "";
-    };
-
-    return {
-      allUnits,
-      firstRowUnits,
-      secondRowUnits,
-      renderUnitPoint,
-      getUnitName,
-    };
-  }, [completedLessons, lessons, unitImageErrors]);
-
-  // ローディング中または未ログイン時の表示
-  if (loading || !user) {
-    if (loading) {
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
-          <div className="text-white text-xl">読み込み中...</div>
-        </div>
-      );
-    }
-    if (!user) {
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
-          <div className="text-white text-xl">ログインページへ移動中...</div>
-        </div>
-      );
-    }
-  }
 
   // 進捗データのローディング中の表示
   if (!progressLoaded) {
