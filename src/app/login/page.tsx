@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { registerWithUsername, loginWithUsername, loginWithGoogle } from "@/lib/auth";
 
@@ -10,7 +10,16 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [rememberUserId, setRememberUserId] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const savedUserId = localStorage.getItem("rememberedUserId");
+    if (savedUserId) {
+      setUsername(savedUserId);
+      setRememberUserId(true);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,10 +32,17 @@ export default function LoginPage() {
       } else {
         await loginWithUsername(username, password);
       }
+      
+      if (rememberUserId && !isRegister) {
+        localStorage.setItem("rememberedUserId", username);
+      } else {
+        localStorage.removeItem("rememberedUserId");
+      }
+      
       router.push("/");
     } catch (err: any) {
-      if (err.code === "auth/wrong-password" || err.code === "auth/user-not-found") {
-        setError("ユーザー名またはパスワードが間違っています");
+      if (err.code === "auth/wrong-password" || err.code === "auth/user-not-found" || err.code === "auth/invalid-credential") {
+        setError("ユーザーIDまたはパスワードが間違っています");
       } else if (err.code === "auth/weak-password") {
         setError("パスワードは6文字以上にしてください");
       } else {
@@ -90,6 +106,21 @@ export default function LoginPage() {
               required
             />
           </div>
+
+          {!isRegister && (
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="rememberUserId"
+                checked={rememberUserId}
+                onChange={(e) => setRememberUserId(e.target.checked)}
+                className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+              />
+              <label htmlFor="rememberUserId" className="ml-2 text-sm text-gray-600">
+                ユーザーIDを記憶する
+              </label>
+            </div>
+          )}
 
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg text-sm">
