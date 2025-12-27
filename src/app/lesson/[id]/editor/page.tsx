@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -535,7 +535,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   }, [currentMissionId, lessonId]);
 
   // 次の問題へ進む処理（共通関数）
-  const goToNextMission = () => {
+  const goToNextMission = useCallback(() => {
     setExecutionResult(null);
     setSelectedBlocks([]);
     setSelectedChoice(null);
@@ -543,7 +543,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     
     if (isRetryMode) {
       // 再出題モード
-      if (retryIndex + 1 < wrongMissionIdsRef.current.length) {
+      if (retryIndex + 1 < wrongMissionIds.length) {
         // 次の間違えた問題へ
         setRetryIndex(retryIndex + 1);
       } else {
@@ -568,27 +568,25 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           localStorage.setItem(`lesson-${lessonId}-mission`, nextMissionId.toString());
         }
       } else {
-        // 全問終了 - 少し待ってから最新のwrongMissionIdsを確認
-        setTimeout(() => {
-          if (wrongMissionIdsRef.current.length > 0) {
-            // 間違えた問題がある → 再出題モードへ
-            setIsRetryMode(true);
-            setRetryIndex(0);
-          } else {
-            // 全問正解 → 完了画面へ
-            if (lessonId) {
-              localStorage.removeItem(`lesson-${lessonId}-mission`);
-            }
-            // クラウドに進捗を保存
-            if (user) {
-              saveLocalProgressToCloud(user.uid);
-            }
-            router.push(`/lesson/${lessonId}/complete`);
+        // 全問終了 - wrongMissionIdsを直接確認
+        if (wrongMissionIds.length > 0) {
+          // 間違えた問題がある → 再出題モードへ
+          setIsRetryMode(true);
+          setRetryIndex(0);
+        } else {
+          // 全問正解 → 完了画面へ
+          if (lessonId) {
+            localStorage.removeItem(`lesson-${lessonId}-mission`);
           }
-        }, 100);
+          // クラウドに進捗を保存
+          if (user) {
+            saveLocalProgressToCloud(user.uid);
+          }
+          router.push(`/lesson/${lessonId}/complete`);
+        }
       }
     }
-  };
+  }, [isRetryMode, retryIndex, wrongMissionIds, lessonId, user, router, currentMissionId, missions?.length]);
 
   // 選択式問題の判定
   const handleQuizAnswer = (choiceIndex: number) => {
@@ -1581,13 +1579,13 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                 >
                   {(() => {
                     if (isRetryMode) {
-                      return retryIndex + 1 < wrongMissionIdsRef.current.length ? "次へ →" : "🎊 完了！";
+                      return retryIndex + 1 < wrongMissionIds.length ? "次へ →" : "🎊 完了！";
                     } else {
                       if (currentMissionId < (missions?.length || 0)) {
                         return "次へ →";
                       } else {
                         // 全問終了の場合
-                        return wrongMissionIdsRef.current.length > 0 ? "次へ →" : "🎊 完了！";
+                        return wrongMissionIds.length > 0 ? "次へ →" : "🎊 完了！";
                       }
                     }
                   })()}
@@ -1683,13 +1681,13 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                   >
                     {(() => {
                       if (isRetryMode) {
-                        return retryIndex + 1 < wrongMissionIdsRef.current.length ? "次へ →" : "🎊 完了！";
+                        return retryIndex + 1 < wrongMissionIds.length ? "次へ →" : "🎊 完了！";
                       } else {
                         if (currentMissionId < (missions?.length || 0)) {
                           return "次へ →";
                         } else {
                           // 全問終了の場合
-                          return wrongMissionIdsRef.current.length > 0 ? "次へ →" : "🎊 完了！";
+                          return wrongMissionIds.length > 0 ? "次へ →" : "🎊 完了！";
                         }
                       }
                     })()}
