@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { getSettings, saveSettings, AppSettings } from "@/utils/settings";
 import { useAuth } from "@/contexts/AuthContext";
-import { updateDisplayName, updateEmail } from "@/lib/auth";
+import { updateDisplayName, updateEmail, changePassword, isGoogleUser } from "@/lib/auth";
 
 export default function OptionsPage() {
   const { user, userId, displayName, contactEmail, refreshUserInfo } = useAuth();
@@ -22,11 +22,23 @@ export default function OptionsPage() {
   const [emailError, setEmailError] = useState("");
   const [emailSuccess, setEmailSuccess] = useState("");
   const [emailLoading, setEmailLoading] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isEditingPassword, setIsEditingPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordSuccess, setPasswordSuccess] = useState("");
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [isGoogleAccount, setIsGoogleAccount] = useState(false);
 
   useEffect(() => {
     const currentSettings = getSettings();
     setSettings(currentSettings);
   }, []);
+
+  useEffect(() => {
+    setIsGoogleAccount(isGoogleUser());
+  }, [user]);
 
   const handleSoundToggle = () => {
     const newSettings = { ...settings, soundEnabled: !settings.soundEnabled };
@@ -70,6 +82,36 @@ export default function OptionsPage() {
       setEmailError(err.message || "エラーが発生しました");
     } finally {
       setEmailLoading(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    setPasswordError("");
+    setPasswordSuccess("");
+    
+    if (newPassword !== confirmPassword) {
+      setPasswordError("新しいパスワードが一致しません");
+      return;
+    }
+    
+    if (newPassword.length < 6) {
+      setPasswordError("新しいパスワードは6文字以上にしてください");
+      return;
+    }
+    
+    setPasswordLoading(true);
+    
+    try {
+      await changePassword(currentPassword, newPassword);
+      setPasswordSuccess("パスワードを変更しました！");
+      setIsEditingPassword(false);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err: any) {
+      setPasswordError(err.message || "エラーが発生しました");
+    } finally {
+      setPasswordLoading(false);
     }
   };
 
@@ -202,6 +244,82 @@ export default function OptionsPage() {
                 </div>
               )}
             </div>
+            
+            {user && !isGoogleAccount && (
+              <div className="border-t pt-3 mt-3">
+                <span className="text-sm text-gray-500">パスワード</span>
+                
+                {!isEditingPassword ? (
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="text-gray-700">••••••••</span>
+                    <button
+                      onClick={() => setIsEditingPassword(true)}
+                      className="text-sm bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-full"
+                    >
+                      変更
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2 mt-1">
+                    <input
+                      type="password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      placeholder="現在のパスワード"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
+                    />
+                    <input
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="新しいパスワード（6文字以上）"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
+                    />
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="新しいパスワード（確認）"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
+                    />
+                    
+                    {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
+                    {passwordSuccess && <p className="text-green-500 text-sm">{passwordSuccess}</p>}
+                    
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleChangePassword}
+                        disabled={passwordLoading}
+                        className="text-sm bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full disabled:opacity-50"
+                      >
+                        {passwordLoading ? "変更中..." : "保存"}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsEditingPassword(false);
+                          setCurrentPassword("");
+                          setNewPassword("");
+                          setConfirmPassword("");
+                          setPasswordError("");
+                        }}
+                        className="text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-full"
+                      >
+                        キャンセル
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {user && isGoogleAccount && (
+              <div className="border-t pt-3 mt-3">
+                <span className="text-sm text-gray-500">パスワード</span>
+                <p className="text-gray-600 text-sm mt-1">
+                  Googleアカウントでログインしているため、パスワードはGoogleで管理されています。
+                </p>
+              </div>
+            )}
           </div>
         )}
 

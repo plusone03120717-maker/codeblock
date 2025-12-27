@@ -23,7 +23,7 @@ import { logout } from "@/lib/auth";
 
 export default function Home() {
   const router = useRouter();
-  const { user, userId, displayName, loading, progressLoaded } = useAuth();
+  const { user, userId, displayName, contactEmail, loading, progressLoaded } = useAuth();
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
   const [totalXP, setTotalXP] = useState(0);
   const [levelInfo, setLevelInfo] = useState({ level: 1, name: "ビギナー", minXP: 0, maxXP: 99 });
@@ -32,6 +32,7 @@ export default function Home() {
   const [highestStreak, setHighestStreak] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showDebugPanel, setShowDebugPanel] = useState(false);
+  const [showEmailBanner, setShowEmailBanner] = useState(true);
   const [debugXP, setDebugXP] = useState("");
   const [debugLessonId, setDebugLessonId] = useState("");
   const [resumeStatus, setResumeStatus] = useState<Record<string, boolean>>({});
@@ -425,6 +426,35 @@ export default function Home() {
                   )
                 )}
               </div>
+              
+              {/* メール設定促進バナー */}
+              {user && !contactEmail && showEmailBanner && (
+                <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg relative">
+                  <button
+                    onClick={() => setShowEmailBanner(false)}
+                    className="absolute top-2 right-2 text-yellow-600 hover:text-yellow-800"
+                  >
+                    ✕
+                  </button>
+                  <div className="flex items-start gap-2">
+                    <span className="text-xl">📧</span>
+                    <div>
+                      <p className="text-sm font-bold text-yellow-800">
+                        メールアドレスを設定しよう！
+                      </p>
+                      <p className="text-xs text-yellow-700 mt-1">
+                        パスワードを忘れた時に、メールアドレスがあると安心です。
+                      </p>
+                      <Link
+                        href="/options"
+                        className="inline-block mt-2 text-xs bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-full"
+                      >
+                        設定する
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )}
               
               {/* ステータスカード */}
               <div className="bg-white rounded-2xl shadow-lg p-4 border-2 border-yellow-200">

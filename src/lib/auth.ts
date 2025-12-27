@@ -4,6 +4,9 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   signOut,
+  updatePassword,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
   User,
 } from "firebase/auth";
 import { doc, setDoc, getDoc, deleteDoc, Timestamp } from "firebase/firestore";
@@ -201,5 +204,39 @@ export const resetPassword = async (userId: string, token: string, newPassword: 
   await deleteDoc(doc(db, "passwordResets", uid));
   
   throw new Error("パスワードの変更にはFirebase Admin SDKが必要です。先生に新しいパスワードを設定してもらってください。");
+};
+
+export const changePassword = async (
+  currentPassword: string,
+  newPassword: string
+): Promise<void> => {
+  const user = auth.currentUser;
+  if (!user || !user.email) {
+    throw new Error("ログインしていません");
+  }
+  
+  if (newPassword.length < 6) {
+    throw new Error("新しいパスワードは6文字以上にしてください");
+  }
+  
+  const credential = EmailAuthProvider.credential(user.email, currentPassword);
+  
+  try {
+    await reauthenticateWithCredential(user, credential);
+  } catch (error: any) {
+    if (error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") {
+      throw new Error("現在のパスワードが間違っています");
+    }
+    throw error;
+  }
+  
+  await updatePassword(user, newPassword);
+};
+
+export const isGoogleUser = (): boolean => {
+  const user = auth.currentUser;
+  if (!user) return false;
+  
+  return user.providerData.some(provider => provider.providerId === "google.com");
 };
 
