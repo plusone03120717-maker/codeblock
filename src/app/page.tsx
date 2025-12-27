@@ -23,7 +23,7 @@ import { logout } from "@/lib/auth";
 
 export default function Home() {
   const router = useRouter();
-  const { user, username, loading, progressLoaded } = useAuth();
+  const { user, userId, displayName, loading, progressLoaded } = useAuth();
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
   const [totalXP, setTotalXP] = useState(0);
   const [levelInfo, setLevelInfo] = useState({ level: 1, name: "ビギナー", minXP: 0, maxXP: 99 });
@@ -411,7 +411,7 @@ export default function Home() {
                   user ? (
                     <button
                       onClick={handleLogout}
-                      className="text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-full transition-colors"
+                      className="text-lg font-bold bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-full transition-colors"
                     >
                       ログアウト
                     </button>
@@ -439,9 +439,9 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {user && username && (
+                    {user && (
                       <div className="text-lg font-bold text-gray-600">
-                        {username}
+                        {displayName || userId || "ユーザー"}
                       </div>
                     )}
                     {highestStreak > 0 && (

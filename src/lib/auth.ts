@@ -14,32 +14,32 @@ const usernameToEmail = (username: string): string => {
 };
 
 export const registerWithUsername = async (
-  username: string,
+  userId: string,
   password: string
 ): Promise<User> => {
-  if (username.length < 3) {
-    throw new Error("ユーザー名は3文字以上にしてください");
+  if (userId.length < 3) {
+    throw new Error("ユーザーIDは3文字以上にしてください");
   }
-  if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-    throw new Error("ユーザー名は英数字とアンダースコアのみ使用できます");
-  }
-
-  const usernameDoc = await getDoc(doc(db, "usernames", username.toLowerCase()));
-  if (usernameDoc.exists()) {
-    throw new Error("このユーザー名は既に使われています");
+  if (!/^[a-zA-Z0-9_]+$/.test(userId)) {
+    throw new Error("ユーザーIDは英数字とアンダースコアのみ使用できます");
   }
 
-  const email = usernameToEmail(username);
+  const userIdDoc = await getDoc(doc(db, "userIds", userId.toLowerCase()));
+  if (userIdDoc.exists()) {
+    throw new Error("このユーザーIDは既に使われています");
+  }
+
+  const email = usernameToEmail(userId);
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
   const user = userCredential.user;
 
   await setDoc(doc(db, "users", user.uid), {
-    username: username,
-    displayName: username,
+    userId: userId,
+    displayName: "",
     createdAt: new Date(),
   });
 
-  await setDoc(doc(db, "usernames", username.toLowerCase()), {
+  await setDoc(doc(db, "userIds", userId.toLowerCase()), {
     uid: user.uid,
   });
 
@@ -63,8 +63,8 @@ export const loginWithGoogle = async (): Promise<User> => {
   const userDoc = await getDoc(doc(db, "users", user.uid));
   if (!userDoc.exists()) {
     await setDoc(doc(db, "users", user.uid), {
-      username: user.displayName || "ユーザー",
-      displayName: user.displayName || "ユーザー",
+      userId: user.email || "user",
+      displayName: user.displayName || "",
       email: user.email,
       createdAt: new Date(),
     });
@@ -77,11 +77,24 @@ export const logout = async (): Promise<void> => {
   await signOut(auth);
 };
 
-export const getUsername = async (uid: string): Promise<string | null> => {
+export const getUserInfo = async (uid: string): Promise<{ userId: string | null; displayName: string | null }> => {
   const userDoc = await getDoc(doc(db, "users", uid));
   if (userDoc.exists()) {
-    return userDoc.data().username;
+    const data = userDoc.data();
+    return {
+      userId: data.userId || null,
+      displayName: data.displayName || null,
+    };
   }
-  return null;
+  return { userId: null, displayName: null };
+};
+
+export const updateDisplayName = async (
+  uid: string,
+  newDisplayName: string
+): Promise<void> => {
+  await setDoc(doc(db, "users", uid), {
+    displayName: newDisplayName,
+  }, { merge: true });
 };
 

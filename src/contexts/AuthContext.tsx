@@ -3,30 +3,43 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { getUsername } from "@/lib/auth";
+import { getUserInfo } from "@/lib/auth";
 import { syncProgressOnLogin } from "@/lib/progressSync";
 
 interface AuthContextType {
   user: User | null;
-  username: string | null;
+  userId: string | null;
+  displayName: string | null;
   loading: boolean;
   progressLoaded: boolean;
+  refreshUserInfo: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  username: null,
+  userId: null,
+  displayName: null,
   loading: true,
   progressLoaded: false,
+  refreshUserInfo: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [username, setUsername] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [progressLoaded, setProgressLoaded] = useState(false);
+
+  const refreshUserInfo = async () => {
+    if (user) {
+      const info = await getUserInfo(user.uid);
+      setUserId(info.userId);
+      setDisplayName(info.displayName);
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -34,12 +47,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setProgressLoaded(false);
       
       if (user) {
-        const name = await getUsername(user.uid);
-        setUsername(name);
+        const info = await getUserInfo(user.uid);
+        setUserId(info.userId);
+        setDisplayName(info.displayName);
         await syncProgressOnLogin(user.uid);
         setProgressLoaded(true);
       } else {
-        setUsername(null);
+        setUserId(null);
+        setDisplayName(null);
         setProgressLoaded(true);
       }
       setLoading(false);
@@ -49,7 +64,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, username, loading, progressLoaded }}>
+    <AuthContext.Provider value={{ user, userId, displayName, loading, progressLoaded, refreshUserInfo }}>
       {children}
     </AuthContext.Provider>
   );
