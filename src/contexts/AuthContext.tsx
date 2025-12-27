@@ -10,6 +10,7 @@ interface AuthContextType {
   user: User | null;
   userId: string | null;
   displayName: string | null;
+  contactEmail: string | null;
   loading: boolean;
   progressLoaded: boolean;
   refreshUserInfo: () => Promise<void>;
@@ -19,6 +20,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   userId: null,
   displayName: null,
+  contactEmail: null,
   loading: true,
   progressLoaded: false,
   refreshUserInfo: async () => {},
@@ -30,6 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string | null>(null);
+  const [contactEmail, setContactEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [progressLoaded, setProgressLoaded] = useState(false);
 
@@ -38,6 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const info = await getUserInfo(user.uid);
       setUserId(info.userId);
       setDisplayName(info.displayName);
+      setContactEmail(info.contactEmail);
     }
   };
 
@@ -50,11 +54,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const info = await getUserInfo(user.uid);
         setUserId(info.userId);
         setDisplayName(info.displayName);
+        setContactEmail(info.contactEmail);
         await syncProgressOnLogin(user.uid);
         setProgressLoaded(true);
       } else {
         setUserId(null);
         setDisplayName(null);
+        setContactEmail(null);
         setProgressLoaded(true);
       }
       setLoading(false);
@@ -64,7 +70,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, userId, displayName, loading, progressLoaded, refreshUserInfo }}>
+    <AuthContext.Provider value={{ user, userId, displayName, contactEmail, loading, progressLoaded, refreshUserInfo }}>
       {children}
     </AuthContext.Provider>
   );

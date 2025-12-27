@@ -66,6 +66,7 @@ export const loginWithGoogle = async (): Promise<User> => {
       userId: user.email || "user",
       displayName: user.displayName || "",
       email: user.email,
+      contactEmail: user.email || "",
       createdAt: new Date(),
     });
   }
@@ -77,16 +78,17 @@ export const logout = async (): Promise<void> => {
   await signOut(auth);
 };
 
-export const getUserInfo = async (uid: string): Promise<{ userId: string | null; displayName: string | null }> => {
+export const getUserInfo = async (uid: string): Promise<{ userId: string | null; displayName: string | null; contactEmail: string | null }> => {
   const userDoc = await getDoc(doc(db, "users", uid));
   if (userDoc.exists()) {
     const data = userDoc.data();
     return {
       userId: data.userId || null,
       displayName: data.displayName || null,
+      contactEmail: data.contactEmail || null,
     };
   }
-  return { userId: null, displayName: null };
+  return { userId: null, displayName: null, contactEmail: null };
 };
 
 export const updateDisplayName = async (
@@ -95,6 +97,19 @@ export const updateDisplayName = async (
 ): Promise<void> => {
   await setDoc(doc(db, "users", uid), {
     displayName: newDisplayName,
+  }, { merge: true });
+};
+
+export const updateEmail = async (
+  uid: string,
+  newEmail: string
+): Promise<void> => {
+  if (newEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+    throw new Error("有効なメールアドレスを入力してください");
+  }
+  
+  await setDoc(doc(db, "users", uid), {
+    contactEmail: newEmail,
   }, { merge: true });
 };
 

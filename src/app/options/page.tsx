@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { getSettings, saveSettings, AppSettings } from "@/utils/settings";
 import { useAuth } from "@/contexts/AuthContext";
-import { updateDisplayName } from "@/lib/auth";
+import { updateDisplayName, updateEmail } from "@/lib/auth";
 
 export default function OptionsPage() {
-  const { user, userId, displayName, refreshUserInfo } = useAuth();
+  const { user, userId, displayName, contactEmail, refreshUserInfo } = useAuth();
   const [settings, setSettings] = useState<AppSettings>({
     soundEnabled: true,
   });
@@ -17,6 +17,11 @@ export default function OptionsPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [newEmail, setNewEmail] = useState("");
+  const [isEditingEmail, setIsEditingEmail] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [emailSuccess, setEmailSuccess] = useState("");
+  const [emailLoading, setEmailLoading] = useState(false);
 
   useEffect(() => {
     const currentSettings = getSettings();
@@ -47,6 +52,24 @@ export default function OptionsPage() {
       setError(err.message || "エラーが発生しました");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUpdateEmail = async () => {
+    if (!user) return;
+    setEmailError("");
+    setEmailSuccess("");
+    setEmailLoading(true);
+    
+    try {
+      await updateEmail(user.uid, newEmail);
+      await refreshUserInfo();
+      setEmailSuccess("メールアドレスを設定しました！");
+      setIsEditingEmail(false);
+    } catch (err: any) {
+      setEmailError(err.message || "エラーが発生しました");
+    } finally {
+      setEmailLoading(false);
     }
   };
 
@@ -118,6 +141,58 @@ export default function OptionsPage() {
                         setIsEditing(false);
                         setNewDisplayName("");
                         setError("");
+                      }}
+                      className="text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-full"
+                    >
+                      キャンセル
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            <div className="border-t pt-3 mt-3">
+              <span className="text-sm text-gray-500">メールアドレス</span>
+              
+              {!isEditingEmail ? (
+                <div className="flex items-center justify-between mt-1">
+                  <span className="text-gray-700">{contactEmail || "（未設定）"}</span>
+                  <button
+                    onClick={() => {
+                      setIsEditingEmail(true);
+                      setNewEmail(contactEmail || "");
+                    }}
+                    className="text-sm bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-full"
+                  >
+                    {contactEmail ? "変更" : "設定"}
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-2 mt-1">
+                  <input
+                    type="email"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    placeholder="example@email.com"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
+                  />
+                  
+                  {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
+                  {emailSuccess && <p className="text-green-500 text-sm">{emailSuccess}</p>}
+                  
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleUpdateEmail}
+                      disabled={emailLoading}
+                      className="text-sm bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full disabled:opacity-50"
+                    >
+                      {emailLoading ? "保存中..." : "保存"}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsEditingEmail(false);
+                        setNewEmail("");
+                        setEmailError("");
                       }}
                       className="text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-full"
                     >
