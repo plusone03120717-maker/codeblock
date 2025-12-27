@@ -1769,6 +1769,238 @@ export const tutorials: LessonTutorial[] = [
       },
     ],
   },
+  {
+    lessonId: "9-2",
+    characterName: "ディクト",
+    characterEmoji: "🐧",
+    slides: [
+      {
+        title: "辞書を作ってみよう",
+        content: "今度は辞書を自分で作ってみましょう。図書館で新しい目録を作るようなものです。",
+        characterMessage: "さて、今度は辞書を自分で作ってみましょう。",
+      },
+      {
+        title: "図書館の目録を作る",
+        content: "図書館で新しい目録を作るようなものです。",
+        characterMessage: "図書館で新しい目録を作るようなものです。",
+      },
+      {
+        title: "辞書を変数に入れる",
+        content: "辞書を変数に入れるには、book = {\"title\": \"ハリーポッター\", \"author\": \"ローリング\"} のように書きます。",
+        characterMessage: "辞書を変数に入れるには、こう書きます：",
+        codeExample: {
+          good: 'book = {"title": "ハリーポッター", "author": "ローリング"}',
+        },
+      },
+      {
+        title: "2つのキーを持つ辞書",
+        content: "これで「title」と「author」という2つのキーを持つ辞書ができました。",
+        characterMessage: "これで「title」と「author」という2つのキーを持つ辞書ができました。",
+      },
+      {
+        title: "値の種類",
+        content: "キーは文字列、値は文字列でも数字でもOKです。",
+        characterMessage: "キーは文字列、値は文字列でも数字でもOKです。",
+      },
+      {
+        title: "数値の値",
+        content: "例えば person = {\"name\": \"太郎\", \"age\": 10} のように、文字列と数字を混ぜられます。",
+        characterMessage: "例えば person = {\"name\": \"太郎\", \"age\": 10} のように。",
+        codeExample: {
+          good: 'person = {"name": "太郎", "age": 10}',
+        },
+      },
+      {
+        title: "いろいろな辞書を作ろう",
+        content: "では、いろいろな辞書を作ってみましょう。",
+        characterMessage: "では、いろいろな辞書を作ってみましょう。",
+      },
+    ],
+  },
+  {
+    lessonId: "9-3",
+    characterName: "ディクト",
+    characterEmoji: "🐧",
+    slides: [
+      {
+        title: "値を取り出す方法",
+        content: "辞書を作れるようになりましたね。次は値を取り出す方法を学びましょう。",
+        characterMessage: "辞書を作れるようになりましたね。次は値を取り出す方法を学びましょう。",
+      },
+      {
+        title: "図書館で本を探すように",
+        content: "図書館でタイトルから本を探すように、キーから値を取り出せます。",
+        characterMessage: "図書館でタイトルから本を探すように、キーから値を取り出せます。",
+      },
+      {
+        title: "角カッコの使い方",
+        content: "書き方は 辞書[\"キー\"] です。角カッコを使います。",
+        characterMessage: "書き方は 辞書[\"キー\"] です。角カッコを使います。",
+        codeExample: {
+          good: 'person["name"]',
+        },
+      },
+      {
+        title: "例：辞書から値を取り出す",
+        content: "例えば person = {\"name\": \"太郎\"} のとき、person[\"name\"] と書くと \"太郎\" が取り出せます。",
+        characterMessage: "例えば person = {\"name\": \"太郎\"} のとき...",
+        codeExample: {
+          good: 'person = {"name": "太郎"}\nprint(person["name"])',
+        },
+      },
+      {
+        title: "実際に取り出してみる",
+        content: "person[\"name\"] と書くと \"太郎\" が取り出せます。",
+        characterMessage: "person[\"name\"] と書くと \"太郎\" が取り出せます。",
+      },
+      {
+        title: "リストとの違い",
+        content: "リストでは番号で取り出しましたが、辞書ではキーの名前で取り出すのです。",
+        characterMessage: "リストでは番号で取り出しましたが、辞書ではキーの名前で取り出すのです。",
+      },
+      {
+        title: "練習してみましょう",
+        content: "名前さえわかれば、一瞬ですよ。では練習してみましょう。",
+        characterMessage: "名前さえわかれば、一瞬ですよ。では練習してみましょう。",
+      },
+    ],
+  },
+  {
+    lessonId: "9-4",
+    characterName: "ディクト",
+    characterEmoji: "🐧",
+    slides: [
+      {
+        title: "値を追加・変更する方法",
+        content: "辞書から値を取り出せるようになりましたね。次は辞書に新しいデータを追加したり、変更したりする方法を学びましょう。",
+        characterMessage: "辞書から値を取り出せるようになりましたね。",
+      },
+      {
+        title: "新しいデータを追加する",
+        content: "次は辞書に新しいデータを追加したり、変更したりする方法を学びましょう。",
+        characterMessage: "次は辞書に新しいデータを追加したり、変更したりする方法を学びましょう。",
+      },
+      {
+        title: "図書館の目録に追加する",
+        content: "新しい本が入ったら、目録に追加しますよね。辞書も同じです。",
+        characterMessage: "新しい本が入ったら、目録に追加しますよね。辞書も同じです。",
+      },
+      {
+        title: "追加の書き方",
+        content: "書き方は 辞書[\"新しいキー\"] = 値 です。",
+        characterMessage: "書き方は 辞書[\"新しいキー\"] = 値 です。",
+        codeExample: {
+          good: 'person["age"] = 10',
+        },
+      },
+      {
+        title: "例：年齢を追加する",
+        content: "例えば person = {\"name\": \"太郎\"} に年齢を追加するには、person[\"age\"] = 10 と書きます。",
+        characterMessage: "例えば person = {\"name\": \"太郎\"} に年齢を追加するには...",
+        codeExample: {
+          good: 'person = {"name": "太郎"}\nperson["age"] = 10\nprint(person)',
+        },
+      },
+      {
+        title: "追加後の辞書",
+        content: "person[\"age\"] = 10 と書くと、これで{\"name\": \"太郎\", \"age\": 10}になります。",
+        characterMessage: "person[\"age\"] = 10 と書きます。これで{\"name\": \"太郎\", \"age\": 10}になります。",
+      },
+      {
+        title: "値を変更する",
+        content: "すでにあるキーに値を入れると、上書きされます。これが値の変更です。",
+        characterMessage: "すでにあるキーに値を入れると、上書きされます。これが値の変更です。",
+      },
+      {
+        title: "練習してみましょう",
+        content: "では、追加と変更を練習してみましょう。",
+        characterMessage: "では、追加と変更を練習してみましょう。",
+      },
+    ],
+  },
+  {
+    lessonId: "9-5",
+    characterName: "ディクト",
+    characterEmoji: "🐧",
+    slides: [
+      {
+        title: "キーがあるか確認する",
+        content: "辞書に値を追加・変更できるようになりましたね。ところで、存在しないキーで値を取り出そうとするとエラーになります。",
+        characterMessage: "辞書に値を追加・変更できるようになりましたね。",
+      },
+      {
+        title: "エラーを防ぐ",
+        content: "存在しないキーで値を取り出そうとするとエラーになります。図書館にない本を探しても見つからないのと同じですね。",
+        characterMessage: "ところで、存在しないキーで値を取り出そうとするとエラーになります。",
+      },
+      {
+        title: "図書館の例",
+        content: "図書館にない本を探しても見つからないのと同じですね。",
+        characterMessage: "図書館にない本を探しても見つからないのと同じですね。",
+      },
+      {
+        title: "in演算子の使い方",
+        content: "そこで「in」を使って、キーがあるかどうか先に確認できます。",
+        characterMessage: "そこで「in」を使って、キーがあるかどうか先に確認できます。",
+      },
+      {
+        title: "inの書き方",
+        content: "書き方は \"キー\" in 辞書 です。あればTrue、なければFalseになります。",
+        characterMessage: "書き方は \"キー\" in 辞書 です。あればTrue、なければFalseになります。",
+        codeExample: {
+          good: '"name" in person',
+        },
+      },
+      {
+        title: "例：キーがあるか確認",
+        content: "例えば \"name\" in person と書くと、nameキーがあるか確認できます。",
+        characterMessage: "例えば \"name\" in person と書くと、nameキーがあるか確認できます。",
+        codeExample: {
+          good: 'person = {"name": "太郎"}\nprint("name" in person)',
+        },
+      },
+      {
+        title: "if文と組み合わせる",
+        content: "if文と組み合わせると、キーがある時だけ値を取り出せますよ。",
+        characterMessage: "if文と組み合わせると、キーがある時だけ値を取り出せますよ。",
+        codeExample: {
+          good: 'if "name" in person:\n    print(person["name"])',
+        },
+      },
+      {
+        title: ".keys()で在庫確認",
+        content: "まずは.keys()で「在庫確認」をしてから探すと安心です。では練習しましょう。",
+        characterMessage: "まずは.keys()で「在庫確認」をしてから探すと安心です。では練習しましょう。",
+      },
+    ],
+  },
+  {
+    lessonId: "9-6",
+    characterName: "ディクト",
+    characterEmoji: "🐧",
+    slides: [
+      {
+        title: "辞書クイズ！",
+        content: "お見事です。辞書についてたくさん学びましたね。最後に、これまでの知識を確認するクイズに挑戦しましょう。",
+        characterMessage: "お見事です。辞書についてたくさん学びましたね。",
+      },
+      {
+        title: "クイズに挑戦",
+        content: "最後に、これまでの知識を確認するクイズに挑戦しましょう。",
+        characterMessage: "最後に、これまでの知識を確認するクイズに挑戦しましょう。",
+      },
+      {
+        title: "学んだことを確認",
+        content: "辞書の作り方、値の取り出し方、追加・変更、キーの確認...全部覚えていますか？",
+        characterMessage: "辞書の作り方、値の取り出し方、追加・変更、キーの確認...全部覚えていますか？",
+      },
+      {
+        title: "すべての情報には見出しがある",
+        content: "すべての情報には、ふさわしい「見出し」があるのです。では、始めましょう。",
+        characterMessage: "すべての情報には、ふさわしい「見出し」があるのです。では、始めましょう。",
+      },
+    ],
+  },
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {
