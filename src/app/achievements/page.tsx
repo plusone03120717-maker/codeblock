@@ -8,6 +8,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { achievements, categoryNames, Achievement } from "@/data/achievements";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import Footer from "@/components/Footer";
 
 export default function AchievementsPage() {
   const router = useRouter();
@@ -78,7 +79,7 @@ export default function AchievementsPage() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto p-4">
+      <main className="max-w-4xl mx-auto p-4 pb-20">
         {/* 進捗サマリー */}
         <div className="bg-white rounded-xl p-6 shadow-lg mb-6">
           <div className="text-center">
@@ -151,21 +152,10 @@ export default function AchievementsPage() {
           })}
         </div>
 
-        {/* ホームに戻るボタン */}
-        <div className="mt-8 text-center">
-          <Link
-            href="/"
-            className="inline-block bg-white text-purple-600 font-bold py-3 px-8 rounded-full shadow-lg hover:bg-purple-100 transition-colors"
-          >
-            {language === "ja" ? "ホームに戻る" : "Back to Home"}
-          </Link>
-        </div>
       </main>
 
       {/* フッター */}
-      <footer className="bg-purple-800 text-white text-center py-4 mt-8">
-        <p className="text-sm">© 2024 CodeBlock</p>
-      </footer>
+      <Footer />
     </div>
   );
 }

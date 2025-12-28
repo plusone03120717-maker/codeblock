@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { lessons, getLesson } from "@/data/lessons";
 import { getTutorial } from "@/data/tutorials";
@@ -804,7 +804,6 @@ const LandingPage = () => {
 
 export default function Home() {
   const router = useRouter();
-  const pathname = usePathname();
   const { user, userId, displayName, contactEmail, loading, progressLoaded } = useAuth();
   const { language } = useLanguage();
   
@@ -1747,40 +1746,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* フッターナビゲーション（ログイン後のみ表示） */}
-      {user && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
-          <div className="max-w-4xl mx-auto flex justify-around items-center py-2">
-            <Link
-              href="/"
-              className={`flex flex-col items-center p-2 transition-colors ${
-                pathname === "/" ? "text-purple-600" : "text-gray-500 hover:text-purple-600"
-              }`}
-            >
-              <span className="text-2xl">🏠</span>
-              <span className="text-xs font-medium">{language === "ja" ? "ホーム" : "Home"}</span>
-            </Link>
-            <Link
-              href="/achievements"
-              className={`flex flex-col items-center p-2 transition-colors ${
-                pathname === "/achievements" ? "text-purple-600" : "text-gray-500 hover:text-purple-600"
-              }`}
-            >
-              <span className="text-2xl">🏆</span>
-              <span className="text-xs font-medium">{language === "ja" ? "実績" : "Achievements"}</span>
-            </Link>
-            <Link
-              href="/options"
-              className={`flex flex-col items-center p-2 transition-colors ${
-                pathname === "/options" ? "text-purple-600" : "text-gray-500 hover:text-purple-600"
-              }`}
-            >
-              <span className="text-2xl">⚙️</span>
-              <span className="text-xs font-medium">{language === "ja" ? "設定" : "Settings"}</span>
-            </Link>
-          </div>
-        </nav>
-      )}
     </div>
   );
 }

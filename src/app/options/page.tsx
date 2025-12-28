@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { getSettings, saveSettings, AppSettings } from "@/utils/settings";
 import { useAuth } from "@/contexts/AuthContext";
 import { updateDisplayName, updateEmail, changePassword, isGoogleUser } from "@/lib/auth";
+import Footer from "@/components/Footer";
 
 export default function OptionsPage() {
   const router = useRouter();
@@ -135,7 +136,7 @@ export default function OptionsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 via-purple-50 to-blue-50 p-4">
+    <div className="min-h-screen bg-gradient-to-b from-pink-50 via-purple-50 to-blue-50 p-4 pb-20">
       <div className="max-w-md mx-auto">
         {/* ヘッダー */}
         <div className="flex items-center gap-4 mb-6">
@@ -377,6 +378,9 @@ export default function OptionsPage() {
         </div>
 
       </div>
+
+      {/* フッター */}
+      <Footer />
     </div>
   );
 }
