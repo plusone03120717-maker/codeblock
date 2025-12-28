@@ -113,25 +113,25 @@ const LandingPage = () => {
               </p>
             </div>
             <div className="text-center p-6">
-              <div className="text-5xl mb-4">🎮</div>
+              <div className="text-5xl mb-4">✨</div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">
-                {language === "ja" ? "ゲーム感覚" : "Game-like Learning"}
+                {language === "ja" ? "ふりがなワンタッチ" : "One-Touch Furigana"}
               </h3>
               <p className="text-gray-600">
                 {language === "ja" 
-                  ? "XPを貯めてレベルアップ！楽しみながらプログラミングをマスター" 
-                  : "Earn XP and level up! Master programming while having fun"}
+                  ? "ボタンひとつでふりがなのオン/オフを切り替え。わからない漢字が出たときだけ表示できるから、画面がスッキリ読みやすい！" 
+                  : "Toggle furigana on/off with one button. Show it only when you need help with kanji!"}
               </p>
             </div>
             <div className="text-center p-6">
-              <div className="text-5xl mb-4">🐱</div>
+              <div className="text-5xl mb-4">💡</div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">
-                {language === "ja" ? "キャラクターと一緒" : "With Characters"}
+                {language === "ja" ? "困ったらヒント" : "Hints When Stuck"}
               </h3>
               <p className="text-gray-600">
                 {language === "ja" 
-                  ? "個性豊かなキャラクターたちがやさしく教えてくれる" 
-                  : "Friendly characters guide you through each lesson"}
+                  ? "わからなくても大丈夫！個性豊かなキャラクターたちがあなたを正解へ導くヒントを教えてくれるよ" 
+                  : "Don't worry if you're stuck! Unique characters will give you hints to guide you to the answer"}
               </p>
             </div>
           </div>
