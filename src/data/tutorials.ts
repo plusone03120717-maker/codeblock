@@ -239,15 +239,59 @@ export const tutorials: LessonTutorial[] = [
     ],
   },
   {
+    lessonId: "1-7",
+    characterName: "コーディ",
+    characterEmoji: "🐍",
+    characterImage: "/images/characters/cody.png",
+    slides: [
+      {
+        title: "複数の値を一度に表示しよう",
+        content: "今日は複数の値を一度に表示する方法を学ぼう！",
+        characterMessage: "今日は複数の値を一度に表示する方法を学ぼう！",
+      },
+      {
+        title: "カンマで複数の値を表示",
+        content: "print()の中で、カンマ（,）を使うと複数の値を表示できるんだ。",
+        characterMessage: "print()の中で、カンマ（,）を使うと複数の値を表示できるんだ。",
+      },
+      {
+        title: "カンマの使い方の例",
+        content: "例えば print(\"名前:\", \"太郎\") と書くと...",
+        characterMessage: "例えば print(\"名前:\", \"太郎\") と書くと...",
+        codeExample: {
+          good: 'print("名前:", "太郎")',
+        },
+      },
+      {
+        title: "カンマでスペースが入る",
+        content: "「名前: 太郎」と表示されるよ！カンマの位置にスペースが入るんだ。",
+        characterMessage: "「名前: 太郎」と表示されるよ！カンマの位置にスペースが入るんだ。",
+      },
+      {
+        title: "文字列と数字を組み合わせる",
+        content: "文字列と数字を組み合わせることもできるよ。print(\"年齢:\", 10) みたいにね！",
+        characterMessage: "文字列と数字を組み合わせることもできるよ。print(\"年齢:\", 10) みたいにね！",
+        codeExample: {
+          good: 'print("年齢:", 10)  # 結果: 年齢: 10',
+        },
+      },
+      {
+        title: "さあ、やってみよう！",
+        content: "複数の値をカンマで表示するミッションに挑戦しよう！",
+        characterMessage: "さあ、やってみよう！",
+      },
+    ],
+  },
+  {
     lessonId: "2-1",
-    characterName: "リリー",
-    characterEmoji: "👩‍🏫",
-    characterImage: "/images/characters/lily.png",
+    characterName: "ディジー",
+    characterEmoji: "🐱",
+    characterImage: "/images/characters/dizzy.png",
     slides: [
       {
         title: "はじめまして！",
-        content: "私はリリー。レッスン2からは私が担当するわね。一緒にゆっくり学んでいきましょう。",
-        characterMessage: "よろしくね！焦らなくて大丈夫よ。",
+        content: "私はディジー！レッスン2からは私が担当するんだ！一緒にゆっくり学んでいこう！",
+        characterMessage: "よろしくね！焦らなくて大丈夫だよ！",
       },
       {
         title: "変数ってなに？",
@@ -280,9 +324,9 @@ export const tutorials: LessonTutorial[] = [
   },
   {
     lessonId: "2-2",
-    characterName: "リリー",
-    characterEmoji: "👩‍🏫",
-    characterImage: "/images/characters/lily.png",
+    characterName: "ディジー",
+    characterEmoji: "🐱",
+    characterImage: "/images/characters/dizzy.png",
     slides: [
       {
         title: "変数を表示しよう",
@@ -312,9 +356,9 @@ export const tutorials: LessonTutorial[] = [
   },
   {
     lessonId: "2-3",
-    characterName: "リリー",
-    characterEmoji: "👩‍🏫",
-    characterImage: "/images/characters/lily.png",
+    characterName: "ディジー",
+    characterEmoji: "🐱",
+    characterImage: "/images/characters/dizzy.png",
     slides: [
       {
         title: "変数で計算しよう",
@@ -346,9 +390,9 @@ export const tutorials: LessonTutorial[] = [
   },
   {
     lessonId: "2-4",
-    characterName: "リリー",
-    characterEmoji: "👩‍🏫",
-    characterImage: "/images/characters/lily.png",
+    characterName: "ディジー",
+    characterEmoji: "🐱",
+    characterImage: "/images/characters/dizzy.png",
     slides: [
       {
         title: "変数の中身を変えよう",
@@ -380,9 +424,9 @@ export const tutorials: LessonTutorial[] = [
   },
   {
     lessonId: "2-5",
-    characterName: "リリー",
-    characterEmoji: "👩‍🏫",
-    characterImage: "/images/characters/lily.png",
+    characterName: "ディジー",
+    characterEmoji: "🐱",
+    characterImage: "/images/characters/dizzy.png",
     slides: [
       {
         title: "変数を組み合わせよう",
@@ -414,9 +458,9 @@ export const tutorials: LessonTutorial[] = [
   },
   {
     lessonId: "2-6",
-    characterName: "リリー",
-    characterEmoji: "👩‍🏫",
-    characterImage: "/images/characters/lily.png",
+    characterName: "ディジー",
+    characterEmoji: "🐱",
+    characterImage: "/images/characters/dizzy.png",
     slides: [
       {
         title: "変数クイズに挑戦！",
