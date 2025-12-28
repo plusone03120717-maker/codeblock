@@ -207,6 +207,35 @@ const LandingPage = () => {
                   : "A curious friend who teaches variables in a fun way!"}
               </p>
             </div>
+            
+            {/* デックス */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg text-center w-64">
+              <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                <Image
+                  src="/images/characters/dex.png"
+                  alt="デックス"
+                  width={96}
+                  height={96}
+                  className="w-20 h-20 object-contain"
+                  unoptimized
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    if (target.parentElement) {
+                      target.parentElement.innerHTML = '<span class="text-5xl">🤖</span>';
+                    }
+                  }}
+                />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                {language === "ja" ? "デックス" : "Dex"}
+              </h3>
+              <p className="text-gray-600 text-sm">
+                {language === "ja" 
+                  ? "データ型を論理的に教えてくれる、頼れるロボット！" 
+                  : "A reliable robot who teaches data types logically!"}
+              </p>
+            </div>
           </div>
           
           {/* その他のキャラクターの予告 */}
@@ -339,6 +368,124 @@ const LandingPage = () => {
                 ? "🎮 問題を解くとXPがもらえる！レベルアップを目指して楽しく学ぼう！" 
                 : "🎮 Earn XP by solving problems! Level up while having fun!"}
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 保護者向けセクション */}
+      <section className="py-16 px-4 bg-purple-50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">
+            {language === "ja" ? "保護者の方へ" : "For Parents"}
+          </h2>
+          <p className="text-center text-gray-600 mb-12">
+            {language === "ja" 
+              ? "お子さまの学習を安心してサポートできる環境をご用意しています" 
+              : "We provide a safe and supportive learning environment for your child"}
+          </p>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* 安心ポイント1 */}
+            <div className="bg-white rounded-xl p-6 shadow-md">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">🔒</span>
+                </div>
+                <h3 className="text-lg font-bold text-gray-800">
+                  {language === "ja" ? "安心・安全な環境" : "Safe & Secure"}
+                </h3>
+              </div>
+              <p className="text-gray-600 text-sm">
+                {language === "ja" 
+                  ? "広告なし、外部リンクなしの安全な学習環境です。お子さまが安心して学習に集中できます。" 
+                  : "An ad-free, link-free safe learning environment where your child can focus on learning."}
+              </p>
+            </div>
+            
+            {/* 安心ポイント2 */}
+            <div className="bg-white rounded-xl p-6 shadow-md">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">📚</span>
+                </div>
+                <h3 className="text-lg font-bold text-gray-800">
+                  {language === "ja" ? "教育的なカリキュラム" : "Educational Curriculum"}
+                </h3>
+              </div>
+              <p className="text-gray-600 text-sm">
+                {language === "ja" 
+                  ? "プログラミング教育の専門家が監修したカリキュラム。基礎から応用まで段階的に学べます。" 
+                  : "Curriculum supervised by programming education experts. Learn step by step from basics to advanced."}
+              </p>
+            </div>
+            
+            {/* 安心ポイント3 */}
+            <div className="bg-white rounded-xl p-6 shadow-md">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">🎯</span>
+                </div>
+                <h3 className="text-lg font-bold text-gray-800">
+                  {language === "ja" ? "自分のペースで学習" : "Learn at Your Own Pace"}
+                </h3>
+              </div>
+              <p className="text-gray-600 text-sm">
+                {language === "ja" 
+                  ? "時間制限なし。お子さまが自分のペースで、何度でも繰り返し学習できます。" 
+                  : "No time limits. Your child can learn at their own pace and review as many times as needed."}
+              </p>
+            </div>
+            
+            {/* 安心ポイント4 */}
+            <div className="bg-white rounded-xl p-6 shadow-md">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">💡</span>
+                </div>
+                <h3 className="text-lg font-bold text-gray-800">
+                  {language === "ja" ? "つまずいても安心" : "Support When Stuck"}
+                </h3>
+              </div>
+              <p className="text-gray-600 text-sm">
+                {language === "ja" 
+                  ? "AIがキャラクターとしてヒントを提供。答えを教えるのではなく、考え方を導くので、自分で解く力が身につきます。" 
+                  : "AI characters provide hints. Instead of giving answers, they guide thinking so children develop problem-solving skills."}
+              </p>
+            </div>
+            
+            {/* 安心ポイント5 */}
+            <div className="bg-white rounded-xl p-6 shadow-md">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">🏆</span>
+                </div>
+                <h3 className="text-lg font-bold text-gray-800">
+                  {language === "ja" ? "達成感を実感" : "Sense of Achievement"}
+                </h3>
+              </div>
+              <p className="text-gray-600 text-sm">
+                {language === "ja" 
+                  ? "XPやレベルアップ機能で、学習の成果を実感できます。お子さまのやる気を引き出します。" 
+                  : "XP and level-up features let children see their progress, boosting motivation."}
+              </p>
+            </div>
+            
+            {/* 安心ポイント6 */}
+            <div className="bg-white rounded-xl p-6 shadow-md">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">🌱</span>
+                </div>
+                <h3 className="text-lg font-bold text-gray-800">
+                  {language === "ja" ? "将来につながるスキル" : "Skills for the Future"}
+                </h3>
+              </div>
+              <p className="text-gray-600 text-sm">
+                {language === "ja" 
+                  ? "Pythonは世界で最も人気のあるプログラミング言語の一つ。今から学ぶことで、将来の選択肢が広がります。" 
+                  : "Python is one of the world's most popular programming languages. Learning it now opens future opportunities."}
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -535,8 +682,8 @@ const LandingPage = () => {
               </h3>
               <p className="text-gray-600 pl-6">
                 {language === "ja" 
-                  ? "小学生（10〜12歳）を主な対象としていますが、プログラミング初心者の方であれば年齢問わずお使いいただけます。ふりがな機能もあるので、漢字が苦手なお子さまでも安心です。" 
-                  : "Mainly designed for elementary school students (ages 10-12), but anyone new to programming can use it. The furigana feature helps younger children read kanji."}
+                  ? "10〜15歳を主な対象としていますが、プログラミング初心者の方であれば年齢問わずお使いいただけます。ふりがな機能もあるので、漢字が苦手なお子さまでも安心です。" 
+                  : "Mainly designed for ages 10-15, but anyone new to programming can use it. The furigana feature helps younger children read kanji."}
               </p>
             </div>
             
