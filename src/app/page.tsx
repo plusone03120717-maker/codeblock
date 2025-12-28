@@ -1,12 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import { lessons, getLesson } from "@/data/lessons";
 import { getTutorial } from "@/data/tutorials";
 import { useState, useEffect, useMemo } from "react";
 import type { ReactNode } from "react";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { achievements, Achievement } from "@/data/achievements";
+import { checkNewAchievements, UserStats, isWeekend, isEarlyMorning } from "@/utils/achievementChecker";
 import { 
   getProgress, 
   getLevelInfo, 
@@ -800,7 +804,9 @@ const LandingPage = () => {
 
 export default function Home() {
   const router = useRouter();
+  const pathname = usePathname();
   const { user, userId, displayName, contactEmail, loading, progressLoaded } = useAuth();
+  const { language } = useLanguage();
   
   // すべてのフックを先に宣言（条件分岐の前に）
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
@@ -819,6 +825,9 @@ export default function Home() {
   const [debugStartMission, setDebugStartMission] = useState("");
   const [lastOpenedMission, setLastOpenedMission] = useState<LastOpenedMission | null>(null);
   const [unitImageErrors, setUnitImageErrors] = useState<Record<number, boolean>>({});
+  const [newAchievements, setNewAchievements] = useState<Achievement[]>([]);
+  const [showAchievementModal, setShowAchievementModal] = useState(false);
+  const [currentAchievementIndex, setCurrentAchievementIndex] = useState(0);
 
 
   useEffect(() => {
@@ -868,6 +877,41 @@ export default function Home() {
     const lastMission = getLastOpenedMission();
     setLastOpenedMission(lastMission);
   }, [progressLoaded]);
+
+  // 実績チェック
+  useEffect(() => {
+    const checkAchievements = async () => {
+      if (!user) return;
+
+      try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (!userDoc.exists()) return;
+
+        const userData = userDoc.data();
+        const currentAchievements: string[] = userData.achievements || [];
+        const pendingAchievements: string[] = userData.pendingAchievements || [];
+
+        // 保留中の実績があれば表示
+        if (pendingAchievements.length > 0) {
+          const achievementsToShow = achievements.filter(a => 
+            pendingAchievements.includes(a.id)
+          );
+          setNewAchievements(achievementsToShow);
+          setShowAchievementModal(true);
+
+          // 保留中の実績を解除済みに移動
+          await updateDoc(doc(db, "users", user.uid), {
+            achievements: [...currentAchievements, ...pendingAchievements],
+            pendingAchievements: []
+          });
+        }
+      } catch (error) {
+        console.error("Failed to check achievements:", error);
+      }
+    };
+
+    checkAchievements();
+  }, [user]);
 
   // ユニット行のレンダリング用のuseMemo（すべてのフックの後に、早期リターンの前に配置）
   const unitRowsContent = useMemo(() => {
@@ -1191,7 +1235,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100">
+    <div className="min-h-screen bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100 pb-20">
       {/* 2カラムレイアウト（デスクトップ） */}
       <div className="pt-6 px-4 pb-4">
         <div className="max-w-6xl mx-auto">
@@ -1659,6 +1703,84 @@ export default function Home() {
 
       {/* フッター */}
       <Footer />
+
+      {/* 実績解除通知モーダル */}
+      {showAchievementModal && newAchievements.length > 0 && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center animate-bounce-in">
+            <div className="text-6xl mb-4">
+              {newAchievements[currentAchievementIndex].icon}
+            </div>
+            <h2 className="text-2xl font-bold text-purple-600 mb-2">
+              {language === "ja" ? "🎉 実績解除！" : "🎉 Achievement Unlocked!"}
+            </h2>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              {newAchievements[currentAchievementIndex].name[language]}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {newAchievements[currentAchievementIndex].description[language]}
+            </p>
+            
+            {/* ページ表示（複数ある場合） */}
+            {newAchievements.length > 1 && (
+              <p className="text-sm text-gray-400 mb-4">
+                {currentAchievementIndex + 1} / {newAchievements.length}
+              </p>
+            )}
+            
+            <button
+              onClick={() => {
+                if (currentAchievementIndex < newAchievements.length - 1) {
+                  setCurrentAchievementIndex(currentAchievementIndex + 1);
+                } else {
+                  setShowAchievementModal(false);
+                  setCurrentAchievementIndex(0);
+                }
+              }}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-full transition-colors"
+            >
+              {currentAchievementIndex < newAchievements.length - 1
+                ? (language === "ja" ? "次へ" : "Next")
+                : (language === "ja" ? "閉じる" : "Close")}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* フッターナビゲーション（ログイン後のみ表示） */}
+      {user && (
+        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
+          <div className="max-w-4xl mx-auto flex justify-around items-center py-2">
+            <Link
+              href="/"
+              className={`flex flex-col items-center p-2 transition-colors ${
+                pathname === "/" ? "text-purple-600" : "text-gray-500 hover:text-purple-600"
+              }`}
+            >
+              <span className="text-2xl">🏠</span>
+              <span className="text-xs font-medium">{language === "ja" ? "ホーム" : "Home"}</span>
+            </Link>
+            <Link
+              href="/achievements"
+              className={`flex flex-col items-center p-2 transition-colors ${
+                pathname === "/achievements" ? "text-purple-600" : "text-gray-500 hover:text-purple-600"
+              }`}
+            >
+              <span className="text-2xl">🏆</span>
+              <span className="text-xs font-medium">{language === "ja" ? "実績" : "Achievements"}</span>
+            </Link>
+            <Link
+              href="/options"
+              className={`flex flex-col items-center p-2 transition-colors ${
+                pathname === "/options" ? "text-purple-600" : "text-gray-500 hover:text-purple-600"
+              }`}
+            >
+              <span className="text-2xl">⚙️</span>
+              <span className="text-xs font-medium">{language === "ja" ? "設定" : "Settings"}</span>
+            </Link>
+          </div>
+        </nav>
+      )}
     </div>
   );
 }

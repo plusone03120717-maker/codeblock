@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { FuriganaProvider } from "@/contexts/FuriganaContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,9 +31,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
-          <FuriganaProvider>
-            {children}
-          </FuriganaProvider>
+          <LanguageProvider>
+            <FuriganaProvider>
+              {children}
+            </FuriganaProvider>
+          </LanguageProvider>
         </AuthProvider>
       </body>
     </html>

@@ -9,7 +9,7 @@ import {
   reauthenticateWithCredential,
   User,
 } from "firebase/auth";
-import { doc, setDoc, getDoc, deleteDoc, Timestamp } from "firebase/firestore";
+import { doc, setDoc, getDoc, updateDoc, deleteDoc, Timestamp } from "firebase/firestore";
 import { auth, db } from "./firebase";
 
 const usernameToEmail = (username: string): string => {
@@ -36,11 +36,31 @@ export const registerWithUsername = async (
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
   const user = userCredential.user;
 
-  await setDoc(doc(db, "users", user.uid), {
+  // 新規ユーザーの初期データ
+  const initialUserData = {
     userId: userId,
     displayName: "",
     createdAt: new Date(),
-  });
+    xp: 0,
+    level: 1,
+    // 実績関連フィールド
+    achievements: [],
+    pendingAchievements: [],
+    lessonsCompleted: [],
+    lessonCompleteCounts: {},
+    totalCorrect: 0,
+    streakDays: 0,
+    lastStudyDate: null,
+    consecutiveCorrect: 0,
+    maxConsecutiveCorrect: 0,
+    noMistakeLessons: [],
+    noHintLessons: [],
+    fastLessons: [],
+    studiedOnWeekend: false,
+    studiedEarly: false,
+  };
+  
+  await setDoc(doc(db, "users", user.uid), initialUserData);
 
   await setDoc(doc(db, "userIds", userId.toLowerCase()), {
     uid: user.uid,
@@ -55,7 +75,12 @@ export const loginWithUsername = async (
 ): Promise<User> => {
   const email = usernameToEmail(username);
   const userCredential = await signInWithEmailAndPassword(auth, email, password);
-  return userCredential.user;
+  const user = userCredential.user;
+  
+  // 既存ユーザーの実績関連フィールドをチェック
+  await ensureAchievementFields(user.uid);
+  
+  return user;
 };
 
 export const loginWithGoogle = async (): Promise<User> => {
@@ -65,13 +90,36 @@ export const loginWithGoogle = async (): Promise<User> => {
 
   const userDoc = await getDoc(doc(db, "users", user.uid));
   if (!userDoc.exists()) {
-    await setDoc(doc(db, "users", user.uid), {
+    // 新規ユーザーの初期データ
+    const initialUserData = {
       userId: user.email || "user",
       displayName: user.displayName || "",
       email: user.email,
       contactEmail: user.email || "",
       createdAt: new Date(),
-    });
+      xp: 0,
+      level: 1,
+      // 実績関連フィールド
+      achievements: [],
+      pendingAchievements: [],
+      lessonsCompleted: [],
+      lessonCompleteCounts: {},
+      totalCorrect: 0,
+      streakDays: 0,
+      lastStudyDate: null,
+      consecutiveCorrect: 0,
+      maxConsecutiveCorrect: 0,
+      noMistakeLessons: [],
+      noHintLessons: [],
+      fastLessons: [],
+      studiedOnWeekend: false,
+      studiedEarly: false,
+    };
+    
+    await setDoc(doc(db, "users", user.uid), initialUserData);
+  } else {
+    // 既存ユーザーの実績関連フィールドをチェック
+    await ensureAchievementFields(user.uid);
   }
 
   return user;
@@ -238,5 +286,43 @@ export const isGoogleUser = (): boolean => {
   if (!user) return false;
   
   return user.providerData.some(provider => provider.providerId === "google.com");
+};
+
+// 既存ユーザーの実績関連フィールドを確保する関数
+const ensureAchievementFields = async (uid: string): Promise<void> => {
+  try {
+    const userDoc = await getDoc(doc(db, "users", uid));
+    
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      
+      // 実績関連フィールドがなければ追加
+      const updates: any = {};
+      
+      if (!userData.achievements) updates.achievements = [];
+      if (!userData.pendingAchievements) updates.pendingAchievements = [];
+      if (!userData.lessonsCompleted) updates.lessonsCompleted = [];
+      if (!userData.lessonCompleteCounts) updates.lessonCompleteCounts = {};
+      if (userData.totalCorrect === undefined) updates.totalCorrect = 0;
+      if (userData.streakDays === undefined) updates.streakDays = 0;
+      if (!userData.lastStudyDate) updates.lastStudyDate = null;
+      if (userData.consecutiveCorrect === undefined) updates.consecutiveCorrect = 0;
+      if (userData.maxConsecutiveCorrect === undefined) updates.maxConsecutiveCorrect = 0;
+      if (!userData.noMistakeLessons) updates.noMistakeLessons = [];
+      if (!userData.noHintLessons) updates.noHintLessons = [];
+      if (!userData.fastLessons) updates.fastLessons = [];
+      if (userData.studiedOnWeekend === undefined) updates.studiedOnWeekend = false;
+      if (userData.studiedEarly === undefined) updates.studiedEarly = false;
+      if (userData.xp === undefined) updates.xp = 0;
+      if (userData.level === undefined) updates.level = 1;
+      
+      // 更新が必要なフィールドがあれば更新
+      if (Object.keys(updates).length > 0) {
+        await updateDoc(doc(db, "users", uid), updates);
+      }
+    }
+  } catch (error) {
+    console.error("Failed to ensure achievement fields:", error);
+  }
 };
 

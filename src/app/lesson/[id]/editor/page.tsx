@@ -20,6 +20,10 @@ import {
 } from "@/utils/progress";
 import { useAuth } from "@/contexts/AuthContext";
 import { saveLocalProgressToCloud } from "@/lib/progressSync";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { achievements } from "@/data/achievements";
+import { checkNewAchievements, UserStats, isWeekend, isEarlyMorning } from "@/utils/achievementChecker";
 import { F, FW, FuriganaText } from "@/components/Furigana";
 import {
   DndContext,
@@ -277,6 +281,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   const [chatMessages, setChatMessages] = useState<{role: string; content: string; name?: string; emoji?: string}[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+  const [totalWrongInLesson, setTotalWrongInLesson] = useState(0);
+  const [lessonStartTime] = useState(Date.now()); // レッスン開始時刻
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -583,6 +589,98 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     }
   }, [currentMissionId, lessonId]);
 
+  // 実績チェック用のユーザー統計を構築
+  const checkAndSaveAchievements = async () => {
+    if (!user || !lessonId) return;
+
+    try {
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (!userDoc.exists()) return;
+
+      const userData = userDoc.data();
+      
+      // 現在の実績一覧
+      const currentAchievements: string[] = userData.achievements || [];
+      const pendingAchievements: string[] = userData.pendingAchievements || [];
+      
+      // クリア済みレッスン一覧を更新
+      const lessonsCompleted: string[] = userData.lessonsCompleted || [];
+      if (!lessonsCompleted.includes(lessonId)) {
+        lessonsCompleted.push(lessonId);
+      }
+      
+      // レッスンクリア回数を更新
+      const lessonCompleteCounts: { [key: string]: number } = userData.lessonCompleteCounts || {};
+      lessonCompleteCounts[lessonId] = (lessonCompleteCounts[lessonId] || 0) + 1;
+      
+      // ノーミスクリアのチェック（totalWrongInLesson === 0）
+      const noMistakeLessons: string[] = userData.noMistakeLessons || [];
+      if (totalWrongInLesson === 0 && !noMistakeLessons.includes(lessonId)) {
+        noMistakeLessons.push(lessonId);
+      }
+      
+      // ヒントなしクリアのチェック
+      const noHintLessons: string[] = userData.noHintLessons || [];
+      if (hintCount === 0 && !noHintLessons.includes(lessonId)) {
+        noHintLessons.push(lessonId);
+      }
+      
+      // 3分以内クリアのチェック
+      const fastLessons: string[] = userData.fastLessons || [];
+      const lessonDuration = Math.floor((Date.now() - lessonStartTime) / 1000); // 秒
+      if (lessonDuration < 180 && !fastLessons.includes(lessonId)) {
+        fastLessons.push(lessonId);
+      }
+      
+      // 週末・早朝チェック
+      const studiedOnWeekend = userData.studiedOnWeekend || isWeekend();
+      const studiedEarly = userData.studiedEarly || isEarlyMorning();
+      
+      // 連続正解の取得（既に各問題で更新されているので、そのまま使用）
+      const consecutiveCorrect = userData.consecutiveCorrect || 0;
+      const maxConsecutiveCorrect = userData.maxConsecutiveCorrect || 0;
+      
+      // ユーザー統計を構築
+      const stats: UserStats = {
+        lessonsCompleted,
+        totalCorrect: (userData.totalCorrect || 0) + 1,
+        totalXp: userData.xp || 0,
+        level: userData.level || 1,
+        streakDays: userData.streakDays || 0,
+        lessonCompleteCounts,
+        consecutiveCorrect: consecutiveCorrect,
+        maxConsecutiveCorrect: maxConsecutiveCorrect,
+        noMistakeLessons,
+        noHintLessons,
+        fastLessons,
+        studiedOnWeekend,
+        studiedEarly
+      };
+      
+      // 新しく解除された実績をチェック
+      const alreadyUnlocked = [...currentAchievements, ...pendingAchievements];
+      const newlyUnlocked = checkNewAchievements(stats, alreadyUnlocked);
+      
+      // 新しい実績があれば pendingAchievements に追加
+      const newPending = [...pendingAchievements, ...newlyUnlocked.map(a => a.id)];
+      
+      // Firestoreに保存
+      await updateDoc(doc(db, "users", user.uid), {
+        lessonsCompleted,
+        lessonCompleteCounts,
+        noMistakeLessons,
+        noHintLessons,
+        fastLessons,
+        studiedOnWeekend,
+        studiedEarly,
+        pendingAchievements: newPending
+      });
+      
+    } catch (error) {
+      console.error("Failed to check achievements:", error);
+    }
+  };
+
   // 次の問題へ進む処理（共通関数）
   const goToNextMission = useCallback(() => {
     setExecutionResult(null);
@@ -603,6 +701,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         // クラウドに進捗を保存
         if (user) {
           saveLocalProgressToCloud(user.uid);
+          // 実績チェック
+          checkAndSaveAchievements();
         }
         router.push(`/lesson/${lessonId}/complete`);
       }
@@ -630,6 +730,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           // クラウドに進捗を保存
           if (user) {
             saveLocalProgressToCloud(user.uid);
+            // 実績チェック
+            checkAndSaveAchievements();
           }
           router.push(`/lesson/${lessonId}/complete`);
         }
@@ -652,6 +754,24 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       });
 
       playCorrectSound(); // 正解音を再生
+
+      // 連続正解を更新（Firestoreに保存）
+      if (user) {
+        getDoc(doc(db, "users", user.uid)).then(userDoc => {
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            const newConsecutiveCorrect = (userData.consecutiveCorrect || 0) + 1;
+            const newMaxConsecutiveCorrect = Math.max(newConsecutiveCorrect, userData.maxConsecutiveCorrect || 0);
+            
+            updateDoc(doc(db, "users", user.uid), {
+              consecutiveCorrect: newConsecutiveCorrect,
+              maxConsecutiveCorrect: newMaxConsecutiveCorrect
+            }).catch(error => {
+              console.error("Failed to update consecutive correct:", error);
+            });
+          }
+        });
+      }
 
       // 進捗保存とXP付与（再出題モードでなければ）
       if (!isRetryMode && lessonId) {
@@ -715,8 +835,20 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         return newCount;
       });
       
+      // レッスン全体の間違い回数をカウント
+      setTotalWrongInLesson(prev => prev + 1);
+      
       setCurrentStreak(0);
       resetStreak();
+      
+      // 連続正解をリセット（Firestoreに保存）
+      if (user) {
+        updateDoc(doc(db, "users", user.uid), {
+          consecutiveCorrect: 0
+        }).catch(error => {
+          console.error("Failed to reset consecutive correct:", error);
+        });
+      }
       
       // 不正解の場合、少し待ってからリセット
       setTimeout(() => {
@@ -1150,6 +1282,23 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
 
         playCorrectSound(); // 正解音を再生
 
+        // 連続正解を更新（Firestoreに保存）
+        if (user) {
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            const newConsecutiveCorrect = (userData.consecutiveCorrect || 0) + 1;
+            const newMaxConsecutiveCorrect = Math.max(newConsecutiveCorrect, userData.maxConsecutiveCorrect || 0);
+            
+            await updateDoc(doc(db, "users", user.uid), {
+              consecutiveCorrect: newConsecutiveCorrect,
+              maxConsecutiveCorrect: newMaxConsecutiveCorrect
+            }).catch(error => {
+              console.error("Failed to update consecutive correct:", error);
+            });
+          }
+        }
+
         // 進捗保存とXP付与（再出題モードでなければ）
         if (!isRetryMode && lessonId) {
           const progressKey = `missionProgress_${lessonId}`;
@@ -1217,8 +1366,20 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           return newCount;
         });
         
+        // レッスン全体の間違い回数をカウント
+        setTotalWrongInLesson(prev => prev + 1);
+        
         setCurrentStreak(0);
         resetStreak();
+        
+        // 連続正解をリセット（Firestoreに保存）
+        if (user) {
+          updateDoc(doc(db, "users", user.uid), {
+            consecutiveCorrect: 0
+          }).catch(error => {
+            console.error("Failed to reset consecutive correct:", error);
+          });
+        }
       }
     } catch (error) {
       setExecutionResult({
