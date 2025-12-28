@@ -141,35 +141,80 @@ const LandingPage = () => {
       {/* キャラクター紹介セクション */}
       <section className="py-16 px-4 bg-purple-50">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">
             {language === "ja" ? "なかまたち" : "Meet the Characters"}
           </h2>
-          <div className="flex flex-wrap justify-center gap-6">
-            <div className="bg-white rounded-xl p-4 shadow-md text-center w-32">
-              <div className="text-4xl mb-2">🐱</div>
-              <p className="font-bold text-gray-800">{language === "ja" ? "ピクセル" : "Pixel"}</p>
+          <p className="text-center text-gray-600 mb-12">
+            {language === "ja" 
+              ? "個性豊かなキャラクターたちが、きみの学習をサポートするよ！" 
+              : "Unique characters will support your learning journey!"}
+          </p>
+          <div className="flex flex-wrap justify-center gap-8">
+            {/* コーディ */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg text-center w-64">
+              <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden bg-green-100 flex items-center justify-center">
+                <Image
+                  src="/images/characters/cody.png"
+                  alt="コーディ"
+                  width={96}
+                  height={96}
+                  className="w-20 h-20 object-contain"
+                  unoptimized
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    if (target.parentElement) {
+                      target.parentElement.innerHTML = '<span class="text-5xl">🐸</span>';
+                    }
+                  }}
+                />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                {language === "ja" ? "コーディ" : "Cody"}
+              </h3>
+              <p className="text-gray-600 text-sm">
+                {language === "ja" 
+                  ? "プログラミングの基本を教えてくれる、元気いっぱいのヘビ！" 
+                  : "An energetic snake who teaches programming basics!"}
+              </p>
             </div>
-            <div className="bg-white rounded-xl p-4 shadow-md text-center w-32">
-              <div className="text-4xl mb-2">🤖</div>
-              <p className="font-bold text-gray-800">{language === "ja" ? "デックス" : "Dex"}</p>
-            </div>
-            <div className="bg-white rounded-xl p-4 shadow-md text-center w-32">
-              <div className="text-4xl mb-2">🦉</div>
-              <p className="font-bold text-gray-800">{language === "ja" ? "ジャッジ" : "Judge"}</p>
-            </div>
-            <div className="bg-white rounded-xl p-4 shadow-md text-center w-32">
-              <div className="text-4xl mb-2">🐹</div>
-              <p className="font-bold text-gray-800">{language === "ja" ? "ルーピー" : "Loopy"}</p>
-            </div>
-            <div className="bg-white rounded-xl p-4 shadow-md text-center w-32">
-              <div className="text-4xl mb-2">🐜</div>
-              <p className="font-bold text-gray-800">{language === "ja" ? "アリー" : "Ally"}</p>
-            </div>
-            <div className="bg-white rounded-xl p-4 shadow-md text-center w-32">
-              <div className="text-4xl mb-2">🐧</div>
-              <p className="font-bold text-gray-800">{language === "ja" ? "ディクト" : "Dicto"}</p>
+            
+            {/* ディジー */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg text-center w-64">
+              <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center">
+                <Image
+                  src="/images/characters/dizzy.png"
+                  alt="ディジー"
+                  width={96}
+                  height={96}
+                  className="w-20 h-20 object-contain"
+                  unoptimized
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    if (target.parentElement) {
+                      target.parentElement.innerHTML = '<span class="text-5xl">🐕</span>';
+                    }
+                  }}
+                />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                {language === "ja" ? "ディジー" : "Diggy"}
+              </h3>
+              <p className="text-gray-600 text-sm">
+                {language === "ja" 
+                  ? "変数について楽しく教えてくれる、好奇心旺盛な仲間！" 
+                  : "A curious friend who teaches variables in a fun way!"}
+              </p>
             </div>
           </div>
+          
+          {/* その他のキャラクターの予告 */}
+          <p className="text-center text-gray-500 mt-8">
+            {language === "ja" 
+              ? "他にもたくさんのなかまが待っているよ...！" 
+              : "Many more friends are waiting for you...!"}
+          </p>
         </div>
       </section>
 
@@ -207,6 +252,93 @@ const LandingPage = () => {
             <div className="bg-gray-100 rounded-lg p-4 text-center">
               <span className="font-bold text-gray-800">✓ {language === "ja" ? "さらに追加予定！" : "More coming!"}</span>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 学習の流れセクション */}
+      <section className="py-16 px-4 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">
+            {language === "ja" ? "学習の流れ" : "How It Works"}
+          </h2>
+          <p className="text-center text-gray-600 mb-12">
+            {language === "ja" 
+              ? "3つのステップでプログラミングをマスターしよう！" 
+              : "Master programming in 3 simple steps!"}
+          </p>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* ステップ1: チュートリアル */}
+            <div className="relative">
+              <div className="bg-purple-100 rounded-2xl p-6 text-center h-full">
+                <div className="w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
+                  1
+                </div>
+                <div className="text-4xl mb-4">📖</div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                  {language === "ja" ? "チュートリアルで学ぶ" : "Learn with Tutorials"}
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  {language === "ja" 
+                    ? "キャラクターがやさしく解説。新しい概念をわかりやすく説明してくれるよ！" 
+                    : "Characters explain concepts in an easy-to-understand way!"}
+                </p>
+              </div>
+              {/* 矢印（PC表示のみ） */}
+              <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-purple-400 text-2xl">
+                →
+              </div>
+            </div>
+            
+            {/* ステップ2: 問題に挑戦 */}
+            <div className="relative">
+              <div className="bg-green-100 rounded-2xl p-6 text-center h-full">
+                <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
+                  2
+                </div>
+                <div className="text-4xl mb-4">🧩</div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                  {language === "ja" ? "ブロックで問題を解く" : "Solve with Blocks"}
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  {language === "ja" 
+                    ? "ドラッグ＆ドロップでコードを組み立て。タイピングなしでプログラミング！" 
+                    : "Build code with drag & drop. No typing required!"}
+                </p>
+              </div>
+              {/* 矢印（PC表示のみ） */}
+              <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-green-400 text-2xl">
+                →
+              </div>
+            </div>
+            
+            {/* ステップ3: ヒントをもらう */}
+            <div className="relative">
+              <div className="bg-yellow-100 rounded-2xl p-6 text-center h-full">
+                <div className="w-12 h-12 bg-yellow-500 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
+                  3
+                </div>
+                <div className="text-4xl mb-4">💡</div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                  {language === "ja" ? "困ったらヒントをもらう" : "Get Hints When Stuck"}
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  {language === "ja" 
+                    ? "わからなくても大丈夫！AIがキャラクターになってヒントを教えてくれるよ" 
+                    : "Don't worry if you're stuck! AI characters will give you hints"}
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          {/* 追加説明 */}
+          <div className="mt-12 bg-gray-50 rounded-2xl p-6 text-center">
+            <p className="text-gray-700">
+              {language === "ja" 
+                ? "🎮 問題を解くとXPがもらえる！レベルアップを目指して楽しく学ぼう！" 
+                : "🎮 Earn XP by solving problems! Level up while having fun!"}
+            </p>
           </div>
         </div>
       </section>

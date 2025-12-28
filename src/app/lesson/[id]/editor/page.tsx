@@ -363,8 +363,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   // ユニットとキャラクターのマッピング
   const getCharacterByUnit = (unitNumber: number): string => {
     const characterMap: { [key: number]: string } = {
-      1: "pixel",
-      2: "pixel",
+      1: "cody",
+      2: "dizzy",
       3: "dex",
       4: "judge",
       5: "loopy",
@@ -373,7 +373,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       8: "rico",
       9: "dicto"
     };
-    return characterMap[unitNumber] || "pixel";
+    return characterMap[unitNumber] || "cody";
   };
   
   // 現在のミッションを取得
