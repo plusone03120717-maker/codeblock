@@ -343,6 +343,284 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* 料金プランセクション */}
+      <section className="py-16 px-4 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
+            {language === "ja" ? "料金プラン" : "Pricing"}
+          </h2>
+          
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {/* 月額プラン */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-200 flex flex-col h-full">
+              <div className="text-center mb-6">
+                <h3 className="text-lg font-bold text-gray-800 mb-2">
+                  {language === "ja" ? "月額プラン" : "Monthly Plan"}
+                </h3>
+                <div className="text-4xl font-bold text-gray-800">
+                  ¥980
+                  <span className="text-lg font-normal text-gray-500">/月</span>
+                </div>
+                <p className="text-gray-500 text-sm mt-1">
+                  {language === "ja" ? "いつでもキャンセルOK" : "Cancel anytime"}
+                </p>
+              </div>
+              <ul className="space-y-3 mb-6 text-sm flex-1">
+                <li className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span>
+                  <span className="text-gray-700">
+                    {language === "ja" ? "すべてのレッスン" : "All lessons"}
+                  </span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span>
+                  <span className="text-gray-700">
+                    {language === "ja" ? "AIヒント機能" : "AI Hints"}
+                  </span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span>
+                  <span className="text-gray-700">
+                    {language === "ja" ? "新レッスンも追加予定" : "New lessons coming"}
+                  </span>
+                </li>
+              </ul>
+              <Link
+                href="/login?mode=register"
+                className="mt-auto block w-full text-center bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-full transition-colors text-sm"
+              >
+                {language === "ja" ? "月額で始める" : "Start Monthly"}
+              </Link>
+            </div>
+            
+            {/* 半年プラン */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-purple-200 flex flex-col h-full">
+              <div className="text-center mb-6">
+                <h3 className="text-lg font-bold text-gray-800 mb-2">
+                  {language === "ja" ? "半年プラン" : "6-Month Plan"}
+                </h3>
+                <div className="text-4xl font-bold text-purple-600">
+                  ¥4,980
+                </div>
+                <p className="text-purple-500 text-sm mt-1">
+                  {language === "ja" ? "¥830/月（2ヶ月分お得）" : "¥830/mo (Save 2 months)"}
+                </p>
+              </div>
+              <ul className="space-y-3 mb-6 text-sm flex-1">
+                <li className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span>
+                  <span className="text-gray-700">
+                    {language === "ja" ? "すべてのレッスン" : "All lessons"}
+                  </span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span>
+                  <span className="text-gray-700">
+                    {language === "ja" ? "AIヒント機能" : "AI Hints"}
+                  </span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span>
+                  <span className="text-gray-700">
+                    {language === "ja" ? "新レッスンも追加予定" : "New lessons coming"}
+                  </span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span>
+                  <span className="text-gray-700">
+                    {language === "ja" ? "6ヶ月間利用可能" : "6 months access"}
+                  </span>
+                </li>
+              </ul>
+              <Link
+                href="/login?mode=register"
+                className="mt-auto block w-full text-center bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold py-3 px-4 rounded-full transition-colors text-sm"
+              >
+                {language === "ja" ? "半年プランで始める" : "Start 6-Month"}
+              </Link>
+            </div>
+            
+            {/* 年間プラン（おすすめ） */}
+            <div className="bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl p-6 shadow-lg border-2 border-purple-400 relative flex flex-col h-full">
+              {/* おすすめバッジ */}
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <span className="bg-orange-500 text-white text-xs font-bold py-1 px-3 rounded-full">
+                  {language === "ja" ? "一番お得！" : "Best Value!"}
+                </span>
+              </div>
+              
+              <div className="text-center mb-6">
+                <h3 className="text-lg font-bold text-white mb-2">
+                  {language === "ja" ? "年間プラン" : "Annual Plan"}
+                </h3>
+                <div className="text-4xl font-bold text-white">
+                  ¥7,800
+                </div>
+                <p className="text-purple-200 text-sm mt-1">
+                  {language === "ja" ? "¥650/月（4ヶ月分お得）" : "¥650/mo (Save 4 months)"}
+                </p>
+              </div>
+              <ul className="space-y-3 mb-6 text-sm flex-1">
+                <li className="flex items-center gap-2">
+                  <span className="text-yellow-300">✓</span>
+                  <span className="text-white">
+                    {language === "ja" ? "すべてのレッスン" : "All lessons"}
+                  </span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-yellow-300">✓</span>
+                  <span className="text-white">
+                    {language === "ja" ? "AIヒント機能" : "AI Hints"}
+                  </span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-yellow-300">✓</span>
+                  <span className="text-white">
+                    {language === "ja" ? "新レッスンも追加予定" : "New lessons coming"}
+                  </span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-yellow-300">✓</span>
+                  <span className="text-white font-bold">
+                    {language === "ja" ? "1年間利用可能" : "1 year access"}
+                  </span>
+                </li>
+              </ul>
+              <Link
+                href="/login?mode=register"
+                className="mt-auto block w-full text-center bg-white hover:bg-purple-100 text-purple-600 font-bold py-3 px-4 rounded-full transition-colors text-sm"
+              >
+                {language === "ja" ? "年間プランで始める" : "Start Annual"}
+              </Link>
+            </div>
+          </div>
+          
+          {/* 無料で始めるボタン */}
+          <div className="mt-10 text-center">
+            <p className="text-gray-600 mb-4">
+              {language === "ja" 
+                ? "まずは無料でお試し！レッスン1-1〜1-3が無料で遊べます" 
+                : "Try for free! Lessons 1-1 to 1-3 are free"}
+            </p>
+            <Link
+              href="/login?mode=register"
+              className="inline-block bg-green-500 hover:bg-green-600 text-white font-bold text-lg py-4 px-10 rounded-full shadow-lg transform hover:scale-105 transition-all"
+            >
+              {language === "ja" ? "🎮 無料で始める" : "🎮 Start Free"}
+            </Link>
+          </div>
+          
+          {/* 注釈 */}
+          <p className="text-center text-gray-500 text-sm mt-8">
+            {language === "ja" 
+              ? "※ 料金は税込みです。有料プランはいつでもキャンセル可能です。" 
+              : "※ Prices include tax. Paid plans can be cancelled anytime."}
+          </p>
+        </div>
+      </section>
+
+      {/* よくある質問セクション */}
+      <section className="py-16 px-4 bg-white">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
+            {language === "ja" ? "よくある質問" : "FAQ"}
+          </h2>
+          
+          <div className="space-y-4">
+            {/* Q1 */}
+            <div className="bg-gray-50 rounded-xl p-6">
+              <h3 className="font-bold text-gray-800 mb-2 flex items-center gap-2">
+                <span className="text-purple-600">Q.</span>
+                {language === "ja" ? "対象年齢は何歳ですか？" : "What age is this for?"}
+              </h3>
+              <p className="text-gray-600 pl-6">
+                {language === "ja" 
+                  ? "小学生（10〜12歳）を主な対象としていますが、プログラミング初心者の方であれば年齢問わずお使いいただけます。ふりがな機能もあるので、漢字が苦手なお子さまでも安心です。" 
+                  : "Mainly designed for elementary school students (ages 10-12), but anyone new to programming can use it. The furigana feature helps younger children read kanji."}
+              </p>
+            </div>
+            
+            {/* Q2 */}
+            <div className="bg-gray-50 rounded-xl p-6">
+              <h3 className="font-bold text-gray-800 mb-2 flex items-center gap-2">
+                <span className="text-purple-600">Q.</span>
+                {language === "ja" ? "プログラミング未経験でも大丈夫？" : "Can beginners use this?"}
+              </h3>
+              <p className="text-gray-600 pl-6">
+                {language === "ja" 
+                  ? "はい、大丈夫です！CodeBlockはプログラミング未経験のお子さま向けに作られています。ドラッグ＆ドロップでコードを組み立てるので、タイピングが苦手でも楽しく学べます。" 
+                  : "Yes! CodeBlock is designed for complete beginners. Build code with drag & drop, so typing skills aren't needed."}
+              </p>
+            </div>
+            
+            {/* Q3 */}
+            <div className="bg-gray-50 rounded-xl p-6">
+              <h3 className="font-bold text-gray-800 mb-2 flex items-center gap-2">
+                <span className="text-purple-600">Q.</span>
+                {language === "ja" ? "スマホやタブレットでも使えますか？" : "Does it work on phones and tablets?"}
+              </h3>
+              <p className="text-gray-600 pl-6">
+                {language === "ja" 
+                  ? "はい、スマートフォンやタブレットのブラウザからご利用いただけます。ただし、画面が大きいパソコンやタブレットでの学習をおすすめします。" 
+                  : "Yes, it works on smartphone and tablet browsers. However, we recommend using a computer or tablet with a larger screen for the best experience."}
+              </p>
+            </div>
+            
+            {/* Q4 */}
+            <div className="bg-gray-50 rounded-xl p-6">
+              <h3 className="font-bold text-gray-800 mb-2 flex items-center gap-2">
+                <span className="text-purple-600">Q.</span>
+                {language === "ja" ? "無料でどこまで遊べますか？" : "What's included for free?"}
+              </h3>
+              <p className="text-gray-600 pl-6">
+                {language === "ja" 
+                  ? "無料でレッスン1-1〜1-3まで学習できます。print関数の基本を学び、プログラミングの楽しさを体験できます。気に入ったら有料プランでさらに学習を進めましょう！" 
+                  : "Lessons 1-1 to 1-3 are free. Learn the basics of the print function and experience the fun of programming. Upgrade to a paid plan to continue learning!"}
+              </p>
+            </div>
+            
+            {/* Q5 */}
+            <div className="bg-gray-50 rounded-xl p-6">
+              <h3 className="font-bold text-gray-800 mb-2 flex items-center gap-2">
+                <span className="text-purple-600">Q.</span>
+                {language === "ja" ? "支払い方法は何がありますか？" : "What payment methods are accepted?"}
+              </h3>
+              <p className="text-gray-600 pl-6">
+                {language === "ja" 
+                  ? "クレジットカード（Visa、Mastercard、JCB、American Express）でお支払いいただけます。" 
+                  : "We accept credit cards (Visa, Mastercard, JCB, American Express)."}
+              </p>
+            </div>
+            
+            {/* Q6 */}
+            <div className="bg-gray-50 rounded-xl p-6">
+              <h3 className="font-bold text-gray-800 mb-2 flex items-center gap-2">
+                <span className="text-purple-600">Q.</span>
+                {language === "ja" ? "解約はいつでもできますか？" : "Can I cancel anytime?"}
+              </h3>
+              <p className="text-gray-600 pl-6">
+                {language === "ja" 
+                  ? "はい、いつでも解約できます。解約後も契約期間中はサービスをご利用いただけます。" 
+                  : "Yes, you can cancel anytime. You'll still have access until the end of your billing period."}
+              </p>
+            </div>
+            
+            {/* Q7 */}
+            <div className="bg-gray-50 rounded-xl p-6">
+              <h3 className="font-bold text-gray-800 mb-2 flex items-center gap-2">
+                <span className="text-purple-600">Q.</span>
+                {language === "ja" ? "学校や塾で使うことはできますか？" : "Can schools or tutoring centers use this?"}
+              </h3>
+              <p className="text-gray-600 pl-6">
+                {language === "ja" 
+                  ? "はい、教育機関でのご利用も歓迎です。団体向けプランについてはお問い合わせください。" 
+                  : "Yes, educational institutions are welcome to use CodeBlock. Please contact us for group plans."}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTAセクション */}
       <section className="py-16 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-center">
         <h2 className="text-3xl font-bold text-white mb-4">
