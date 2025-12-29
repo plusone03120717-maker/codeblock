@@ -213,6 +213,61 @@ export function getOverallRetentionRate(): number {
 }
 
 /**
+ * 定着度レベルを取得
+ */
+export function getRetentionLevel(item: ReviewItem): {
+  level: 'new' | 'learning' | 'reviewing' | 'learned' | 'mastered';
+  label: string;
+  color: string;
+  emoji: string;
+} {
+  const streak = item.correctStreak;
+  
+  if (streak === 0) {
+    return { level: 'new', label: '未定着', color: 'red', emoji: '🔴' };
+  } else if (streak >= 1 && streak <= 2) {
+    return { level: 'learning', label: '学習中', color: 'orange', emoji: '🟠' };
+  } else if (streak >= 3 && streak <= 4) {
+    return { level: 'reviewing', label: '定着中', color: 'yellow', emoji: '🟡' };
+  } else if (streak === 5) {
+    return { level: 'learned', label: '定着済み', color: 'green', emoji: '🟢' };
+  } else {
+    return { level: 'mastered', label: 'マスター', color: 'purple', emoji: '⭐' };
+  }
+}
+
+/**
+ * 復習統計を取得
+ */
+export function getReviewStats(): {
+  totalItems: number;
+  masteredCount: number;
+  learningCount: number;
+  todayReviewCount: number;
+} {
+  const state = getReviewState();
+  const todayItems = getTodayReviewItems();
+  
+  let masteredCount = 0;
+  let learningCount = 0;
+  
+  state.items.forEach((item) => {
+    if (item.correctStreak >= 6) {
+      masteredCount++;
+    } else {
+      learningCount++;
+    }
+  });
+  
+  return {
+    totalItems: state.items.length,
+    masteredCount,
+    learningCount,
+    todayReviewCount: todayItems.length,
+  };
+}
+
+/**
  * 復習データをリセット（デバッグ用）
  */
 export function resetReviewData(): void {

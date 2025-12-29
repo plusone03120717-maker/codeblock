@@ -12,7 +12,9 @@ import {
   getTodayReviewItems,
   updateReviewResult,
   getRetentionRate,
+  getRetentionLevel,
 } from "@/utils/reviewSystem";
+import { addXP } from "@/utils/progress";
 import { useAuth } from "@/contexts/AuthContext";
 import { F, FW, FuriganaText } from "@/components/Furigana";
 import {
@@ -194,6 +196,8 @@ export default function ReviewPage() {
   const [completedCount, setCompletedCount] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [showCompletionScreen, setShowCompletionScreen] = useState(false);
+  const [earnedXP, setEarnedXP] = useState(0);
+  const [retentionUpgrades, setRetentionUpgrades] = useState(0);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -225,6 +229,12 @@ export default function ReviewPage() {
       setCurrentIndex(0);
     }
   }, [reviewItems.length, currentIndex]);
+
+  // 復習開始時にXPと定着度アップカウントをリセット
+  useEffect(() => {
+    setEarnedXP(0);
+    setRetentionUpgrades(0);
+  }, []);
 
   // 現在の復習アイテム
   const currentReviewItem = reviewItems[currentIndex];
@@ -287,6 +297,30 @@ export default function ReviewPage() {
     setSelectedChoice(null);
     setShowNextButton(false);
   }, [currentIndex]);
+
+  // 定着度が上がったかチェック（更新前のstreakと更新後のstreakを比較）
+  const checkRetentionUpgrade = (beforeStreak: number, afterStreak: number): boolean => {
+    if (beforeStreak === afterStreak) return false;
+    
+    // レベルが上がったかチェック
+    const getLevel = (streak: number) => {
+      if (streak === 0) return 'new';
+      if (streak <= 2) return 'learning';
+      if (streak <= 4) return 'reviewing';
+      if (streak === 5) return 'learned';
+      return 'mastered';
+    };
+    
+    const beforeLevel = getLevel(beforeStreak);
+    const afterLevel = getLevel(afterStreak);
+    
+    // レベルが上がった場合のみtrue
+    const levelOrder = ['new', 'learning', 'reviewing', 'learned', 'mastered'];
+    const beforeIndex = levelOrder.indexOf(beforeLevel);
+    const afterIndex = levelOrder.indexOf(afterLevel);
+    
+    return afterIndex > beforeIndex;
+  };
 
   // 問題が見つからない場合、次の問題にスキップ
   useEffect(() => {
@@ -376,7 +410,20 @@ export default function ReviewPage() {
       
       // 復習結果を更新
       if (currentReviewItem) {
+        const beforeStreak = currentReviewItem.correctStreak;
         updateReviewResult(currentReviewItem.odaiId, true);
+        
+        // 更新後のstreakを取得（正解したので+1）
+        const afterStreak = beforeStreak + 1;
+        
+        // 定着度が上がったかチェック
+        if (checkRetentionUpgrade(beforeStreak, afterStreak)) {
+          setRetentionUpgrades(prev => prev + 1);
+        }
+        
+        // XPを付与（1問2XP）
+        addXP(2);
+        setEarnedXP(prev => prev + 2);
         setCorrectCount(prev => prev + 1);
       }
       
@@ -448,7 +495,20 @@ export default function ReviewPage() {
         
         // 復習結果を更新
         if (currentReviewItem) {
+          const beforeStreak = currentReviewItem.correctStreak;
           updateReviewResult(currentReviewItem.odaiId, true);
+          
+          // 更新後のstreakを取得（正解したので+1）
+          const afterStreak = beforeStreak + 1;
+          
+          // 定着度が上がったかチェック
+          if (checkRetentionUpgrade(beforeStreak, afterStreak)) {
+            setRetentionUpgrades(prev => prev + 1);
+          }
+          
+          // XPを付与（1問2XP）
+          addXP(2);
+          setEarnedXP(prev => prev + 2);
           setCorrectCount(prev => prev + 1);
         }
         
@@ -486,7 +546,9 @@ export default function ReviewPage() {
     if (currentIndex + 1 < reviewItems.length) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      // 全問完了
+      // 全問完了ボーナス（+5XP）
+      addXP(5);
+      setEarnedXP(prev => prev + 5);
       setShowCompletionScreen(true);
     }
   };
@@ -544,6 +606,14 @@ export default function ReviewPage() {
               <p className="text-xl text-gray-700">
                 正解率: <span className="font-bold text-blue-600">{accuracy}%</span>
               </p>
+              <p className="text-xl text-gray-700">
+                獲得XP: <span className="font-bold text-yellow-600">+{earnedXP} XP</span>
+              </p>
+              {retentionUpgrades > 0 && (
+                <p className="text-lg text-purple-600 font-bold">
+                  ✨ {retentionUpgrades}問が定着度アップ！
+                </p>
+              )}
             </div>
             <Link
               href="/"
@@ -604,6 +674,7 @@ export default function ReviewPage() {
   }
 
   const retentionRate = getRetentionRate(currentReviewItem);
+  const retentionLevel = getRetentionLevel(currentReviewItem);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 via-purple-50 to-blue-50 p-2 md:p-4">
@@ -632,9 +703,20 @@ export default function ReviewPage() {
             <span className="text-sm font-bold text-gray-700">
               復習 {currentIndex + 1}/{reviewItems.length}
             </span>
-            <span className="text-xs text-gray-500">
-              定着度: {retentionRate}%
-            </span>
+            <div className="flex items-center gap-2">
+              <span className={`text-xs font-bold px-2 py-1 rounded-full border-2 ${
+                retentionLevel.color === 'red' ? 'bg-red-100 border-red-300 text-red-700' :
+                retentionLevel.color === 'orange' ? 'bg-orange-100 border-orange-300 text-orange-700' :
+                retentionLevel.color === 'yellow' ? 'bg-yellow-100 border-yellow-300 text-yellow-700' :
+                retentionLevel.color === 'green' ? 'bg-green-100 border-green-300 text-green-700' :
+                'bg-purple-100 border-purple-300 text-purple-700'
+              }`}>
+                {retentionLevel.emoji} {retentionLevel.label}
+              </span>
+              <span className="text-xs text-gray-500">
+                定着度: {retentionRate}%
+              </span>
+            </div>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div

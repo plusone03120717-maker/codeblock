@@ -2,17 +2,20 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { getTodayReviewItems, getOverallRetentionRate } from "@/utils/reviewSystem";
+import { getTodayReviewItems, getOverallRetentionRate, getReviewStats } from "@/utils/reviewSystem";
 
 export default function ReviewSection() {
   const [reviewCount, setReviewCount] = useState(0);
   const [retentionRate, setRetentionRate] = useState(100);
+  const [masteredCount, setMasteredCount] = useState(0);
+  const [learningCount, setLearningCount] = useState(0);
 
   useEffect(() => {
     const updateReviewInfo = () => {
       const items = getTodayReviewItems();
       const count = items.length;
       const rate = getOverallRetentionRate();
+      const stats = getReviewStats();
       
       // #region agent log
       fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ReviewSection.tsx:12',message:'updateReviewInfo',data:{reviewCount:count,retentionRate:rate,itemsCount:items.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
@@ -20,6 +23,8 @@ export default function ReviewSection() {
       
       setReviewCount(count);
       setRetentionRate(rate);
+      setMasteredCount(stats.masteredCount);
+      setLearningCount(stats.learningCount);
     };
 
     updateReviewInfo();
@@ -46,6 +51,19 @@ export default function ReviewSection() {
         <p className="text-amber-700 text-sm mb-3">
           {reviewCount}問の復習があります
         </p>
+        {/* 統計情報 */}
+        <div className="flex gap-4 mb-3 text-sm">
+          <div className="flex items-center gap-1 text-purple-700">
+            <span>⭐</span>
+            <span className="font-bold">{masteredCount}</span>
+            <span>問</span>
+          </div>
+          <div className="flex items-center gap-1 text-orange-700">
+            <span>📚</span>
+            <span className="font-bold">{learningCount}</span>
+            <span>問</span>
+          </div>
+        </div>
         {/* 全体の定着度プログレスバー */}
         <div>
           <div className="flex justify-between text-xs text-amber-600 mb-1">
@@ -73,6 +91,19 @@ export default function ReviewSection() {
         <p className="text-green-700 text-sm mb-3">
           今日の復習はありません。お疲れ様でした！
         </p>
+        {/* 統計情報 */}
+        <div className="flex gap-4 mb-3 text-sm">
+          <div className="flex items-center gap-1 text-purple-700">
+            <span>⭐</span>
+            <span className="font-bold">{masteredCount}</span>
+            <span>問</span>
+          </div>
+          <div className="flex items-center gap-1 text-orange-700">
+            <span>📚</span>
+            <span className="font-bold">{learningCount}</span>
+            <span>問</span>
+          </div>
+        </div>
         {/* 全体の定着度プログレスバー */}
         <div>
           <div className="flex justify-between text-xs text-green-600 mb-1">
