@@ -59,7 +59,7 @@ const LandingPage = () => {
       {/* ヘッダー */}
       <header className="flex justify-between items-center p-4 max-w-6xl mx-auto">
         <div className="flex items-center gap-2">
-          <Image src="/logo.png" alt="CodeBlock ロゴ" width={40} height={40} className="rounded-full" />
+          <Image src="/logo.png" alt="CodeBlock ロゴ" width={40} height={40} className="rounded-full border-2 border-white" />
           <span className="text-2xl font-bold text-white">CodeBlock</span>
         </div>
         <div className="flex items-center gap-3">
