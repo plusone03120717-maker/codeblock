@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { achievements, categoryNames, Achievement } from "@/data/achievements";
@@ -70,7 +71,7 @@ export default function AchievementsPage() {
       <header className="bg-purple-700 text-white p-4 shadow-md">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl">🍀</span>
+            <Image src="/logo.png" alt="CodeBlock" width={32} height={32} className="rounded-full" />
             <span className="text-xl font-bold">CodeBlock</span>
           </Link>
           <h1 className="text-xl font-bold">

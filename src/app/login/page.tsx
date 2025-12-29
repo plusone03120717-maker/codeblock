@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { registerWithUsername, loginWithUsername, loginWithGoogle } from "@/lib/auth";
 
 function LoginContent() {
@@ -78,6 +79,7 @@ function LoginContent() {
     <div className="min-h-screen bg-gradient-to-b from-purple-600 to-blue-600 flex flex-col items-center justify-center p-4">
       {/* ロゴ */}
       <div className="flex items-center gap-2 mb-6">
+        <Image src="/logo.png" alt="CodeBlock" width={48} height={48} className="rounded-full" />
         <span className="text-3xl font-bold text-white">CodeBlock</span>
       </div>
       

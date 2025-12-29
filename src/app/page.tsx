@@ -59,7 +59,7 @@ const LandingPage = () => {
       {/* ヘッダー */}
       <header className="flex justify-between items-center p-4 max-w-6xl mx-auto">
         <div className="flex items-center gap-2">
-          <span className="text-3xl">🍀</span>
+          <Image src="/logo.png" alt="CodeBlock" width={40} height={40} className="rounded-full" />
           <span className="text-2xl font-bold text-white">CodeBlock</span>
         </div>
         <div className="flex items-center gap-3">
@@ -791,7 +791,7 @@ const LandingPage = () => {
       {/* フッター */}
       <footer className="py-8 px-4 bg-gray-800 text-center">
         <div className="flex items-center justify-center gap-2 mb-4">
-          <span className="text-2xl">🍀</span>
+          <Image src="/logo.png" alt="CodeBlock" width={32} height={32} className="rounded-full" />
           <span className="text-xl font-bold text-white">CodeBlock</span>
         </div>
         <p className="text-gray-400 text-sm">
@@ -1243,8 +1243,9 @@ export default function Home() {
             <div className="space-y-4 md:col-span-1">
               {/* ヘッダー：ロゴとユーザー情報 */}
               <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-bold text-left text-purple-800">
-                  🐍 CodeBlock
+                <h1 className="text-2xl font-bold text-left flex items-center gap-2" style={{ color: '#333333' }}>
+                  <Image src="/logo.png" alt="CodeBlock" width={32} height={32} className="rounded-full" />
+                  CodeBlock
                 </h1>
                 {!loading && (
                   user ? (
