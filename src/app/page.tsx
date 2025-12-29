@@ -24,6 +24,8 @@ import { F, FW, FuriganaText } from "@/components/Furigana";
 import { UNIT_COLORS, getUnitGradient, getUnitSolid } from "@/utils/unitColors";
 import { useAuth } from "@/contexts/AuthContext";
 import { logout } from "@/lib/auth";
+import ReviewSection from "@/components/ReviewSection";
+import { resetReviewData, getReviewCount } from "@/utils/reviewSystem";
 
 // 簡単な多言語対応フック（ランディングページ用）
 const useLanguage = () => {
@@ -1354,6 +1356,9 @@ export default function Home() {
 
             {/* 右カラム：進捗マップ + レッスンカルーセル + ユニットボタン（2/3幅） */}
             <div className="space-y-4 md:col-span-2">
+              {/* 復習セクション */}
+              <ReviewSection />
+              
               {/* 進捗マップ */}
               <div className="px-4">
                 <div className="flex justify-center items-center gap-1">
@@ -1687,6 +1692,25 @@ export default function Home() {
                     開始
                   </button>
                 </div>
+              </div>
+
+              {/* 復習データリセット */}
+              <div className="mb-3">
+                <label className="text-xs text-gray-600 block mb-1">復習データ</label>
+                <div className="flex gap-1 mb-1">
+                  <button
+                    onClick={() => {
+                      resetReviewData();
+                      alert("復習データをリセットしました！");
+                    }}
+                    className="flex-1 bg-orange-500 text-white text-xs px-2 py-1 rounded hover:bg-orange-600"
+                  >
+                    リセット
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500">
+                  復習待ち: {getReviewCount()}問
+                </p>
               </div>
 
               {/* 現在の進捗 */}

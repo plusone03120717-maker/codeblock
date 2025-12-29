@@ -44,6 +44,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { playBlockAddSound, playBlockRemoveSound, playCorrectSound, playIncorrectSound } from "@/utils/sounds";
+import { addToReviewList } from "@/utils/reviewSystem";
 
 type EditorPageProps = {
   params: Promise<{
@@ -808,6 +809,11 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         if (user) {
           saveLocalProgressToCloud(user.uid);
         }
+        
+        // 復習リストに追加
+        if (lesson) {
+          addToReviewList(lessonId, currentMissionId, lesson.title);
+        }
       }
 
       // 「次へ」ボタンを表示
@@ -1334,11 +1340,16 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           if (user) {
             saveLocalProgressToCloud(user.uid);
           }
+          
+        // 復習リストに追加
+        if (lesson) {
+          addToReviewList(lessonId, currentMissionId, lesson.title);
         }
+      }
 
-        // 「次へ」ボタンを表示
-        setShowNextButton(true);
-      } else {
+      // 「次へ」ボタンを表示
+      setShowNextButton(true);
+    } else {
         // 不正解
         let errorMessage = "期待される出力と異なります。もう一度試してみましょう！";
         if (!codeIsValid && codeErrorMessage) {
