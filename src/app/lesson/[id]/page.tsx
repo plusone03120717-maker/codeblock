@@ -22,6 +22,7 @@ export default function LessonPage({ params }: LessonPageProps) {
   const [lessonId, setLessonId] = useState<string | null>(null);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [imageError, setImageError] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // 未ログイン時はログインページへリダイレクト
   useEffect(() => {
@@ -49,6 +50,38 @@ export default function LessonPage({ params }: LessonPageProps) {
     setImageError(false);
   }, [tutorial]);
   const completed = lessonId ? isLessonCompleted(lessonId) : false;
+
+  const slides = tutorial?.slides || [];
+  const hasNextSlide = slides.length > 0 && currentSlideIndex < slides.length - 1;
+  const hasPrevSlide = currentSlideIndex > 0;
+
+  // キーボード操作のサポート
+  useEffect(() => {
+    if (!lessonId || !tutorial || slides.length === 0) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft" && hasPrevSlide) {
+        setIsTransitioning(true);
+        setTimeout(() => {
+          setCurrentSlideIndex((prev) => prev - 1);
+          setIsTransitioning(false);
+        }, 150);
+      } else if (e.key === "ArrowRight") {
+        if (hasNextSlide) {
+          setIsTransitioning(true);
+          setTimeout(() => {
+            setCurrentSlideIndex((prev) => prev + 1);
+            setIsTransitioning(false);
+          }, 150);
+        } else {
+          router.push(`/lesson/${lessonId}/editor`);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [lessonId, tutorial, slides.length, currentSlideIndex, hasNextSlide, hasPrevSlide, router]);
 
   // ローディング中または未ログイン時の表示
   if (loading || !user) {
@@ -88,14 +121,15 @@ export default function LessonPage({ params }: LessonPageProps) {
     );
   }
 
-  const slides = tutorial?.slides || [];
   const currentSlide = slides[currentSlideIndex];
-  const hasNextSlide = currentSlideIndex < slides.length - 1;
-  const hasPrevSlide = currentSlideIndex > 0;
 
   const handleNextSlide = () => {
     if (hasNextSlide) {
-      setCurrentSlideIndex(currentSlideIndex + 1);
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentSlideIndex(currentSlideIndex + 1);
+        setIsTransitioning(false);
+      }, 150);
     } else {
       // 最後のスライドならエディタに進む
       router.push(`/lesson/${lessonId}/editor`);
@@ -104,7 +138,11 @@ export default function LessonPage({ params }: LessonPageProps) {
 
   const handlePrevSlide = () => {
     if (hasPrevSlide) {
-      setCurrentSlideIndex(currentSlideIndex - 1);
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentSlideIndex(currentSlideIndex - 1);
+        setIsTransitioning(false);
+      }, 150);
     }
   };
 
@@ -147,61 +185,75 @@ export default function LessonPage({ params }: LessonPageProps) {
 
         {/* チュートリアルスライド */}
         {tutorial && currentSlide ? (
-          <div className="bg-white rounded-2xl shadow-xl p-4 border-2 border-purple-200 mb-4">
+          <div className={`bg-white rounded-2xl shadow-xl p-6 border-2 border-purple-200 mb-4 transition-opacity duration-150 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
             {/* ナビゲーションボタン（上部） */}
-            <div className="flex justify-between items-center gap-2 mb-3">
+            <div className="flex justify-between items-center gap-2 mb-4">
               {currentSlideIndex > 0 ? (
                 <button
-                  onClick={() => setCurrentSlideIndex(currentSlideIndex - 1)}
-                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full font-bold text-sm transition-all"
+                  onClick={handlePrevSlide}
+                  className="px-5 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full font-bold text-sm transition-all shadow-md hover:shadow-lg flex items-center gap-1"
                 >
-                  ← 前へ
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  前へ
                 </button>
               ) : (
-                <div className="px-4 py-2 invisible text-sm">← 前へ</div>
+                <div className="px-5 py-2.5 invisible text-sm">前へ</div>
               )}
 
               {/* スライドインジケーター */}
-              <div className="flex gap-1">
+              <div className="flex gap-2">
                 {slides.map((_, index) => (
-                  <div
+                  <button
                     key={index}
-                    className={`w-2 h-2 rounded-full transition-all ${
+                    onClick={() => {
+                      setIsTransitioning(true);
+                      setTimeout(() => {
+                        setCurrentSlideIndex(index);
+                        setIsTransitioning(false);
+                      }, 150);
+                    }}
+                    className={`rounded-full transition-all ${
                       index === currentSlideIndex
-                        ? "bg-purple-500"
-                        : "bg-purple-200"
+                        ? "w-3 h-3 bg-purple-500 scale-125"
+                        : "w-3 h-3 bg-purple-200 hover:bg-purple-300"
                     }`}
+                    aria-label={`スライド ${index + 1}`}
                   />
                 ))}
               </div>
 
               {currentSlideIndex < slides.length - 1 ? (
                 <button
-                  onClick={() => setCurrentSlideIndex(currentSlideIndex + 1)}
-                  className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-full font-bold text-sm transition-all"
+                  onClick={handleNextSlide}
+                  className="px-5 py-2.5 bg-purple-500 hover:bg-purple-600 text-white rounded-full font-bold text-sm transition-all shadow-md hover:shadow-lg flex items-center gap-1"
                 >
-                  次へ →
+                  次へ
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                  </svg>
                 </button>
               ) : (
                 <button
                   onClick={() => router.push(`/lesson/${lessonId}/editor`)}
-                  className="px-4 py-2 bg-gradient-to-r from-green-400 to-emerald-500 text-white rounded-full font-bold text-sm transition-all"
+                  className="px-5 py-2.5 bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white rounded-full font-bold text-sm transition-all shadow-md hover:shadow-lg"
                 >
                   <F reading="かいし">開始</F> 🚀
                 </button>
               )}
             </div>
 
-            {/* キャラクターと吹き出し（横並び） */}
-            <div className="flex items-start gap-3 mb-3">
-              {/* キャラクター（小さく） */}
-              <div className="w-28 h-28 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 border-2 border-purple-200 overflow-hidden">
+            {/* キャラクターと吹き出し */}
+            <div className="flex flex-col md:flex-row items-start gap-4 mb-4">
+              {/* キャラクター */}
+              <div className="w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-purple-200 to-purple-300 rounded-full flex items-center justify-center flex-shrink-0 border-4 border-purple-400 shadow-lg overflow-hidden mx-auto md:mx-0">
                 {tutorial.characterImage && !imageError ? (
                   <Image
                     src={tutorial.characterImage}
                     alt={tutorial.characterName}
-                    width={112}
-                    height={112}
+                    width={128}
+                    height={128}
                     className="object-contain"
                     unoptimized
                     onError={() => {
@@ -210,30 +262,35 @@ export default function LessonPage({ params }: LessonPageProps) {
                     }}
                   />
                 ) : (
-                  <span className="text-4xl">{tutorial.characterEmoji}</span>
+                  <span className="text-4xl md:text-5xl">{tutorial.characterEmoji}</span>
                 )}
               </div>
               
               {/* 吹き出し */}
-              <div className="flex-1 bg-purple-100 rounded-xl p-3 relative">
-                <div className="absolute left-0 top-4 transform -translate-x-2">
-                  <div className="w-0 h-0 border-t-6 border-t-transparent border-r-8 border-r-purple-100 border-b-6 border-b-transparent"></div>
+              <div className="flex-1 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-4 relative shadow-md w-full md:w-auto">
+                {/* モバイル用：上向きの三角形 */}
+                <div className="absolute left-1/2 top-0 transform -translate-x-1/2 -translate-y-full md:hidden">
+                  <div className="w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-12 border-b-purple-100"></div>
                 </div>
-                <p className="text-sm text-gray-700"><FuriganaText text={currentSlide.characterMessage} /></p>
+                {/* デスクトップ用：左向きの三角形 */}
+                <div className="hidden md:block absolute left-0 top-6 transform -translate-x-3">
+                  <div className="w-0 h-0 border-t-8 border-t-transparent border-r-12 border-r-purple-100 border-b-8 border-b-transparent"></div>
+                </div>
+                <p className="text-sm md:text-base text-gray-700 leading-relaxed"><FuriganaText text={currentSlide.characterMessage} /></p>
               </div>
             </div>
 
             {/* スライドタイトル */}
-            <h2 className="text-lg font-bold text-purple-800 mb-2">
+            <h2 className="text-lg md:text-xl font-bold text-purple-800 mb-3">
               <FuriganaText text={currentSlide.title} />
             </h2>
             
             {/* 説明 */}
-            <p className="text-sm text-gray-600 mb-2"><FuriganaText text={currentSlide.content} /></p>
+            <p className="text-sm md:text-base text-gray-600 mb-4 leading-relaxed"><FuriganaText text={currentSlide.content} /></p>
             
             {/* 画像 */}
             {currentSlide.image && (
-              <div className="mb-3">
+              <div className="mb-4">
                 <Image
                   src={currentSlide.image}
                   alt="ブロック画像"
@@ -244,21 +301,21 @@ export default function LessonPage({ params }: LessonPageProps) {
               </div>
             )}
             
-            {/* コード例（コンパクト版） */}
+            {/* コード例 */}
             {currentSlide.codeExample && (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {currentSlide.codeExample.bad && (
-                  <div className="bg-red-50 border border-red-300 rounded-lg p-2">
-                    <div className="text-red-600 font-bold text-xs mb-1">❌ ダメな<F reading="れい">例</F></div>
-                    <pre className="bg-red-100 rounded p-2 text-red-800 font-mono text-xs overflow-x-auto">
+                  <div className="bg-red-50 border-2 border-red-300 rounded-lg p-3">
+                    <div className="text-red-600 font-bold text-sm mb-2">❌ ダメな<F reading="れい">例</F></div>
+                    <pre className="bg-gray-900 rounded-lg p-3 text-red-400 font-mono text-sm overflow-x-auto shadow-inner">
                       {currentSlide.codeExample.bad}
                     </pre>
                   </div>
                 )}
                 {currentSlide.codeExample.good && (
-                  <div className="bg-green-50 border border-green-300 rounded-lg p-2">
-                    <div className="text-green-600 font-bold text-xs mb-1">✅ 正しい<F reading="れい">例</F></div>
-                    <pre className="bg-green-100 rounded p-2 text-green-800 font-mono text-xs overflow-x-auto">
+                  <div className="bg-green-50 border-2 border-green-300 rounded-lg p-3">
+                    <div className="text-green-600 font-bold text-sm mb-2">✅ 正しい<F reading="れい">例</F></div>
+                    <pre className="bg-gray-900 rounded-lg p-3 text-green-400 font-mono text-sm overflow-x-auto shadow-inner">
                       {currentSlide.codeExample.good}
                     </pre>
                   </div>

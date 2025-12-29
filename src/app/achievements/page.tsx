@@ -71,7 +71,7 @@ export default function AchievementsPage() {
       <header className="bg-purple-700 text-white p-4 shadow-md">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="CodeBlock" width={32} height={32} className="rounded-full" />
+            <Image src="/logo.png" alt="CodeBlock ロゴ" width={32} height={32} className="rounded-full" />
             <span className="text-xl font-bold">CodeBlock</span>
           </Link>
           <h1 className="text-xl font-bold">

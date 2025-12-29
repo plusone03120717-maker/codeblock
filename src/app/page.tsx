@@ -59,7 +59,7 @@ const LandingPage = () => {
       {/* ヘッダー */}
       <header className="flex justify-between items-center p-4 max-w-6xl mx-auto">
         <div className="flex items-center gap-2">
-          <Image src="/logo.png" alt="CodeBlock" width={40} height={40} className="rounded-full" />
+          <Image src="/logo.png" alt="CodeBlock ロゴ" width={40} height={40} className="rounded-full" />
           <span className="text-2xl font-bold text-white">CodeBlock</span>
         </div>
         <div className="flex items-center gap-3">
@@ -791,7 +791,7 @@ const LandingPage = () => {
       {/* フッター */}
       <footer className="py-8 px-4 bg-gray-800 text-center">
         <div className="flex items-center justify-center gap-2 mb-4">
-          <Image src="/logo.png" alt="CodeBlock" width={32} height={32} className="rounded-full" />
+          <Image src="/logo.png" alt="CodeBlock ロゴ" width={32} height={32} className="rounded-full" />
           <span className="text-xl font-bold text-white">CodeBlock</span>
         </div>
         <p className="text-gray-400 text-sm">
@@ -1242,16 +1242,16 @@ export default function Home() {
             {/* 左カラム：ロゴ + ステータスカード + 前回の続き（1/3幅） */}
             <div className="space-y-4 md:col-span-1">
               {/* ヘッダー：ロゴとユーザー情報 */}
-              <div className="flex justify-between items-center mb-4">
+              <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-left flex items-center gap-2" style={{ color: '#333333' }}>
-                  <Image src="/logo.png" alt="CodeBlock" width={32} height={32} className="rounded-full" />
+                  <Image src="/logo.png" alt="CodeBlock ロゴ" width={32} height={32} className="rounded-full" />
                   CodeBlock
                 </h1>
                 {!loading && (
                   user ? (
                     <button
                       onClick={handleLogout}
-                      className="text-lg font-bold bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-full transition-colors"
+                      className="text-lg font-bold bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-4 py-2 rounded-full transition-colors"
                     >
                       ログアウト
                     </button>
@@ -1296,7 +1296,7 @@ export default function Home() {
               )}
               
               {/* ステータスカード */}
-              <div className="bg-white rounded-2xl shadow-lg p-4 border-2 border-yellow-200">
+              <div className="bg-white rounded-2xl shadow-lg p-5 border-2 border-yellow-200">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center shadow">
