@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getProgress, getXPForNextLevel, getXPInCurrentLevel } from "@/utils/progress";
+import { getProgress, getXPToNextLevel, getXPInCurrentLevel, getLevelInfo } from "@/utils/progress";
 
 export default function PlayerStats() {
   const [progress, setProgress] = useState<{
@@ -12,8 +12,9 @@ export default function PlayerStats() {
   useEffect(() => {
     const loadProgress = () => {
       const data = getProgress();
+      const levelInfo = getLevelInfo(data.totalXP);
       setProgress({
-        level: data.level,
+        level: levelInfo.level,
         totalXP: data.totalXP,
       });
     };
@@ -41,7 +42,7 @@ export default function PlayerStats() {
   }
 
   const { level, totalXP } = progress;
-  const xpForNextLevel = getXPForNextLevel();
+  const xpForNextLevel = getXPToNextLevel(totalXP);
   const xpInCurrentLevel = getXPInCurrentLevel(totalXP);
   const progressPercent = Math.min((xpInCurrentLevel / xpForNextLevel) * 100, 100);
 
@@ -71,6 +72,7 @@ export default function PlayerStats() {
     </div>
   );
 }
+
 
 
 

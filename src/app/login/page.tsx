@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { registerWithUsername, loginWithUsername, loginWithGoogle } from "@/lib/auth";
 
-export default function LoginPage() {
+function LoginContent() {
   const [isRegister, setIsRegister] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -197,6 +197,18 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
+        <div className="text-white text-xl">読み込み中...</div>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
 

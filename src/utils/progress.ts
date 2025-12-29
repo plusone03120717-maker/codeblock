@@ -87,6 +87,12 @@ export function getXPToNextLevel(xp: number): number {
   return currentLevel.maxXP - xp + 1
 }
 
+// 現在のレベルでのXP（レベル内での進捗）
+export function getXPInCurrentLevel(xp: number): number {
+  const currentLevel = getLevelInfo(xp)
+  return xp - currentLevel.minXP
+}
+
 // XPを追加（レベルアップしたかどうかを返す）
 export function addXP(amount: number): { newTotal: number; leveledUp: boolean; newLevel: LevelInfo } {
   const progress = getProgress()

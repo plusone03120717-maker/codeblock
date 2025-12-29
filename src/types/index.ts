@@ -1,6 +1,6 @@
 export interface Block {
   id: string;
-  type: "print" | "variable" | "if";
+  type: "print" | "variable" | "if" | "newline";
   label: string;
   params: Record<string, any>;
   pythonCode: string;
@@ -19,7 +19,7 @@ export interface Lesson {
 export interface WordBlock {
   id: string;
   text: string;
-  type: "keyword" | "operator" | "string" | "number" | "variable" | "indent" | "function" | "bracket";
+  type: "string" | "number" | "function" | "variable" | "keyword" | "operator" | "indent" | "bracket" | "newline" | "quote" | "text" | "print" | "if" | "comparison" | "boolean" | "colon" | "list" | "dict" | "comma" | "equals" | "return" | "def" | "param" | "loop" | "range" | "index" | "separator";
   color: string;
 }
 
