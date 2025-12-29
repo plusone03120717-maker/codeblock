@@ -1604,7 +1604,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         </div>
 
         {/* XPとレベル表示（コンパクト版） */}
-        <div className="flex items-center justify-between bg-white rounded-xl p-2 shadow border border-yellow-200 mb-2">
+        <div className="flex items-center justify-between bg-white rounded-xl p-2 shadow border border-yellow-200 mb-3">
           <div className="flex items-center gap-2">
             <span className="text-lg">⭐</span>
             <span className="font-bold text-yellow-600 text-sm">Lv.{levelInfo.level}</span>
@@ -1624,7 +1624,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         </div>
 
         {/* 進捗バー（コンパクト版） */}
-        <div className="mb-2">
+        <div className="mb-3">
           <div className="flex items-center justify-between mb-1">
             {isRetryMode ? (
               <>
@@ -1680,17 +1680,17 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         </div>
 
         {/* ミッション内容（コンパクト版） */}
-        <div className="bg-white rounded-xl shadow p-3 mb-2 border border-blue-200">
-          <div className="flex items-start gap-3">
-            {/* キャラクター（小さく） */}
+        <div className="bg-white rounded-2xl shadow-lg p-4 md:p-5 mb-3 border-2 border-blue-300">
+          <div className="flex items-start gap-4">
+            {/* キャラクター */}
             {tutorial && (
-              <div className="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="w-28 h-28 md:w-32 md:h-32 bg-gradient-to-br from-purple-200 to-purple-300 rounded-full flex items-center justify-center flex-shrink-0 border-4 border-purple-400 shadow-lg overflow-hidden">
                 {tutorial.characterImage && !imageError ? (
                   <Image
                     src={tutorial.characterImage}
                     alt={tutorial.characterName}
-                    width={96}
-                    height={96}
+                    width={128}
+                    height={128}
                     className="object-contain"
                     unoptimized
                     onError={() => {
@@ -1699,23 +1699,23 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                     }}
                   />
                 ) : (
-                  <span className="text-4xl">{tutorial.characterEmoji}</span>
+                  <span className="text-4xl md:text-5xl">{tutorial.characterEmoji}</span>
                 )}
               </div>
             )}
             
             {/* 説明 */}
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-gray-700 mb-1"><FuriganaText text={currentMission.description} /></p>
+              <p className="text-sm md:text-base text-gray-700 mb-2 leading-relaxed"><FuriganaText text={currentMission.description} /></p>
               {currentMission?.prefixCode && (
-                <div className="bg-gray-700 rounded-lg p-2 mt-2">
+                <div className="bg-gray-700 rounded-lg p-2 mt-3">
                   <p className="text-xs text-gray-400 mb-1">変数の設定（自動で入力されます）:</p>
                   <pre className="text-yellow-400 font-mono text-sm">{currentMission.prefixCode}</pre>
                 </div>
               )}
               {/* 期待される出力 - クイズ形式以外の場合のみ表示 */}
               {currentMission?.type !== "quiz" && !currentMission?.hideExpectedOutput && (
-                <div className="bg-gray-800 rounded-lg p-2 mt-2">
+                <div className="bg-gray-800 rounded-lg p-2 mt-3">
                   <p className="text-xs text-gray-400 mb-1"><F reading="きたい">期待</F>される<F reading="しゅつりょく">出力</F>:</p>
                   <pre className="text-green-400 font-mono text-sm">
                     {currentMission.expectedOutput}
@@ -1729,7 +1729,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         {/* 回答エリア - 問題タイプによって分岐 */}
         {currentMission?.type === "quiz" ? (
           // 選択式問題のUI
-          <div className="mb-3">
+          <div className="mb-4">
             {/* コード表示 */}
             <div className="bg-gray-900 rounded-xl p-4 mb-4">
               <pre className="text-green-400 font-mono text-sm whitespace-pre-wrap">{currentMission.codeToRead}</pre>
@@ -1761,9 +1761,9 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           // 従来のブロック形式のUI
           <>
             {/* 回答エリア */}
-            <div className="mb-3">
-              <h3 className="text-sm font-bold mb-1 text-gray-700">あなたの<F reading="こた">答</F>え</h3>
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-xl p-3 min-h-[60px]">
+            <div className="mb-4">
+              <h3 className="text-sm font-bold mb-2 text-gray-700">あなたの<F reading="こた">答</F>え</h3>
+              <div className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-300 rounded-2xl p-4 min-h-[60px]">
                 {selectedBlocks.length === 0 ? (
                   <p className="text-gray-400 text-center py-2 text-sm"><F reading="たんご">単語</F>を<F reading="えら">選</F>んでください</p>
                 ) : (
@@ -1797,9 +1797,9 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
             </div>
 
             {/* 単語選択 */}
-            <div className="mb-3">
-              <h3 className="text-sm font-bold mb-1 text-gray-700"><F reading="たんご">単語</F>を<F reading="えら">選</F>んでね</h3>
-              <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-3">
+            <div className="mb-4">
+              <h3 className="text-sm font-bold mb-2 text-gray-700"><F reading="たんご">単語</F>を<F reading="えら">選</F>んでね</h3>
+              <div className="bg-gray-50 border-2 border-gray-200 rounded-2xl p-4">
                 <div className="flex flex-wrap gap-2">
                   {availableBlocks.map((block) => (
                     <button
@@ -1839,10 +1839,10 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         >
           {/* 実行結果 */}
           {executionResult && (
-            <div className="p-2 border-b">
+            <div className="p-3 border-b">
               {executionResult.success ? (
                 <div>
-                  <div className="bg-green-100 border-2 border-green-500 rounded-xl p-2 flex items-center gap-2">
+                  <div className="bg-green-100 border-2 border-green-500 rounded-2xl p-3 flex items-center gap-3">
                     <span className="text-xl">🎉</span>
                     <div className="flex-1">
                       <p className="text-green-800 font-bold text-sm"><FW word="正解" />！</p>
@@ -1850,13 +1850,13 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                     </div>
                   </div>
                   {currentMission?.explanation && (
-                    <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-xl">
                       <p className="text-blue-800 text-sm">💡 {currentMission.explanation}</p>
                     </div>
                   )}
                 </div>
               ) : (
-                <div className="bg-red-100 border-2 border-red-500 rounded-xl p-2 flex items-center gap-2">
+                <div className="bg-red-100 border-2 border-red-500 rounded-2xl p-3 flex items-center gap-3">
                   <span className="text-xl">🤔</span>
                   <div>
                     <p className="text-red-800 font-bold text-sm">もう一度！</p>
@@ -1988,7 +1988,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           <div className="p-3">
             {executionResult.success ? (
               <>
-                <div className="bg-green-100 border-2 border-green-500 rounded-xl p-3 flex items-center gap-2 mb-3">
+                <div className="bg-green-100 border-2 border-green-500 rounded-2xl p-4 flex items-center gap-3 mb-3">
                   <span className="text-2xl">🎉</span>
                   <div>
                     <p className="text-green-800 font-bold"><FW word="正解" />！</p>
@@ -1996,7 +1996,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                   </div>
                 </div>
                 {currentMission?.explanation && (
-                  <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-xl">
                     <p className="text-blue-800 text-sm">💡 {currentMission.explanation}</p>
                   </div>
                 )}
@@ -2033,7 +2033,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
               </>
             ) : (
               <>
-                <div className="bg-red-100 border-2 border-red-500 rounded-xl p-3 flex items-center gap-2 mb-3">
+                <div className="bg-red-100 border-2 border-red-500 rounded-2xl p-4 flex items-center gap-3 mb-3">
                   <span className="text-2xl">🤔</span>
                   <div>
                     <p className="text-red-800 font-bold">もう一度！</p>
