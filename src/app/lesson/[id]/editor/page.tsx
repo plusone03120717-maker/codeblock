@@ -158,7 +158,7 @@ async function executePythonCode(
   code: string
 ): Promise<{ output: string | null; error: string | null }> {
   try {
-    const response = await fetch("http://localhost:8000/api/execute", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/execute`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1429,7 +1429,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       : "";
     
     try {
-      const response = await fetch("http://localhost:8000/api/hint", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/hint`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
