@@ -75,7 +75,7 @@ export default function AchievementsPage() {
             <span className="text-xl font-bold">CodeBlock</span>
           </Link>
           <h1 className="text-xl font-bold">
-            {language === "ja" ? "🏆 実績" : "🏆 Achievements"}
+            {language === "ja" ? "🏅 バッジ" : "🏅 Achievements"}
           </h1>
         </div>
       </header>
@@ -85,7 +85,7 @@ export default function AchievementsPage() {
         <div className="bg-white rounded-xl p-6 shadow-lg mb-6">
           <div className="text-center">
             <p className="text-gray-600 mb-2">
-              {language === "ja" ? "獲得した実績" : "Achievements Unlocked"}
+              {language === "ja" ? "獲得したバッジ" : "Achievements Unlocked"}
             </p>
             <p className="text-4xl font-bold text-purple-600">
               {unlockedAchievements.length} / {achievements.length}
@@ -144,7 +144,7 @@ export default function AchievementsPage() {
                 {isUnlocked && (
                   <div className="mt-2">
                     <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">
-                      {language === "ja" ? "獲得済み" : "Unlocked"}
+                      {language === "ja" ? "ゲット済み！" : "Unlocked"}
                     </span>
                   </div>
                 )}

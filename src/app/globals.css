@@ -64,7 +64,7 @@ body {
   }
 }
 
-/* 実績解除通知アニメーション */
+/* バッジゲット通知アニメーション */
 @keyframes bounce-in {
   0% {
     transform: scale(0.5);

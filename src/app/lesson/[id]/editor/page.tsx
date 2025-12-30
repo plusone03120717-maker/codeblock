@@ -658,7 +658,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         studiedEarly
       };
       
-      // 新しく解除された実績をチェック
+      // 新しくゲットされたバッジをチェック
       const alreadyUnlocked = [...currentAchievements, ...pendingAchievements];
       const newlyUnlocked = checkNewAchievements(stats, alreadyUnlocked);
       

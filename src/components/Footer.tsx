@@ -29,9 +29,9 @@ export default function Footer() {
     },
     {
       href: "/achievements",
-      label: "実績",
+      label: "バッジ",
       icon: (
-        <span className="text-2xl">🏆</span>
+        <span className="text-2xl">🏅</span>
       ),
     },
     {

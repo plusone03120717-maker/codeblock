@@ -912,7 +912,7 @@ export default function Home() {
         const currentAchievements: string[] = userData.achievements || [];
         const pendingAchievements: string[] = userData.pendingAchievements || [];
 
-        // 保留中の実績があれば表示
+        // 保留中のバッジがあれば表示
         if (pendingAchievements.length > 0) {
           const achievementsToShow = achievements.filter(a => 
             pendingAchievements.includes(a.id)
@@ -920,7 +920,7 @@ export default function Home() {
           setNewAchievements(achievementsToShow);
           setShowAchievementModal(true);
 
-          // 保留中の実績を解除済みに移動
+          // 保留中のバッジを獲得済みに移動
           await updateDoc(doc(db, "users", user.uid), {
             achievements: [...currentAchievements, ...pendingAchievements],
             pendingAchievements: []
@@ -1749,7 +1749,7 @@ export default function Home() {
       {/* フッター */}
       <Footer />
 
-      {/* 実績解除通知モーダル */}
+      {/* バッジゲット通知モーダル */}
       {showAchievementModal && newAchievements.length > 0 && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center animate-bounce-in">
@@ -1757,7 +1757,7 @@ export default function Home() {
               {newAchievements[currentAchievementIndex].icon}
             </div>
             <h2 className="text-2xl font-bold text-purple-600 mb-2">
-              {language === "ja" ? "🎉 実績解除！" : "🎉 Achievement Unlocked!"}
+              {language === "ja" ? "🎉 バッジゲット！" : "🎉 Achievement Unlocked!"}
             </h2>
             <h3 className="text-xl font-bold text-gray-800 mb-2">
               {newAchievements[currentAchievementIndex].name[language]}
