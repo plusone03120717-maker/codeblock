@@ -331,11 +331,11 @@ const LandingPage = () => {
           </h2>
           <p className="text-center text-gray-600 mb-12">
             {language === "ja" 
-              ? "3つのステップでプログラミングをマスターしよう！" 
-              : "Master programming in 3 simple steps!"}
+              ? "4つのステップでプログラミングをマスターしよう！" 
+              : "Master programming in 4 simple steps!"}
           </p>
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* ステップ1: チュートリアル */}
             <div className="relative">
               <div className="bg-purple-100 rounded-2xl p-6 text-center h-full">
@@ -353,7 +353,7 @@ const LandingPage = () => {
                 </p>
               </div>
               {/* 矢印（PC表示のみ） */}
-              <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-purple-400 text-2xl">
+              <div className="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-purple-400 text-2xl">
                 →
               </div>
             </div>
@@ -375,7 +375,7 @@ const LandingPage = () => {
                 </p>
               </div>
               {/* 矢印（PC表示のみ） */}
-              <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-green-400 text-2xl">
+              <div className="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-green-400 text-2xl">
                 →
               </div>
             </div>
@@ -394,6 +394,28 @@ const LandingPage = () => {
                   {language === "ja" 
                     ? "わからなくても大丈夫！AIがキャラクターになってヒントを教えてくれるよ" 
                     : "Don't worry if you're stuck! AI characters will give you hints"}
+                </p>
+              </div>
+              {/* 矢印（PC表示のみ） */}
+              <div className="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-yellow-400 text-2xl">
+                →
+              </div>
+            </div>
+            
+            {/* ステップ4: 復習で定着 */}
+            <div className="relative">
+              <div className="bg-blue-50 rounded-2xl p-6 text-center h-full">
+                <div className="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
+                  4
+                </div>
+                <div className="text-4xl mb-4">🔄</div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                  {language === "ja" ? "復習で定着させる" : "Review to Master"}
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  {language === "ja" 
+                    ? "AIが最適なタイミングで復習問題を出題。忘れる前に思い出して、知識をしっかり定着させよう！" 
+                    : "AI provides review questions at optimal times. Remember before you forget and solidify your knowledge!"}
                 </p>
               </div>
             </div>
