@@ -146,7 +146,23 @@ const LandingPage = () => {
               </p>
             </div>
             <div className="text-center p-6">
-              <div className="text-5xl mb-4">💡</div>
+              <div className="h-64 flex items-center justify-center mb-4">
+                <img 
+                  src="/images/features/hint.png" 
+                  alt={language === "ja" ? "困ったらヒント" : "Hints When Stuck"} 
+                  className="max-h-full max-w-full rounded-lg shadow-md object-contain"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    if (target.parentElement) {
+                      const fallback = document.createElement('div');
+                      fallback.className = 'text-5xl';
+                      fallback.textContent = '💡';
+                      target.parentElement.appendChild(fallback);
+                    }
+                  }}
+                />
+              </div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">
                 {language === "ja" ? "困ったらヒント" : "Hints When Stuck"}
               </h3>
@@ -846,6 +862,7 @@ export default function Home() {
   const [debugStartMission, setDebugStartMission] = useState("");
   const [lastOpenedMission, setLastOpenedMission] = useState<LastOpenedMission | null>(null);
   const [unitImageErrors, setUnitImageErrors] = useState<Record<number, boolean>>({});
+  const [unitImageFallback, setUnitImageFallback] = useState<Record<number, boolean>>({});
   const [newAchievements, setNewAchievements] = useState<Achievement[]>([]);
   const [showAchievementModal, setShowAchievementModal] = useState(false);
   const [currentAchievementIndex, setCurrentAchievementIndex] = useState(0);
@@ -964,13 +981,19 @@ export default function Home() {
         lessons.find(l => l.id === lessonId)?.unitNumber === unit
       );
 
-      // ユニットが完了した場合、最初のレッスンのキャラクター画像を取得
+      // ユニットが完了した場合、画像を取得
       let characterImage: string | undefined;
+      let fallbackImage: string | undefined; // フォールバック用（チュートリアルの画像）
       let characterEmoji: string | undefined;
       if (isUnitComplete && unitLessons.length > 0) {
+        // ユニット専用画像を優先的に使用
+        const unitImagePath = `/images/characters/unit-${String(unit).padStart(2, '0')}.png`;
+        characterImage = unitImagePath;
+        
+        // フォールバック用に最初のレッスンのチュートリアル画像を取得
         const firstLesson = unitLessons[0];
         const tutorial = getTutorial(firstLesson.id);
-        characterImage = tutorial?.characterImage;
+        fallbackImage = tutorial?.characterImage;
         characterEmoji = tutorial?.characterEmoji;
       }
 
@@ -992,28 +1015,56 @@ export default function Home() {
           <div className="absolute top-0 flex items-center justify-center">
             <div className={`w-12 h-12 rounded-full flex flex-col items-center justify-center font-bold text-xs shadow-lg transition-all duration-300 ease-out ${hasCompletedLessons ? 'group-hover:scale-110' : ''} ${
               isUnitComplete
-                ? `bg-gradient-to-br ${unitColor} text-white overflow-hidden`
+                ? `bg-gradient-to-br ${unitColor} text-white ${unit === 1 ? 'overflow-hidden' : ''}`
                 : completedInUnit > 0
                 ? "bg-gradient-to-br from-yellow-400 to-amber-500 text-white"
                 : "bg-gradient-to-br from-gray-300 to-gray-400 text-gray-600"
             }`}>
-              {isUnitComplete && characterImage && !unitImageErrors[unit] ? (
-                <Image
-                  src={characterImage}
-                  alt="Character"
-                  width={48}
-                  height={48}
-                  className="object-contain w-full h-full"
-                  unoptimized
-                  onError={() => {
-                    setUnitImageErrors(prev => ({ ...prev, [unit]: true }));
-                  }}
-                />
-              ) : isUnitComplete && characterEmoji ? (
-                <span className="text-2xl">{characterEmoji}</span>
-              ) : (
-                <span>{unit}</span>
-              )}
+              {isUnitComplete && (() => {
+                // ユニット1は元のサイズ（w-full h-full）、ユニット2以降は背景が見えるサイズ（w-10 h-10）
+                const imageSize = unit === 1 ? 'w-full h-full' : 'w-10 h-10';
+                const imageWidth = unit === 1 ? 48 : 40;
+                const imageHeight = unit === 1 ? 48 : 40;
+                
+                // ユニット専用画像がエラーでなく、フォールバックも不要な場合
+                if (characterImage && !unitImageErrors[unit] && !unitImageFallback[unit]) {
+                  return (
+                    <Image
+                      src={characterImage}
+                      alt="Character"
+                      width={imageWidth}
+                      height={imageHeight}
+                      className={`object-contain ${imageSize}`}
+                      unoptimized
+                      onError={() => {
+                        // ユニット専用画像が失敗した場合、フォールバックを試す
+                        setUnitImageFallback(prev => ({ ...prev, [unit]: true }));
+                      }}
+                    />
+                  );
+                }
+                // フォールバック画像を使用する場合
+                if (unitImageFallback[unit] && fallbackImage && !unitImageErrors[unit]) {
+                  return (
+                    <Image
+                      src={fallbackImage}
+                      alt="Character"
+                      width={imageWidth}
+                      height={imageHeight}
+                      className={`object-contain ${imageSize}`}
+                      unoptimized
+                      onError={() => {
+                        setUnitImageErrors(prev => ({ ...prev, [unit]: true }));
+                      }}
+                    />
+                  );
+                }
+                // 画像が使えない場合は絵文字またはユニット番号
+                if (characterEmoji) {
+                  return <span className="text-2xl">{characterEmoji}</span>;
+                }
+                return <span>{unit}</span>;
+              })()}
             </div>
           </div>
         </div>
@@ -1040,7 +1091,7 @@ export default function Home() {
       renderUnitPoint,
       getUnitName,
     };
-  }, [completedLessons, lessons, unitImageErrors]);
+  }, [completedLessons, lessons, unitImageErrors, unitImageFallback]);
 
   const handleLogout = async () => {
     const confirmed = window.confirm("本当にログアウトしますか？");
