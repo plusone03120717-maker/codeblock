@@ -26,6 +26,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { logout } from "@/lib/auth";
 import ReviewSection from "@/components/ReviewSection";
 import { resetReviewData, getReviewCount } from "@/utils/reviewSystem";
+import ToggleImage from "@/components/ToggleImage";
 
 // 簡単な多言語対応フック（ランディングページ用）
 const useLanguage = () => {
@@ -108,7 +109,13 @@ const LandingPage = () => {
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center p-6">
-              <div className="text-5xl mb-4">🧩</div>
+              <div className="h-64 flex items-center justify-center mb-4">
+                <img 
+                  src="/images/features/block-learning.png" 
+                  alt={language === "ja" ? "ブロックで学ぶ" : "Learn with Blocks"} 
+                  className="max-h-full max-w-full rounded-lg shadow-md object-contain"
+                />
+              </div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">
                 {language === "ja" ? "ブロックで学ぶ" : "Learn with Blocks"}
               </h3>
@@ -119,7 +126,16 @@ const LandingPage = () => {
               </p>
             </div>
             <div className="text-center p-6">
-              <div className="text-5xl mb-4">✨</div>
+              <div className="h-64 flex items-center justify-center mb-4">
+                <ToggleImage
+                  image1="/images/features/furigana-off.png"
+                  image2="/images/features/furigana-on.png"
+                  alt1={language === "ja" ? "ふりがなOFF" : "Furigana OFF"}
+                  alt2={language === "ja" ? "ふりがなON" : "Furigana ON"}
+                  interval={2500}
+                  className="w-full max-w-xs h-full rounded-xl shadow-lg overflow-hidden"
+                />
+              </div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">
                 {language === "ja" ? "ふりがなワンタッチ" : "One-Touch Furigana"}
               </h3>
