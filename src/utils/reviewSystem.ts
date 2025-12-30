@@ -242,6 +242,7 @@ export function getRetentionLevel(item: ReviewItem): {
 export function getReviewStats(): {
   totalItems: number;
   masteredCount: number;
+  learnedCount: number;
   learningCount: number;
   todayReviewCount: number;
 } {
@@ -249,11 +250,14 @@ export function getReviewStats(): {
   const todayItems = getTodayReviewItems();
   
   let masteredCount = 0;
+  let learnedCount = 0;
   let learningCount = 0;
   
   state.items.forEach((item) => {
     if (item.correctStreak >= 6) {
       masteredCount++;
+    } else if (item.correctStreak === 5) {
+      learnedCount++;
     } else {
       learningCount++;
     }
@@ -262,6 +266,7 @@ export function getReviewStats(): {
   return {
     totalItems: state.items.length,
     masteredCount,
+    learnedCount,
     learningCount,
     todayReviewCount: todayItems.length,
   };

@@ -818,7 +818,11 @@ export default function Home() {
   const [highestStreak, setHighestStreak] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showDebugPanel, setShowDebugPanel] = useState(false);
-  const [showEmailBanner, setShowEmailBanner] = useState(true);
+  const [showEmailBanner, setShowEmailBanner] = useState(() => {
+    if (typeof window === "undefined") return true;
+    const dismissed = localStorage.getItem("email-banner-dismissed");
+    return dismissed !== "true";
+  });
   const [debugXP, setDebugXP] = useState("");
   const [debugLessonId, setDebugLessonId] = useState("");
   const [resumeStatus, setResumeStatus] = useState<Record<string, boolean>>({});
@@ -1240,59 +1244,60 @@ export default function Home() {
       {/* 2カラムレイアウト（デスクトップ） */}
       <div className="pt-6 px-4 pb-4">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* 左カラム：ロゴ + ステータスカード + 前回の続き（1/3幅） */}
+          {/* ヘッダー：ロゴとユーザー情報 */}
+          <header className="flex justify-between items-center mb-4">
+            <h1 className="text-2xl font-bold text-left flex items-center gap-2" style={{ color: '#333333' }}>
+              <Image src="/logo.png" alt="CodeBlock ロゴ" width={32} height={32} className="rounded-full" />
+              CodeBlock
+            </h1>
+            {!loading && (
+              user ? (
+                <button
+                  onClick={handleLogout}
+                  className="text-lg font-bold bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-4 py-2 rounded-full transition-colors"
+                >
+                  ログアウト
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  className="text-lg font-bold bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full transition-colors"
+                >
+                  ログイン
+                </Link>
+              )
+            )}
+          </header>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+            {/* 左カラム：ステータスカード + 前回の続き（1/3幅） */}
             <div className="space-y-4 md:col-span-1">
-              {/* ヘッダー：ロゴとユーザー情報 */}
-              <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-left flex items-center gap-2" style={{ color: '#333333' }}>
-                  <Image src="/logo.png" alt="CodeBlock ロゴ" width={32} height={32} className="rounded-full" />
-                  CodeBlock
-                </h1>
-                {!loading && (
-                  user ? (
-                    <button
-                      onClick={handleLogout}
-                      className="text-lg font-bold bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-4 py-2 rounded-full transition-colors"
-                    >
-                      ログアウト
-                    </button>
-                  ) : (
-                    <Link
-                      href="/login"
-                      className="text-lg font-bold bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full transition-colors"
-                    >
-                      ログイン
-                    </Link>
-                  )
-                )}
-              </div>
               
               {/* メール設定促進バナー */}
               {user && !contactEmail && showEmailBanner && (
-                <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg relative">
-                  <button
-                    onClick={() => setShowEmailBanner(false)}
-                    className="absolute top-2 right-2 text-yellow-600 hover:text-yellow-800"
-                  >
-                    ✕
-                  </button>
-                  <div className="flex items-start gap-2">
-                    <span className="text-xl">📧</span>
-                    <div>
-                      <p className="text-sm font-bold text-yellow-800">
-                        メールアドレスを設定しよう！
-                      </p>
-                      <p className="text-xs text-yellow-700 mt-1">
-                        パスワードを忘れた時に、メールアドレスがあると安心です。
-                      </p>
-                      <Link
-                        href="/options"
-                        className="inline-block mt-2 text-xs bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-full"
-                      >
-                        設定する
-                      </Link>
-                    </div>
+                <div className="mb-2 p-2 bg-blue-50 border border-blue-200 rounded-xl flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">✉️</span>
+                    <span className="text-sm font-bold text-blue-800">
+                      メールアドレスを設定しよう！
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Link
+                      href="/options"
+                      className="bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold py-1 px-3 rounded-lg"
+                    >
+                      設定する
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setShowEmailBanner(false);
+                        localStorage.setItem("email-banner-dismissed", "true");
+                      }}
+                      className="text-gray-400 hover:text-gray-600 ml-1 text-sm"
+                    >
+                      ✕
+                    </button>
                   </div>
                 </div>
               )}
@@ -1352,43 +1357,13 @@ export default function Home() {
                   </Link>
                 );
               })()}
-            </div>
 
-            {/* 右カラム：進捗マップ + レッスンカルーセル + ユニットボタン（2/3幅） */}
-            <div className="space-y-4 md:col-span-2">
               {/* 復習セクション */}
               <ReviewSection />
-              
-              {/* 進捗マップ */}
-              <div className="px-4">
-                <div className="flex justify-center items-center gap-1">
-                  {lessons.map((lesson, index) => {
-                    const isCompleted = completedLessons.includes(lesson.id);
-                    const isCurrent = index === currentIndex;
-                    const isLocked = isLessonLocked(index);
-                    
-                    // ユニットボタンの色定義を使用
-                    const lessonColor = getUnitSolid(lesson.unitNumber);
-                    
-                    return (
-                      <div
-                        key={lesson.id}
-                        onClick={() => setCurrentIndex(index)}
-                        className={`w-3 h-3 rounded-full cursor-pointer transition-all ${
-                          isLocked
-                            ? "bg-gray-300"
-                            : isCompleted
-                            ? isCurrent
-                              ? `${lessonColor} scale-125`
-                              : lessonColor
-                            : "bg-gray-400"
-                        }`}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
+            </div>
 
+            {/* 右カラム：レッスンカルーセル + 進捗マップ + ユニットボタン（2/3幅） */}
+            <div className="space-y-4 md:col-span-2">
               {/* レッスンカルーセル */}
               <div className="relative px-4">
                 <div className="max-w-md mx-auto md:max-w-full">
@@ -1512,6 +1487,36 @@ export default function Home() {
               </button>
             );
           })()}
+                </div>
+              </div>
+
+              {/* 進捗マップ */}
+              <div className="px-4">
+                <div className="flex justify-center items-center gap-1">
+                  {lessons.map((lesson, index) => {
+                    const isCompleted = completedLessons.includes(lesson.id);
+                    const isCurrent = index === currentIndex;
+                    const isLocked = isLessonLocked(index);
+                    
+                    // ユニットボタンの色定義を使用
+                    const lessonColor = getUnitSolid(lesson.unitNumber);
+                    
+                    return (
+                      <div
+                        key={lesson.id}
+                        onClick={() => setCurrentIndex(index)}
+                        className={`w-3 h-3 rounded-full cursor-pointer transition-all ${
+                          isLocked
+                            ? "bg-gray-300"
+                            : isCompleted
+                            ? isCurrent
+                              ? `${lessonColor} scale-125`
+                              : lessonColor
+                            : "bg-gray-400"
+                        }`}
+                      />
+                    );
+                  })}
                 </div>
               </div>
 
