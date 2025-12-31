@@ -454,8 +454,8 @@ const LandingPage = () => {
             </h3>
             <p className="text-xl text-gray-700 mb-6">
               {language === "ja" 
-                ? "350問以上の問題で、しっかりと基礎を身につけよう！" 
-                : "Over 350 questions to master the fundamentals!"}
+                ? "530問以上の問題で、しっかりと基礎を身につけよう！" 
+                : "Over 530 questions to master the fundamentals!"}
             </p>
             <div className="grid md:grid-cols-3 gap-4 max-w-3xl mx-auto text-sm">
               <div className="bg-white rounded-lg p-4">
