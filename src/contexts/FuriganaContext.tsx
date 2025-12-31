@@ -46,6 +46,8 @@ export function FuriganaProvider({ children }: { children: ReactNode }) {
     setFuriganaEnabled(prev => {
       const newValue = !prev;
       localStorage.setItem("furigana-enabled", String(newValue));
+      // カスタムイベントを発火して同じタブ内の他のコンポーネントに通知
+      window.dispatchEvent(new Event("furigana-changed"));
       return newValue;
     });
   };

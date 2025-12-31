@@ -19,6 +19,7 @@ import {
   saveLastOpenedMission
 } from "@/utils/progress";
 import { useAuth } from "@/contexts/AuthContext";
+import { useFurigana } from "@/contexts/FuriganaContext";
 import { saveLocalProgressToCloud } from "@/lib/progressSync";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -251,6 +252,7 @@ function DraggableBlock({ block, index, onRemove }: DraggableBlockProps) {
 export default function LessonEditorPage({ params }: EditorPageProps) {
   const router = useRouter();
   const { user, loading } = useAuth();
+  const { furiganaEnabled, toggleFurigana } = useFurigana();
   const [lessonId, setLessonId] = useState<string | null>(null);
   const [currentMissionId, setCurrentMissionId] = useState(1);
   const [selectedBlocks, setSelectedBlocks] = useState<WordBlock[]>([]);
@@ -399,20 +401,11 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   
   const tutorial = lessonId ? getTutorial(lessonId) : undefined;
 
-  // ローディング中または未ログイン時の表示
-  if (loading || !user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
-        <div className="text-white text-xl">読み込み中...</div>
-      </div>
-    );
-  }
-
   // チュートリアルが変わったときにも画像エラーをリセット
   useEffect(() => {
     setImageError(false);
   }, [tutorial]);
-  
+
   // ブロックをランダムに並べ替える（重複除去）
   const availableBlocks = useMemo(() => {
     if (!currentMission?.availableBlocks) return [];
@@ -436,6 +429,37 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     }
     return shuffled;
   }, [currentMission?.availableBlocks, currentMissionId]);
+
+  // 表示用に行ごとにブロックをグループ化
+  const blockLines = useMemo(() => {
+    const lines: { blocks: { block: WordBlock; index: number }[] }[] = [];
+    let currentLine: { block: WordBlock; index: number }[] = [];
+    
+    selectedBlocks.forEach((block, index) => {
+      if (block.text === "↵") {
+        currentLine.push({ block, index });
+        lines.push({ blocks: currentLine });
+        currentLine = [];
+      } else {
+        currentLine.push({ block, index });
+      }
+    });
+    
+    if (currentLine.length > 0) {
+      lines.push({ blocks: currentLine });
+    }
+    
+    return lines;
+  }, [selectedBlocks]);
+
+  // ローディング中または未ログイン時の表示
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
+        <div className="text-white text-xl">読み込み中...</div>
+      </div>
+    );
+  }
 
   // 現在のインデントレベルを計算する関数
   const getCurrentIndentLevel = (blocks: WordBlock[]): number => {
@@ -537,28 +561,6 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       });
     }
   };
-
-  // 表示用に行ごとにブロックをグループ化
-  const blockLines = useMemo(() => {
-    const lines: { blocks: { block: WordBlock; index: number }[] }[] = [];
-    let currentLine: { block: WordBlock; index: number }[] = [];
-    
-    selectedBlocks.forEach((block, index) => {
-      if (block.text === "↵") {
-        currentLine.push({ block, index });
-        lines.push({ blocks: currentLine });
-        currentLine = [];
-      } else {
-        currentLine.push({ block, index });
-      }
-    });
-    
-    if (currentLine.length > 0) {
-      lines.push({ blocks: currentLine });
-    }
-    
-    return lines;
-  }, [selectedBlocks]);
 
   // リセット
   const reset = () => {
@@ -1596,15 +1598,15 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         </div>
       )}
       <div className="max-w-5xl mx-auto">
-        {/* ホームに戻るリンク */}
+        {/* ホームボタン */}
         <div className="mb-2">
           <Link
             href="/"
-            className="inline-flex items-center gap-1 text-gray-700 hover:text-gray-900 font-semibold transition-colors text-sm"
+            className="inline-flex items-center gap-2 text-gray-700 hover:text-gray-900 font-semibold transition-colors text-base bg-white hover:bg-gray-50 px-4 py-2 rounded-lg border border-gray-200"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
+              className="h-5 w-5"
               viewBox="0 0 20 20"
               fill="currentColor"
             >
@@ -1941,7 +1943,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
               </div>
             ) : (
               // 通常時：「やり直す」と「確認する」ボタンを表示
-              <div className="flex justify-center gap-3">
+              <div className="flex justify-center items-center gap-3">
                 <button
                   type="button"
                   onClick={reset}
@@ -1975,6 +1977,20 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                   }}
                 >
                   {isExecuting ? <><F reading="じっこう">実行</F><F reading="ちゅう">中</F>...</> : <><FW word="確認" />する 🎯</>}
+                </button>
+                <button
+                  type="button"
+                  onClick={toggleFurigana}
+                  className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-all ${
+                    furiganaEnabled
+                      ? "text-green-600 bg-green-50"
+                      : "text-gray-500 hover:text-green-500"
+                  }`}
+                >
+                  <span className="text-lg">あ</span>
+                  <span className="text-xs font-bold">
+                    {furiganaEnabled ? "ふりがなON" : "ふりがな"}
+                  </span>
                 </button>
               </div>
             )}
