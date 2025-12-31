@@ -57,6 +57,25 @@ export default function LessonsPage() {
     setCompletedLessons(progress.completedLessons);
   }, []);
 
+  const jumpToLessonCard = (unit: string) => {
+    const elementId = `lesson-unit-${unit}`;
+    const element = document.getElementById(elementId);
+    
+    if (element) {
+      // 要素の位置を取得
+      const elementTop = element.offsetTop;
+      // ヘッダーと余白を考慮したオフセット
+      const offset = 150;
+      const targetScrollY = Math.max(0, elementTop - offset);
+      
+      // スクロール実行
+      window.scrollTo({
+        top: targetScrollY,
+        behavior: "smooth"
+      });
+    }
+  };
+
   const isLessonLocked = (lessonIndex: number): boolean => {
     if (lessonIndex === 0) return false;
     const previousLesson = lessons[lessonIndex - 1];
@@ -97,13 +116,46 @@ export default function LessonsPage() {
       </div>
 
       {/* 進捗バー */}
-      <div className="px-4 mb-6">
+      <div className="px-4 mb-4">
         <div className="max-w-md mx-auto">
           <div className="w-full bg-gray-200 rounded-full h-3">
             <div
               className="bg-gradient-to-r from-green-400 to-green-500 h-3 rounded-full transition-all"
               style={{ width: `${(completedLessons.length / lessons.length) * 100}%` }}
             />
+          </div>
+        </div>
+      </div>
+
+      {/* レッスンジャンプ */}
+      <div className="px-4 mb-6">
+        <div className="max-w-md mx-auto">
+          <div className="bg-white rounded-xl shadow-md p-4 border-2 border-purple-200">
+            <select
+              id="lesson-jump"
+              onChange={(e) => {
+                if (e.target.value) {
+                  jumpToLessonCard(e.target.value);
+                  // 選択をリセット（次の選択ができるように）
+                  setTimeout(() => {
+                    const select = document.getElementById('lesson-jump') as HTMLSelectElement;
+                    if (select) select.value = '';
+                  }, 300);
+                }
+              }}
+              defaultValue=""
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            >
+              <option value="">レッスンを選択...</option>
+              {Object.entries(lessonsByUnit).map(([unit, unitLessons]) => {
+                const unitNum = parseInt(unit);
+                return (
+                  <option key={unit} value={unit}>
+                    レッスン {unit}: {unitNames[unitNum] || "その他"} ({unitLessons.length}問)
+                  </option>
+                );
+              })}
+            </select>
           </div>
         </div>
       </div>
@@ -116,12 +168,12 @@ export default function LessonsPage() {
             const completedInUnit = unitLessons.filter(l => completedLessons.includes(l.id)).length;
             
             return (
-              <div key={unit}>
+              <div key={unit} id={`lesson-unit-${unit}`} style={{ scrollMarginTop: '180px' }}>
                 {/* ユニットヘッダー */}
                 <div className={`bg-gradient-to-r ${getUnitGradient(unitNum)} rounded-t-2xl p-3`}>
                   <div className="flex items-center justify-between text-white">
                     <h2 className="font-bold">
-                      ユニット {unit}: {unitNames[unitNum] || "その他"}
+                      レッスン {unit}: {unitNames[unitNum] || "その他"}
                     </h2>
                     <span className="text-sm bg-white/20 px-2 py-1 rounded-full">
                       {completedInUnit}/{unitLessons.length}

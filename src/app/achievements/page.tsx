@@ -60,40 +60,40 @@ export default function AchievementsPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
-        <div className="text-white text-xl">{t("common.loading")}</div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100">
+        <div className="text-gray-700 text-xl">{t("common.loading")}</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-400 to-purple-600">
+    <div className="min-h-screen bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100 pb-20">
       {/* ヘッダー */}
-      <header className="bg-purple-700 text-white p-4 shadow-md">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
+      <div className="bg-gradient-to-r from-purple-500 to-blue-600 relative overflow-hidden">
+        <header className="flex justify-between items-center p-4 max-w-6xl mx-auto relative z-20">
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="CodeBlock ロゴ" width={32} height={32} className="rounded-full" />
-            <span className="text-xl font-bold">CodeBlock</span>
+            <Image src="/logo.png" alt="CodeBlock ロゴ" width={40} height={40} className="rounded-full border-2 border-white" />
+            <span className="text-2xl font-bold text-white">CodeBlock</span>
           </Link>
-          <h1 className="text-xl font-bold">
+          <h1 className="text-xl md:text-2xl font-bold text-white">
             {language === "ja" ? "🏅 バッジ" : "🏅 Achievements"}
           </h1>
-        </div>
-      </header>
+        </header>
+      </div>
 
-      <main className="max-w-4xl mx-auto p-4 pb-20">
+      <main className="max-w-4xl mx-auto p-4 pt-6 pb-20">
         {/* 進捗サマリー */}
         <div className="bg-white rounded-xl p-6 shadow-lg mb-6">
           <div className="text-center">
             <p className="text-gray-600 mb-2">
               {language === "ja" ? <><FW word="獲得" />したバッジ</> : "Achievements Unlocked"}
             </p>
-            <p className="text-4xl font-bold text-purple-600">
+            <p className="text-4xl font-bold text-purple-500">
               {unlockedAchievements.length} / {achievements.length}
             </p>
             <div className="w-full bg-gray-200 rounded-full h-4 mt-4">
               <div
-                className="bg-purple-600 h-4 rounded-full transition-all duration-500"
+                className="bg-purple-500 h-4 rounded-full transition-all duration-500"
                 style={{ width: `${(unlockedAchievements.length / achievements.length) * 100}%` }}
               ></div>
             </div>
@@ -108,7 +108,7 @@ export default function AchievementsPage() {
               onClick={() => setSelectedCategory(category)}
               className={`px-4 py-2 rounded-full font-medium transition-colors ${
                 selectedCategory === category
-                  ? "bg-purple-600 text-white"
+                  ? "bg-purple-500 text-white"
                   : "bg-white text-gray-700 hover:bg-purple-100"
               }`}
             >

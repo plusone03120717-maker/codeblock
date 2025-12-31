@@ -55,8 +55,8 @@ export default function OptionsPage() {
   // ローディング中または未ログイン時の表示
   if (authLoading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
-        <div className="text-white text-xl">読み込み中...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100">
+        <div className="text-gray-700 text-xl">読み込み中...</div>
       </div>
     );
   }
@@ -137,7 +137,7 @@ export default function OptionsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 via-purple-50 to-blue-50 p-4 pb-20">
+    <div className="min-h-screen bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100 p-4 pb-20">
       <div className="max-w-md mx-auto">
         {/* ヘッダー */}
         <div className="flex items-center gap-4 mb-6">
