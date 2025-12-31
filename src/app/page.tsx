@@ -176,6 +176,132 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* ゲーミフィケーション機能セクション */}
+      <section className="py-16 px-4 bg-gradient-to-br from-yellow-50 to-orange-50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">
+            {language === "ja" ? "🎮 ゲームのように楽しく学べる" : "🎮 Learn Like a Game"}
+          </h2>
+          <p className="text-center text-gray-600 mb-12">
+            {language === "ja" 
+              ? "XPやレベルアップで、学習がもっと楽しくなる！" 
+              : "XP and level-ups make learning more fun!"}
+          </p>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {/* XPシステム */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg text-center">
+              <div className="text-4xl mb-4">⚡</div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                {language === "ja" ? "XPシステム" : "XP System"}
+              </h3>
+              <ul className="text-sm text-gray-600 space-y-1 text-left">
+                <li>• {language === "ja" ? "1問正解 = 10XP" : "1 correct = 10XP"}</li>
+                <li>• {language === "ja" ? "レッスン完了 = 50XP" : "Lesson complete = 50XP"}</li>
+                <li>• {language === "ja" ? "復習完了 = 20XP" : "Review complete = 20XP"}</li>
+              </ul>
+            </div>
+
+            {/* レベルシステム */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg text-center">
+              <div className="text-4xl mb-4">📈</div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                {language === "ja" ? "レベルシステム" : "Level System"}
+              </h3>
+              <p className="text-sm text-gray-600">
+                {language === "ja" 
+                  ? "Lv.1 ビギナーからレジェンドまで、段階的にレベルアップ！" 
+                  : "Level up from Beginner to Legend!"}
+              </p>
+            </div>
+
+            {/* ストリークボーナス */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg text-center">
+              <div className="text-4xl mb-4">🔥</div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                {language === "ja" ? "ストリークボーナス" : "Streak Bonus"}
+              </h3>
+              <p className="text-sm text-gray-600">
+                {language === "ja" 
+                  ? "3問連続正解ごとにボーナスXPがもらえる！" 
+                  : "Get bonus XP for every 3 consecutive correct answers!"}
+              </p>
+            </div>
+
+            {/* レベルアップ演出 */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg text-center">
+              <div className="text-4xl mb-4">🎉</div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                {language === "ja" ? "レベルアップ演出" : "Level Up Animation"}
+              </h3>
+              <p className="text-sm text-gray-600">
+                {language === "ja" 
+                  ? "レベルアップ時には特別なアニメーションが表示される！" 
+                  : "Special animations when you level up!"}
+              </p>
+            </div>
+          </div>
+
+          {/* 実績・バッジシステム */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg">
+            <h3 className="text-2xl font-bold text-center text-gray-800 mb-6">
+              {language === "ja" ? "🏆 実績・バッジシステム" : "🏆 Achievements & Badges"}
+            </h3>
+            <p className="text-center text-gray-600 mb-6">
+              {language === "ja" 
+                ? "34種類の実績を集めて、学習のモチベーションを上げよう！" 
+                : "Collect 34 different achievements to boost your motivation!"}
+            </p>
+            
+            <div className="grid md:grid-cols-5 gap-4">
+              <div className="text-center">
+                <div className="text-3xl mb-2">🌱</div>
+                <div className="text-sm font-bold text-gray-700">
+                  {language === "ja" ? "学習進捗" : "Progress"}
+                </div>
+                <div className="text-xs text-gray-500 mt-1">10種類</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl mb-2">🔥</div>
+                <div className="text-sm font-bold text-gray-700">
+                  {language === "ja" ? "連続学習" : "Streaks"}
+                </div>
+                <div className="text-xs text-gray-500 mt-1">5種類</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl mb-2">✅</div>
+                <div className="text-sm font-bold text-gray-700">
+                  {language === "ja" ? "正解数" : "Correct"}
+                </div>
+                <div className="text-xs text-gray-500 mt-1">5種類</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl mb-2">⚡</div>
+                <div className="text-sm font-bold text-gray-700">
+                  {language === "ja" ? "XP・レベル" : "XP & Level"}
+                </div>
+                <div className="text-xs text-gray-500 mt-1">5種類</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl mb-2">💯</div>
+                <div className="text-sm font-bold text-gray-700">
+                  {language === "ja" ? "チャレンジ" : "Challenges"}
+                </div>
+                <div className="text-xs text-gray-500 mt-1">9種類</div>
+              </div>
+            </div>
+            
+            <div className="mt-6 bg-gray-50 rounded-lg p-4">
+              <p className="text-sm text-gray-600 text-center">
+                {language === "ja" 
+                  ? "例: 「はじめの一歩」「連続学習30日」「パーフェクト」「スピードスター」など" 
+                  : "Examples: 'First Step', '30-Day Streak', 'Perfect', 'Speed Star', etc."}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* キャラクター紹介セクション */}
       <section className="py-16 px-4 bg-purple-50">
         <div className="max-w-6xl mx-auto">
@@ -320,6 +446,61 @@ const LandingPage = () => {
               <span className="font-bold text-gray-800">✓ {language === "ja" ? "さらに追加予定！" : "More coming!"}</span>
             </div>
           </div>
+          
+          {/* 問題数情報を追加 */}
+          <div className="mt-12 bg-gradient-to-r from-purple-100 to-blue-100 rounded-2xl p-8 text-center">
+            <h3 className="text-2xl font-bold text-gray-800 mb-4">
+              {language === "ja" ? "📚 豊富な問題数" : "📚 Extensive Question Bank"}
+            </h3>
+            <p className="text-xl text-gray-700 mb-6">
+              {language === "ja" 
+                ? "350問以上の問題で、しっかりと基礎を身につけよう！" 
+                : "Over 350 questions to master the fundamentals!"}
+            </p>
+            <div className="grid md:grid-cols-3 gap-4 max-w-3xl mx-auto text-sm">
+              <div className="bg-white rounded-lg p-4">
+                <div className="text-2xl font-bold text-green-600 mb-1">70問</div>
+                <div className="text-gray-600">{language === "ja" ? "レッスン1: print関数" : "Unit 1: print function"}</div>
+              </div>
+              <div className="bg-white rounded-lg p-4">
+                <div className="text-2xl font-bold text-blue-600 mb-1">60問</div>
+                <div className="text-gray-600">{language === "ja" ? "レッスン2: 変数" : "Unit 2: Variables"}</div>
+              </div>
+              <div className="bg-white rounded-lg p-4">
+                <div className="text-2xl font-bold text-purple-600 mb-1">40問</div>
+                <div className="text-gray-600">{language === "ja" ? "レッスン3: データ型" : "Unit 3: Data Types"}</div>
+              </div>
+              <div className="bg-white rounded-lg p-4">
+                <div className="text-2xl font-bold text-yellow-600 mb-1">60問</div>
+                <div className="text-gray-600">{language === "ja" ? "レッスン4: 条件分岐" : "Unit 4: Conditionals"}</div>
+              </div>
+              <div className="bg-white rounded-lg p-4">
+                <div className="text-2xl font-bold text-red-600 mb-1">60問</div>
+                <div className="text-gray-600">{language === "ja" ? "レッスン5: ループ" : "Unit 5: Loops"}</div>
+              </div>
+              <div className="bg-white rounded-lg p-4">
+                <div className="text-2xl font-bold text-indigo-600 mb-1">60問</div>
+                <div className="text-gray-600">{language === "ja" ? "レッスン6: リスト" : "Unit 6: Lists"}</div>
+              </div>
+              <div className="bg-white rounded-lg p-4">
+                <div className="text-2xl font-bold text-pink-600 mb-1">60問</div>
+                <div className="text-gray-600">{language === "ja" ? "レッスン7: 関数" : "Unit 7: Functions"}</div>
+              </div>
+              <div className="bg-white rounded-lg p-4">
+                <div className="text-2xl font-bold text-teal-600 mb-1">60問</div>
+                <div className="text-gray-600">{language === "ja" ? "レッスン8: 戻り値" : "Unit 8: Return Values"}</div>
+              </div>
+              <div className="bg-white rounded-lg p-4">
+                <div className="text-2xl font-bold text-gray-600 mb-1">60問</div>
+                <div className="text-gray-600">{language === "ja" ? "レッスン9: 辞書" : "Unit 9: Dictionaries"}</div>
+              </div>
+            </div>
+            <p className="text-gray-600 mt-6 text-sm">
+              {language === "ja" 
+                ? "※ レッスン10以降も順次追加予定です" 
+                : "※ Units 10+ will be added gradually"}
+            </p>
+          </div>
         </div>
       </section>
 
@@ -427,6 +608,84 @@ const LandingPage = () => {
               {language === "ja" 
                 ? "🎮 問題を解くとXPがもらえる！レベルアップを目指して楽しく学ぼう！" 
                 : "🎮 Earn XP by solving problems! Level up while having fun!"}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* スマート復習システムセクション */}
+      <section className="py-16 px-4 bg-blue-50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">
+            {language === "ja" ? "🧠 スマート復習システム" : "🧠 Smart Review System"}
+          </h2>
+          <p className="text-center text-gray-600 mb-4">
+            {language === "ja" 
+              ? "エビングハウスの忘却曲線に基づいた、科学的な復習システム" 
+              : "Scientific review system based on Ebbinghaus' forgetting curve"}
+          </p>
+          <p className="text-center text-sm text-gray-500 mb-12">
+            {language === "ja" 
+              ? "AIが最適なタイミングで復習問題を出題し、知識をしっかり定着させます" 
+              : "AI provides review questions at optimal times to solidify your knowledge"}
+          </p>
+
+          {/* 復習間隔の説明 */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg mb-8">
+            <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+              {language === "ja" ? "📅 自動調整される復習間隔" : "📅 Auto-Adjusted Review Intervals"}
+            </h3>
+            <div className="grid md:grid-cols-5 gap-4">
+              <div className="text-center p-4 bg-red-50 rounded-lg">
+                <div className="text-2xl mb-2">🔴</div>
+                <div className="font-bold text-gray-800 text-sm mb-1">
+                  {language === "ja" ? "未定着" : "New"}
+                </div>
+                <div className="text-xs text-gray-600">
+                  {language === "ja" ? "1日後" : "1 day"}
+                </div>
+              </div>
+              <div className="text-center p-4 bg-orange-50 rounded-lg">
+                <div className="text-2xl mb-2">🟠</div>
+                <div className="font-bold text-gray-800 text-sm mb-1">
+                  {language === "ja" ? "学習中" : "Learning"}
+                </div>
+                <div className="text-xs text-gray-600">
+                  {language === "ja" ? "3日後" : "3 days"}
+                </div>
+              </div>
+              <div className="text-center p-4 bg-yellow-50 rounded-lg">
+                <div className="text-2xl mb-2">🟡</div>
+                <div className="font-bold text-gray-800 text-sm mb-1">
+                  {language === "ja" ? "定着中" : "Solidifying"}
+                </div>
+                <div className="text-xs text-gray-600">
+                  {language === "ja" ? "1週間後" : "1 week"}
+                </div>
+              </div>
+              <div className="text-center p-4 bg-green-50 rounded-lg">
+                <div className="text-2xl mb-2">🟢</div>
+                <div className="font-bold text-gray-800 text-sm mb-1">
+                  {language === "ja" ? "定着済み" : "Mastered"}
+                </div>
+                <div className="text-xs text-gray-600">
+                  {language === "ja" ? "2週間後" : "2 weeks"}
+                </div>
+              </div>
+              <div className="text-center p-4 bg-purple-50 rounded-lg">
+                <div className="text-2xl mb-2">⭐</div>
+                <div className="font-bold text-gray-800 text-sm mb-1">
+                  {language === "ja" ? "マスター" : "Expert"}
+                </div>
+                <div className="text-xs text-gray-600">
+                  {language === "ja" ? "1ヶ月後" : "1 month"}
+                </div>
+              </div>
+            </div>
+            <p className="text-center text-sm text-gray-600 mt-6">
+              {language === "ja" 
+                ? "連続正解数に応じて、復習間隔が自動的に延長されます" 
+                : "Review intervals automatically extend based on consecutive correct answers"}
             </p>
           </div>
         </div>
