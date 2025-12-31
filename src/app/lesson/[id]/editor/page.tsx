@@ -327,15 +327,29 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         
         if (missions) {
           const maxMissionId = missions.length;
-          // 保存された進捗から次の問題を開始（進捗は0-indexed、missionIdは1-indexed）
-          // savedProgress = 3 の場合、4問目（missionId = 4）から開始
-          if (savedProgress > 0 && savedProgress < maxMissionId) {
-            missionId = savedProgress + 1;
-          } else if (savedProgress >= maxMissionId) {
-            // 全問クリア済みの場合は最初から
-            missionId = 1;
+          
+          // 途中進捗をチェック（lesson-{lessonId}-progress）
+          const savedProgressKey = `lesson-${id}-progress`;
+          const savedMissionProgress = localStorage.getItem(savedProgressKey);
+          
+          if (savedMissionProgress) {
+            const savedMission = parseInt(savedMissionProgress, 10);
+            // 保存されたミッション番号が有効な範囲内かチェック
+            if (savedMission > 0 && savedMission <= maxMissionId) {
+              missionId = savedMission;
+            }
           } else {
-            missionId = 1;
+            // 途中進捗がない場合、既存の進捗ロジックを使用
+            // 保存された進捗から次の問題を開始（進捗は0-indexed、missionIdは1-indexed）
+            // savedProgress = 3 の場合、4問目（missionId = 4）から開始
+            if (savedProgress > 0 && savedProgress < maxMissionId) {
+              missionId = savedProgress + 1;
+            } else if (savedProgress >= maxMissionId) {
+              // 全問クリア済みの場合は最初から
+              missionId = 1;
+            } else {
+              missionId = 1;
+            }
           }
         }
         
@@ -700,6 +714,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         // 全ての再出題が完了 → 完了画面へ
         if (lessonId) {
           localStorage.removeItem(`lesson-${lessonId}-mission`);
+          // レッスン完了時に途中進捗をクリア
+          localStorage.removeItem(`lesson-${lessonId}-progress`);
         }
         // クラウドに進捗を保存
         if (user) {
@@ -729,6 +745,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           // 全問正解 → 完了画面へ
           if (lessonId) {
             localStorage.removeItem(`lesson-${lessonId}-mission`);
+            // レッスン完了時に途中進捗をクリア
+            localStorage.removeItem(`lesson-${lessonId}-progress`);
           }
           // クラウドに進捗を保存
           if (user) {
@@ -806,6 +824,18 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         // currentMissionId = 3 の場合、進捗は 2（3問目までクリア済み）を保存
         const newProgress = Math.max(savedProgress, currentMissionIndex + 1);
         localStorage.setItem(progressKey, newProgress.toString());
+        
+        // 途中進捗を保存（lesson-{lessonId}-progress）
+        const nextMission = currentMissionId + 1;
+        const missions = getLessonMissions(lessonId);
+        
+        // 次のミッションがある場合は進捗を保存
+        if (missions && nextMission <= missions.length) {
+          localStorage.setItem(`lesson-${lessonId}-progress`, nextMission.toString());
+        } else {
+          // 最後のミッションをクリアした場合は進捗をクリア
+          localStorage.removeItem(`lesson-${lessonId}-progress`);
+        }
         
         // クラウドに進捗を保存
         if (user) {
@@ -1337,6 +1367,18 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           // currentMissionId = 3 の場合、進捗は 2（3問目までクリア済み）を保存
           const newProgress = Math.max(savedProgress, currentMissionIndex + 1);
           localStorage.setItem(progressKey, newProgress.toString());
+          
+          // 途中進捗を保存（lesson-{lessonId}-progress）
+          const nextMission = currentMissionId + 1;
+          const missions = getLessonMissions(lessonId);
+          
+          // 次のミッションがある場合は進捗を保存
+          if (missions && nextMission <= missions.length) {
+            localStorage.setItem(`lesson-${lessonId}-progress`, nextMission.toString());
+          } else {
+            // 最後のミッションをクリアした場合は進捗をクリア
+            localStorage.removeItem(`lesson-${lessonId}-progress`);
+          }
           
           // クラウドに進捗を保存
           if (user) {

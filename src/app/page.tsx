@@ -62,31 +62,32 @@ const LandingPage = () => {
       {/* ヘッダー */}
       <div className="bg-gradient-to-r from-purple-500 to-blue-600 relative overflow-hidden">
         {/* 背景画像 */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
+        <div className="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none z-0">
           <Image 
             src="/header-image.png" 
             alt="Header decoration" 
             width={800} 
             height={400} 
             className="object-contain"
+            style={{ width: "auto", height: "auto" }}
             priority
           />
         </div>
-        <header className="flex justify-between items-center p-4 max-w-6xl mx-auto relative z-10">
+        <header className="flex justify-between items-center p-4 max-w-6xl mx-auto relative z-20">
         <div className="flex items-center gap-2">
           <Image src="/logo.png" alt="CodeBlock ロゴ" width={40} height={40} className="rounded-full border-2 border-white" />
           <span className="text-2xl font-bold text-white">CodeBlock</span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 relative z-20">
           <Link
             href="/login"
-            className="text-white font-medium hover:text-purple-200 transition-colors"
+            className="text-white font-medium hover:text-purple-200 transition-colors relative z-20"
           >
             {t("common.login")}
           </Link>
           <Link
             href="/login?mode=register"
-            className="bg-white text-purple-600 font-bold py-2 px-6 rounded-full hover:bg-purple-100 transition-colors"
+            className="bg-white text-purple-600 font-bold py-2 px-6 rounded-full hover:bg-purple-100 transition-colors relative z-20"
           >
             {language === "ja" ? <>新規<FW word="登録" /></> : "Sign Up"}
           </Link>
