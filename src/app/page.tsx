@@ -58,9 +58,21 @@ const LandingPage = () => {
   const { t, language } = useLanguage();
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-500 to-blue-600">
+    <div className="min-h-screen">
       {/* ヘッダー */}
-      <header className="flex justify-between items-center p-4 max-w-6xl mx-auto">
+      <div className="bg-gradient-to-r from-purple-500 to-blue-600 relative overflow-hidden">
+        {/* 背景画像 */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
+          <Image 
+            src="/header-image.png" 
+            alt="Header decoration" 
+            width={800} 
+            height={400} 
+            className="object-contain"
+            priority
+          />
+        </div>
+        <header className="flex justify-between items-center p-4 max-w-6xl mx-auto relative z-10">
         <div className="flex items-center gap-2">
           <Image src="/logo.png" alt="CodeBlock ロゴ" width={40} height={40} className="rounded-full border-2 border-white" />
           <span className="text-2xl font-bold text-white">CodeBlock</span>
@@ -79,10 +91,10 @@ const LandingPage = () => {
             {language === "ja" ? <>新規<FW word="登録" /></> : "Sign Up"}
           </Link>
         </div>
-      </header>
+        </header>
 
-      {/* ヒーローセクション */}
-      <section className="text-center py-16 px-4">
+        {/* ヒーローセクション */}
+        <section className="text-center py-16 px-4">
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
           {language === "ja" ? "ブロックで学ぶ" : "Learn with Blocks"}
           <br />
@@ -99,7 +111,8 @@ const LandingPage = () => {
         >
           {language === "ja" ? "無料で始める 🚀" : "Start Free 🚀"}
         </Link>
-      </section>
+        </section>
+      </div>
 
       {/* 特徴セクション */}
       <section className="py-16 px-4 bg-white">
@@ -188,9 +201,10 @@ const LandingPage = () => {
               : "XP and level-ups make learning more fun!"}
           </p>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {/* XPシステム */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg text-center">
+          <div className="flex justify-center mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl w-full">
+              {/* XPシステム */}
+              <div className="bg-white rounded-2xl p-6 shadow-lg text-center">
               <div className="text-4xl mb-4">⚡</div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">
                 {language === "ja" ? "XPシステム" : "XP System"}
@@ -227,18 +241,6 @@ const LandingPage = () => {
                   : "Get bonus XP for every 3 consecutive correct answers!"}
               </p>
             </div>
-
-            {/* レベルアップ演出 */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg text-center">
-              <div className="text-4xl mb-4">🎉</div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">
-                {language === "ja" ? "レベルアップ演出" : "Level Up Animation"}
-              </h3>
-              <p className="text-sm text-gray-600">
-                {language === "ja" 
-                  ? "レベルアップ時には特別なアニメーションが表示される！" 
-                  : "Special animations when you level up!"}
-              </p>
             </div>
           </div>
 
@@ -249,8 +251,8 @@ const LandingPage = () => {
             </h3>
             <p className="text-center text-gray-600 mb-6">
               {language === "ja" 
-                ? "34種類の実績を集めて、学習のモチベーションを上げよう！" 
-                : "Collect 34 different achievements to boost your motivation!"}
+                ? "たくさんの実績を集めて、学習のモチベーションを上げよう！（順次追加）" 
+                : "Collect many achievements to boost your motivation! (More coming soon)"}
             </p>
             
             <div className="grid md:grid-cols-5 gap-4">
@@ -523,7 +525,6 @@ const LandingPage = () => {
                 <div className="w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
                   1
                 </div>
-                <div className="text-4xl mb-4">📖</div>
                 <h3 className="text-xl font-bold text-gray-800 mb-2">
                   {language === "ja" ? "チュートリアルで学ぶ" : "Learn with Tutorials"}
                 </h3>
@@ -545,7 +546,6 @@ const LandingPage = () => {
                 <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
                   2
                 </div>
-                <div className="text-4xl mb-4">🧩</div>
                 <h3 className="text-xl font-bold text-gray-800 mb-2">
                   {language === "ja" ? <>ブロックで<FW word="問題" />を解く</> : "Solve with Blocks"}
                 </h3>
@@ -567,7 +567,6 @@ const LandingPage = () => {
                 <div className="w-12 h-12 bg-yellow-500 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
                   3
                 </div>
-                <div className="text-4xl mb-4">💡</div>
                 <h3 className="text-xl font-bold text-gray-800 mb-2">
                   {language === "ja" ? "困ったらヒントをもらう" : "Get Hints When Stuck"}
                 </h3>
@@ -589,7 +588,6 @@ const LandingPage = () => {
                 <div className="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
                   4
                 </div>
-                <div className="text-4xl mb-4">🔄</div>
                 <h3 className="text-xl font-bold text-gray-800 mb-2">
                   {language === "ja" ? "復習で定着させる" : "Review to Master"}
                 </h3>
@@ -617,7 +615,7 @@ const LandingPage = () => {
       <section className="py-16 px-4 bg-blue-50">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">
-            {language === "ja" ? "🧠 スマート復習システム" : "🧠 Smart Review System"}
+            {language === "ja" ? "スマート復習システム" : "Smart Review System"}
           </h2>
           <p className="text-center text-gray-600 mb-4">
             {language === "ja" 
