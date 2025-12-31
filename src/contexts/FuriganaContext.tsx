@@ -14,10 +14,32 @@ export function FuriganaProvider({ children }: { children: ReactNode }) {
 
   // localStorageから初期値を読み込み
   useEffect(() => {
-    const saved = localStorage.getItem("furigana-enabled");
-    if (saved === "true") {
-      setFuriganaEnabled(true);
-    }
+    const loadFuriganaState = () => {
+      const saved = localStorage.getItem("furigana-enabled");
+      setFuriganaEnabled(saved === "true");
+    };
+    
+    loadFuriganaState();
+    
+    // localStorageの変更を監視（別タブでの変更を検知）
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "furigana-enabled") {
+        loadFuriganaState();
+      }
+    };
+    
+    // カスタムイベントで同じタブ内での変更も検知
+    const handleFuriganaChange = () => {
+      loadFuriganaState();
+    };
+    
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("furigana-changed", handleFuriganaChange);
+    
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("furigana-changed", handleFuriganaChange);
+    };
   }, []);
 
   const toggleFurigana = () => {
@@ -42,6 +64,7 @@ export function useFurigana() {
   }
   return context;
 }
+
 
 
 

@@ -62,6 +62,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setDisplayName(null);
         setContactEmail(null);
         setProgressLoaded(true);
+        // ログアウト時にフリガナをオフにする
+        if (typeof window !== "undefined") {
+          localStorage.setItem("furigana-enabled", "false");
+          // カスタムイベントを発火してFuriganaContextに通知
+          window.dispatchEvent(new Event("furigana-changed"));
+        }
       }
       setLoading(false);
     });
