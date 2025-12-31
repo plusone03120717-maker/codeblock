@@ -76,7 +76,7 @@ const LandingPage = () => {
             href="/login?mode=register"
             className="bg-white text-purple-600 font-bold py-2 px-6 rounded-full hover:bg-purple-100 transition-colors"
           >
-            {language === "ja" ? "新規登録" : "Sign Up"}
+            {language === "ja" ? <>新規<FW word="登録" /></> : "Sign Up"}
           </Link>
         </div>
       </header>
@@ -184,7 +184,7 @@ const LandingPage = () => {
           </h2>
           <p className="text-center text-gray-600 mb-12">
             {language === "ja" 
-              ? "個性豊かなキャラクターたちが、きみの学習をサポートするよ！" 
+              ? <>個性豊かなキャラクターたちが、きみの<FW word="学習" />をサポートするよ！</> 
               : "Unique characters will support your learning journey!"}
           </p>
           <div className="flex flex-wrap justify-center gap-8">
@@ -327,7 +327,7 @@ const LandingPage = () => {
       <section className="py-16 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">
-            {language === "ja" ? "学習の流れ" : "How It Works"}
+            {language === "ja" ? <><FW word="学習" />の流れ</> : "How It Works"}
           </h2>
           <p className="text-center text-gray-600 mb-12">
             {language === "ja" 
@@ -366,7 +366,7 @@ const LandingPage = () => {
                 </div>
                 <div className="text-4xl mb-4">🧩</div>
                 <h3 className="text-xl font-bold text-gray-800 mb-2">
-                  {language === "ja" ? "ブロックで問題を解く" : "Solve with Blocks"}
+                  {language === "ja" ? <>ブロックで<FW word="問題" />を解く</> : "Solve with Blocks"}
                 </h3>
                 <p className="text-gray-600 text-sm">
                   {language === "ja" 
@@ -414,7 +414,7 @@ const LandingPage = () => {
                 </h3>
                 <p className="text-gray-600 text-sm">
                   {language === "ja" 
-                    ? "AIが最適なタイミングで復習問題を出題。忘れる前に思い出して、知識をしっかり定着させよう！" 
+                    ? <>AIが最適なタイミングで<FW word="復習" /><FW word="問題" />を出題。忘れる前に思い出して、<FW word="知識" />をしっかり定着させよう！</> 
                     : "AI provides review questions at optimal times. Remember before you forget and solidify your knowledge!"}
                 </p>
               </div>
@@ -1101,8 +1101,8 @@ export default function Home() {
       if (unit === 4) return <>条件<F reading="ぶんき">分岐</F></>;
       if (unit === 5) return "ループ";
       if (unit === 6) return "リスト";
-      if (unit === 7) return <>関数の基本</>;
-      if (unit === 8) return <>戻り値と応用</>;
+      if (unit === 7) return <><FW word="関数" />の<FW word="基本" /></>;
+      if (unit === 8) return <><FW word="戻り値" />と<FW word="応用" /></>;
       return "";
     };
 
@@ -1442,7 +1442,7 @@ export default function Home() {
                     className="flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-full shadow-md transition-all"
                   >
                     <span>▶</span>
-                    <span>前回の続きから学習する</span>
+                    <span>前回の<FW word="続" />きから<FW word="学習" />する</span>
                   </Link>
                 );
               })()}
@@ -1511,7 +1511,7 @@ export default function Home() {
                   <div className="mt-auto">
                     {isLocked ? (
                       <div className="inline-flex items-center justify-center w-full py-3 rounded-full font-bold text-lg bg-gray-600/50 text-gray-300 cursor-not-allowed whitespace-nowrap">
-                        <span>🔒 前のレッスンを<F reading="くりあ">クリア</F>しよう</span>
+                        <span>🔒 前のレッスンを<FW word="クリア" />しよう</span>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center gap-1">
@@ -1535,7 +1535,7 @@ export default function Home() {
                             href={`/lesson/${lesson.id}`}
                             className="inline-flex items-center justify-center w-full py-3 rounded-full font-bold text-lg bg-white text-purple-600 hover:scale-105 shadow-lg transition-all whitespace-nowrap"
                           >
-                            <span>🚀 学習する</span>
+                            <span>🚀 <FW word="学習" />する</span>
                           </Link>
                         )}
                         

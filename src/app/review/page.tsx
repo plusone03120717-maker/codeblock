@@ -569,7 +569,7 @@ export default function ReviewPage() {
         <div className="max-w-4xl mx-auto">
           <div className="bg-green-100 border-2 border-green-500 rounded-2xl p-8 text-center">
             <h2 className="text-2xl font-bold text-green-800 mb-4">
-              ✅ 復習完了！
+              ✅ <FW word="復習" /><FW word="完了" />！
             </h2>
             <p className="text-green-700 mb-6">
               今日の復習はありません。お疲れ様でした！
@@ -597,14 +597,14 @@ export default function ReviewPage() {
         <div className="max-w-4xl mx-auto">
           <div className="bg-white border-2 border-purple-500 rounded-2xl p-8 text-center shadow-lg">
             <h2 className="text-3xl font-bold text-purple-800 mb-4">
-              🎉 復習完了！
+              🎉 <FW word="復習" /><FW word="完了" />！
             </h2>
             <div className="space-y-4 mb-6">
               <p className="text-xl text-gray-700">
-                正解数: <span className="font-bold text-green-600">{correctCount}</span> / {reviewItems.length}
+                <FW word="正解" />数: <span className="font-bold text-green-600">{correctCount}</span> / {reviewItems.length}
               </p>
               <p className="text-xl text-gray-700">
-                正解率: <span className="font-bold text-blue-600">{accuracy}%</span>
+                <FW word="正解" />率: <span className="font-bold text-blue-600">{accuracy}%</span>
               </p>
               <p className="text-xl text-gray-700">
                 獲得XP: <span className="font-bold text-yellow-600">+{earnedXP} XP</span>

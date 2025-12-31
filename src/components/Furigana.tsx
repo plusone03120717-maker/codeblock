@@ -20,7 +20,7 @@ export function F({ children, reading }: FuriganaProps) {
 }
 
 // よく使う単語のふりがな付きテキスト
-// 小学6年生以上の漢字にふりがなを付ける
+// 小学校5年生レベルの漢字からふりがなを付ける
 export const words = {
   変数: { text: "変数", reading: "へんすう" },
   関数: { text: "関数", reading: "かんすう" },
@@ -89,6 +89,18 @@ export const words = {
   管理: { text: "管理", reading: "かんり" },
   波カッコ: { text: "波カッコ", reading: "なみかっこ" },
   波: { text: "波", reading: "なみ" },
+  変更: { text: "変更", reading: "へんこう" },
+  保存: { text: "保存", reading: "ほぞん" },
+  設定: { text: "設定", reading: "せってい" },
+  学習: { text: "学習", reading: "がくしゅう" },
+  続: { text: "続", reading: "つづ" },
+  登録: { text: "登録", reading: "とうろく" },
+  戻り値: { text: "戻り値", reading: "もどりあたい" },
+  戻り: { text: "戻り", reading: "もどり" },
+  繰り返し: { text: "繰り返し", reading: "くりかえし" },
+  クリア: { text: "クリア", reading: "くりあ" },
+  獲得: { text: "獲得", reading: "かくとく" },
+  済み: { text: "済み", reading: "すみ" },
 };
 
 // 単語キーから直接ふりがな付きテキストを返すヘルパー

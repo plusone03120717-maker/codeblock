@@ -7,6 +7,7 @@ import { getSettings, saveSettings, AppSettings } from "@/utils/settings";
 import { useAuth } from "@/contexts/AuthContext";
 import { updateDisplayName, updateEmail, changePassword, isGoogleUser } from "@/lib/auth";
 import Footer from "@/components/Footer";
+import { FW, FuriganaText } from "@/components/Furigana";
 
 export default function OptionsPage() {
   const router = useRouter();
@@ -162,7 +163,7 @@ export default function OptionsPage() {
             </div>
             
             <div className="border-t pt-4">
-              <span className="text-sm text-gray-500">ユーザー名（表示用）</span>
+              <span className="text-sm text-gray-500">ユーザー名（<FW word="表示" />用）</span>
               
               {!isEditing ? (
                 <div className="flex items-center justify-between mt-1">
@@ -174,7 +175,7 @@ export default function OptionsPage() {
                     }}
                     className="text-sm bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-full"
                   >
-                    変更
+                    <FW word="変更" />
                   </button>
                 </div>
               ) : (
@@ -187,8 +188,8 @@ export default function OptionsPage() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
                   />
                   
-                  {error && <p className="text-red-500 text-sm">{error}</p>}
-                  {success && <p className="text-green-500 text-sm">{success}</p>}
+                  {error && <p className="text-red-500 text-sm"><FuriganaText text={error} /></p>}
+                  {success && <p className="text-green-500 text-sm"><FuriganaText text={success} /></p>}
                   
                   <div className="flex gap-2">
                     <button
@@ -196,7 +197,7 @@ export default function OptionsPage() {
                       disabled={loading}
                       className="text-sm bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full disabled:opacity-50"
                     >
-                      {loading ? "変更中..." : "保存"}
+                      {loading ? <><FW word="変更" />中...</> : <FW word="保存" />}
                     </button>
                     <button
                       onClick={() => {
@@ -226,7 +227,7 @@ export default function OptionsPage() {
                     }}
                     className="text-sm bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-full"
                   >
-                    {contactEmail ? "変更" : "設定"}
+                    {contactEmail ? <FW word="変更" /> : <FW word="設定" />}
                   </button>
                 </div>
               ) : (
@@ -239,8 +240,8 @@ export default function OptionsPage() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
                   />
                   
-                  {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
-                  {emailSuccess && <p className="text-green-500 text-sm">{emailSuccess}</p>}
+                  {emailError && <p className="text-red-500 text-sm"><FuriganaText text={emailError} /></p>}
+                  {emailSuccess && <p className="text-green-500 text-sm"><FuriganaText text={emailSuccess} /></p>}
                   
                   <div className="flex gap-2">
                     <button
@@ -248,7 +249,7 @@ export default function OptionsPage() {
                       disabled={emailLoading}
                       className="text-sm bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full disabled:opacity-50"
                     >
-                      {emailLoading ? "保存中..." : "保存"}
+                      {emailLoading ? <><FW word="保存" />中...</> : <FW word="保存" />}
                     </button>
                     <button
                       onClick={() => {
@@ -276,7 +277,7 @@ export default function OptionsPage() {
                       onClick={() => setIsEditingPassword(true)}
                       className="text-sm bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-full"
                     >
-                      変更
+                      <FW word="変更" />
                     </button>
                   </div>
                 ) : (
@@ -303,8 +304,8 @@ export default function OptionsPage() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
                     />
                     
-                    {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
-                    {passwordSuccess && <p className="text-green-500 text-sm">{passwordSuccess}</p>}
+                    {passwordError && <p className="text-red-500 text-sm"><FuriganaText text={passwordError} /></p>}
+                    {passwordSuccess && <p className="text-green-500 text-sm"><FuriganaText text={passwordSuccess} /></p>}
                     
                     <div className="flex gap-2">
                       <button
@@ -312,7 +313,7 @@ export default function OptionsPage() {
                         disabled={passwordLoading}
                         className="text-sm bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full disabled:opacity-50"
                       >
-                        {passwordLoading ? "変更中..." : "保存"}
+                        {passwordLoading ? <><FW word="変更" />中...</> : <FW word="保存" />}
                       </button>
                       <button
                         onClick={() => {
@@ -372,7 +373,7 @@ export default function OptionsPage() {
           {/* 保存完了メッセージ */}
           {saved && (
             <div className="mt-4 bg-green-100 text-green-700 p-3 rounded-lg text-center font-medium">
-              ✓ 設定を保存しました
+              ✓ <FW word="設定" />を<FW word="保存" />しました
             </div>
           )}
         </div>

@@ -10,6 +10,7 @@ import { achievements, categoryNames, Achievement } from "@/data/achievements";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Footer from "@/components/Footer";
+import { FW, FuriganaText } from "@/components/Furigana";
 
 export default function AchievementsPage() {
   const router = useRouter();
@@ -85,7 +86,7 @@ export default function AchievementsPage() {
         <div className="bg-white rounded-xl p-6 shadow-lg mb-6">
           <div className="text-center">
             <p className="text-gray-600 mb-2">
-              {language === "ja" ? "獲得したバッジ" : "Achievements Unlocked"}
+              {language === "ja" ? <><FW word="獲得" />したバッジ</> : "Achievements Unlocked"}
             </p>
             <p className="text-4xl font-bold text-purple-600">
               {unlockedAchievements.length} / {achievements.length}
@@ -113,7 +114,7 @@ export default function AchievementsPage() {
             >
               {category === "all"
                 ? (language === "ja" ? "すべて" : "All")
-                : categoryNames[category][language]}
+                : language === "ja" ? <FuriganaText text={categoryNames[category][language]} /> : categoryNames[category][language]}
             </button>
           ))}
         </div>
@@ -136,15 +137,15 @@ export default function AchievementsPage() {
                   {achievement.icon}
                 </div>
                 <h3 className={`font-bold mb-1 ${isUnlocked ? "text-gray-800" : "text-gray-500"}`}>
-                  {achievement.name[language]}
+                  {language === "ja" ? <FuriganaText text={achievement.name[language]} /> : achievement.name[language]}
                 </h3>
                 <p className={`text-xs ${isUnlocked ? "text-gray-600" : "text-gray-400"}`}>
-                  {achievement.description[language]}
+                  {language === "ja" ? <FuriganaText text={achievement.description[language]} /> : achievement.description[language]}
                 </p>
                 {isUnlocked && (
                   <div className="mt-2">
                     <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">
-                      {language === "ja" ? "ゲット済み！" : "Unlocked"}
+                      {language === "ja" ? <>ゲット<FW word="済み" />！</> : "Unlocked"}
                     </span>
                   </div>
                 )}

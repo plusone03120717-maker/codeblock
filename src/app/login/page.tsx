@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { registerWithUsername, loginWithUsername, loginWithGoogle } from "@/lib/auth";
+import { FW, FuriganaText } from "@/components/Furigana";
 
 function LoginContent() {
   const [isRegister, setIsRegister] = useState(false);
@@ -139,7 +140,7 @@ function LoginContent() {
 
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg text-sm">
-              {error}
+              <FuriganaText text={error} />
             </div>
           )}
 
@@ -148,7 +149,7 @@ function LoginContent() {
             disabled={loading}
             className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition-colors disabled:opacity-50"
           >
-            {loading ? "処理中..." : isRegister ? "登録する" : "ログイン"}
+            {loading ? "処理中..." : isRegister ? <><FW word="登録" />する</> : "ログイン"}
           </button>
         </form>
 
@@ -194,7 +195,7 @@ function LoginContent() {
           >
             {isRegister
               ? "すでにアカウントをお持ちの方はこちら"
-              : "新しくアカウントを作る"}
+              : <>新しくアカウントを作る</>}
           </button>
         </div>
       </div>

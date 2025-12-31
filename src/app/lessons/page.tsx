@@ -78,10 +78,10 @@ export default function LessonsPage() {
     2: <FW word="変数" />,
     3: <>データ<F reading="がた">型</F></>,
     4: <>条件<F reading="ぶんき">分岐</F></>,
-    5: <>繰り返し</>,
+    5: <><FW word="繰り返し" /></>,
     6: <>リスト</>,
-    7: <>関数の基本</>,
-    8: <>戻り値と応用</>,
+    7: <><FW word="関数" />の<FW word="基本" /></>,
+    8: <><FW word="戻り値" />と<FW word="応用" /></>,
   };
 
   return (
