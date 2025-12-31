@@ -317,90 +317,99 @@ const LandingPage = () => {
           </p>
           <div className="flex flex-wrap justify-center gap-8">
             {/* コーディ */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg text-center w-64">
-              <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden bg-green-100 flex items-center justify-center">
-                <Image
-                  src="/images/characters/cody.png"
-                  alt="コーディ"
-                  width={96}
-                  height={96}
-                  className="w-20 h-20 object-contain"
-                  unoptimized
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    if (target.parentElement) {
-                      target.parentElement.innerHTML = '<span class="text-5xl">🐸</span>';
-                    }
-                  }}
-                />
+            <div className="relative rounded-2xl shadow-lg overflow-hidden w-80 h-96 bg-green-100">
+              <Image
+                src="/images/characters/cody.png"
+                alt="コーディ"
+                width={320}
+                height={384}
+                className="w-full h-full object-cover"
+                unoptimized
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  if (target.parentElement) {
+                    const fallback = document.createElement('div');
+                    fallback.className = 'w-full h-full flex items-center justify-center text-9xl';
+                    fallback.textContent = '🐸';
+                    target.parentElement.appendChild(fallback);
+                  }
+                }}
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-6 text-white">
+                <h3 className="text-2xl font-bold mb-2">
+                  {language === "ja" ? "コーディ" : "Cody"}
+                </h3>
+                <p className="text-sm leading-relaxed">
+                  {language === "ja" 
+                    ? "プログラミングの基本を教えてくれる、元気いっぱいのヘビ！" 
+                    : "An energetic snake who teaches programming basics!"}
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">
-                {language === "ja" ? "コーディ" : "Cody"}
-              </h3>
-              <p className="text-gray-600 text-sm">
-                {language === "ja" 
-                  ? "プログラミングの基本を教えてくれる、元気いっぱいのヘビ！" 
-                  : "An energetic snake who teaches programming basics!"}
-              </p>
             </div>
             
             {/* ディジー */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg text-center w-64">
-              <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center">
-                <Image
-                  src="/images/characters/dizzy.png"
-                  alt="ディジー"
-                  width={96}
-                  height={96}
-                  className="w-20 h-20 object-contain"
-                  unoptimized
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    if (target.parentElement) {
-                      target.parentElement.innerHTML = '<span class="text-5xl">🐕</span>';
-                    }
-                  }}
-                />
+            <div className="relative rounded-2xl shadow-lg overflow-hidden w-80 h-96 bg-blue-100">
+              <Image
+                src="/images/characters/dizzy.png"
+                alt="ディジー"
+                width={320}
+                height={384}
+                className="w-full h-full object-cover"
+                unoptimized
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  if (target.parentElement) {
+                    const fallback = document.createElement('div');
+                    fallback.className = 'w-full h-full flex items-center justify-center text-9xl';
+                    fallback.textContent = '🐕';
+                    target.parentElement.appendChild(fallback);
+                  }
+                }}
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-6 text-white">
+                <h3 className="text-2xl font-bold mb-2">
+                  {language === "ja" ? "ディジー" : "Diggy"}
+                </h3>
+                <p className="text-sm leading-relaxed">
+                  {language === "ja" 
+                    ? "変数について楽しく教えてくれる、好奇心旺盛な仲間！" 
+                    : "A curious friend who teaches variables in a fun way!"}
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">
-                {language === "ja" ? "ディジー" : "Diggy"}
-              </h3>
-              <p className="text-gray-600 text-sm">
-                {language === "ja" 
-                  ? "変数について楽しく教えてくれる、好奇心旺盛な仲間！" 
-                  : "A curious friend who teaches variables in a fun way!"}
-              </p>
             </div>
             
             {/* デックス */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg text-center w-64">
-              <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
-                <Image
-                  src="/images/characters/dex.png"
-                  alt="デックス"
-                  width={96}
-                  height={96}
-                  className="w-20 h-20 object-contain"
-                  unoptimized
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    if (target.parentElement) {
-                      target.parentElement.innerHTML = '<span class="text-5xl">🤖</span>';
-                    }
-                  }}
-                />
+            <div className="relative rounded-2xl shadow-lg overflow-hidden w-80 h-96 bg-gray-100">
+              <Image
+                src="/images/characters/dex.png"
+                alt="デックス"
+                width={320}
+                height={384}
+                className="w-full h-full object-cover"
+                unoptimized
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  if (target.parentElement) {
+                    const fallback = document.createElement('div');
+                    fallback.className = 'w-full h-full flex items-center justify-center text-9xl';
+                    fallback.textContent = '🤖';
+                    target.parentElement.appendChild(fallback);
+                  }
+                }}
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-6 text-white">
+                <h3 className="text-2xl font-bold mb-2">
+                  {language === "ja" ? "デックス" : "Dex"}
+                </h3>
+                <p className="text-sm leading-relaxed">
+                  {language === "ja" 
+                    ? "データ型を論理的に教えてくれる、頼れるロボット！" 
+                    : "A reliable robot who teaches data types logically!"}
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">
-                {language === "ja" ? "デックス" : "Dex"}
-              </h3>
-              <p className="text-gray-600 text-sm">
-                {language === "ja" 
-                  ? "データ型を論理的に教えてくれる、頼れるロボット！" 
-                  : "A reliable robot who teaches data types logically!"}
-              </p>
             </div>
           </div>
           
