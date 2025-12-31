@@ -272,20 +272,6 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
               <span className="font-semibold text-gray-700">レッスンID:</span>
               <span className="text-gray-600">{lessonId}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-gray-700"><F reading="なんいど">難易度</F>:</span>
-              <span
-                className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                  currentLesson.difficulty === "かんたん"
-                    ? "bg-emerald-100 text-emerald-700"
-                    : currentLesson.difficulty === "ふつう"
-                    ? "bg-amber-100 text-amber-700"
-                    : "bg-rose-100 text-rose-700"
-                }`}
-              >
-                {currentLesson.difficulty}
-              </span>
-            </div>
             {nextLesson && (
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-gray-700"><F reading="つぎ">次</F>のレッスン:</span>
