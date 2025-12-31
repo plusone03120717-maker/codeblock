@@ -1965,7 +1965,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                   onClick={handleCheck}
                   disabled={isExecuting}
                   style={{
-                    background: isExecuting ? '#9ca3af' : 'linear-gradient(to right, #86efac, #34d399)',
+                    background: isExecuting ? '#9ca3af' : 'linear-gradient(to right, #a855f7, #6366f1)',
                     color: 'white',
                     padding: '12px 24px',
                     borderRadius: '9999px',
@@ -1976,7 +1976,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                     opacity: isExecuting ? 0.5 : 1,
                   }}
                 >
-                  {isExecuting ? <><F reading="じっこう">実行</F><F reading="ちゅう">中</F>...</> : <><FW word="確認" />する 🎯</>}
+                  {isExecuting ? <><F reading="じっこう">実行</F><F reading="ちゅう">中</F>...</> : <><FW word="確認" />する</>}
                 </button>
                 <button
                   type="button"
