@@ -305,44 +305,69 @@ async def health():
 
 
 class HintRequest(BaseModel):
-    character: str
-    question: str
-    code: str
-    user_answer: str
-    expected_answer: str
-    message: str = ""
+    character_id: str  # キャラクターID（cody, dizzy, dex など）
+    character_name: str  # キャラクター名
+    personality: str  # 性格
+    speech_style: str  # 口調
+    hint_style: str  # ヒントの出し方
+    catchphrases: list[str]  # 口癖リスト
+    question: str  # 問題文
+    code: str  # 正解コード
+    user_answer: str  # ユーザーの回答
+    expected_answer: str  # 期待される回答
 
 
 class HintResponse(BaseModel):
     hint: str
+    character_id: str
     character_name: str
     character_emoji: str
 
 
 @app.post("/api/hint", response_model=HintResponse)
 async def get_hint(request: HintRequest):
-    character = CHARACTER_PROMPTS.get(request.character, CHARACTER_PROMPTS["pixel"])
+    # キャラクターの絵文字を取得（フォールバック用）
+    character = CHARACTER_PROMPTS.get(request.character_id, CHARACTER_PROMPTS.get("pixel", {"name": request.character_name, "emoji": "🐱"}))
     
-    system_prompt = character["prompt"]
+    system_prompt = f"""あなたは「{request.character_name}」というキャラクターです。
+CodeBlockというPython学習アプリで、小学生（10-12歳）にヒントを出す役割です。
+
+【キャラクターの性格】
+{request.personality}
+
+【話し方・口調】
+{request.speech_style}
+
+【ヒントの出し方】
+{request.hint_style}
+
+【口癖（参考にしてください）】
+{', '.join(request.catchphrases)}
+
+【重要なルール】
+- 答えを直接教えないでください
+- ヒントは1〜2文で簡潔に
+- 小学生にわかりやすい言葉を使う
+- キャラクターの口調を必ず守る
+- 励ましの言葉を含める
+"""
     
-    user_message = f"""生徒が以下の問題で困っています。ヒントを出してください。
+    user_prompt = f"""以下の問題でユーザーが間違えました。ヒントを出してください。
 
 【問題】
 {request.question}
 
-【コード】
+【正解コード】
 {request.code}
 
-【生徒の回答】
+【ユーザーの回答】
 {request.user_answer}
 
-【正解】
+【期待される回答】
 {request.expected_answer}
 
-【生徒からのメッセージ】
-{request.message if request.message else "ヒントをください"}
-
-答えを直接教えず、考え方のヒントを短く（3文以内で）教えてください。"""
+キャラクターの口調でヒントを1〜2文で出してください。答えは直接教えないでください。
+"""
 
     try:
         # APIキーのチェック
@@ -358,7 +383,7 @@ async def get_hint(request: HintRequest):
             max_tokens=200,
             system=system_prompt,
             messages=[
-                {"role": "user", "content": user_message}
+                {"role": "user", "content": user_prompt}
             ]
         )
         
@@ -366,7 +391,8 @@ async def get_hint(request: HintRequest):
         
         return HintResponse(
             hint=hint_text,
-            character_name=character["name"],
+            character_id=request.character_id,
+            character_name=request.character_name,
             character_emoji=character["emoji"]
         )
     except Exception as e:
@@ -375,7 +401,8 @@ async def get_hint(request: HintRequest):
         traceback.print_exc()  # スタックトレースを出力
         return HintResponse(
             hint="ごめんね、今ヒントを出せないみたい。もう一度試してみてね！",
-            character_name=character["name"],
+            character_id=request.character_id,
+            character_name=request.character_name,
             character_emoji=character["emoji"]
         )
 

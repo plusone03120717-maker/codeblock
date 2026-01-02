@@ -7,6 +7,7 @@ import Image from "next/image";
 import { lessons } from "@/data/lessons";
 import { getLessonMissions, getMission } from "@/data/missions";
 import { getTutorial } from "@/data/tutorials";
+import { characterProfiles, getCharacterByUnit } from "@/data/characterProfiles";
 import { WordBlock } from "@/types";
 import { 
   getProgress, 
@@ -382,22 +383,6 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   const lesson = lessonId ? lessons.find((l) => l.id === lessonId) : undefined;
   const missions = lessonId ? getLessonMissions(lessonId) : undefined;
   
-  // ユニットとキャラクターのマッピング
-  const getCharacterByUnit = (unitNumber: number): string => {
-    const characterMap: { [key: number]: string } = {
-      1: "cody",
-      2: "dizzy",
-      3: "dex",
-      4: "judge",
-      5: "loopy",
-      6: "ally",
-      7: "nico",
-      8: "rico",
-      9: "dicto"
-    };
-    return characterMap[unitNumber] || "cody";
-  };
-  
   // 現在のミッションを取得
   const currentMission = useMemo(() => {
     if (!missions) return undefined;
@@ -591,7 +576,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     setSelectedChoice(null);
     setShowNextButton(false);
     
-    // ヒント機能の状態をリセット
+    // ヒント機能の状態をリセット（各問題ごとに1回ヒントを表示できるようにする）
     setWrongCount(0);
     setHintShown(false);
     setHintMessage("");
@@ -601,7 +586,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     if (lessonId) {
       localStorage.setItem(`lesson-${lessonId}-mission`, currentMissionId.toString());
     }
-  }, [currentMissionId, lessonId]);
+  }, [currentMissionId, lessonId, currentMission?.id]);
 
   // 実績チェック用のユーザー統計を構築
   const checkAndSaveAchievements = async () => {
@@ -1456,13 +1441,16 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     
     const mission = currentMission;
     const unitNumber = lesson?.unitNumber || 1;
-    const characterName = getCharacterByUnit(unitNumber);
     
-    // キャラクター情報を取得（emojiとname）
-    const character = {
-      name: characterName,
-      emoji: tutorial?.characterEmoji || "🐱"
-    };
+    // キャラクタープロファイルを取得
+    const characterProfile = getCharacterByUnit(unitNumber);
+    
+    if (!characterProfile) {
+      setHintMessage("ヒントを取得できませんでした。");
+      setShowHintModal(true);
+      setHintLoading(false);
+      return;
+    }
     
     // ユーザーの回答を取得（コード形式または選択式の場合は選択した選択肢）
     const userAnswer = currentMission?.type === "quiz" 
@@ -1497,12 +1485,16 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          character: characterName,
+          character_id: characterProfile.id,
+          character_name: characterProfile.name,
+          personality: characterProfile.personality,
+          speech_style: characterProfile.speechStyle,
+          hint_style: characterProfile.hintStyle,
+          catchphrases: characterProfile.catchphrases,
           question: question,
           code: code,
           user_answer: userAnswer,
-          expected_answer: expectedAnswer,
-          message: "" // 質問なし（初回ヒントのみ）
+          expected_answer: expectedAnswer
         }),
       });
       
@@ -2097,36 +2089,47 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       )}
       
       {/* ヒントモーダル */}
-      {showHintModal && (
-        <div className="fixed inset-0 backdrop-blur-md bg-white/30 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
-            {/* キャラクターアイコン */}
-            <div className="flex items-center gap-3 mb-4">
-              <div className="text-4xl">{tutorial?.characterEmoji || "🐱"}</div>
-              <div className="font-bold text-lg text-purple-600">{tutorial?.characterName || "キャラクター"}からのヒント</div>
+      {showHintModal && (() => {
+        const characterProfile = getCharacterByUnit(lesson?.unitNumber || 1);
+        if (!characterProfile) return null;
+        
+        return (
+          <div className="fixed inset-0 backdrop-blur-md bg-white/30 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
+              {/* キャラクター画像と名前 */}
+              <div className="flex items-center gap-3 mb-4">
+                <img 
+                  src={characterProfile.image} 
+                  alt={characterProfile.name}
+                  className="w-16 h-16 object-contain"
+                />
+                <div className="font-bold text-lg text-purple-600">
+                  {characterProfile.name}からのヒント
+                </div>
+              </div>
+              
+              {/* ヒントメッセージ */}
+              {hintLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+                </div>
+              ) : (
+                <div className="bg-purple-50 rounded-xl p-4 mb-4">
+                  <p className="text-gray-700">{hintMessage}</p>
+                </div>
+              )}
+              
+              {/* 閉じるボタン */}
+              <button
+                onClick={() => setShowHintModal(false)}
+                className="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-xl transition-colors"
+              >
+                わかった！
+              </button>
             </div>
-            
-            {/* ヒントメッセージ */}
-            {hintLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
-              </div>
-            ) : (
-              <div className="bg-purple-50 rounded-xl p-4 mb-4">
-                <p className="text-gray-700">{hintMessage}</p>
-              </div>
-            )}
-            
-            {/* 閉じるボタン */}
-            <button
-              onClick={() => setShowHintModal(false)}
-              className="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-xl transition-colors"
-            >
-              わかった！
-            </button>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
