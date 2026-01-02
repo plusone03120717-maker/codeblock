@@ -48,6 +48,59 @@ import { CSS } from "@dnd-kit/utilities";
 import { playBlockAddSound, playBlockRemoveSound, playCorrectSound, playIncorrectSound } from "@/utils/sounds";
 import { addToReviewList } from "@/utils/reviewSystem";
 
+// ヒント回数管理用の定数と関数
+const DAILY_HINT_KEY = "codeblock_daily_hints";
+const MAX_DAILY_HINTS = 10;
+
+interface DailyHintData {
+  date: string; // YYYY-MM-DD形式
+  count: number;
+}
+
+// 今日の日付を取得（YYYY-MM-DD形式）
+const getTodayString = (): string => {
+  const today = new Date();
+  return today.toISOString().split('T')[0];
+};
+
+// 1日のヒント使用状況を取得
+const getDailyHintData = (): DailyHintData => {
+  if (typeof window === 'undefined') return { date: getTodayString(), count: 0 };
+  
+  const stored = localStorage.getItem(DAILY_HINT_KEY);
+  if (!stored) {
+    return { date: getTodayString(), count: 0 };
+  }
+  
+  const data: DailyHintData = JSON.parse(stored);
+  
+  // 日付が変わっていたらリセット
+  if (data.date !== getTodayString()) {
+    return { date: getTodayString(), count: 0 };
+  }
+  
+  return data;
+};
+
+// ヒント使用回数を増やす
+const incrementDailyHintCount = (): void => {
+  const data = getDailyHintData();
+  data.count += 1;
+  data.date = getTodayString();
+  localStorage.setItem(DAILY_HINT_KEY, JSON.stringify(data));
+};
+
+// 残りヒント回数を取得
+const getRemainingHints = (): number => {
+  const data = getDailyHintData();
+  return Math.max(0, MAX_DAILY_HINTS - data.count);
+};
+
+// ヒントが使用可能かチェック
+const canUseHint = (): boolean => {
+  return getRemainingHints() > 0;
+};
+
 type EditorPageProps = {
   params: Promise<{
     id: string;
@@ -280,12 +333,14 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   // ヒント機能の状態
   const [wrongCount, setWrongCount] = useState(0);
   const [hintShown, setHintShown] = useState(false);
+  const hintShownRef = useRef(false); // 最新のhintShown値を保持するref
   const [showHintModal, setShowHintModal] = useState(false);
   const [hintMessage, setHintMessage] = useState("");
   const [hintLoading, setHintLoading] = useState(false);
   const [totalHintCountInLesson, setTotalHintCountInLesson] = useState(0); // レッスン全体のヒント使用回数（実績チェック用）
   const [totalWrongInLesson, setTotalWrongInLesson] = useState(0);
   const [lessonStartTime] = useState(Date.now()); // レッスン開始時刻
+  const [remainingHints, setRemainingHints] = useState<number>(MAX_DAILY_HINTS);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -374,6 +429,9 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     setTotalXP(progress.totalXP);
     setLevelInfo(getLevelInfo(progress.totalXP));
     setLevelProgress(getLevelProgress(progress.totalXP));
+    
+    // 残りヒント回数を初期化
+    setRemainingHints(getRemainingHints());
   }, []);
 
   useEffect(() => {
@@ -579,8 +637,12 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     // ヒント機能の状態をリセット（各問題ごとに1回ヒントを表示できるようにする）
     setWrongCount(0);
     setHintShown(false);
+    hintShownRef.current = false; // refもリセット
     setHintMessage("");
     setShowHintModal(false);
+    
+    // 残りヒント回数を更新
+    setRemainingHints(getRemainingHints());
     
     // ミッションIDをローカルストレージに保存
     if (lessonId) {
@@ -849,10 +911,18 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       // 不正解回数をカウント
       setWrongCount(prev => {
         const newCount = prev + 1;
-        if (newCount >= 3 && !hintShown) {
-          fetchHint(); // 自動でヒントを取得
+        
+        if (newCount >= 3 && !hintShownRef.current) {
+          hintShownRef.current = true; // refを先に更新
           setHintShown(true);
-          setTotalHintCountInLesson(prev => prev + 1);
+          
+          if (canUseHint()) {
+            fetchHint(); // 自動でヒントを取得
+            setTotalHintCountInLesson(prev => prev + 1);
+          } else {
+            setHintMessage("今日のヒントは使い切りました。明日また挑戦してね！");
+            setShowHintModal(true);
+          }
         }
         return newCount;
       });
@@ -906,13 +976,42 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         codeToExecute = currentMission.prefixCode + "\n" + normalizedCode;
       }
       const { output, error } = await executePythonCode(codeToExecute);
+      
       if (error) {
+        
         setExecutionResult({
           success: false,
           error: `エラー: ${error}`,
         });
-        setIsExecuting(false);
         playIncorrectSound(); // 不正解音を再生
+        
+        // エラー時も不正解としてカウント
+        setWrongCount(prev => {
+          const newCount = prev + 1;
+          
+          if (newCount >= 3 && !hintShownRef.current) {
+            
+            hintShownRef.current = true;
+            setHintShown(true);
+            
+            if (canUseHint()) {
+              fetchHint();
+              setTotalHintCountInLesson(prev => prev + 1);
+            } else {
+              setHintMessage("今日のヒントは使い切りました。明日また挑戦してね！");
+              setShowHintModal(true);
+            }
+          }
+          return newCount;
+        });
+        
+        // レッスン全体の間違い回数をカウント
+        setTotalWrongInLesson(prev => prev + 1);
+        
+        setCurrentStreak(0);
+        resetStreak();
+        
+        setIsExecuting(false);
         return;
       }
 
@@ -1296,6 +1395,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
 
       // 両方の条件を満たした場合のみ正解
       if (outputMatches && codeIsValid) {
+        
         // 正解時の表示を更新
         setExecutionResult({
           success: true,
@@ -1378,18 +1478,18 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       // 「次へ」ボタンを表示
       setShowNextButton(true);
     } else {
-        // 不正解
-        let errorMessage = "期待される出力と異なります。もう一度試してみましょう！";
-        if (!codeIsValid && codeErrorMessage) {
-          errorMessage = codeErrorMessage;
-        }
-        setExecutionResult({
-          success: false,
-          output: actualOutput,
-          error: errorMessage,
-        });
-        
-        playIncorrectSound(); // 不正解音を再生
+      // 不正解
+      let errorMessage = "期待される出力と異なります。もう一度試してみましょう！";
+      if (!codeIsValid && codeErrorMessage) {
+        errorMessage = codeErrorMessage;
+      }
+      setExecutionResult({
+        success: false,
+        output: actualOutput,
+        error: errorMessage,
+      });
+      
+      playIncorrectSound(); // 不正解音を再生
         
         // 間違えた問題を記録（まだ記録されていなければ、通常モードのみ）
         if (!isRetryMode && currentMission && !wrongMissionIds.includes(currentMission.id)) {
@@ -1399,10 +1499,18 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         // 不正解回数をカウント
         setWrongCount(prev => {
           const newCount = prev + 1;
-          if (newCount >= 3 && !hintShown) {
-            fetchHint(); // 自動でヒントを取得
+          
+          if (newCount >= 3 && !hintShownRef.current) {
+            hintShownRef.current = true; // refを先に更新
             setHintShown(true);
-            setTotalHintCountInLesson(prev => prev + 1);
+            
+            if (canUseHint()) {
+              fetchHint(); // 自動でヒントを取得
+              setTotalHintCountInLesson(prev => prev + 1);
+            } else {
+              setHintMessage("今日のヒントは使い切りました。明日また挑戦してね！");
+              setShowHintModal(true);
+            }
           }
           return newCount;
         });
@@ -1430,6 +1538,31 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         }`,
       });
       playIncorrectSound(); // エラー時も不正解音を再生
+      
+      // エラー時も不正解としてカウント
+      setWrongCount(prev => {
+        const newCount = prev + 1;
+        
+        if (newCount >= 3 && !hintShownRef.current) {
+          hintShownRef.current = true;
+          setHintShown(true);
+          
+          if (canUseHint()) {
+            fetchHint();
+            setTotalHintCountInLesson(prev => prev + 1);
+          } else {
+            setHintMessage("今日のヒントは使い切りました。明日また挑戦してね！");
+            setShowHintModal(true);
+          }
+        }
+        return newCount;
+      });
+      
+      // レッスン全体の間違い回数をカウント
+      setTotalWrongInLesson(prev => prev + 1);
+      
+      setCurrentStreak(0);
+      resetStreak();
     } finally {
       setIsExecuting(false);
     }
@@ -1437,6 +1570,13 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
 
   // ヒント取得関数
   const fetchHint = async () => {
+    // 1日の上限チェック
+    if (!canUseHint()) {
+      setHintMessage("今日のヒントは使い切りました。明日また挑戦してね！");
+      setShowHintModal(true);
+      return;
+    }
+    
     setHintLoading(true);
     
     const mission = currentMission;
@@ -1508,6 +1648,11 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       const data = await response.json();
       setHintMessage(data.hint || "ごめんね、エラーが起きちゃった。もう一度挑戦してみてね！");
       setShowHintModal(true);
+      
+      // ヒント使用回数を増やす
+      incrementDailyHintCount();
+      setRemainingHints(getRemainingHints());
+      
     } catch (error) {
       console.error("ヒント取得エラー:", error);
       setHintMessage("ごめんね、エラーが起きちゃった。もう一度挑戦してみてね！");
@@ -1902,10 +2047,15 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                       <p className="text-red-700 text-xs">出力: {executionResult.output}</p>
                     )}
                     {/* ヒント取得中の表示 */}
-                    {wrongCount >= 3 && hintLoading && (
+                    {wrongCount >= 3 && hintLoading && canUseHint() && (
                       <div className="flex items-center gap-2 text-purple-600 mt-2">
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-500"></div>
                         <span className="text-xs">{tutorial?.characterName || "キャラクター"}がヒントを考えているよ...</span>
+                      </div>
+                    )}
+                    {wrongCount >= 3 && !hintShown && !canUseHint() && (
+                      <div className="text-orange-600 text-sm mt-2">
+                        今日のヒントは使い切りました（明日リセット）
                       </div>
                     )}
                   </div>
@@ -2074,10 +2224,15 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                     <p className="text-red-800 font-bold">もう一度！</p>
                     <p className="text-red-700 text-sm">{executionResult.error}</p>
                     {/* ヒント取得中の表示 */}
-                    {wrongCount >= 3 && hintLoading && (
+                    {wrongCount >= 3 && hintLoading && canUseHint() && (
                       <div className="flex items-center gap-2 text-purple-600 mt-2">
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-500"></div>
                         <span className="text-xs">{tutorial?.characterName || "キャラクター"}がヒントを考えているよ...</span>
+                      </div>
+                    )}
+                    {wrongCount >= 3 && !hintShown && !canUseHint() && (
+                      <div className="text-orange-600 text-sm mt-2">
+                        今日のヒントは使い切りました（明日リセット）
                       </div>
                     )}
                   </div>
@@ -2117,6 +2272,19 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                 <div className="bg-purple-50 rounded-xl p-4 mb-4">
                   <p className="text-gray-700">{hintMessage}</p>
                 </div>
+              )}
+              
+              {/* 残りヒント回数の表示 */}
+              {!hintLoading && remainingHints > 0 && (
+                <p className="text-sm text-gray-500 text-center mb-4">
+                  今日の残りヒント: {remainingHints}回
+                </p>
+              )}
+              
+              {!hintLoading && remainingHints === 0 && (
+                <p className="text-sm text-orange-500 text-center mb-4">
+                  今日のヒントは使い切りました
+                </p>
               )}
               
               {/* 閉じるボタン */}
