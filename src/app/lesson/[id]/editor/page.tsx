@@ -278,12 +278,11 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   
   // ヒント機能の状態
   const [wrongCount, setWrongCount] = useState(0);
-  const [showHintButton, setShowHintButton] = useState(false);
-  const [showChatModal, setShowChatModal] = useState(false);
-  const [hintCount, setHintCount] = useState(0);
-  const [chatMessages, setChatMessages] = useState<{role: string; content: string; name?: string; emoji?: string}[]>([]);
-  const [chatInput, setChatInput] = useState("");
-  const [chatLoading, setChatLoading] = useState(false);
+  const [hintShown, setHintShown] = useState(false);
+  const [showHintModal, setShowHintModal] = useState(false);
+  const [hintMessage, setHintMessage] = useState("");
+  const [hintLoading, setHintLoading] = useState(false);
+  const [totalHintCountInLesson, setTotalHintCountInLesson] = useState(0); // レッスン全体のヒント使用回数（実績チェック用）
   const [totalWrongInLesson, setTotalWrongInLesson] = useState(0);
   const [lessonStartTime] = useState(Date.now()); // レッスン開始時刻
 
@@ -594,11 +593,9 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     
     // ヒント機能の状態をリセット
     setWrongCount(0);
-    setShowHintButton(false);
-    setHintCount(0);
-    setChatMessages([]);
-    setChatInput("");
-    setShowChatModal(false);
+    setHintShown(false);
+    setHintMessage("");
+    setShowHintModal(false);
     
     // ミッションIDをローカルストレージに保存
     if (lessonId) {
@@ -638,7 +635,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       
       // ヒントなしクリアのチェック
       const noHintLessons: string[] = userData.noHintLessons || [];
-      if (hintCount === 0 && !noHintLessons.includes(lessonId)) {
+      if (totalHintCountInLesson === 0 && !noHintLessons.includes(lessonId)) {
         noHintLessons.push(lessonId);
       }
       
@@ -867,8 +864,10 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       // 不正解回数をカウント
       setWrongCount(prev => {
         const newCount = prev + 1;
-        if (newCount >= 3) {
-          setShowHintButton(true);
+        if (newCount >= 3 && !hintShown) {
+          fetchHint(); // 自動でヒントを取得
+          setHintShown(true);
+          setTotalHintCountInLesson(prev => prev + 1);
         }
         return newCount;
       });
@@ -1415,8 +1414,10 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         // 不正解回数をカウント
         setWrongCount(prev => {
           const newCount = prev + 1;
-          if (newCount >= 3) {
-            setShowHintButton(true);
+          if (newCount >= 3 && !hintShown) {
+            fetchHint(); // 自動でヒントを取得
+            setHintShown(true);
+            setTotalHintCountInLesson(prev => prev + 1);
           }
           return newCount;
         });
@@ -1450,17 +1451,23 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   };
 
   // ヒント取得関数
-  const fetchHint = async (userMessage: string = "") => {
-    if (hintCount >= 2) return;
-    
-    setChatLoading(true);
+  const fetchHint = async () => {
+    setHintLoading(true);
     
     const mission = currentMission;
     const unitNumber = lesson?.unitNumber || 1;
-    const character = getCharacterByUnit(unitNumber);
+    const characterName = getCharacterByUnit(unitNumber);
     
-    // ユーザーの回答を取得（コード形式）
-    const userCode = selectedBlocks.length > 0 ? generateCode(selectedBlocks) : "";
+    // キャラクター情報を取得（emojiとname）
+    const character = {
+      name: characterName,
+      emoji: tutorial?.characterEmoji || "🐱"
+    };
+    
+    // ユーザーの回答を取得（コード形式または選択式の場合は選択した選択肢）
+    const userAnswer = currentMission?.type === "quiz" 
+      ? (selectedChoice !== null ? currentMission.choices?.[selectedChoice] || "" : "")
+      : (selectedBlocks.length > 0 ? generateCode(selectedBlocks) : "");
     
     // 問題文を取得（questionプロパティがあればそれを使い、なければdescriptionを使う）
     const question = (mission as any)?.question 
@@ -1484,18 +1491,18 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       : "";
     
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/hint`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/hint`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          character: character,
+          character: characterName,
           question: question,
           code: code,
-          user_answer: userCode,
+          user_answer: userAnswer,
           expected_answer: expectedAnswer,
-          message: userMessage
+          message: "" // 質問なし（初回ヒントのみ）
         }),
       });
       
@@ -1507,36 +1514,17 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       }
       
       const data = await response.json();
-      console.log("ヒント取得成功:", data);  // デバッグ用
-      
-      setChatMessages(prev => [
-        ...prev,
-        ...(userMessage ? [{ role: "user", content: userMessage }] : []),
-        { role: "assistant", content: data.hint, name: data.character_name, emoji: data.character_emoji }
-      ]);
-      
-      setHintCount(prev => prev + 1);
+      setHintMessage(data.hint || "ごめんね、エラーが起きちゃった。もう一度挑戦してみてね！");
+      setShowHintModal(true);
     } catch (error) {
-      console.error("ヒント取得エラー:", error);  // エラーログを追加
-      setChatMessages(prev => [
-        ...prev,
-        ...(userMessage ? [{ role: "user", content: userMessage }] : []),
-        { role: "assistant", content: "ごめんね、エラーが起きちゃった。もう一度試してみてね！" }
-      ]);
+      console.error("ヒント取得エラー:", error);
+      setHintMessage("ごめんね、エラーが起きちゃった。もう一度挑戦してみてね！");
+      setShowHintModal(true);
     } finally {
-      setChatLoading(false);
+      setHintLoading(false);
     }
   };
   
-  // チャット送信関数
-  const handleChatSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!chatInput.trim() || chatLoading || hintCount >= 2) return;
-    
-    fetchHint(chatInput);
-    setChatInput("");
-  };
-
   // handleCheckとgoToNextMissionをrefに保存
   useEffect(() => {
     handleCheckRef.current = handleCheck;
@@ -1913,13 +1901,20 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
               ) : (
                 <div className="bg-red-100 border-2 border-red-500 rounded-2xl p-3 flex items-center gap-3">
                   <span className="text-xl">🤔</span>
-                  <div>
+                  <div className="flex-1">
                     <p className="text-red-800 font-bold text-sm">もう一度！</p>
                     {executionResult.error && (
                       <p className="text-red-700 text-xs font-bold">{executionResult.error}</p>
                     )}
                     {executionResult.output && (
                       <p className="text-red-700 text-xs">出力: {executionResult.output}</p>
+                    )}
+                    {/* ヒント取得中の表示 */}
+                    {wrongCount >= 3 && hintLoading && (
+                      <div className="flex items-center gap-2 text-purple-600 mt-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-500"></div>
+                        <span className="text-xs">{tutorial?.characterName || "キャラクター"}がヒントを考えているよ...</span>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -1929,27 +1924,6 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           
           {/* ボタン */}
           <div className="p-3">
-            {/* ヒントボタン */}
-            {showHintButton && hintCount < 2 && (
-              <div className="mb-3 flex justify-center">
-                <button
-                  onClick={() => {
-                    setShowChatModal(true);
-                    if (chatMessages.length === 0) {
-                      fetchHint();
-                    }
-                  }}
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2"
-                >
-                  💡 ヒントをもらう（残り{2 - hintCount}回）
-                </button>
-              </div>
-            )}
-            {hintCount >= 2 && (
-              <div className="mb-3 text-center">
-                <p className="text-gray-500 text-sm">ヒントは使い切りました</p>
-              </div>
-            )}
             {showNextButton ? (
               // 正解時：「次へ」ボタンを表示
               <div className="flex justify-center">
@@ -2104,109 +2078,52 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
               <>
                 <div className="bg-red-100 border-2 border-red-500 rounded-2xl p-4 flex items-center gap-3 mb-3">
                   <span className="text-2xl">🤔</span>
-                  <div>
+                  <div className="flex-1">
                     <p className="text-red-800 font-bold">もう一度！</p>
                     <p className="text-red-700 text-sm">{executionResult.error}</p>
+                    {/* ヒント取得中の表示 */}
+                    {wrongCount >= 3 && hintLoading && (
+                      <div className="flex items-center gap-2 text-purple-600 mt-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-500"></div>
+                        <span className="text-xs">{tutorial?.characterName || "キャラクター"}がヒントを考えているよ...</span>
+                      </div>
+                    )}
                   </div>
                 </div>
-                {/* ヒントボタン */}
-                {showHintButton && hintCount < 2 && (
-                  <div className="mb-3 flex justify-center">
-                    <button
-                      onClick={() => {
-                        setShowChatModal(true);
-                        if (chatMessages.length === 0) {
-                          fetchHint();
-                        }
-                      }}
-                      className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2"
-                    >
-                      💡 ヒントをもらう（残り{2 - hintCount}回）
-                    </button>
-                  </div>
-                )}
-                {hintCount >= 2 && (
-                  <div className="mb-3 text-center">
-                    <p className="text-gray-500 text-sm">ヒントは使い切りました</p>
-                  </div>
-                )}
               </>
             )}
           </div>
         </div>
       )}
       
-      {/* チャットモーダル */}
-      {showChatModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md max-h-[80vh] flex flex-col">
-            {/* ヘッダー */}
-            <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="font-bold text-lg text-gray-800">💡 ヒント</h3>
-              <button
-                onClick={() => setShowChatModal(false)}
-                className="text-gray-500 hover:text-gray-700 text-2xl"
-              >
-                ×
-              </button>
+      {/* ヒントモーダル */}
+      {showHintModal && (
+        <div className="fixed inset-0 backdrop-blur-md bg-white/30 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
+            {/* キャラクターアイコン */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="text-4xl">{tutorial?.characterEmoji || "🐱"}</div>
+              <div className="font-bold text-lg text-purple-600">{tutorial?.characterName || "キャラクター"}からのヒント</div>
             </div>
             
-            {/* メッセージエリア */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {chatMessages.map((msg, index) => (
-                <div key={index} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                  {msg.role === "assistant" && (
-                    <div className="bg-purple-100 rounded-2xl p-3 max-w-[80%]">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xl">{msg.emoji || "🐱"}</span>
-                        <span className="font-bold text-purple-800 text-sm">{msg.name || "キャラクター"}</span>
-                      </div>
-                      <p className="text-gray-700">{msg.content}</p>
-                    </div>
-                  )}
-                  {msg.role === "user" && (
-                    <div className="bg-blue-500 text-white rounded-2xl p-3 max-w-[80%]">
-                      <p>{msg.content}</p>
-                    </div>
-                  )}
-                </div>
-              ))}
-              {chatLoading && (
-                <div className="flex justify-start">
-                  <div className="bg-purple-100 rounded-2xl p-3">
-                    <p className="text-gray-500">考え中...</p>
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            {/* 入力エリア */}
-            {hintCount < 2 ? (
-              <form onSubmit={handleChatSubmit} className="p-4 border-t">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    placeholder="質問を入力..."
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-800"
-                    disabled={chatLoading}
-                  />
-                  <button
-                    type="submit"
-                    disabled={chatLoading || !chatInput.trim()}
-                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-full disabled:opacity-50"
-                  >
-                    送信
-                  </button>
-                </div>
-                <p className="text-xs text-gray-500 mt-2 text-center">残り{2 - hintCount}回質問できます</p>
-              </form>
+            {/* ヒントメッセージ */}
+            {hintLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+              </div>
             ) : (
-              <div className="p-4 border-t text-center">
-                <p className="text-gray-500">ヒントは使い切りました。頑張って解いてみよう！</p>
+              <div className="bg-purple-50 rounded-xl p-4 mb-4">
+                <p className="text-gray-700">{hintMessage}</p>
               </div>
             )}
+            
+            {/* 閉じるボタン */}
+            <button
+              onClick={() => setShowHintModal(false)}
+              className="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-xl transition-colors"
+            >
+              わかった！
+            </button>
           </div>
         </div>
       )}
