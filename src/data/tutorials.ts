@@ -286,7 +286,7 @@ export const tutorials: LessonTutorial[] = [
     lessonId: "2-1",
     characterName: "ディジー",
     characterEmoji: "🐱",
-    characterImage: "/images/characters/unit-02.png",
+    characterImage: "/images/characters/dizzy.png",
     slides: [
       {
         title: "はじめまして！",
