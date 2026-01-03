@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, updateDoc, Timestamp } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc, Timestamp, collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { UserProfile, UserSubscription, SubscriptionPlan, PLAN_FEATURES } from "@/types/user";
 
@@ -155,6 +155,67 @@ export const upgradeToPremium = async (
     plan,
     status: "active",
     startDate: now,
+    endDate,
+  };
+  
+  await updateSubscription(uid, subscription);
+};
+
+// 全ユーザーを取得
+export const getAllUsers = async (): Promise<UserProfile[]> => {
+  try {
+    const usersRef = collection(db, "users");
+    const snapshot = await getDocs(usersRef);
+    const users: UserProfile[] = [];
+    
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      users.push({
+        uid: doc.id,
+        email: data.email || "",
+        displayName: data.displayName || "",
+        subscription: {
+          plan: data.subscription?.plan || "free",
+          status: data.subscription?.status || "active",
+          startDate: data.subscription?.startDate?.toDate() || null,
+          endDate: data.subscription?.endDate?.toDate() || null,
+        },
+        createdAt: data.createdAt?.toDate() || new Date(),
+        updatedAt: data.updatedAt?.toDate() || new Date(),
+      });
+    });
+    
+    return users;
+  } catch (error) {
+    console.error("Error getting all users:", error);
+    return [];
+  }
+};
+
+// プランを手動で変更
+export const changeUserPlan = async (
+  uid: string,
+  plan: SubscriptionPlan
+): Promise<void> => {
+  const now = new Date();
+  let endDate: Date | null = null;
+  
+  if (plan === "monthly") {
+    endDate = new Date(now);
+    endDate.setMonth(endDate.getMonth() + 1);
+  } else if (plan === "yearly") {
+    endDate = new Date(now);
+    endDate.setFullYear(endDate.getFullYear() + 1);
+  } else if (plan === "plusone") {
+    // plus oneは無期限
+    endDate = new Date(now);
+    endDate.setFullYear(endDate.getFullYear() + 10); // 10年後
+  }
+  
+  const subscription: UserSubscription = {
+    plan,
+    status: "active",
+    startDate: plan === "free" ? null : now,
     endDate,
   };
   
