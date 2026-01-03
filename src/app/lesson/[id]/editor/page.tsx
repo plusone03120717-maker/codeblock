@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { lessons } from "@/data/lessons";
+import { lessons, getLesson } from "@/data/lessons";
 import { getLessonMissions, getMission } from "@/data/missions";
 import { getTutorial } from "@/data/tutorials";
 import { characterProfiles, getCharacterByUnit } from "@/data/characterProfiles";
@@ -305,7 +305,7 @@ function DraggableBlock({ block, index, onRemove }: DraggableBlockProps) {
 
 export default function LessonEditorPage({ params }: EditorPageProps) {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { user, loading, canAccessLesson } = useAuth();
   const { furiganaEnabled, toggleFurigana } = useFurigana();
   const [lessonId, setLessonId] = useState<string | null>(null);
   const [currentMissionId, setCurrentMissionId] = useState(1);
@@ -365,6 +365,18 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       router.push("/login");
     }
   }, [user, loading, router]);
+
+  // アクセス制御
+  useEffect(() => {
+    if (loading || !lessonId) return;
+    
+    const lesson = getLesson(lessonId);
+    if (!lesson) return;
+    
+    if (!canAccessLesson(lesson.unitNumber)) {
+      router.push("/");
+    }
+  }, [lessonId, canAccessLesson, loading, router]);
 
   useEffect(() => {
     params.then((p) => {

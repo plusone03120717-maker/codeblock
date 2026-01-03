@@ -27,6 +27,7 @@ import { logout } from "@/lib/auth";
 import ReviewSection from "@/components/ReviewSection";
 import { resetReviewData, getReviewCount } from "@/utils/reviewSystem";
 import ToggleImage from "@/components/ToggleImage";
+import { UpgradeModal } from "@/components/UpgradeModal";
 
 // 簡単な多言語対応フック（ランディングページ用）
 const useLanguage = () => {
@@ -1127,7 +1128,9 @@ const LandingPage = () => {
 
 export default function Home() {
   const router = useRouter();
-  const { user, userId, displayName, contactEmail, loading, progressLoaded } = useAuth();
+  const { user, userId, displayName, contactEmail, loading, progressLoaded, canAccessLesson, userProfile } = useAuth();
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [selectedLessonNumber, setSelectedLessonNumber] = useState(0);
   const { language } = useLanguage();
   
   // すべてのフックを先に宣言（条件分岐の前に）
@@ -1419,6 +1422,19 @@ export default function Home() {
   // レッスンカードクリック時の処理（途中データがある場合はエディターに直接遷移）
   const handleLessonClick = (lessonId: string) => {
     if (typeof window === "undefined") return;
+    
+    const lesson = getLesson(lessonId);
+    if (!lesson) return;
+    
+    const lessonNumber = lesson.unitNumber;
+    
+    // アクセス権限チェック
+    const hasAccess = canAccessLesson(lessonNumber);
+    if (!hasAccess) {
+      setSelectedLessonNumber(lessonNumber);
+      setShowUpgradeModal(true);
+      return;
+    }
     
     const savedMission = localStorage.getItem(`lesson-${lessonId}-mission`);
     
@@ -1740,13 +1756,26 @@ export default function Home() {
           {(() => {
             const lesson = lessons[currentIndex];
             const isCompleted = completedLessons.includes(lesson.id);
-            const isLocked = isLessonLocked(currentIndex);
+            const isProgressLocked = isLessonLocked(currentIndex);
+            const isPremiumLocked = !canAccessLesson(lesson.unitNumber);
+            const isLocked = isProgressLocked || isPremiumLocked;
             // ユニットボタンの色定義を使用
             const bgColor = isLocked ? "from-gray-400 to-gray-500" : getUnitGradient(lesson.unitNumber);
 
             return (
               <div className="mx-12">
-                <div className={`bg-gradient-to-br ${bgColor} rounded-3xl p-6 shadow-xl text-white relative overflow-hidden min-h-[220px] flex flex-col`}>
+                <div 
+                  className={`bg-gradient-to-br ${bgColor} rounded-3xl p-6 shadow-xl text-white relative overflow-hidden min-h-[220px] flex flex-col ${isLocked ? 'cursor-pointer' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (isPremiumLocked) {
+                      setSelectedLessonNumber(lesson.unitNumber);
+                      setShowUpgradeModal(true);
+                    } else if (!isProgressLocked) {
+                      handleLessonClick(lesson.id);
+                    }
+                  }}
+                >
                   {/* 完了バッジ */}
                   {isCompleted && (
                     <div className="absolute top-0 right-0 bg-green-500 px-4 py-1 rounded-bl-2xl font-bold text-sm">
@@ -1755,7 +1784,12 @@ export default function Home() {
                   )}
 
                   {/* ロックアイコン */}
-                  {isLocked && (
+                  {isPremiumLocked && (
+                    <div className="absolute top-0 right-0 bg-purple-600 px-4 py-1 rounded-bl-2xl font-bold text-sm">
+                      🔒 有料プラン
+                    </div>
+                  )}
+                  {isProgressLocked && !isPremiumLocked && (
                     <div className="absolute top-0 right-0 bg-gray-600 px-4 py-1 rounded-bl-2xl font-bold text-sm">
                       🔒 ロック
                     </div>
@@ -1775,8 +1809,17 @@ export default function Home() {
                   <p className="text-sm opacity-90 mb-4"><FuriganaText text={lesson.description} /></p>
 
                   {/* ボタン */}
-                  <div className="mt-auto">
-                    {isLocked ? (
+                  <div className="mt-auto" onClick={(e) => {
+                    // isPremiumLockedの場合は親のonClickに任せる（stopPropagationしない）
+                    if (!isPremiumLocked) {
+                      e.stopPropagation();
+                    }
+                  }}>
+                    {isPremiumLocked ? (
+                      <div className="inline-flex items-center justify-center w-full py-3 rounded-full font-bold text-lg bg-purple-600/50 text-white cursor-pointer whitespace-nowrap">
+                        <span>🔒 有料プランで解放</span>
+                      </div>
+                    ) : isProgressLocked ? (
                       <div className="inline-flex items-center justify-center w-full py-3 rounded-full font-bold text-lg bg-gray-600/50 text-gray-300 cursor-not-allowed whitespace-nowrap">
                         <span>🔒 前のレッスンを<FW word="クリア" />しよう</span>
                       </div>
@@ -2088,6 +2131,13 @@ export default function Home() {
 
       {/* フッター */}
       <Footer />
+
+      {/* アップグレードモーダル */}
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        lessonNumber={selectedLessonNumber}
+      />
 
       {/* バッジゲット通知モーダル */}
       {showAchievementModal && newAchievements.length > 0 && (

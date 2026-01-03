@@ -18,7 +18,7 @@ type LessonPageProps = {
 
 export default function LessonPage({ params }: LessonPageProps) {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { user, loading, canAccessLesson } = useAuth();
   const [lessonId, setLessonId] = useState<string | null>(null);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [imageError, setImageError] = useState(false);
@@ -41,6 +41,21 @@ export default function LessonPage({ params }: LessonPageProps) {
       }
     });
   }, [params]);
+
+  // アクセス制御
+  useEffect(() => {
+    if (loading || !lessonId) return;
+    
+    const lesson = getLesson(lessonId);
+    if (!lesson) return;
+    
+    const lessonNumber = lesson.unitNumber;
+    
+    if (!canAccessLesson(lessonNumber)) {
+      // ホームにリダイレクト
+      router.push("/");
+    }
+  }, [lessonId, canAccessLesson, loading, router]);
 
   const lesson = lessonId ? getLesson(lessonId) : undefined;
   const tutorial = lessonId ? getTutorial(lessonId) : undefined;
