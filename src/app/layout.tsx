@@ -21,7 +21,7 @@ const websiteJsonLd = {
   '@type': 'WebApplication',
   name: 'CodeBlock',
   description: '小学生でも楽しくPythonが学べる！ドラッグ&ドロップでプログラミングの基礎を身につけよう。',
-  url: 'https://codeblock.example.com',
+  url: 'https://codeblock.jp',
   applicationCategory: 'EducationalApplication',
   operatingSystem: 'Web',
   offers: {
@@ -60,6 +60,7 @@ const courseJsonLd = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://codeblock.jp'),
   title: "CodeBlock - ブロックで学ぶはじめてのPython",
   description: "小学生向けプログラミング学習プラットフォーム。ドラッグ＆ドロップでPythonを学ぼう",
 };

@@ -209,9 +209,16 @@ CHARACTER_PROMPTS = {
 }
 
 # CORS設定（フロントエンドからのリクエストを許可）
+origins = [
+    "http://localhost:3000",
+    "https://codeblock-omega.vercel.app",
+    "https://codeblock.jp",
+    "https://www.codeblock.jp",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
