@@ -10,12 +10,27 @@ from typing import Optional
 import os
 from dotenv import load_dotenv
 from anthropic import Anthropic
+import stripe
 
 # .envを読み込み
 load_dotenv()
 
 # Anthropicクライアントを初期化
 anthropic_client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+
+# Stripe設定
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+
+STRIPE_PRICES = {
+    "monthly": os.getenv("STRIPE_PRICE_MONTHLY", ""),
+    "yearly": os.getenv("STRIPE_PRICE_YEARLY", ""),
+}
+
+# 起動時の確認ログ
+print("=== Stripe Configuration ===")
+print(f"API Key: {'SET' if stripe.api_key else 'NOT SET'}")
+print(f"Monthly Price ID: {STRIPE_PRICES['monthly']}")
+print(f"Yearly Price ID: {STRIPE_PRICES['yearly']}")
 
 app = FastAPI()
 
@@ -317,6 +332,14 @@ class HintRequest(BaseModel):
     expected_answer: str  # 期待される回答
 
 
+class CheckoutRequest(BaseModel):
+    plan: str
+    user_id: str
+    user_email: str
+    success_url: str
+    cancel_url: str
+
+
 class HintResponse(BaseModel):
     hint: str
     character_id: str
@@ -405,4 +428,44 @@ CodeBlockというPython学習アプリで、小学生（10-12歳）にヒント
             character_name=request.character_name,
             character_emoji=character["emoji"]
         )
+
+
+@app.post("/api/create-checkout-session")
+async def create_checkout_session(request: CheckoutRequest):
+    print(f"=== Checkout Request: plan={request.plan}, email={request.user_email} ===")
+    
+    try:
+        if request.plan not in STRIPE_PRICES:
+            raise HTTPException(status_code=400, detail=f"Invalid plan: {request.plan}")
+        
+        price_id = STRIPE_PRICES[request.plan]
+        
+        if not price_id:
+            raise HTTPException(status_code=400, detail=f"Price not configured for {request.plan}")
+        
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            mode="subscription",
+            customer_email=request.user_email,
+            metadata={
+                "user_id": request.user_id,
+                "plan": request.plan,
+            },
+            line_items=[{
+                "price": price_id,
+                "quantity": 1,
+            }],
+            success_url=request.success_url,
+            cancel_url=request.cancel_url,
+        )
+        
+        print(f"Checkout session created: {session.id}")
+        return {"session_id": session.id, "url": session.url}
+    
+    except stripe.error.StripeError as e:
+        print(f"Stripe Error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
