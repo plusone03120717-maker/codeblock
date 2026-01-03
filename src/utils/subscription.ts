@@ -133,3 +133,31 @@ export const isSubscriptionActive = (subscription: UserSubscription): boolean =>
   return new Date() < subscription.endDate;
 };
 
+// サブスクリプションを有料プランに更新
+export const upgradeToPremium = async (
+  uid: string,
+  plan: "monthly" | "yearly"
+): Promise<void> => {
+  const now = new Date();
+  let endDate: Date;
+  
+  if (plan === "monthly") {
+    // 1ヶ月後
+    endDate = new Date(now);
+    endDate.setMonth(endDate.getMonth() + 1);
+  } else {
+    // 1年後
+    endDate = new Date(now);
+    endDate.setFullYear(endDate.getFullYear() + 1);
+  }
+  
+  const subscription: UserSubscription = {
+    plan,
+    status: "active",
+    startDate: now,
+    endDate,
+  };
+  
+  await updateSubscription(uid, subscription);
+};
+

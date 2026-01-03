@@ -19,6 +19,7 @@ interface AuthContextType {
   isPremium: boolean;
   canAccessLesson: (lessonNumber: number) => boolean;
   refreshUserInfo: () => Promise<void>;
+  refreshUserProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -32,6 +33,7 @@ const AuthContext = createContext<AuthContextType>({
   isPremium: false,
   canAccessLesson: () => false,
   refreshUserInfo: async () => {},
+  refreshUserProfile: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -53,6 +55,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setContactEmail(info.contactEmail);
       
       // UserProfileも更新
+      const profile = await getUserProfile(user.uid);
+      if (profile) {
+        setUserProfile(profile);
+      }
+    }
+  };
+
+  const refreshUserProfile = async () => {
+    if (user) {
       const profile = await getUserProfile(user.uid);
       if (profile) {
         setUserProfile(profile);
@@ -125,7 +136,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         userProfile,
         isPremium,
         canAccessLesson,
-        refreshUserInfo 
+        refreshUserInfo,
+        refreshUserProfile 
       }}
     >
       {children}
