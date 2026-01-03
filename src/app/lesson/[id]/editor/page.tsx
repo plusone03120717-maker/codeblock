@@ -1640,7 +1640,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       : "";
     
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/hint`, {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const response = await fetch(`${API_URL}/api/hint`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
