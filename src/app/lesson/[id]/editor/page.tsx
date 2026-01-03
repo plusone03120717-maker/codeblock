@@ -1523,7 +1523,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
             hintShownRef.current = true; // refを先に更新
             setHintShown(true);
             
-            if (canUseHint()) {
+            if (canUseHint(isPremium)) {
               fetchHint(); // 自動でヒントを取得
               setTotalHintCountInLesson(prev => prev + 1);
             } else {
@@ -1566,7 +1566,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           hintShownRef.current = true;
           setHintShown(true);
           
-          if (canUseHint()) {
+          if (canUseHint(isPremium)) {
             fetchHint();
             setTotalHintCountInLesson(prev => prev + 1);
           } else {
