@@ -825,7 +825,7 @@ const LandingPage = () => {
             {language === "ja" ? "料金プラン" : "Pricing"}
           </h2>
           
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {/* 月額プラン */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-200 flex flex-col h-full">
               <div className="text-center mb-6">
@@ -837,7 +837,7 @@ const LandingPage = () => {
                   <span className="text-lg font-normal text-gray-500">/月</span>
                 </div>
                 <p className="text-gray-500 text-sm mt-1">
-                  {language === "ja" ? "いつでもキャンセルOK" : "Cancel anytime"}
+                  {language === "ja" ? "いつでも解約OK" : "Cancel anytime"}
                 </p>
               </div>
               <ul className="space-y-3 mb-6 text-sm flex-1">
@@ -868,59 +868,12 @@ const LandingPage = () => {
               </Link>
             </div>
             
-            {/* 半年プラン */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-purple-200 flex flex-col h-full">
-              <div className="text-center mb-6">
-                <h3 className="text-lg font-bold text-gray-800 mb-2">
-                  {language === "ja" ? "半年プラン" : "6-Month Plan"}
-                </h3>
-                <div className="text-4xl font-bold text-purple-600">
-                  ¥4,980
-                </div>
-                <p className="text-purple-500 text-sm mt-1">
-                  {language === "ja" ? "¥830/月（2ヶ月分お得）" : "¥830/mo (Save 2 months)"}
-                </p>
-              </div>
-              <ul className="space-y-3 mb-6 text-sm flex-1">
-                <li className="flex items-center gap-2">
-                  <span className="text-green-500">✓</span>
-                  <span className="text-gray-700">
-                    {language === "ja" ? "すべてのレッスン" : "All lessons"}
-                  </span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-green-500">✓</span>
-                  <span className="text-gray-700">
-                    {language === "ja" ? "AIヒント機能" : "AI Hints"}
-                  </span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-green-500">✓</span>
-                  <span className="text-gray-700">
-                    {language === "ja" ? "新レッスンも追加予定" : "New lessons coming"}
-                  </span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-green-500">✓</span>
-                  <span className="text-gray-700">
-                    {language === "ja" ? "6ヶ月間利用可能" : "6 months access"}
-                  </span>
-                </li>
-              </ul>
-              <Link
-                href="/login?mode=register"
-                className="mt-auto block w-full text-center bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold py-3 px-4 rounded-full transition-colors text-sm"
-              >
-                {language === "ja" ? "半年プランで始める" : "Start 6-Month"}
-              </Link>
-            </div>
-            
             {/* 年間プラン（おすすめ） */}
             <div className="bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl p-6 shadow-lg border-2 border-purple-400 relative flex flex-col h-full">
               {/* おすすめバッジ */}
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                 <span className="bg-orange-500 text-white text-xs font-bold py-1 px-3 rounded-full">
-                  {language === "ja" ? "一番お得！" : "Best Value!"}
+                  {language === "ja" ? "おすすめ" : "Recommended"}
                 </span>
               </div>
               
@@ -929,10 +882,13 @@ const LandingPage = () => {
                   {language === "ja" ? "年間プラン" : "Annual Plan"}
                 </h3>
                 <div className="text-4xl font-bold text-white">
-                  ¥7,800
+                  ¥6,800
                 </div>
                 <p className="text-purple-200 text-sm mt-1">
-                  {language === "ja" ? "¥650/月（4ヶ月分お得）" : "¥650/mo (Save 4 months)"}
+                  {language === "ja" ? "月あたり567円" : "¥567/mo"}
+                </p>
+                <p className="text-yellow-300 text-xs font-bold mt-1">
+                  {language === "ja" ? "42%お得" : "42% off"}
                 </p>
               </div>
               <ul className="space-y-3 mb-6 text-sm flex-1">
