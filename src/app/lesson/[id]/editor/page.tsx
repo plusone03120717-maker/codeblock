@@ -50,7 +50,6 @@ import { addToReviewList } from "@/utils/reviewSystem";
 
 // ヒント回数管理用の定数と関数
 const DAILY_HINT_KEY = "codeblock_daily_hints";
-const MAX_DAILY_HINTS = 10;
 
 interface DailyHintData {
   date: string; // YYYY-MM-DD形式
@@ -90,15 +89,18 @@ const incrementDailyHintCount = (): void => {
   localStorage.setItem(DAILY_HINT_KEY, JSON.stringify(data));
 };
 
-// 残りヒント回数を取得
-const getRemainingHints = (): number => {
+// 残りヒント回数を取得（isPremiumを引数として受け取る）
+const getRemainingHints = (isPremium: boolean): number => {
   const data = getDailyHintData();
-  return Math.max(0, MAX_DAILY_HINTS - data.count);
+  const maxHints = isPremium ? 10 : 3;
+  return Math.max(0, maxHints - data.count);
 };
 
-// ヒントが使用可能かチェック
-const canUseHint = (): boolean => {
-  return getRemainingHints() > 0;
+// ヒントが使用可能かチェック（isPremiumを引数として受け取る）
+const canUseHint = (isPremium: boolean): boolean => {
+  const maxHints = isPremium ? 10 : 3;
+  const data = getDailyHintData();
+  return data.count < maxHints;
 };
 
 type EditorPageProps = {
@@ -305,7 +307,7 @@ function DraggableBlock({ block, index, onRemove }: DraggableBlockProps) {
 
 export default function LessonEditorPage({ params }: EditorPageProps) {
   const router = useRouter();
-  const { user, loading, canAccessLesson } = useAuth();
+  const { user, loading, canAccessLesson, isPremium } = useAuth();
   const { furiganaEnabled, toggleFurigana } = useFurigana();
   const [lessonId, setLessonId] = useState<string | null>(null);
   const [currentMissionId, setCurrentMissionId] = useState(1);
@@ -340,7 +342,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   const [totalHintCountInLesson, setTotalHintCountInLesson] = useState(0); // レッスン全体のヒント使用回数（実績チェック用）
   const [totalWrongInLesson, setTotalWrongInLesson] = useState(0);
   const [lessonStartTime] = useState(Date.now()); // レッスン開始時刻
-  const [remainingHints, setRemainingHints] = useState<number>(MAX_DAILY_HINTS);
+  const [remainingHints, setRemainingHints] = useState<number>(isPremium ? 10 : 3);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -443,8 +445,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     setLevelProgress(getLevelProgress(progress.totalXP));
     
     // 残りヒント回数を初期化
-    setRemainingHints(getRemainingHints());
-  }, []);
+    setRemainingHints(getRemainingHints(isPremium));
+  }, [isPremium]);
 
   useEffect(() => {
     wrongMissionIdsRef.current = wrongMissionIds;
@@ -654,7 +656,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     setShowHintModal(false);
     
     // 残りヒント回数を更新
-    setRemainingHints(getRemainingHints());
+    setRemainingHints(getRemainingHints(isPremium));
     
     // ミッションIDをローカルストレージに保存
     if (lessonId) {
@@ -928,11 +930,13 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           hintShownRef.current = true; // refを先に更新
           setHintShown(true);
           
-          if (canUseHint()) {
+          if (canUseHint(isPremium)) {
             fetchHint(); // 自動でヒントを取得
             setTotalHintCountInLesson(prev => prev + 1);
           } else {
-            setHintMessage("今日のヒントは使い切りました。明日また挑戦してね！");
+            setHintMessage(isPremium 
+              ? "今日のヒントは使い切りました。明日また挑戦してね！"
+              : "今日のヒントは使い切りました（無料プラン: 1日3回まで）。有料プランなら1日10回まで使えます！");
             setShowHintModal(true);
           }
         }
@@ -1006,11 +1010,13 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
             hintShownRef.current = true;
             setHintShown(true);
             
-            if (canUseHint()) {
+            if (canUseHint(isPremium)) {
               fetchHint();
               setTotalHintCountInLesson(prev => prev + 1);
             } else {
-              setHintMessage("今日のヒントは使い切りました。明日また挑戦してね！");
+              setHintMessage(isPremium 
+                ? "今日のヒントは使い切りました。明日また挑戦してね！"
+                : "今日のヒントは使い切りました（無料プラン: 1日3回まで）。有料プランなら1日10回まで使えます！");
               setShowHintModal(true);
             }
           }
@@ -1583,8 +1589,10 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   // ヒント取得関数
   const fetchHint = async () => {
     // 1日の上限チェック
-    if (!canUseHint()) {
-      setHintMessage("今日のヒントは使い切りました。明日また挑戦してね！");
+    if (!canUseHint(isPremium)) {
+      setHintMessage(isPremium 
+        ? "今日のヒントは使い切りました。明日また挑戦してね！"
+        : "今日のヒントは使い切りました（無料プラン: 1日3回まで）。有料プランなら1日10回まで使えます！");
       setShowHintModal(true);
       return;
     }
@@ -1663,7 +1671,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       
       // ヒント使用回数を増やす
       incrementDailyHintCount();
-      setRemainingHints(getRemainingHints());
+      setRemainingHints(getRemainingHints(isPremium));
       
     } catch (error) {
       console.error("ヒント取得エラー:", error);
@@ -2059,15 +2067,17 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                       <p className="text-red-700 text-xs">出力: {executionResult.output}</p>
                     )}
                     {/* ヒント取得中の表示 */}
-                    {wrongCount >= 3 && hintLoading && canUseHint() && (
+                    {wrongCount >= 3 && hintLoading && canUseHint(isPremium) && (
                       <div className="flex items-center gap-2 text-purple-600 mt-2">
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-500"></div>
                         <span className="text-xs">{tutorial?.characterName || "キャラクター"}がヒントを考えているよ...</span>
                       </div>
                     )}
-                    {wrongCount >= 3 && !hintShown && !canUseHint() && (
+                    {wrongCount >= 3 && !hintShown && !canUseHint(isPremium) && (
                       <div className="text-orange-600 text-sm mt-2">
-                        今日のヒントは使い切りました（明日リセット）
+                        {isPremium 
+                          ? "今日のヒントは使い切りました（明日リセット）"
+                          : "今日のヒントは使い切りました（無料プラン: 1日3回まで）"}
                       </div>
                     )}
                   </div>
@@ -2236,15 +2246,17 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                     <p className="text-red-800 font-bold">もう一度！</p>
                     <p className="text-red-700 text-sm">{executionResult.error}</p>
                     {/* ヒント取得中の表示 */}
-                    {wrongCount >= 3 && hintLoading && canUseHint() && (
+                    {wrongCount >= 3 && hintLoading && canUseHint(isPremium) && (
                       <div className="flex items-center gap-2 text-purple-600 mt-2">
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-500"></div>
                         <span className="text-xs">{tutorial?.characterName || "キャラクター"}がヒントを考えているよ...</span>
                       </div>
                     )}
-                    {wrongCount >= 3 && !hintShown && !canUseHint() && (
+                    {wrongCount >= 3 && !hintShown && !canUseHint(isPremium) && (
                       <div className="text-orange-600 text-sm mt-2">
-                        今日のヒントは使い切りました（明日リセット）
+                        {isPremium 
+                          ? "今日のヒントは使い切りました（明日リセット）"
+                          : "今日のヒントは使い切りました（無料プラン: 1日3回まで）"}
                       </div>
                     )}
                   </div>
@@ -2287,16 +2299,28 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
               )}
               
               {/* 残りヒント回数の表示 */}
-              {!hintLoading && remainingHints > 0 && (
+              {!hintLoading && (
                 <p className="text-sm text-gray-500 text-center mb-4">
-                  今日の残りヒント: {remainingHints}回
+                  今日の残りヒント: {remainingHints}回 / {isPremium ? 10 : 3}回
                 </p>
               )}
               
-              {!hintLoading && remainingHints === 0 && (
-                <p className="text-sm text-orange-500 text-center mb-4">
-                  今日のヒントは使い切りました
-                </p>
+              {/* 無料ユーザーへのアップグレード促進 */}
+              {!hintLoading && !isPremium && remainingHints === 0 && (
+                <div className="text-center mt-4">
+                  <p className="text-sm text-purple-600 mb-2">
+                    有料プランなら1日10回までヒントが使えます！
+                  </p>
+                  <button
+                    onClick={() => {
+                      setShowHintModal(false);
+                      // UpgradeModalを表示する処理があれば追加
+                    }}
+                    className="text-sm text-purple-500 underline"
+                  >
+                    プランを見る
+                  </button>
+                </div>
               )}
               
               {/* 閉じるボタン */}
