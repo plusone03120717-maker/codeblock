@@ -95,7 +95,7 @@ export const words = {
   学習: { text: "学習", reading: "がくしゅう" },
   続: { text: "続", reading: "つづ" },
   登録: { text: "登録", reading: "とうろく" },
-  戻り値: { text: "戻り値", reading: "もどりあたい" },
+  戻り値: { text: "戻り値", reading: "もどりち" },
   戻り: { text: "戻り", reading: "もどり" },
   繰り返し: { text: "繰り返し", reading: "くりかえし" },
   クリア: { text: "クリア", reading: "くりあ" },

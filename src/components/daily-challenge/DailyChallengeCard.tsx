@@ -19,12 +19,8 @@ export function DailyChallengeCard({ state, stats, onStart }: DailyChallengeCard
   const isInProgress = state && !state.completed && state.currentQuestion > 0;
   const isNotStarted = !state || (!isCompleted && !isInProgress);
   
-  // 背景グラデーションを決定
-  const bgGradient = isCompleted 
-    ? 'from-green-400 to-green-600' 
-    : isInProgress 
-    ? 'from-yellow-400 to-orange-500' 
-    : 'from-blue-400 to-blue-600';
+  // 背景グラデーションを決定（ランディングページのヘッダーと同じ色）
+  const bgGradient = 'from-purple-500 to-blue-600';
   
   return (
     <div className={`rounded-2xl shadow-lg p-6 bg-gradient-to-r ${bgGradient} text-white`}>
@@ -86,10 +82,6 @@ export function DailyChallengeCard({ state, stats, onStart }: DailyChallengeCard
               今日は<F reading="かんりょう">完了</F>！
             </span>
           </div>
-          <p className="text-lg">
-            {state.correctCount}/3 <F reading="もん">問</F>
-            <F reading="せいかい">正解</F>
-          </p>
           <DailyChallengeTimer />
         </div>
       )}
