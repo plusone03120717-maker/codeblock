@@ -430,9 +430,9 @@ export default function ReviewPage() {
           setRetentionUpgrades(prev => prev + 1);
         }
         
-        // XPを付与（1問2XP）
-        addXP(2);
-        setEarnedXP(prev => prev + 2);
+        // XPを付与（1問5XP）
+        addXP(5);
+        setEarnedXP(prev => prev + 5);
         setCorrectCount(prev => prev + 1);
       }
       
@@ -515,9 +515,9 @@ export default function ReviewPage() {
             setRetentionUpgrades(prev => prev + 1);
           }
           
-          // XPを付与（1問2XP）
-          addXP(2);
-          setEarnedXP(prev => prev + 2);
+          // XPを付与（1問5XP）
+          addXP(5);
+          setEarnedXP(prev => prev + 5);
           setCorrectCount(prev => prev + 1);
         }
         
@@ -555,9 +555,9 @@ export default function ReviewPage() {
     if (currentIndex + 1 < reviewItems.length) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      // 全問完了ボーナス（+5XP）
-      addXP(5);
-      setEarnedXP(prev => prev + 5);
+      // 全問完了ボーナス（+10XP）
+      addXP(10);
+      setEarnedXP(prev => prev + 10);
       setShowCompletionScreen(true);
     }
   };

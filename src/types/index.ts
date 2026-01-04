@@ -44,3 +44,12 @@ export interface Mission {
   prefixCode?: string;
 }
 
+// デイリーチャレンジ関連の型定義をエクスポート
+export type {
+  DailyChallengeState,
+  DailyChallengeQuestion,
+  DailyChallengeStats,
+  DailyChallengeBadge,
+  DailyChallengeBadgeType,
+} from './dailyChallenge';
+

@@ -28,6 +28,17 @@ import ReviewSection from "@/components/ReviewSection";
 import { resetReviewData, getReviewCount } from "@/utils/reviewSystem";
 import ToggleImage from "@/components/ToggleImage";
 import { UpgradeModal } from "@/components/UpgradeModal";
+import { DailyChallengeCard } from "@/components/daily-challenge";
+import {
+  getDailyChallengeState,
+  getDailyChallengeStats,
+  generateNewDailyChallenge,
+  resetDailyChallengeState,
+  resetDailyChallengeStats,
+  setDebugStreak,
+} from "@/utils/dailyChallengeStorage";
+import { DailyChallengeState, DailyChallengeStats } from "@/types/dailyChallenge";
+import { getTodayDateJST } from "@/utils/dailyChallengeUtils";
 
 // 簡単な多言語対応フック（ランディングページ用）
 const useLanguage = () => {
@@ -1114,6 +1125,10 @@ export default function Home() {
   const [newAchievements, setNewAchievements] = useState<Achievement[]>([]);
   const [showAchievementModal, setShowAchievementModal] = useState(false);
   const [currentAchievementIndex, setCurrentAchievementIndex] = useState(0);
+  const [dailyChallengeState, setDailyChallengeState] = useState<DailyChallengeState | null>(null);
+  const [dailyChallengeStats, setDailyChallengeStats] = useState<DailyChallengeStats | null>(null);
+  const [debugStreak, setDebugStreakInput] = useState<string>('7');
+  const [dailyDebugInfo, setDailyDebugInfo] = useState<string>('');
 
 
   useEffect(() => {
@@ -1126,6 +1141,12 @@ export default function Home() {
     setLevelProgress(getLevelProgress(progress.totalXP));
     setXpToNext(getXPToNextLevel(progress.totalXP));
     setHighestStreak(progress.highestStreak);
+    
+    // デイリーチャレンジの状態を取得
+    const challengeState = getDailyChallengeState();
+    const challengeStats = getDailyChallengeStats();
+    setDailyChallengeState(challengeState);
+    setDailyChallengeStats(challengeStats);
   }, [progressLoaded]);
 
   useEffect(() => {
@@ -1401,6 +1422,20 @@ export default function Home() {
       // 新規 → チュートリアルへ
       router.push(`/lesson/${lessonId}`);
     }
+  };
+
+  // チャレンジ開始ハンドラ
+  const handleStartDailyChallenge = () => {
+    const progressStr = localStorage.getItem('codeblock-progress');
+    const userProgress = progressStr ? JSON.parse(progressStr).completedLessons?.reduce((acc: Record<string, boolean>, id: string) => {
+      acc[id] = true;
+      return acc;
+    }, {}) : null;
+    
+    const newChallenge = generateNewDailyChallenge(userProgress);
+    setDailyChallengeState(newChallenge);
+    
+    router.push('/daily-challenge');
   };
 
   // デバッグ用：全レッスンを完了にする
@@ -1685,6 +1720,17 @@ export default function Home() {
                   </Link>
                 );
               })()}
+
+              {/* デイリーチャレンジ */}
+              {dailyChallengeStats && (
+                <div className="mb-6">
+                  <DailyChallengeCard
+                    state={dailyChallengeState}
+                    stats={dailyChallengeStats}
+                    onStart={handleStartDailyChallenge}
+                  />
+                </div>
+              )}
 
               {/* 復習セクション */}
               <ReviewSection />
@@ -2071,6 +2117,161 @@ export default function Home() {
                 <p className="text-xs text-gray-500">
                   復習待ち: {getReviewCount()}問
                 </p>
+              </div>
+
+              {/* デイリーチャレンジ デバッグ */}
+              <div className="border-t border-gray-300 pt-3 mt-3">
+                <h3 className="font-bold text-xs text-yellow-600 mb-2">🎯 デイリーチャレンジ</h3>
+                
+                {/* デバッグ情報表示 */}
+                <div className="bg-gray-100 p-2 rounded mb-2 text-xs max-h-32 overflow-auto">
+                  <pre className="whitespace-pre-wrap">{dailyDebugInfo || '情報を更新してください'}</pre>
+                </div>
+                
+                {/* 情報更新ボタン */}
+                <button
+                  onClick={() => {
+                    const state = getDailyChallengeState();
+                    const stats = getDailyChallengeStats();
+                    const today = getTodayDateJST();
+                    
+                    const info = `
+📅 今日の日付(JST): ${today}
+📊 チャレンジ状態:
+  - 日付: ${state?.date || 'なし'}
+  - 完了: ${state?.completed ? 'はい' : 'いいえ'}
+  - 現在の問題: ${state ? state.currentQuestion + 1 : 0}/3
+  - 正解数: ${state?.correctCount || 0}
+📈 統計:
+  - 連続日数: ${stats.currentStreak}日
+  - 最長連続: ${stats.longestStreak}日
+  - 累計完了: ${stats.totalCompleted}回
+  - 累計正解: ${stats.totalCorrect}問
+  - 最終完了日: ${stats.lastCompletedDate || 'なし'}
+  - バッジ: ${stats.badges.map(b => b.type).join(', ') || 'なし'}
+                    `.trim();
+                    
+                    setDailyDebugInfo(info);
+                    // 状態も更新
+                    setDailyChallengeState(state);
+                    setDailyChallengeStats(stats);
+                  }}
+                  className="w-full bg-gray-600 hover:bg-gray-500 text-white text-xs py-1 px-2 rounded mb-2"
+                >
+                  🔄 情報を更新
+                </button>
+                
+                {/* チャレンジ状態リセット */}
+                <button
+                  onClick={() => {
+                    resetDailyChallengeState();
+                    const state = getDailyChallengeState();
+                    const stats = getDailyChallengeStats();
+                    setDailyChallengeState(state);
+                    setDailyChallengeStats(stats);
+                    alert('デイリーチャレンジの状態をリセットしました');
+                    // 情報も更新
+                    const today = getTodayDateJST();
+                    const info = `
+📅 今日の日付(JST): ${today}
+📊 チャレンジ状態: リセット済み
+📈 統計:
+  - 連続日数: ${stats.currentStreak}日
+  - 最長連続: ${stats.longestStreak}日
+                    `.trim();
+                    setDailyDebugInfo(info);
+                  }}
+                  className="w-full bg-orange-500 hover:bg-orange-400 text-white text-xs py-1 px-2 rounded mb-1"
+                >
+                  🗑️ 今日のチャレンジをリセット
+                </button>
+                
+                {/* 統計リセット */}
+                <button
+                  onClick={() => {
+                    if (confirm('統計データをすべてリセットしますか？')) {
+                      resetDailyChallengeStats();
+                      const stats = getDailyChallengeStats();
+                      setDailyChallengeStats(stats);
+                      const today = getTodayDateJST();
+                      const info = `
+📅 今日の日付(JST): ${today}
+📊 チャレンジ状態: ${getDailyChallengeState()?.date || 'なし'}
+📈 統計: リセット済み
+                      `.trim();
+                      setDailyDebugInfo(info);
+                      alert('統計データをリセットしました');
+                    }
+                  }}
+                  className="w-full bg-red-500 hover:bg-red-400 text-white text-xs py-1 px-2 rounded mb-2"
+                >
+                  ⚠️ 統計を完全リセット
+                </button>
+                
+                {/* 連続日数設定 */}
+                <div className="flex gap-1 mb-1">
+                  <input
+                    type="number"
+                    value={debugStreak}
+                    onChange={(e) => setDebugStreakInput(e.target.value)}
+                    className="flex-1 bg-gray-50 border rounded px-2 py-1 text-xs"
+                    placeholder="連続日数"
+                    min="0"
+                    max="100"
+                  />
+                  <button
+                    onClick={() => {
+                      const streak = parseInt(debugStreak) || 0;
+                      setDebugStreak(streak);
+                      const stats = getDailyChallengeStats();
+                      setDailyChallengeStats(stats);
+                      const today = getTodayDateJST();
+                      const info = `
+📅 今日の日付(JST): ${today}
+📈 統計:
+  - 連続日数: ${stats.currentStreak}日（設定済み）
+                      `.trim();
+                      setDailyDebugInfo(info);
+                      alert(`連続日数を ${streak} 日に設定しました`);
+                    }}
+                    className="bg-blue-500 hover:bg-blue-400 text-white text-xs py-1 px-2 rounded"
+                  >
+                    設定
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 mb-2">
+                  ※ 連続日数を6に設定→完了→7日バッジ
+                </p>
+                
+                {/* クイックテスト用ボタン */}
+                <div className="grid grid-cols-2 gap-1">
+                  <button
+                    onClick={() => {
+                      setDebugStreak(6);
+                      resetDailyChallengeState();
+                      const stats = getDailyChallengeStats();
+                      setDailyChallengeStats(stats);
+                      setDailyChallengeState(null);
+                      alert('7日バッジテスト準備完了！チャレンジを完了してください');
+                    }}
+                    className="bg-purple-500 hover:bg-purple-400 text-white text-xs py-1 px-2 rounded"
+                  >
+                    🔥 7日準備
+                  </button>
+                  <button
+                    onClick={() => {
+                      setDebugStreak(29);
+                      resetDailyChallengeState();
+                      const stats = getDailyChallengeStats();
+                      setDailyChallengeStats(stats);
+                      setDailyChallengeState(null);
+                      alert('30日バッジテスト準備完了！チャレンジを完了してください');
+                    }}
+                    className="bg-purple-500 hover:bg-purple-400 text-white text-xs py-1 px-2 rounded"
+                  >
+                    ⭐ 30日準備
+                  </button>
+                </div>
               </div>
 
               {/* 現在の進捗 */}

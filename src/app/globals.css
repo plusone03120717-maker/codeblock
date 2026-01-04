@@ -64,10 +64,10 @@ body {
   }
 }
 
-/* バッジゲット通知アニメーション */
+/* デイリーチャレンジバッジポップアップ用のアニメーション */
 @keyframes bounce-in {
   0% {
-    transform: scale(0.5);
+    transform: scale(0);
     opacity: 0;
   }
   50% {

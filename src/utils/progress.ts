@@ -221,3 +221,64 @@ export const clearLastOpenedMission = (): void => {
   if (typeof window === "undefined") return;
   localStorage.removeItem("codeblock_last_opened_mission");
 };
+
+// ============================================
+// デイリーチャレンジの報酬
+// ============================================
+
+export const DAILY_CHALLENGE_REWARDS = {
+  PER_CORRECT: 10,           // 1問正解につき10XP（レッスンと同じ）
+  COMPLETION_BONUS: 15,      // 完了ボーナス15XP
+  PERFECT_BONUS: 25,         // 全問正解ボーナス25XP
+  STREAK_7_BONUS: 100,       // 7日連続ボーナス100XP
+  STREAK_30_BONUS: 500,      // 30日連続ボーナス500XP
+};
+
+/**
+ * デイリーチャレンジのXPを計算
+ */
+export function calculateDailyChallengeXP(
+  correctCount: number,
+  isNewStreak7: boolean = false,
+  isNewStreak30: boolean = false
+): { total: number; breakdown: XPBreakdown } {
+  let total = 0;
+  const breakdown: XPBreakdown = {
+    correct: correctCount * DAILY_CHALLENGE_REWARDS.PER_CORRECT,
+    completion: DAILY_CHALLENGE_REWARDS.COMPLETION_BONUS,
+    perfect: 0,
+    streak7: 0,
+    streak30: 0,
+  };
+  
+  total += breakdown.correct;
+  total += breakdown.completion;
+  
+  // 全問正解ボーナス
+  if (correctCount === 3) {
+    breakdown.perfect = DAILY_CHALLENGE_REWARDS.PERFECT_BONUS;
+    total += breakdown.perfect;
+  }
+  
+  // 連続ボーナス
+  if (isNewStreak7) {
+    breakdown.streak7 = DAILY_CHALLENGE_REWARDS.STREAK_7_BONUS;
+    total += breakdown.streak7;
+  }
+  
+  if (isNewStreak30) {
+    breakdown.streak30 = DAILY_CHALLENGE_REWARDS.STREAK_30_BONUS;
+    total += breakdown.streak30;
+  }
+  
+  return { total, breakdown };
+}
+
+// XP内訳の型定義
+export interface XPBreakdown {
+  correct: number;      // 正解XP
+  completion: number;   // 完了ボーナス
+  perfect: number;      // 全問正解ボーナス
+  streak7: number;      // 7日連続ボーナス
+  streak30: number;     // 30日連続ボーナス
+}
