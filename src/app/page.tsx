@@ -127,77 +127,325 @@ const LandingPage = () => {
         </section>
       </div>
 
-      {/* 特徴セクション */}
-      <section className="py-16 px-4 bg-white">
+      {/* 保護者向け訴求セクション */}
+      <section className="py-16 px-4 bg-gray-50">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
-            {language === "ja" ? "CodeBlockの特徴" : "Features"}
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center p-6">
-              <div className="h-64 flex items-center justify-center mb-4">
-                <img 
-                  src="/images/features/block-learning.png" 
-                  alt={language === "ja" ? "ブロックで学ぶ" : "Learn with Blocks"} 
-                  className="max-h-full max-w-full rounded-lg shadow-md object-contain"
-                />
+          
+          {/* パート1: 問題提起 */}
+          <div className="mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-8">
+              {language === "ja" ? (
+                <>
+                  子どもにプログラミングを学ばせたい。でも...
+                </>
+              ) : (
+                "Want your child to learn programming. But..."
+              )}
+            </h2>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
+              {/* 悩み1 */}
+              <div className="bg-white rounded-xl p-6 shadow-md">
+                <div className="text-3xl mb-3">💭</div>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {language === "ja" 
+                    ? "プログラミングは将来必要なスキルだと分かっている"
+                    : "I know programming is an essential skill for the future"}
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">
-                {language === "ja" ? "ブロックで学ぶ" : "Learn with Blocks"}
-              </h3>
-              <p className="text-gray-600">
-                {language === "ja" 
-                  ? "ドラッグ＆ドロップでコードを組み立て。タイピングが苦手でも大丈夫！" 
-                  : "Build code with drag & drop. No typing skills needed!"}
-              </p>
-            </div>
-            <div className="text-center p-6">
-              <div className="h-64 flex items-center justify-center mb-4">
-                <ToggleImage
-                  image1="/images/features/furigana-off.png"
-                  image2="/images/features/furigana-on.png"
-                  alt1={language === "ja" ? "ふりがなOFF" : "Furigana OFF"}
-                  alt2={language === "ja" ? "ふりがなON" : "Furigana ON"}
-                  interval={2500}
-                  className="w-full max-w-xs h-full rounded-xl shadow-lg overflow-hidden"
-                />
+              
+              {/* 悩み2 */}
+              <div className="bg-white rounded-xl p-6 shadow-md">
+                <div className="text-3xl mb-3">😰</div>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {language === "ja" 
+                    ? (
+                      <>
+                        でも<F reading="きょうざい">教材</F>を見ると英語や専門用語ばかりで難しそう
+                      </>
+                    )
+                    : "But learning materials are full of English and technical terms"}
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">
-                {language === "ja" ? "ふりがなワンタッチ" : "One-Touch Furigana"}
-              </h3>
-              <p className="text-gray-600">
-                {language === "ja" 
-                  ? "ボタンひとつでふりがなのオン/オフを切り替え。わからない漢字が出たときだけ表示できるから、画面がスッキリ読みやすい！" 
-                  : "Toggle furigana on/off with one button. Show it only when you need help with kanji!"}
-              </p>
-            </div>
-            <div className="text-center p-6">
-              <div className="h-64 flex items-center justify-center mb-4">
-                <img 
-                  src="/images/features/hint.png" 
-                  alt={language === "ja" ? "困ったらヒント" : "Hints When Stuck"} 
-                  className="max-h-full max-w-full rounded-lg shadow-md object-contain"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    if (target.parentElement) {
-                      const fallback = document.createElement('div');
-                      fallback.className = 'text-5xl';
-                      fallback.textContent = '💡';
-                      target.parentElement.appendChild(fallback);
-                    }
-                  }}
-                />
+              
+              {/* 悩み3 */}
+              <div className="bg-white rounded-xl p-6 shadow-md">
+                <div className="text-3xl mb-3">😓</div>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {language === "ja" 
+                    ? "いきなりコードを書かせるのはハードルが高い"
+                    : "Having them write code right away seems too difficult"}
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">
-                {language === "ja" ? "困ったらヒント" : "Hints When Stuck"}
-              </h3>
-              <p className="text-gray-600">
-                {language === "ja" 
-                  ? "わからなくても大丈夫！個性豊かなキャラクターたちがあなたを正解へ導くヒントを教えてくれるよ" 
-                  : "Don't worry if you're stuck! Unique characters will give you hints to guide you to the answer"}
-              </p>
+              
+              {/* 悩み4 */}
+              <div className="bg-white rounded-xl p-6 shadow-md">
+                <div className="text-3xl mb-3">😟</div>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {language === "ja" 
+                    ? "子どもが挫折しないか心配"
+                    : "I'm worried my child might give up"}
+                </p>
+              </div>
+              
+              {/* 悩み5 */}
+              <div className="bg-white rounded-xl p-6 shadow-md">
+                <div className="text-3xl mb-3">🤔</div>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {language === "ja" 
+                    ? "何から始めればいいか分からない"
+                    : "I don't know where to start"}
+                </p>
+              </div>
+              
+              {/* 悩み6 */}
+              <div className="bg-white rounded-xl p-6 shadow-md">
+                <div className="text-3xl mb-3">📚</div>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {language === "ja" 
+                    ? "タイピングがまだできない小学生には難しすぎる"
+                    : "It's too difficult for elementary students who can't type yet"}
+                </p>
+              </div>
             </div>
+          </div>
+
+          {/* CodeBlockの特徴セクション */}
+          <section className="mb-16 py-16 px-4 bg-white">
+            <div className="max-w-6xl mx-auto">
+              <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
+                {language === "ja" ? "CodeBlockの特徴" : "Features"}
+              </h2>
+              <div className="grid md:grid-cols-3 gap-8">
+                <div className="text-center p-6">
+                  <div className="h-64 flex items-center justify-center mb-4">
+                    <img 
+                      src="/images/features/block-learning.png" 
+                      alt={language === "ja" ? "ブロックで学ぶ" : "Learn with Blocks"} 
+                      className="max-h-full max-w-full rounded-lg shadow-md object-contain"
+                    />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">
+                    {language === "ja" ? "ブロックで学ぶ" : "Learn with Blocks"}
+                  </h3>
+                  <p className="text-gray-600">
+                    {language === "ja" 
+                      ? "ドラッグ＆ドロップでコードを組み立て。タイピングが苦手でも大丈夫！" 
+                      : "Build code with drag & drop. No typing skills needed!"}
+                  </p>
+                </div>
+                <div className="text-center p-6">
+                  <div className="h-64 flex items-center justify-center mb-4">
+                    <ToggleImage
+                      image1="/images/features/furigana-off.png"
+                      image2="/images/features/furigana-on.png"
+                      alt1={language === "ja" ? "ふりがなOFF" : "Furigana OFF"}
+                      alt2={language === "ja" ? "ふりがなON" : "Furigana ON"}
+                      interval={2500}
+                      className="w-full max-w-xs h-full rounded-xl shadow-lg overflow-hidden"
+                    />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">
+                    {language === "ja" ? "ふりがなワンタッチ" : "One-Touch Furigana"}
+                  </h3>
+                  <p className="text-gray-600">
+                    {language === "ja" 
+                      ? "ボタンひとつでふりがなのオン/オフを切り替え。わからない漢字が出たときだけ表示できるから、画面がスッキリ読みやすい！" 
+                      : "Toggle furigana on/off with one button. Show it only when you need help with kanji!"}
+                  </p>
+                </div>
+                <div className="text-center p-6">
+                  <div className="h-64 flex items-center justify-center mb-4">
+                    <img 
+                      src="/images/features/hint.png" 
+                      alt={language === "ja" ? "困ったらヒント" : "Hints When Stuck"} 
+                      className="max-h-full max-w-full rounded-lg shadow-md object-contain"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        if (target.parentElement) {
+                          const fallback = document.createElement('div');
+                          fallback.className = 'text-5xl';
+                          fallback.textContent = '💡';
+                          target.parentElement.appendChild(fallback);
+                        }
+                      }}
+                    />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">
+                    {language === "ja" ? "困ったらヒント" : "Hints When Stuck"}
+                  </h3>
+                  <p className="text-gray-600">
+                    {language === "ja" 
+                      ? "わからなくても大丈夫！個性豊かなキャラクターたちがあなたを正解へ導くヒントを教えてくれるよ" 
+                      : "Don't worry if you're stuck! Unique characters will give you hints to guide you to the answer"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* パート3: 差別化ポイント */}
+          <div className="mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-8">
+              {language === "ja" ? (
+                <>
+                  他のPython<F reading='きょうざい'>教材</F>との違い
+                </>
+              ) : (
+                "Difference from other Python learning materials"
+              )}
+            </h2>
+            
+            {/* 比較表（デスクトップ用） */}
+            <div className="hidden md:block overflow-x-auto mb-8">
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+                      <th className="px-6 py-4 text-left font-bold">{language === "ja" ? "項目" : "Item"}</th>
+                      <th className="px-6 py-4 text-center font-bold">{language === "ja" ? "他の教材" : "Other Materials"}</th>
+                      <th className="px-6 py-4 text-center font-bold bg-purple-700">{language === "ja" ? "CodeBlock" : "CodeBlock"}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-gray-200">
+                      <td className="px-6 py-4 font-semibold text-gray-800">{language === "ja" ? "入力方法" : "Input Method"}</td>
+                      <td className="px-6 py-4 text-center text-gray-600">{language === "ja" ? "キーボードでタイピング" : "Typing on keyboard"}</td>
+                      <td className="px-6 py-4 text-center text-purple-600 font-bold bg-purple-50">✓ {language === "ja" ? "ブロックを選んで並べる" : "Select and arrange blocks"}</td>
+                    </tr>
+                    <tr className="border-b border-gray-200 bg-gray-50">
+                      <td className="px-6 py-4 font-semibold text-gray-800">{language === "ja" ? "対象年齢" : "Target Age"}</td>
+                      <td className="px-6 py-4 text-center text-gray-600">{language === "ja" ? "中高生〜大人向けが多い" : "Mostly for middle/high school and adults"}</td>
+                      <td className="px-6 py-4 text-center text-purple-600 font-bold bg-purple-50">
+                        ✓ {language === "ja" ? (
+                          <>
+                            <F reading="しょうがくせい">小学生</F>（10〜12歳）に特化
+                          </>
+                        ) : (
+                          "Specialized for elementary (ages 10-12)"
+                        )}
+                      </td>
+                    </tr>
+                    <tr className="border-b border-gray-200">
+                      <td className="px-6 py-4 font-semibold text-gray-800">{language === "ja" ? "学習体験" : "Learning Experience"}</td>
+                      <td className="px-6 py-4 text-center text-gray-600">{language === "ja" ? "教科書的・説明が多い" : "Textbook-like, lots of explanations"}</td>
+                      <td className="px-6 py-4 text-center text-purple-600 font-bold bg-purple-50">✓ {language === "ja" ? "ゲーム感覚で楽しく" : "Fun, game-like experience"}</td>
+                    </tr>
+                    <tr className="bg-gray-50">
+                      <td className="px-6 py-4 font-semibold text-gray-800">{language === "ja" ? "難易度" : "Difficulty"}</td>
+                      <td className="px-6 py-4 text-center text-gray-600">{language === "ja" ? "最初からハードルが高い" : "High barrier from the start"}</td>
+                      <td className="px-6 py-4 text-center text-purple-600 font-bold bg-purple-50">✓ {language === "ja" ? "やさしくステップアップ" : "Gentle step-by-step progression"}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* 比較表（モバイル用） */}
+            <div className="md:hidden space-y-4 mb-8">
+              <div className="bg-white rounded-xl p-6 shadow-md">
+                <h3 className="font-bold text-gray-800 mb-4">{language === "ja" ? "入力方法" : "Input Method"}</h3>
+                <div className="space-y-3">
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-sm text-gray-600 mb-1">{language === "ja" ? "他の教材" : "Other Materials"}</p>
+                    <p className="text-gray-700">{language === "ja" ? "キーボードでタイピング" : "Typing on keyboard"}</p>
+                  </div>
+                  <div className="bg-purple-50 rounded-lg p-3 border-2 border-purple-300">
+                    <p className="text-sm text-purple-600 font-bold mb-1">CodeBlock</p>
+                    <p className="text-purple-700 font-semibold">✓ {language === "ja" ? "ブロックを選んで並べる" : "Select and arrange blocks"}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white rounded-xl p-6 shadow-md">
+                <h3 className="font-bold text-gray-800 mb-4">{language === "ja" ? "対象年齢" : "Target Age"}</h3>
+                <div className="space-y-3">
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-sm text-gray-600 mb-1">{language === "ja" ? "他の教材" : "Other Materials"}</p>
+                    <p className="text-gray-700">{language === "ja" ? "中高生〜大人向けが多い" : "Mostly for middle/high school and adults"}</p>
+                  </div>
+                  <div className="bg-purple-50 rounded-lg p-3 border-2 border-purple-300">
+                    <p className="text-sm text-purple-600 font-bold mb-1">CodeBlock</p>
+                    <p className="text-purple-700 font-semibold">
+                      ✓ {language === "ja" ? (
+                        <>
+                          <F reading="しょうがくせい">小学生</F>（10〜12歳）に特化
+                        </>
+                      ) : (
+                        "Specialized for elementary (ages 10-12)"
+                      )}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white rounded-xl p-6 shadow-md">
+                <h3 className="font-bold text-gray-800 mb-4">{language === "ja" ? "学習体験" : "Learning Experience"}</h3>
+                <div className="space-y-3">
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-sm text-gray-600 mb-1">{language === "ja" ? "他の教材" : "Other Materials"}</p>
+                    <p className="text-gray-700">{language === "ja" ? "教科書的・説明が多い" : "Textbook-like, lots of explanations"}</p>
+                  </div>
+                  <div className="bg-purple-50 rounded-lg p-3 border-2 border-purple-300">
+                    <p className="text-sm text-purple-600 font-bold mb-1">CodeBlock</p>
+                    <p className="text-purple-700 font-semibold">✓ {language === "ja" ? "ゲーム感覚で楽しく" : "Fun, game-like experience"}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white rounded-xl p-6 shadow-md">
+                <h3 className="font-bold text-gray-800 mb-4">{language === "ja" ? "難易度" : "Difficulty"}</h3>
+                <div className="space-y-3">
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-sm text-gray-600 mb-1">{language === "ja" ? "他の教材" : "Other Materials"}</p>
+                    <p className="text-gray-700">{language === "ja" ? "最初からハードルが高い" : "High barrier from the start"}</p>
+                  </div>
+                  <div className="bg-purple-50 rounded-lg p-3 border-2 border-purple-300">
+                    <p className="text-sm text-purple-600 font-bold mb-1">CodeBlock</p>
+                    <p className="text-purple-700 font-semibold">✓ {language === "ja" ? "やさしくステップアップ" : "Gentle step-by-step progression"}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 追加の差別化ポイント */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <div className="bg-white rounded-xl p-5 shadow-md text-center">
+                <div className="text-3xl mb-2">🐸</div>
+                <p className="text-sm font-semibold text-gray-800">
+                  {language === "ja" ? "キャラクターと一緒に学べる" : "Learn with characters"}
+                </p>
+              </div>
+              <div className="bg-white rounded-xl p-5 shadow-md text-center">
+                <div className="text-3xl mb-2">📱</div>
+                <p className="text-sm font-semibold text-gray-800">
+                  {language === "ja" ? "スマホでもタブレットでもOK" : "Works on phone & tablet"}
+                </p>
+              </div>
+              <div className="bg-white rounded-xl p-5 shadow-md text-center">
+                <div className="text-3xl mb-2">🔄</div>
+                <p className="text-sm font-semibold text-gray-800">
+                  {language === "ja" ? "間隔反復学習で定着する" : "Spaced repetition for retention"}
+                </p>
+              </div>
+              <div className="bg-white rounded-xl p-5 shadow-md text-center">
+                <div className="text-3xl mb-2">🏆</div>
+                <p className="text-sm font-semibold text-gray-800">
+                  {language === "ja" ? "XPやバッジでモチベーション維持" : "XP & badges maintain motivation"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* CTAボタン */}
+          <div className="text-center">
+            <Link
+              href="/login?mode=register"
+              className="inline-block bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold text-lg md:text-xl py-4 px-10 rounded-full shadow-lg transform hover:scale-105 transition-all"
+            >
+              {language === "ja" ? "無料で始める 🚀" : "Start Free 🚀"}
+            </Link>
           </div>
         </div>
       </section>
@@ -432,99 +680,6 @@ const LandingPage = () => {
               ? "他にもたくさんのなかまが待っているよ...！" 
               : "Many more friends are waiting for you...!"}
           </p>
-        </div>
-      </section>
-
-      {/* 学習内容セクション */}
-      <section className="py-16 px-4 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
-            {language === "ja" ? "学べること" : "What You'll Learn"}
-          </h2>
-          <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto">
-            <div className="bg-green-100 rounded-lg p-4 text-center">
-              <span className="font-bold text-green-800">✓ {language === "ja" ? "print関数" : "print function"}</span>
-            </div>
-            <div className="bg-blue-100 rounded-lg p-4 text-center">
-              <span className="font-bold text-blue-800">✓ {language === "ja" ? "変数" : "Variables"}</span>
-            </div>
-            <div className="bg-purple-100 rounded-lg p-4 text-center">
-              <span className="font-bold text-purple-800">✓ {language === "ja" ? "データ型" : "Data Types"}</span>
-            </div>
-            <div className="bg-yellow-100 rounded-lg p-4 text-center">
-              <span className="font-bold text-yellow-800">✓ {language === "ja" ? "条件分岐" : "Conditionals"}</span>
-            </div>
-            <div className="bg-red-100 rounded-lg p-4 text-center">
-              <span className="font-bold text-red-800">✓ {language === "ja" ? "ループ" : "Loops"}</span>
-            </div>
-            <div className="bg-indigo-100 rounded-lg p-4 text-center">
-              <span className="font-bold text-indigo-800">✓ {language === "ja" ? "リスト" : "Lists"}</span>
-            </div>
-            <div className="bg-pink-100 rounded-lg p-4 text-center">
-              <span className="font-bold text-pink-800">✓ {language === "ja" ? "関数" : "Functions"}</span>
-            </div>
-            <div className="bg-teal-100 rounded-lg p-4 text-center">
-              <span className="font-bold text-teal-800">✓ {language === "ja" ? "辞書" : "Dictionaries"}</span>
-            </div>
-            <div className="bg-gray-100 rounded-lg p-4 text-center">
-              <span className="font-bold text-gray-800">✓ {language === "ja" ? "さらに追加予定！" : "More coming!"}</span>
-            </div>
-          </div>
-          
-          {/* 問題数情報を追加 */}
-          <div className="mt-12 bg-gradient-to-r from-purple-100 to-blue-100 rounded-2xl p-8 text-center">
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">
-              {language === "ja" ? "📚 豊富な問題数" : "📚 Extensive Question Bank"}
-            </h3>
-            <p className="text-xl text-gray-700 mb-6">
-              {language === "ja" 
-                ? "530問以上の問題で、しっかりと基礎を身につけよう！" 
-                : "Over 530 questions to master the fundamentals!"}
-            </p>
-            <div className="grid md:grid-cols-3 gap-4 max-w-3xl mx-auto text-sm">
-              <div className="bg-white rounded-lg p-4">
-                <div className="text-2xl font-bold text-green-600 mb-1">70問</div>
-                <div className="text-gray-600">{language === "ja" ? "レッスン1: print関数" : "Unit 1: print function"}</div>
-              </div>
-              <div className="bg-white rounded-lg p-4">
-                <div className="text-2xl font-bold text-blue-600 mb-1">60問</div>
-                <div className="text-gray-600">{language === "ja" ? "レッスン2: 変数" : "Unit 2: Variables"}</div>
-              </div>
-              <div className="bg-white rounded-lg p-4">
-                <div className="text-2xl font-bold text-purple-600 mb-1">40問</div>
-                <div className="text-gray-600">{language === "ja" ? "レッスン3: データ型" : "Unit 3: Data Types"}</div>
-              </div>
-              <div className="bg-white rounded-lg p-4">
-                <div className="text-2xl font-bold text-yellow-600 mb-1">60問</div>
-                <div className="text-gray-600">{language === "ja" ? "レッスン4: 条件分岐" : "Unit 4: Conditionals"}</div>
-              </div>
-              <div className="bg-white rounded-lg p-4">
-                <div className="text-2xl font-bold text-red-600 mb-1">60問</div>
-                <div className="text-gray-600">{language === "ja" ? "レッスン5: ループ" : "Unit 5: Loops"}</div>
-              </div>
-              <div className="bg-white rounded-lg p-4">
-                <div className="text-2xl font-bold text-indigo-600 mb-1">60問</div>
-                <div className="text-gray-600">{language === "ja" ? "レッスン6: リスト" : "Unit 6: Lists"}</div>
-              </div>
-              <div className="bg-white rounded-lg p-4">
-                <div className="text-2xl font-bold text-pink-600 mb-1">60問</div>
-                <div className="text-gray-600">{language === "ja" ? "レッスン7: 関数" : "Unit 7: Functions"}</div>
-              </div>
-              <div className="bg-white rounded-lg p-4">
-                <div className="text-2xl font-bold text-teal-600 mb-1">60問</div>
-                <div className="text-gray-600">{language === "ja" ? "レッスン8: 戻り値" : "Unit 8: Return Values"}</div>
-              </div>
-              <div className="bg-white rounded-lg p-4">
-                <div className="text-2xl font-bold text-gray-600 mb-1">60問</div>
-                <div className="text-gray-600">{language === "ja" ? "レッスン9: 辞書" : "Unit 9: Dictionaries"}</div>
-              </div>
-            </div>
-            <p className="text-gray-600 mt-6 text-sm">
-              {language === "ja" 
-                ? "※ レッスン10以降も順次追加予定です" 
-                : "※ Units 10+ will be added gradually"}
-            </p>
-          </div>
         </div>
       </section>
 
