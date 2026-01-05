@@ -119,7 +119,7 @@ const LandingPage = () => {
             : "Easy for kids! Learn programming with drag & drop"}
         </p>
         <Link
-          href="/login"
+          href="/login?mode=register"
           className="inline-block bg-orange-500 hover:bg-orange-600 text-white font-bold text-xl py-4 px-10 rounded-full shadow-lg transform hover:scale-105 transition-all"
         >
           {language === "ja" ? "無料で始める 🚀" : "Start Free 🚀"}
@@ -1294,7 +1294,7 @@ const LandingPage = () => {
           {language === "ja" ? "無料でアカウントを作成して、今すぐ学習スタート" : "Create a free account and start learning today"}
         </p>
         <Link
-          href="/login"
+          href="/login?mode=register"
           className="inline-block bg-orange-500 hover:bg-orange-600 text-white font-bold text-xl py-4 px-10 rounded-full shadow-lg transform hover:scale-105 transition-all"
         >
           {language === "ja" ? "無料で始める 🚀" : "Start Free 🚀"}
