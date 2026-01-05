@@ -961,6 +961,73 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* 運営者情報セクション */}
+      <section className="py-12 md:py-16 px-4 bg-gradient-to-b from-white to-blue-50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-4">
+            <F reading="うんえいしゃ">運営者について</F>
+          </h2>
+          
+          {/* 運営者名とキャッチコピー */}
+          <div className="text-center mb-8 md:mb-12">
+            <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">
+              プログラミングスクール plus one
+            </h3>
+            <p className="text-base md:text-lg text-gray-600 italic">
+              〜一つ一つの成長を大事に。〜
+            </p>
+          </div>
+
+          {/* 私たちの想い */}
+          <div className="bg-white rounded-2xl p-6 md:p-8 shadow-lg mb-8 md:mb-12 max-w-4xl mx-auto">
+            <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-4 text-center">
+              {language === "ja" ? "私たちの想い" : "Our Mission"}
+            </h3>
+            <p className="text-gray-700 leading-relaxed text-center text-sm md:text-base">
+              {language === "ja" 
+                ? "CodeBlockは、実際のプログラミング教室で子どもたちを指導している現役講師が開発した学習アプリです。教室での指導経験を通じて、子どもたちがつまずきやすいポイントや、楽しく学べる方法を日々研究してきました。その経験を活かし、お子さま一人ひとりの「わからない」に寄り添い、一つ一つの成長を大切にできるよう、CodeBlockを開発いたしました。プログラミングは難しいものではなく、楽しく学べるもの。その想いを込めて、お子さまの学習をサポートします。"
+                : "CodeBlock is a learning app developed by active instructors who teach children in real programming classrooms. Through our teaching experience, we've researched the points where children struggle and ways to make learning fun. We've developed CodeBlock to support each child's individual learning journey, valuing every step of growth. Programming isn't difficult—it's something that can be learned with joy. We support your child's learning with this belief."}
+            </p>
+          </div>
+
+          {/* 連絡先 */}
+          <div className="bg-white rounded-2xl p-6 md:p-8 shadow-lg mb-6 md:mb-8 max-w-2xl mx-auto">
+            <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-4 md:mb-6 text-center">
+              {language === "ja" ? "お問い合わせ" : "Contact Us"}
+            </h3>
+            <div className="space-y-4">
+              {/* メールアドレス */}
+              <div className="flex items-center justify-center gap-3 flex-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 md:h-6 md:w-6 text-purple-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <a 
+                  href="mailto:plus.one.0312.0717@gmail.com" 
+                  className="text-purple-600 hover:text-purple-700 font-medium text-sm md:text-base break-all"
+                >
+                  plus.one.0312.0717@gmail.com
+                </a>
+              </div>
+              
+              {/* 公式サイト */}
+              <div className="flex items-center justify-center gap-3 flex-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 md:h-6 md:w-6 text-purple-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                </svg>
+                <a 
+                  href="https://plus-one-naruse.com/" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-purple-600 hover:text-purple-700 font-medium text-sm md:text-base"
+                >
+                  {language === "ja" ? "公式サイト" : "Official Website"}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* よくある質問セクション */}
       <section className="py-16 px-4 bg-white">
         <div className="max-w-3xl mx-auto">
