@@ -282,3 +282,25 @@ export interface XPBreakdown {
   streak7: number;      // 7日連続ボーナス
   streak30: number;     // 30日連続ボーナス
 }
+
+/**
+ * レッスン1-1, 1-2, 1-3がすべて完了しているかチェック
+ * デイリーチャレンジの表示条件
+ */
+export function hasCompletedUnit1Basics(): boolean {
+  const progress = getProgress();
+  return (
+    progress.completedLessons.includes('1-1') &&
+    progress.completedLessons.includes('1-2') &&
+    progress.completedLessons.includes('1-3')
+  );
+}
+
+/**
+ * レッスン1-7が完了しているかチェック
+ * スマート復習システムの表示条件
+ */
+export function hasCompletedLesson1_7(): boolean {
+  const progress = getProgress();
+  return progress.completedLessons.includes('1-7');
+}

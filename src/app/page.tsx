@@ -17,6 +17,8 @@ import {
   getLevelProgress, 
   getXPToNextLevel,
   getLastOpenedMission,
+  hasCompletedUnit1Basics,
+  hasCompletedLesson1_7,
   type LastOpenedMission
 } from "@/utils/progress";
 import Footer from "@/components/Footer";
@@ -1944,7 +1946,7 @@ export default function Home() {
               })()}
 
               {/* デイリーチャレンジ */}
-              {dailyChallengeStats && (
+              {hasCompletedUnit1Basics() && dailyChallengeStats && (
                 <div className="mb-6">
                   <DailyChallengeCard
                     state={dailyChallengeState}
@@ -1955,7 +1957,9 @@ export default function Home() {
               )}
 
               {/* 復習セクション */}
-              <ReviewSection />
+              {hasCompletedLesson1_7() && (
+                <ReviewSection />
+              )}
             </div>
 
             {/* 右カラム：レッスンカルーセル + 進捗マップ + ユニットボタン（2/3幅） */}
