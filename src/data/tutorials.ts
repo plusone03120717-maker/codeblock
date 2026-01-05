@@ -177,6 +177,48 @@ export const tutorials: LessonTutorial[] = [
     characterImage: "/images/characters/cody.png",
     slides: [
       {
+        title: "文字列を繰り返そう",
+        content: "「*」を使うと、文字列を何回も繰り返すことができるよ！",
+        characterMessage: "文字列の繰り返しをマスターしよう！",
+      },
+      {
+        title: "文字列繰り返しの書き方",
+        content: "文字列 * 数字 と書くと、文字列が指定した回数だけ繰り返されるんだ。",
+        characterMessage: "\"Hi\" * 3 で \"HiHiHi\" になるよ！",
+        codeExample: {
+          good: 'print("Hi" * 3)  # 結果: HiHiHi',
+        },
+      },
+      {
+        title: "数字と文字列の違い",
+        content: "数字の掛け算（3 * 2 = 6）とは違って、文字列の繰り返し（\"Hi\" * 3 = \"HiHiHi\"）になるよ。",
+        characterMessage: "数字を掛けると計算だけど、文字列を掛けると繰り返しになるんだ！",
+        codeExample: {
+          good: 'print(3 * 2)      # 結果: 6\nprint("Hi" * 3)   # 結果: HiHiHi',
+        },
+      },
+      {
+        title: "いろいろな文字を繰り返そう",
+        content: "どんな文字列でも繰り返せるよ。「*」を5回繰り返したり、「あ」を10回繰り返したりできるんだ！",
+        characterMessage: "好きな文字を何回でも繰り返せるよ！",
+        codeExample: {
+          good: 'print("*" * 5)    # 結果: *****\nprint("あ" * 10)  # 結果: ああああああああああ',
+        },
+      },
+      {
+        title: "さあ、挑戦だ！",
+        content: "文字列を繰り返すミッションに挑戦しよう！",
+        characterMessage: "準備はいいか？やってみよう！",
+      },
+    ],
+  },
+  {
+    lessonId: "1-6",
+    characterName: "コーディ",
+    characterEmoji: "🐍",
+    characterImage: "/images/characters/cody.png",
+    slides: [
+      {
         title: "余りを計算しよう",
         content: "「%」を使うと、割り算の余りを求めることができるよ！",
         characterMessage: "余りの計算はプログラミングでよく使うんだ！",
@@ -200,40 +242,6 @@ export const tutorials: LessonTutorial[] = [
       {
         title: "さあ、挑戦だ！",
         content: "余りの計算ミッションに挑戦しよう！",
-        characterMessage: "準備はいいか？やってみよう！",
-      },
-    ],
-  },
-  {
-    lessonId: "1-6",
-    characterName: "コーディ",
-    characterEmoji: "🐍",
-    characterImage: "/images/characters/cody.png",
-    slides: [
-      {
-        title: "複数の値を表示しよう",
-        content: "print()の中に「,」で区切って複数の値を入れると、まとめて表示できるよ！",
-        characterMessage: "カンマを使った表示方法を学ぼう！",
-      },
-      {
-        title: "カンマ区切りの書き方",
-        content: "print(値1, 値2, 値3) のように書くと、スペースで区切って表示されるんだ。",
-        characterMessage: "自動でスペースが入るから便利だよ！",
-        codeExample: {
-          good: "print(\"Hello\", \"World\")  # 結果: Hello World",
-        },
-      },
-      {
-        title: "文字列と数字を一緒に表示",
-        content: "カンマを使えば、文字列と数字を一緒に表示できるよ。",
-        characterMessage: "「+」だと文字列同士しかつなげられないけど、カンマなら何でもOK！",
-        codeExample: {
-          good: "print(\"答えは\", 42)  # 結果: 答えは 42",
-        },
-      },
-      {
-        title: "さあ、挑戦だ！",
-        content: "複数の値を表示するミッションに挑戦しよう！",
         characterMessage: "準備はいいか？やってみよう！",
       },
     ],
