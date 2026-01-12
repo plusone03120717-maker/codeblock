@@ -406,11 +406,21 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         if (missions) {
           const maxMissionId = missions.length;
           
+          // デバッグパネルから指定されたミッション番号をチェック（lesson-{lessonId}-mission）
+          const debugMissionKey = `lesson-${id}-mission`;
+          const debugMission = localStorage.getItem(debugMissionKey);
+          
           // 途中進捗をチェック（lesson-{lessonId}-progress）
           const savedProgressKey = `lesson-${id}-progress`;
           const savedMissionProgress = localStorage.getItem(savedProgressKey);
           
-          if (savedMissionProgress) {
+          // デバッグパネルで指定されたミッション番号を優先
+          if (debugMission) {
+            const debugMissionNum = parseInt(debugMission, 10);
+            if (!isNaN(debugMissionNum) && debugMissionNum > 0 && debugMissionNum <= maxMissionId) {
+              missionId = debugMissionNum;
+            }
+          } else if (savedMissionProgress) {
             const savedMission = parseInt(savedMissionProgress, 10);
             // 保存されたミッション番号が有効な範囲内かチェック
             if (savedMission > 0 && savedMission <= maxMissionId) {
@@ -1395,9 +1405,14 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           
           // 変数名を抽出（= の前にある単語）
           if (codeIsValid) {
-            const variableMatch = code.match(/(\w+)\s*=/);
-            if (variableMatch) {
-              const variableName = variableMatch[1];
+            // すべての変数定義を抽出
+            const variableMatches = code.matchAll(/(\w+)\s*=/g);
+            const variableNames: string[] = [];
+            for (const match of variableMatches) {
+              variableNames.push(match[1]);
+            }
+            
+            if (variableNames.length > 0) {
               // print()内で変数が使用されているかチェック
               // print(変数名) の形式をチェック（文字列内は除外）
               const printMatches = code.matchAll(/print\s*\([^)]*\)/g);
@@ -1406,7 +1421,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                 const printContent = printMatch[0];
                 // 文字列（"..." または '...'）を除去してから変数名をチェック
                 const withoutStrings = printContent.replace(/["'][^"']*["']/g, '');
-                if (withoutStrings.includes(variableName)) {
+                // 定義された変数のうち、少なくとも1つがprint()内で使用されているかチェック
+                if (variableNames.some(varName => withoutStrings.includes(varName))) {
                   variableUsedInPrint = true;
                   break;
                 }

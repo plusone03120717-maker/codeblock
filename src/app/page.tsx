@@ -1777,7 +1777,7 @@ export default function Home() {
       return;
     }
     
-    // localStorageに設定（ミッション番号は0始まりなので-1）
+    // localStorageに設定
     localStorage.setItem(`lesson-${debugStartLessonId}-mission`, String(missionNum));
     localStorage.setItem(`lesson-${debugStartLessonId}-wrong`, JSON.stringify([]));
     localStorage.removeItem(`lesson-${debugStartLessonId}-retryMode`);
