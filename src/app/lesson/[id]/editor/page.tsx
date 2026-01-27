@@ -294,6 +294,7 @@ function DraggableBlock({ block, index, onRemove }: DraggableBlockProps) {
         className={`${block.color} text-gray-700 px-3 py-2 rounded-xl text-sm font-mono shadow-md hover:shadow-lg transition-all border-2 border-white cursor-grab active:cursor-grabbing select-none ${
           block.text === "    " ? "bg-gray-300 border-gray-400" : ""
         }`}
+        style={block.text === "==" ? { letterSpacing: "0.15em" } : undefined}
       >
         {block.text === "    " ? "→" : block.text}
       </div>
@@ -498,7 +499,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   // ブロックをランダムに並べ替える（重複除去）
   const availableBlocks = useMemo(() => {
     if (!currentMission?.availableBlocks) return [];
-    
+
     // 重複を除去（同じtextを持つブロックは1つだけ残す）
     const uniqueBlocks: WordBlock[] = [];
     const seenTexts = new Set<string>();
@@ -540,15 +541,6 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     
     return lines;
   }, [selectedBlocks]);
-
-  // ローディング中または未ログイン時の表示
-  if (loading || !user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
-        <div className="text-white text-xl">読み込み中...</div>
-      </div>
-    );
-  }
 
   // 現在のインデントレベルを計算する関数
   const getCurrentIndentLevel = (blocks: WordBlock[]): number => {
@@ -1762,6 +1754,15 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [showNextButton, currentMission?.type, isExecuting]);
 
+  // ローディング中または未ログイン時の表示
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
+        <div className="text-white text-xl">読み込み中...</div>
+      </div>
+    );
+  }
+
   if (!lessonId) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-blue-50 to-white">
@@ -2045,6 +2046,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                       type="button"
                       onClick={() => selectBlock(block)}
                       className={`${block.color} text-gray-700 px-3 py-2 rounded-xl text-sm font-mono shadow hover:shadow-md hover:scale-105 transition-all border border-white`}
+                      style={block.text === "==" ? { letterSpacing: "0.15em" } : undefined}
                     >
                       {block.text}
                     </button>
