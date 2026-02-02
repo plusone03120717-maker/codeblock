@@ -119,6 +119,10 @@ function shouldAddSpace(current: WordBlock, next: WordBlock): boolean {
   if (next.text === "↵") {
     return false;
   }
+  // インデントブロックの後にはスペース不要
+  if (current.text === "    " || current.type === "indent") {
+    return false;
+  }
   // 括弧や演算子の前後にはスペース不要
   if (current.text === "(" || next.text === ")" || next.text === "(") {
     return false;
