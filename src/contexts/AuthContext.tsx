@@ -4,8 +4,8 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import { User, onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { getUserInfo } from "@/lib/auth";
-import { syncProgressOnLogin } from "@/lib/progressSync";
-import { UserProfile, SubscriptionPlan } from "@/types/user";
+import { syncProgressOnLogin, clearLocalUserData } from "@/lib/progressSync";
+import { UserProfile } from "@/types/user";
 import { getUserProfile, createUserProfile, isPremiumPlan, canAccessLesson as checkLessonAccess } from "@/utils/subscription";
 
 interface AuthContextType {
@@ -103,7 +103,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setContactEmail(null);
         setUserProfile(null);
         setProgressLoaded(true);
-        // ログアウト時にフリガナをオフにする
+        // ログアウト時にユーザー固有のデータをクリア
+        clearLocalUserData();
         if (typeof window !== "undefined") {
           localStorage.setItem("furigana-enabled", "false");
           // カスタムイベントを発火してFuriganaContextに通知

@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 管理者判定
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == "kaerunoutaga777@gmail.com";
+    }
+
+    // ユーザードキュメント: 認証済みユーザーが自分のドキュメントのみアクセス可能
+    // 管理者は全ユーザーの読み取り・書き込みが可能
+    match /users/{uid} {
+      allow read, write: if request.auth != null && (request.auth.uid == uid || isAdmin());
+
+      // サブコレクション（progress等）も本人のみアクセス可能（管理者も可）
+      match /{subcollection}/{docId} {
+        allow read, write: if request.auth != null && (request.auth.uid == uid || isAdmin());
+      }
+    }
+
+    // ユーザーID→UIDマッピング
+    // 読み取り: ログイン時のユーザーID存在確認に必要（認証前に呼ばれる）
+    // 書き込み: 新規作成のみ許可、自分のUIDのみ設定可能
+    match /userIds/{userId} {
+      allow read: if true;
+      allow create: if request.auth != null
+                    && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // パスワードリセット: 本人のみアクセス可能
+    match /passwordResets/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}

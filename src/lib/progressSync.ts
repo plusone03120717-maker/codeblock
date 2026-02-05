@@ -120,3 +120,32 @@ export const saveLocalProgressToCloud = async (uid: string): Promise<void> => {
   await saveProgressToCloud(uid, localProgress);
 };
 
+// ログアウト時にユーザー固有のlocalStorageデータをすべてクリア
+export const clearLocalUserData = (): void => {
+  if (typeof window === "undefined") return;
+
+  const keysToRemove: string[] = [];
+
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (!key) continue;
+
+    if (
+      key === "codeblock-progress" ||
+      key === "codeblock-review-items" ||
+      key === "codeblock_daily_hints" ||
+      key === "codeblock_daily_challenge_state" ||
+      key === "codeblock_daily_challenge_stats" ||
+      key === "codeblock_last_opened_mission" ||
+      key === "email-banner-dismissed" ||
+      key.startsWith("missionProgress_") ||
+      key.startsWith("lesson-") ||
+      key.startsWith("daily_challenge_processed_")
+    ) {
+      keysToRemove.push(key);
+    }
+  }
+
+  keysToRemove.forEach((key) => localStorage.removeItem(key));
+};
+
