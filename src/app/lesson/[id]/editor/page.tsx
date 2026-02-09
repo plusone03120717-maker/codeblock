@@ -134,11 +134,11 @@ function shouldAddSpace(current: WordBlock, next: WordBlock): boolean {
   if (current.text === '"' || next.text === '"') {
     return false;
   }
-  // 演算子の前後にはスペース不要
-  if (["=", ">=", ":", "(", ")", '"'].includes(current.text)) {
+  // 代入演算子・コロン・括弧・引用符の前後にはスペース不要（比較演算子>=, <=, ==, !=はスペースあり）
+  if (["=", ":", "(", ")", '"'].includes(current.text)) {
     return false;
   }
-  if (["=", ">=", ":", "(", ")", '"'].includes(next.text)) {
+  if (["=", ":", "(", ")", '"'].includes(next.text)) {
     return false;
   }
   // 文字列の後にはスペース不要（次の文字列や演算子が来る場合）
