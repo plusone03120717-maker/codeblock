@@ -199,8 +199,9 @@ export default function AdminPage() {
               {filteredUsers.map((u) => (
                 <tr key={u.uid} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
-                    <div className="font-medium text-gray-800">{u.displayName || "名前未設定"}</div>
-                    <div className="text-sm text-gray-500">{u.email}</div>
+                    <div className="font-medium text-gray-800">{u.userId || u.displayName || "名前未設定"}</div>
+                    <div className="text-sm text-gray-500">{u.displayName && u.displayName !== u.userId ? u.displayName : ""}</div>
+                    <div className="text-xs text-gray-400">{u.email}</div>
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPlanBadgeColor(u.subscription.plan)}`}>
@@ -261,7 +262,8 @@ export default function AdminPage() {
                 <div>
                   <h2 className="text-xl font-bold text-gray-800">📚 進捗管理</h2>
                   <p className="text-gray-500 text-sm mt-1">
-                    {progressModalUser.displayName || "名前未設定"} ({progressModalUser.email})
+                    {progressModalUser.userId || progressModalUser.displayName || "名前未設定"}
+                    {progressModalUser.displayName && progressModalUser.displayName !== progressModalUser.userId ? ` (${progressModalUser.displayName})` : ""}
                   </p>
                 </div>
                 <button

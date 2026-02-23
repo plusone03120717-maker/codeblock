@@ -172,8 +172,9 @@ export const getAllUsers = async (): Promise<UserProfile[]> => {
       const data = doc.data();
       users.push({
         uid: doc.id,
-        email: data.email || "",
-        displayName: data.displayName || "",
+        userId: data.userId || "",
+        email: data.email || data.contactEmail || "",
+        displayName: data.displayName || data.userId || "",
         subscription: {
           plan: data.subscription?.plan || "free",
           status: data.subscription?.status || "active",

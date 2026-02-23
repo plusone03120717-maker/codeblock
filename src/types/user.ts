@@ -11,6 +11,7 @@ export interface UserSubscription {
 
 export interface UserProfile {
   uid: string;
+  userId?: string;
   email: string;
   displayName: string;
   subscription: UserSubscription;
