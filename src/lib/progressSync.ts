@@ -11,6 +11,7 @@ export interface ProgressData {
   streak: number;
   lastStudyDate: string | null;
   missionProgress: { [lessonId: string]: number };
+  lastOpenedMission?: { lessonId: string; missionId: number; timestamp: number } | null;
 }
 
 const DEFAULT_PROGRESS: ProgressData = {
@@ -74,6 +75,14 @@ export const syncProgressOnLogin = async (uid: string): Promise<void> => {
         localStorage.setItem(`missionProgress_${lessonId}`, progress.toString());
       });
     }
+
+    // lastOpenedMissionを復元
+    if (cloudProgress.lastOpenedMission) {
+      localStorage.setItem(
+        "codeblock_last_opened_mission",
+        JSON.stringify(cloudProgress.lastOpenedMission)
+      );
+    }
   }
 };
 
@@ -103,6 +112,17 @@ export const getLocalProgress = (): ProgressData => {
   const totalXP = progress.totalXP || 0;
   const levelInfo = getLevelInfo(totalXP);
   
+  // lastOpenedMissionを取得
+  let lastOpenedMission = null;
+  const lastOpenedMissionJson = localStorage.getItem("codeblock_last_opened_mission");
+  if (lastOpenedMissionJson) {
+    try {
+      lastOpenedMission = JSON.parse(lastOpenedMissionJson);
+    } catch {
+      lastOpenedMission = null;
+    }
+  }
+
   return {
     visibleLessons: progress.visibleLessons || ["1-1"],
     completedLessons: progress.completedLessons || [],
@@ -112,6 +132,7 @@ export const getLocalProgress = (): ProgressData => {
     streak: progress.currentStreak || 0,
     lastStudyDate: progress.lastStudyDate || null,
     missionProgress: missionProgress,
+    lastOpenedMission: lastOpenedMission,
   };
 };
 
