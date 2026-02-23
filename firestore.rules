@@ -4,7 +4,7 @@ service cloud.firestore {
 
     // 管理者判定
     function isAdmin() {
-      return request.auth != null && request.auth.token.email == "kaerunoutaga777@gmail.com";
+      return request.auth != null && request.auth.token.email == "plus.one.0312.0717@gmail.com";
     }
 
     // ユーザードキュメント: 認証済みユーザーが自分のドキュメントのみアクセス可能
