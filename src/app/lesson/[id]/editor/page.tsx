@@ -1162,6 +1162,20 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         }
       }
 
+      // レッスン4-3（if/elseを使おう）の場合、ifとelseを使っているかチェック
+      if (lessonId === "4-3") {
+        if (!code.includes("if ")) {
+          codeIsValid = false;
+          codeErrorMessage = "if文を使って条件分岐を書こう！";
+        } else if (!code.includes("else:")) {
+          codeIsValid = false;
+          codeErrorMessage = "elseを使ってどちらの場合も書こう！";
+        } else if (!code.includes("\n")) {
+          codeIsValid = false;
+          codeErrorMessage = "↵（エンター）ブロックを使って改行しよう！";
+        }
+      }
+
       // レッスン4-4（elifを使おう）の場合、elif, elseを使っているかチェック
       if (lessonId === "4-4") {
         const hasElif = code.includes("elif ");
