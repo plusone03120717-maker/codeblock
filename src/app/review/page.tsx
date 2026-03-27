@@ -495,41 +495,66 @@ export default function ReviewPage() {
       const normalizedExpected = expectedOutput.trim();
       const outputMatches = normalizedActual === normalizedExpected;
 
-      if (outputMatches) {
+      // コード構造チェック
+      let codeIsValid = true;
+      let codeErrorMessage = "";
+
+      const reviewLessonId = currentReviewItem?.lessonId;
+
+      // レッスン4-3（if/else）: if・else・比較演算子・改行の存在を確認
+      if (reviewLessonId === "4-3") {
+        const comparisonOperators = ["!=", "<=", ">=", "==", "<", ">"];
+        const hasComparison = comparisonOperators.some(op => code.includes(op));
+        if (!code.includes("if ")) {
+          codeIsValid = false;
+          codeErrorMessage = "if文を使って条件分岐を書こう！";
+        } else if (!code.includes("else:")) {
+          codeIsValid = false;
+          codeErrorMessage = "elseを使ってどちらの場合も書こう！";
+        } else if (!hasComparison) {
+          codeIsValid = false;
+          codeErrorMessage = "比較演算子（>, <, >=, <=, ==）を使って条件を書こう！";
+        } else if (!code.includes("\n")) {
+          codeIsValid = false;
+          codeErrorMessage = "↵（エンター）ブロックを使って改行しよう！";
+        }
+      }
+
+      if (outputMatches && codeIsValid) {
         setExecutionResult({
           success: true,
           output: actualOutput,
         });
         playCorrectSound();
-        
+
         // 復習結果を更新
         if (currentReviewItem) {
           const beforeStreak = currentReviewItem.correctStreak;
           updateReviewResult(currentReviewItem.odaiId, true);
-          
+
           // 更新後のstreakを取得（正解したので+1）
           const afterStreak = beforeStreak + 1;
-          
+
           // 定着度が上がったかチェック
           if (checkRetentionUpgrade(beforeStreak, afterStreak)) {
             setRetentionUpgrades(prev => prev + 1);
           }
-          
+
           // XPを付与（1問5XP）
           addXP(5);
           setEarnedXP(prev => prev + 5);
           setCorrectCount(prev => prev + 1);
         }
-        
+
         setShowNextButton(true);
       } else {
         setExecutionResult({
           success: false,
           output: actualOutput,
-          error: "期待される出力と異なります。もう一度試してみましょう！",
+          error: !codeIsValid ? codeErrorMessage : "期待される出力と異なります。もう一度試してみましょう！",
         });
         playIncorrectSound();
-        
+
         // 復習結果を更新
         if (currentReviewItem) {
           updateReviewResult(currentReviewItem.odaiId, false);
