@@ -316,12 +316,26 @@ export default function LessonPage({ params }: LessonPageProps) {
               </div>
             )}
             
+            {/* 図解・対応表（Pythonのコードではないので、コードブロックとは分けて表示する） */}
+            {currentSlide.note && (
+              <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-3 mb-3">
+                <div className="text-amber-700 font-bold text-sm mb-2">
+                  📘 <F reading="ず">図</F>でイメージしよう（これはPythonの<F reading="か">書</F>き<F reading="かた">方</F>ではないよ）
+                </div>
+                <pre className="text-amber-900 font-mono text-sm whitespace-pre-wrap overflow-x-auto">
+                  {currentSlide.note}
+                </pre>
+              </div>
+            )}
+
             {/* コード例 */}
             {currentSlide.codeExample && (
               <div className="space-y-3">
                 {currentSlide.codeExample.bad && (
                   <div className="bg-red-50 border-2 border-red-300 rounded-lg p-3">
-                    <div className="text-red-600 font-bold text-sm mb-2">❌ ダメな<F reading="れい">例</F></div>
+                    <div className="text-red-600 font-bold text-sm mb-2">
+                      ❌ {currentSlide.codeExample.badLabel ?? <>ダメな<F reading="れい">例</F></>}
+                    </div>
                     <pre className="bg-gray-900 rounded-lg p-3 text-red-400 font-mono text-sm overflow-x-auto shadow-inner">
                       {currentSlide.codeExample.bad}
                     </pre>

@@ -8,9 +8,19 @@ export interface LessonTutorial {
     content: string;
     characterMessage: string;
     codeExample?: {
+      /** 実際に動くPythonコード。「正しい例」として表示される */
       good?: string;
+      /** 動かない・意図と違うコード */
       bad?: string;
+      /** bad の見出しを変えたいとき（既定は「ダメな例」） */
+      badLabel?: string;
     };
+    /**
+     * Pythonコードではない図解・対応表（例: 5 == 5 → True）。
+     * コードブロックとは別のスタイルで表示するので、
+     * 「→」などの記号をPythonの文法と誤解させない。
+     */
+    note?: string;
     image?: string;
   }>;
 }
@@ -37,7 +47,7 @@ export const tutorials: LessonTutorial[] = [
       },
       {
         title: "改行について",
-        content: "プログラムは1行ずつ書いていくんだ。print()を2回使うと、2つのメッセージを表示できるよ。改行はスペースキーで行うことができる。codeblockの中では、改行ブロックを使う。",
+        content: "プログラムは1行ずつ書いていくんだ。print()を2回使うと、2つのメッセージを表示できるよ。文章を次の行に送ることを「改行」といって、キーボードではEnterキーで行う。codeblockの中では、改行ブロック（↵）を使うよ。",
         characterMessage: "↵マークは「改行」を意味する。次の行に移るときに使うんだ！",
         codeExample: {
           good: "print(\"Hello\")\nprint(\"World\")",
@@ -254,31 +264,27 @@ export const tutorials: LessonTutorial[] = [
     slides: [
       {
         title: "複数の値を一度に表示しよう",
-        content: "今日は複数の値を一度に表示する方法を学ぼう！",
-        characterMessage: "今日は複数の値を一度に表示する方法を学ぼう！",
+        content: "これまでは print() にひとつだけ値を入れてきた。実は、カンマ（,）で区切れば、いくつでもまとめて表示できるんだ。",
+        characterMessage: "print()を何回も書かなくていいってこと！便利だろ？",
       },
       {
-        title: "カンマで複数の値を表示",
-        content: "print()の中で、カンマ（,）を使うと複数の値を表示できるんだ。",
-        characterMessage: "print()の中で、カンマ（,）を使うと複数の値を表示できるんだ。",
-      },
-      {
-        title: "カンマの使い方の例",
-        content: "例えば print(\"名前:\", \"太郎\") と書くと...",
-        characterMessage: "例えば print(\"名前:\", \"太郎\") と書くと...",
+        title: "カンマで区切って書く",
+        content: "print()のカッコの中に、表示したい値をカンマで区切って並べる。左から順番に表示されるよ。",
+        characterMessage: "print(\"名前:\", \"太郎\") みたいに書くんだ。",
         codeExample: {
-          good: 'print("名前:", "太郎")',
+          good: 'print("名前:", "太郎")\n# 結果: 名前: 太郎',
         },
       },
       {
-        title: "カンマでスペースが入る",
-        content: "「名前: 太郎」と表示されるよ！カンマの位置にスペースが入るんだ。",
-        characterMessage: "「名前: 太郎」と表示されるよ！カンマの位置にスペースが入るんだ。",
+        title: "カンマの場所にスペースが入る",
+        content: "「名前:太郎」ではなく「名前: 太郎」と、あいだにスペースが1つ入る。これはPythonが自動でやってくれるんだ。",
+        characterMessage: "自分でスペースを入れなくていい。ここが「+」で連結するときとの違いだよ！",
+        note: "print(\"名前:\", \"太郎\")   →  名前: 太郎   （スペースが入る）\nprint(\"名前:\" + \"太郎\")   →  名前:太郎    （くっつく）",
       },
       {
-        title: "文字列と数字を組み合わせる",
-        content: "文字列と数字を組み合わせることもできるよ。print(\"年齢:\", 10) みたいにね！",
-        characterMessage: "文字列と数字を組み合わせることもできるよ。print(\"年齢:\", 10) みたいにね！",
+        title: "文字列と数字を混ぜられる",
+        content: "「+」では文字列と数字を直接つなげられなかったけど、カンマなら混ぜてもエラーにならない。ここが大きな違いだ。",
+        characterMessage: "文字と数字を一緒に出したいときは、カンマが一番かんたんだよ！",
         codeExample: {
           good: 'print("年齢:", 10)  # 結果: 年齢: 10',
         },
@@ -286,7 +292,7 @@ export const tutorials: LessonTutorial[] = [
       {
         title: "さあ、やってみよう！",
         content: "複数の値をカンマで表示するミッションに挑戦しよう！",
-        characterMessage: "さあ、やってみよう！",
+        characterMessage: "準備はいいか？やってみよう！",
       },
     ],
   },
@@ -347,6 +353,7 @@ export const tutorials: LessonTutorial[] = [
         characterMessage: "クオーテーションは要らないのがポイントよ。",
         codeExample: {
           good: "name = \"太郎\"\nprint(name)  # 太郎と表示される",
+          badLabel: "意図とちがう例",
           bad: "print(\"name\")  # nameという文字が表示されちゃう",
         },
       },
@@ -516,13 +523,20 @@ export const tutorials: LessonTutorial[] = [
         title: "3つの基本の型",
         content: "まずは3つの型を覚えよう。str（文字列）、int（整数）、bool（真偽値）だ。",
         characterMessage: "str は文字、int は数字、bool は True か False。",
+        note: "\"Hello\"  → str（文字列）\n42       → int（整数）\nTrue     → bool（真偽値）",
+      },
+      {
+        title: "4つめの型：float（小数）",
+        content: "小数点がついた数は float（フロート）という型になる。3.14 や 0.5 のような数だ。整数の 42 は int、小数の 3.14 は float。同じ数でも 5 は int、5.0 は float だ。",
+        characterMessage: "小数点がひとつ入るだけで、型が変わる。ここは見落としやすい。",
+        note: "3.14  → float（小数）\n5     → int（整数）\n5.0   → float（小数）",
         codeExample: {
-          good: '"Hello"  → str（文字列）\n42       → int（整数）\nTrue     → bool（真偽値）',
+          good: "print(3.14)\nprint(5.0)",
         },
       },
       {
         title: "さあ、始めよう！",
-        content: "データ型を正しく理解すれば、エラーを防げる。一緒に学んでいこう。",
+        content: "str・int・float・bool。この4つがわかれば、エラーはぐっと減る。一緒に学んでいこう。",
         characterMessage: "型を制する者、コードを制す。",
       },
     ],
@@ -542,9 +556,7 @@ export const tutorials: LessonTutorial[] = [
         title: "type()の使い方",
         content: "type(データ) と書くと、そのデータの型がわかる。",
         characterMessage: "type() は型を教えてくれる便利な関数だ。",
-        codeExample: {
-          good: 'type("Hello")  → <class \'str\'>\ntype(42)       → <class \'int\'>\ntype(True)     → <class \'bool\'>',
-        },
+        note: "type(\"Hello\")  →  <class 'str'>\ntype(42)       →  <class 'int'>\ntype(True)     →  <class 'bool'>",
       },
       {
         title: "printと組み合わせる",
@@ -586,6 +598,14 @@ export const tutorials: LessonTutorial[] = [
         characterMessage: "数字と文字列は直接つなげられない。str()で変換してからつなげよう。",
         codeExample: {
           good: 'age = 10\nmessage = "私は" + str(age) + "歳です"\nprint(message)  # 私は10歳です',
+        },
+      },
+      {
+        title: "小数に変換する float()",
+        content: "float()を使うと、小数（float型）に変換できる。文字列の \"3.14\" も、整数の 10 も小数にできる。int()が整数、str()が文字列、float()が小数だと覚えよう。",
+        characterMessage: "int()・str()・float()。この3つが型変換の基本セットだ。",
+        codeExample: {
+          good: 'print(float("3.14"))  # 3.14\nprint(float(10))      # 10.0',
         },
       },
       {
@@ -642,32 +662,28 @@ export const tutorials: LessonTutorial[] = [
         title: "条件分岐とは何か",
         content: "条件によって、処理を分けることを「条件分岐」と呼ぶ。例：信号が青なら渡る、赤なら止まる。プログラムも同じように、条件で行動を変えられる。",
         characterMessage: "条件分岐は、判断の基本だ。",
-        codeExample: {
-          good: "信号が青 → 渡る\n信号が赤 → 止まる",
-        },
+        note: "信号が青 → 渡る\n信号が赤 → 止まる",
       },
       {
         title: "if文の書き方",
         content: "if 条件:\n    処理\n条件がTrueなら、処理が実行される。コロン「:」を忘れないこと。",
         characterMessage: "if文は、条件を判定する構文だ。",
         codeExample: {
-          good: "if age >= 10:\n    print(\"10歳以上です\")",
+          good: "age = 12\nif age >= 10:\n    print(\"10歳以上です\")",
         },
       },
       {
         title: "TrueとFalse",
         content: "条件は必ず True か False のどちらかになる。True = 条件が正しい → 処理を実行。False = 条件が正しくない → 処理をスキップ。曖昧さは許されない。それがプログラムの世界だ。",
         characterMessage: "判定は明確でなければならない。",
-        codeExample: {
-          good: "age >= 10  → True なら処理実行\nage < 10   → False なら処理スキップ",
-        },
+        note: "age >= 10  →  True なら処理を実行\nage < 10   →  False なら処理をスキップ",
       },
       {
         title: "インデント（字下げ）",
         content: "if文の中の処理は、スペース4つ分下げる。これを「インデント」と呼ぶ。インデントがないと、エラーになる。整ったコードは、正しい判定の第一歩だ。",
         characterMessage: "インデントは、コードの構造を示す。",
         codeExample: {
-          good: "if age >= 10:\n    print(\"10歳以上です\")  # 4スペース下げる",
+          good: "age = 12\nif age >= 10:\n    print(\"10歳以上です\")  # 4スペース下げる",
           bad: "if age >= 10:\nprint(\"10歳以上です\")  # エラー：インデントなし",
         },
       },
@@ -693,25 +709,19 @@ export const tutorials: LessonTutorial[] = [
         title: "等しい・等しくない",
         content: "== は「等しいか？」を判定する。!= は「等しくないか？」を判定する。例: 5 == 5 は True、5 != 3 も True。",
         characterMessage: "等しいか、等しくないか。判定は明確だ。",
-        codeExample: {
-          good: "5 == 5  → True\n5 != 3  → True",
-        },
+        note: "5 == 5  →  True\n5 != 3  →  True",
       },
       {
         title: "大小を比べる",
         content: "< は「より小さい」を判定する。> は「より大きい」を判定する。例: 3 < 5 は True、10 > 5 も True。",
         characterMessage: "大小の判定も、明確でなければならない。",
-        codeExample: {
-          good: "3 < 5   → True\n10 > 5  → True",
-        },
+        note: "3 < 5   →  True\n10 > 5  →  True",
       },
       {
         title: "以上・以下",
         content: "<= は「以下（同じか小さい）」を判定する。>= は「以上（同じか大きい）」を判定する。例: 5 <= 5 は True、10 >= 5 も True。",
         characterMessage: "以上・以下は、境界を含む判定だ。",
-        codeExample: {
-          good: "5 <= 5  → True\n10 >= 5 → True",
-        },
+        note: "5 <= 5  →  True\n10 >= 5 →  True",
       },
       {
         title: "比較演算子を使ってみよう",
@@ -736,7 +746,7 @@ export const tutorials: LessonTutorial[] = [
         content: "if 条件:\n    Trueの時の処理\nelse:\n    Falseの時の処理\nelseの後にもコロン「:」を忘れないこと。",
         characterMessage: "if-elseは、2つの結果を分岐させる構文だ。",
         codeExample: {
-          good: "if age >= 18:\n    print(\"大人\")\nelse:\n    print(\"子ども\")",
+          good: "age = 20\nif age >= 18:\n    print(\"大人\")\nelse:\n    print(\"子ども\")",
         },
       },
       {
@@ -744,16 +754,14 @@ export const tutorials: LessonTutorial[] = [
         content: "点数が60以上なら「合格」、そうでなければ「不合格」。HPが0より大きければ「生存」、そうでなければ「ゲームオーバー」。このように、2つの結果を分岐させることができる。",
         characterMessage: "2つの結果を明確に分岐させる。",
         codeExample: {
-          good: "if score >= 60:\n    print(\"合格\")\nelse:\n    print(\"不合格\")",
+          good: "score = 75\nif score >= 60:\n    print(\"合格\")\nelse:\n    print(\"不合格\")",
         },
       },
       {
         title: "必ずどちらかが実行される",
         content: "if-elseでは、必ずどちらか一方が実行される。条件がTrueならifブロック、Falseならelseブロック。両方実行されることも、両方スキップされることもない。",
         characterMessage: "判定は明確でなければならない。",
-        codeExample: {
-          good: "if True → ifブロック実行\nif False → elseブロック実行",
-        },
+        note: "条件が True  →  if のブロックを実行\n条件が False →  else のブロックを実行",
       },
       {
         title: "if-elseを使ってみよう",
@@ -778,7 +786,7 @@ export const tutorials: LessonTutorial[] = [
         content: "if 条件1:\n    条件1がTrueの時の処理\nelif 条件2:\n    条件2がTrueの時の処理\nelse:\n    どれもFalseの時の処理\nelifは「else if」の略だ。",
         characterMessage: "if-elif-elseは、3つ以上の結果を分岐させる構文だ。",
         codeExample: {
-          good: "if score >= 80:\n    print(\"A\")\nelif score >= 60:\n    print(\"B\")\nelse:\n    print(\"C\")",
+          good: "score = 75\nif score >= 80:\n    print(\"A\")\nelif score >= 60:\n    print(\"B\")\nelse:\n    print(\"C\")",
         },
       },
       {
@@ -786,16 +794,14 @@ export const tutorials: LessonTutorial[] = [
         content: "点数が80以上なら「A」。点数が60以上なら「B」。それ以外なら「C」。このように、3つ以上の結果に分岐できる。",
         characterMessage: "複数の条件で判定を下す。",
         codeExample: {
-          good: "if score >= 80:\n    print(\"A\")\nelif score >= 60:\n    print(\"B\")\nelse:\n    print(\"C\")",
+          good: "score = 75\nif score >= 80:\n    print(\"A\")\nelif score >= 60:\n    print(\"B\")\nelse:\n    print(\"C\")",
         },
       },
       {
         title: "上から順に判定される",
         content: "条件は上から順にチェックされる。最初にTrueになった条件だけが実行される。一度実行されたら、残りの条件はスキップされる。この順番が重要だ。覚えておこう。",
         characterMessage: "判定は順番が重要である。",
-        codeExample: {
-          good: "上から順にチェック → 最初のTrueで実行 → 残りはスキップ",
-        },
+        note: "上から順にチェック  →  最初にTrueになった条件だけ実行  →  残りはスキップ",
       },
       {
         title: "if-elif-elseを使ってみよう",
@@ -820,7 +826,7 @@ export const tutorials: LessonTutorial[] = [
         content: "and は「両方の条件がTrue」の時だけTrueになる。例: hp >= 50 and mp >= 30。HPもMPも条件を満たさないと、Trueにならない。",
         characterMessage: "and は厳格だ。両方とも満たさなければならない。",
         codeExample: {
-          good: "if hp >= 50 and mp >= 30:\n    print(\"戦える\")",
+          good: "hp = 80\nmp = 50\nif hp >= 50 and mp >= 30:\n    print(\"戦える\")",
         },
       },
       {
@@ -828,7 +834,7 @@ export const tutorials: LessonTutorial[] = [
         content: "or は「どちらかの条件がTrue」ならTrueになる。例: hp > 0 or mp > 0。どちらか一方でも条件を満たせば、Trueになる。",
         characterMessage: "or は柔軟だ。どちらか一つでも満たせばよい。",
         codeExample: {
-          good: "if hp > 0 or mp > 0:\n    print(\"まだ動ける\")",
+          good: "hp = 0\nmp = 100\nif hp > 0 or mp > 0:\n    print(\"まだ動ける\")",
         },
       },
       {
@@ -836,7 +842,7 @@ export const tutorials: LessonTutorial[] = [
         content: "not は条件の結果を反転させる。True は False に、False は True になる。例: not isGameOver は「ゲームオーバーでない」という意味だ。",
         characterMessage: "not は反転の力を持つ。TrueとFalseを逆転させる。",
         codeExample: {
-          good: "if not isGameOver:\n    print(\"続行\")",
+          good: "isGameOver = False\nif not isGameOver:\n    print(\"続行\")",
         },
       },
       {
@@ -1021,7 +1027,8 @@ export const tutorials: LessonTutorial[] = [
         characterMessage: "ループの外で print(total) すると、最終結果が出るよ！",
         codeExample: {
           good: "total = 0\nfor i in range(3):\n    total = total + i\nprint(total)  # ループの外",
-          bad: "total = 0\nfor i in range(3):\n    total = total + i\n    print(total)  # ループの中（間違い）",
+          badLabel: "意図とちがう例",
+          bad: "total = 0\nfor i in range(3):\n    total = total + i\n    print(total)  # ループの中だと途中経過が3行出てしまう\n# 結果: 0 / 1 / 3",
         },
       },
       {
@@ -1173,7 +1180,7 @@ export const tutorials: LessonTutorial[] = [
       },
       {
         title: "位置を指定して取り出そう！",
-        content: "prefixCodeで用意されたリストから、指定された要素をインデックスで取り出しましょう。",
+        content: "あらかじめ用意されているリストから、指定された要素をインデックスで取り出しましょう。",
         characterMessage: "さあ、インデックスを使って要素を取り出してみよう！ 0から数えるのを忘れないでね！",
       },
     ],
@@ -1382,7 +1389,7 @@ export const tutorials: LessonTutorial[] = [
         content: "say_hello() のように、関数名の後ろにカッコをつけると呼び出せます。レストランで「これください！」と注文するイメージです。",
         characterMessage: "関数名の後ろに () をつけるだけ！ これが『注文』だよ！",
         codeExample: {
-          good: "say_hello()",
+          good: "def say_hello():\n    print(\"こんにちは\")\n\nsay_hello()",
         },
       },
       {
@@ -1425,7 +1432,7 @@ export const tutorials: LessonTutorial[] = [
         content: "関数名()を複数回書くと、その回数だけ関数が実行されます。コードがスッキリして読みやすくなります。",
         characterMessage: "say_hello() を3回書けば、3回挨拶できるよ！",
         codeExample: {
-          good: "say_hello()\nsay_hello()\nsay_hello()",
+          good: "def say_hello():\n    print(\"こんにちは\")\n\nsay_hello()\nsay_hello()\nsay_hello()",
         },
       },
       {
@@ -1523,9 +1530,9 @@ export const tutorials: LessonTutorial[] = [
       {
         title: "引数の順番が大事",
         content: "引数は渡す順番が重要です。最初の値が最初のパラメータに、2番目の値が2番目のパラメータに入ります。",
-        characterMessage: "順番を間違えると、違う材料が入っちゃうから気をつけてね！",
+        characterMessage: "先に書いた値が first、次に書いた値が last に入るよ。順番を間違えると違う材料が入っちゃうから気をつけてね！",
         codeExample: {
-          good: "def greet(first, last):\n    print(first + \" \" + last)\n\ngreet(\"太郎\", \"田中\")\n# 結果: 太郎 田中",
+          good: "def greet(first, last):\n    print(first + \" \" + last)\n\ngreet(\"山田\", \"太郎\")\n# 結果: 山田 太郎",
         },
       },
       {
@@ -1587,7 +1594,7 @@ export const tutorials: LessonTutorial[] = [
         content: "printは、先生が黒板に答えを書いて見せるだけ。書いたら消されちゃうわ。returnは、答えをノートに書いて渡してくれること。だから後から見返せるし、次の計算にも使えるの。",
         characterMessage: "printは『見せる』だけ。returnは『渡す』の。この違い、とても大事よ",
         codeExample: {
-          good: '# print: 表示するだけ\nprint("カレー")\n\n# return: 値を返す\nresult = get_dish()\nprint(result)',
+          good: 'def get_dish():\n    return "カレー"\n\n# print: 表示するだけ\nprint("カレー")\n\n# return: 値を返して、あとから使える\nresult = get_dish()\nprint(result)',
         },
       },
       {
@@ -1621,7 +1628,7 @@ export const tutorials: LessonTutorial[] = [
         content: "result = get_number() で受け取った後、print(result)で表示したり、result + 10のように計算に使えます。",
         characterMessage: "変数に入れたら、printで表示したり、計算に使ったりできるわ",
         codeExample: {
-          good: 'result = get_number()\nprint(result)  # 100\nprint(result + 10)  # 110',
+          good: 'def get_number():\n    return 100\n\nresult = get_number()\nprint(result)       # 100\nprint(result + 10)  # 110',
         },
       },
       {
@@ -1630,7 +1637,7 @@ export const tutorials: LessonTutorial[] = [
         characterMessage: "get_number()だけ書いて受け取らないと、戻り値は消えてしまうの。もったいないわ",
         codeExample: {
           bad: "get_number()  # 戻り値が消える",
-          good: "result = get_number()  # 変数に保存される",
+          good: "def get_number():\n    return 100\n\nresult = get_number()  # 変数に保存される\nprint(result)",
         },
       },
       {
@@ -1672,7 +1679,7 @@ export const tutorials: LessonTutorial[] = [
         content: "計算結果を変数で受け取れば、後から何度でも使えます。",
         characterMessage: "result = double(5) で10を受け取って、print(result)で表示できるわ",
         codeExample: {
-          good: "result = double(5)\nprint(result)  # 10\nprint(result + 5)  # 15",
+          good: "def double(x):\n    return x * 2\n\nresult = double(5)\nprint(result)      # 10\nprint(result + 5)  # 15",
         },
       },
       {
@@ -1792,288 +1799,223 @@ export const tutorials: LessonTutorial[] = [
   {
     lessonId: "9-1",
     characterName: "ディクト",
-    characterEmoji: "🐧",
+    characterEmoji: "📚",
     characterImage: "/images/characters/dict.png",
     slides: [
       {
         title: "知識の図書館へようこそ",
-        content: "ディクトは司書を務めています。今日は「辞書」という新しいデータの入れ物を学びましょう。",
-        characterMessage: "ようこそ、知識の図書館へ。私はディクト、司書を務めています。",
-      },
-      {
-        title: "辞書とは？",
-        content: "今日は「辞書」という新しいデータの入れ物を学びましょう。",
-        characterMessage: "今日は「辞書」という新しいデータの入れ物を学びましょう。",
+        content: "私はディクト、この図書館の司書です。今日は「辞書（ディクショナリ）」という、新しいデータの入れ物を学びましょう。",
+        characterMessage: "ようこそ。今日は本の目録のようなデータの持ち方をお教えします。",
       },
       {
         title: "リストとの違い",
-        content: "リストは「順番」で管理しましたが、辞書は「名前」で管理します。",
-        characterMessage: "アリーさんから「リスト」は学びましたね？リストは「順番」で管理しました。",
-      },
-      {
-        title: "名前で管理する",
-        content: "辞書は「名前」で管理します。図書館で本を探すように！",
-        characterMessage: "辞書は「名前」で管理します。図書館で本を探すように！",
-      },
-      {
-        title: "図書館の例",
-        content: "例えば、図書館では「3番目の本」ではなく「ハリーポッターという本」で探しますよね。",
-        characterMessage: "例えば、図書館では「3番目の本」ではなく「ハリーポッターという本」で探しますよね。",
+        content: "アリーさんから学んだリストは「順番」でデータを管理しました。fruits[0] のように番号で取り出しましたね。辞書はそれとちがって「名前」で管理します。",
+        characterMessage: "図書館では「3番目の本」ではなく「ハリーポッターという本」で探しますよね。それが辞書です。",
       },
       {
         title: "キーと値のペア",
-        content: "辞書は「キー」と「値」のペアで作ります。キーが本のタイトル、値が本の内容です。",
-        characterMessage: "辞書は「キー」と「値」のペアで作ります。キーが本のタイトル、値が本の内容です。",
+        content: "辞書は「キー」と「値」をペアにして持ちます。キーが本のタイトル、値がその中身にあたります。キーを指定すれば、値がすぐに取り出せます。",
+        characterMessage: "キーは見出し、値は中身。この2つでひと組です。",
       },
       {
         title: "辞書の書き方",
-        content: "書き方は { \"キー\": \"値\" } です。波カッコ { } を使います。",
-        characterMessage: "書き方は { \"キー\": \"値\" } です。波カッコ { } を使います。",
+        content: "波カッコ { } の中に、キー: 値 の形で書きます。キーと値のあいだはコロン「:」でつなぎます。",
+        characterMessage: "{ \"キー\": \"値\" } が基本の形です。まずはこの形を覚えましょう。",
         codeExample: {
-          good: '{"name": "太郎"}',
+          good: 'print({"name": "太郎"})\n# 結果: {\'name\': \'太郎\'}',
         },
       },
       {
-        title: "実際に使ってみましょう",
-        content: "さて、実際に辞書を見てみましょう。",
-        characterMessage: "さて、実際に辞書を見てみましょう。",
+        title: "表示するとクォートが変わる",
+        content: "Pythonは辞書を表示するとき、文字列をシングルクォート（'）で囲みます。自分で書くときはダブルクォート（\"）でも大丈夫です。",
+        characterMessage: "書くときは \" 、表示は ' 。おどろかなくて大丈夫ですよ。",
+      },
+      {
+        title: "実際に作ってみましょう",
+        content: "では、いろいろな辞書を作って表示してみましょう。",
+        characterMessage: "さあ、最初の目録をつくってみましょうか。",
       },
     ],
   },
   {
     lessonId: "9-2",
     characterName: "ディクト",
-    characterEmoji: "🐧",
+    characterEmoji: "📚",
     characterImage: "/images/characters/dict.png",
     slides: [
       {
-        title: "辞書を作ってみよう",
-        content: "今度は辞書を自分で作ってみましょう。図書館で新しい目録を作るようなものです。",
-        characterMessage: "さて、今度は辞書を自分で作ってみましょう。",
-      },
-      {
-        title: "図書館の目録を作る",
-        content: "図書館で新しい目録を作るようなものです。",
-        characterMessage: "図書館で新しい目録を作るようなものです。",
-      },
-      {
         title: "辞書を変数に入れる",
-        content: "辞書を変数に入れるには、book = {\"title\": \"ハリーポッター\", \"author\": \"ローリング\"} のように書きます。",
-        characterMessage: "辞書を変数に入れるには、こう書きます：",
+        content: "作った辞書は変数に入れておくと、あとから何度でも使えます。図書館で目録に名前をつけるようなものです。",
+        characterMessage: "変数名 = { ... } と書けば、目録に名前がつきます。",
         codeExample: {
-          good: 'book = {"title": "ハリーポッター", "author": "ローリング"}',
+          good: 'book = {"title": "ハリーポッター", "author": "ローリング"}\nprint(book)',
         },
       },
       {
-        title: "2つのキーを持つ辞書",
-        content: "これで「title」と「author」という2つのキーを持つ辞書ができました。",
-        characterMessage: "これで「title」と「author」という2つのキーを持つ辞書ができました。",
+        title: "ペアはカンマで区切る",
+        content: "キーと値のペアを2つ以上入れるときは、ペアとペアのあいだをカンマ「,」で区切ります。",
+        characterMessage: "コロンはキーと値をつなぐ、カンマはペアとペアを区切る。役割がちがいます。",
+        note: "{ \"title\": \"ハリーポッター\" , \"author\": \"ローリング\" }\n         ↑コロン                   ↑カンマ",
       },
       {
-        title: "値の種類",
-        content: "キーは文字列、値は文字列でも数字でもOKです。",
-        characterMessage: "キーは文字列、値は文字列でも数字でもOKです。",
-      },
-      {
-        title: "数値の値",
-        content: "例えば person = {\"name\": \"太郎\", \"age\": 10} のように、文字列と数字を混ぜられます。",
-        characterMessage: "例えば person = {\"name\": \"太郎\", \"age\": 10} のように。",
+        title: "値は文字でも数字でもよい",
+        content: "キーは文字列で書きますが、値は文字列でも数字でもかまいません。ひとつの辞書の中で混ぜても大丈夫です。",
+        characterMessage: "名前は文字、年齢は数字。無理にそろえなくてよいのです。",
         codeExample: {
-          good: 'person = {"name": "太郎", "age": 10}',
+          good: 'person = {"name": "太郎", "age": 10}\nprint(person)',
         },
       },
       {
         title: "いろいろな辞書を作ろう",
-        content: "では、いろいろな辞書を作ってみましょう。",
-        characterMessage: "では、いろいろな辞書を作ってみましょう。",
+        content: "本、人物、ゲームのキャラクター。身のまわりのものを辞書にしてみましょう。",
+        characterMessage: "では、自分だけの目録をつくってみましょう。",
       },
     ],
   },
   {
     lessonId: "9-3",
     characterName: "ディクト",
-    characterEmoji: "🐧",
+    characterEmoji: "📚",
     characterImage: "/images/characters/dict.png",
     slides: [
       {
-        title: "値を取り出す方法",
-        content: "辞書を作れるようになりましたね。次は値を取り出す方法を学びましょう。",
-        characterMessage: "辞書を作れるようになりましたね。次は値を取り出す方法を学びましょう。",
+        title: "キーから値を取り出す",
+        content: "辞書を作れるようになりましたね。次は中身を取り出しましょう。図書館でタイトルから本を探すのと同じで、キーを指定すれば値が返ってきます。",
+        characterMessage: "名前さえわかれば一瞬です。番号を数える必要はありません。",
       },
       {
-        title: "図書館で本を探すように",
-        content: "図書館でタイトルから本を探すように、キーから値を取り出せます。",
-        characterMessage: "図書館でタイトルから本を探すように、キーから値を取り出せます。",
-      },
-      {
-        title: "角カッコの使い方",
-        content: "書き方は 辞書[\"キー\"] です。角カッコを使います。",
-        characterMessage: "書き方は 辞書[\"キー\"] です。角カッコを使います。",
+        title: "角カッコで指定する",
+        content: "辞書[\"キー\"] と書きます。作るときは波カッコ { } でしたが、取り出すときは角カッコ [ ] を使います。",
+        characterMessage: "作るのは { } 、取り出すのは [ ] 。ここは間違えやすいところです。",
         codeExample: {
-          good: 'person["name"]',
+          good: 'person = {"name": "太郎"}\nprint(person["name"])\n# 結果: 太郎',
         },
       },
       {
-        title: "例：辞書から値を取り出す",
-        content: "例えば person = {\"name\": \"太郎\"} のとき、person[\"name\"] と書くと \"太郎\" が取り出せます。",
-        characterMessage: "例えば person = {\"name\": \"太郎\"} のとき...",
+        title: "リストとくらべてみよう",
+        content: "リストは番号（インデックス）で、辞書はキーの名前で取り出します。どちらも角カッコを使いますが、中に入れるものがちがいます。",
+        characterMessage: "fruits[0] は0番目。person[\"name\"] は name という見出し。",
+        note: "リスト  fruits[0]        →  0番目の要素\n辞書    person[\"name\"]   →  name というキーの値",
+      },
+      {
+        title: "取り出した値は変数に入れられる",
+        content: "取り出した値は、そのまま表示してもいいですし、変数に入れてあとから使うこともできます。",
+        characterMessage: "一度取り出してしまえば、ふつうの値と同じように使えます。",
         codeExample: {
-          good: 'person = {"name": "太郎"}\nprint(person["name"])',
+          good: 'person = {"name": "さくら"}\nname = person["name"]\nprint(name)',
         },
-      },
-      {
-        title: "実際に取り出してみる",
-        content: "person[\"name\"] と書くと \"太郎\" が取り出せます。",
-        characterMessage: "person[\"name\"] と書くと \"太郎\" が取り出せます。",
-      },
-      {
-        title: "リストとの違い",
-        content: "リストでは番号で取り出しましたが、辞書ではキーの名前で取り出すのです。",
-        characterMessage: "リストでは番号で取り出しましたが、辞書ではキーの名前で取り出すのです。",
       },
       {
         title: "練習してみましょう",
-        content: "名前さえわかれば、一瞬ですよ。では練習してみましょう。",
-        characterMessage: "名前さえわかれば、一瞬ですよ。では練習してみましょう。",
+        content: "いろいろな辞書から、指定された値を取り出してみましょう。",
+        characterMessage: "では、目録から本を探してみましょうか。",
       },
     ],
   },
   {
     lessonId: "9-4",
     characterName: "ディクト",
-    characterEmoji: "🐧",
+    characterEmoji: "📚",
     characterImage: "/images/characters/dict.png",
     slides: [
       {
-        title: "値を追加・変更する方法",
-        content: "辞書から値を取り出せるようになりましたね。次は辞書に新しいデータを追加したり、変更したりする方法を学びましょう。",
-        characterMessage: "辞書から値を取り出せるようになりましたね。",
-      },
-      {
-        title: "新しいデータを追加する",
-        content: "次は辞書に新しいデータを追加したり、変更したりする方法を学びましょう。",
-        characterMessage: "次は辞書に新しいデータを追加したり、変更したりする方法を学びましょう。",
-      },
-      {
-        title: "図書館の目録に追加する",
-        content: "新しい本が入ったら、目録に追加しますよね。辞書も同じです。",
-        characterMessage: "新しい本が入ったら、目録に追加しますよね。辞書も同じです。",
+        title: "あとから追加する",
+        content: "新しい本が入ったら目録に書き足しますよね。辞書も同じで、あとからペアを追加できます。",
+        characterMessage: "できあがった目録に、行を書き足すイメージです。",
       },
       {
         title: "追加の書き方",
-        content: "書き方は 辞書[\"新しいキー\"] = 値 です。",
-        characterMessage: "書き方は 辞書[\"新しいキー\"] = 値 です。",
+        content: "辞書[\"新しいキー\"] = 値 と書きます。取り出すときと同じ角カッコを使って、右辺に入れたい値を書きます。",
+        characterMessage: "取り出すときは右辺なし、追加するときは = で値を渡す。それだけの違いです。",
         codeExample: {
-          good: 'person["age"] = 10',
+          good: 'person = {"name": "太郎"}\nperson["age"] = 10\nprint(person)\n# 結果: {\'name\': \'太郎\', \'age\': 10}',
         },
       },
       {
-        title: "例：年齢を追加する",
-        content: "例えば person = {\"name\": \"太郎\"} に年齢を追加するには、person[\"age\"] = 10 と書きます。",
-        characterMessage: "例えば person = {\"name\": \"太郎\"} に年齢を追加するには...",
+        title: "すでにあるキーなら上書き",
+        content: "同じ書き方で、すでにあるキーを指定すると値が上書きされます。追加と変更は同じ書き方なのです。",
+        characterMessage: "無ければ追加、あれば変更。ひとつ覚えれば両方できます。",
         codeExample: {
-          good: 'person = {"name": "太郎"}\nperson["age"] = 10\nprint(person)',
+          good: 'hero = {"hp": 50}\nhero["hp"] = 100\nprint(hero)\n# 結果: {\'hp\': 100}',
         },
-      },
-      {
-        title: "追加後の辞書",
-        content: "person[\"age\"] = 10 と書くと、これで{\"name\": \"太郎\", \"age\": 10}になります。",
-        characterMessage: "person[\"age\"] = 10 と書きます。これで{\"name\": \"太郎\", \"age\": 10}になります。",
-      },
-      {
-        title: "値を変更する",
-        content: "すでにあるキーに値を入れると、上書きされます。これが値の変更です。",
-        characterMessage: "すでにあるキーに値を入れると、上書きされます。これが値の変更です。",
       },
       {
         title: "練習してみましょう",
-        content: "では、追加と変更を練習してみましょう。",
-        characterMessage: "では、追加と変更を練習してみましょう。",
+        content: "辞書に値を追加したり、変更したりしてみましょう。",
+        characterMessage: "では、目録を更新してみましょう。",
       },
     ],
   },
   {
     lessonId: "9-5",
     characterName: "ディクト",
-    characterEmoji: "🐧",
+    characterEmoji: "📚",
     characterImage: "/images/characters/dict.png",
     slides: [
       {
-        title: "キーがあるか確認する",
-        content: "辞書に値を追加・変更できるようになりましたね。ところで、存在しないキーで値を取り出そうとするとエラーになります。",
-        characterMessage: "辞書に値を追加・変更できるようになりましたね。",
+        title: "無いキーを指定するとエラー",
+        content: "辞書に入っていないキーを指定して取り出そうとすると、プログラムはエラーで止まってしまいます。図書館に無い本を探しても見つからないのと同じですね。",
+        characterMessage: "ですから、探す前に「あるかどうか」を確かめる方法を覚えましょう。",
       },
       {
-        title: "エラーを防ぐ",
-        content: "存在しないキーで値を取り出そうとするとエラーになります。図書館にない本を探しても見つからないのと同じですね。",
-        characterMessage: "ところで、存在しないキーで値を取り出そうとするとエラーになります。",
-      },
-      {
-        title: "図書館の例",
-        content: "図書館にない本を探しても見つからないのと同じですね。",
-        characterMessage: "図書館にない本を探しても見つからないのと同じですね。",
-      },
-      {
-        title: "in演算子の使い方",
-        content: "そこで「in」を使って、キーがあるかどうか先に確認できます。",
-        characterMessage: "そこで「in」を使って、キーがあるかどうか先に確認できます。",
-      },
-      {
-        title: "inの書き方",
-        content: "書き方は \"キー\" in 辞書 です。あればTrue、なければFalseになります。",
-        characterMessage: "書き方は \"キー\" in 辞書 です。あればTrue、なければFalseになります。",
+        title: "in で確かめる",
+        content: "\"キー\" in 辞書 と書くと、そのキーがあれば True、なければ False が返ってきます。",
+        characterMessage: "あるか無いかを True / False で教えてくれます。",
         codeExample: {
-          good: '"name" in person',
+          good: 'person = {"name": "太郎"}\nprint("name" in person)   # True\nprint("age" in person)    # False',
         },
       },
       {
-        title: "例：キーがあるか確認",
-        content: "例えば \"name\" in person と書くと、nameキーがあるか確認できます。",
-        characterMessage: "例えば \"name\" in person と書くと、nameキーがあるか確認できます。",
+        title: "if と組み合わせる",
+        content: "ジャッジさんから学んだif文と組み合わせれば、「キーがあるときだけ取り出す」という安全な書き方ができます。",
+        characterMessage: "確かめてから取り出す。これがエラーを防ぐ作法です。",
         codeExample: {
-          good: 'person = {"name": "太郎"}\nprint("name" in person)',
+          good: 'person = {"name": "太郎"}\nif "name" in person:\n    print(person["name"])',
         },
       },
       {
-        title: "if文と組み合わせる",
-        content: "if文と組み合わせると、キーがある時だけ値を取り出せますよ。",
-        characterMessage: "if文と組み合わせると、キーがある時だけ値を取り出せますよ。",
+        title: "キーの一覧を見る .keys()",
+        content: "辞書.keys() と書くと、その辞書が持っているキーをまとめて取り出せます。表示すると dict_keys([...]) という形で出てきます。カッコ ( ) を付け忘れないようにしましょう。",
+        characterMessage: "目録の見出しだけを、ずらりと並べて見るようなものです。",
         codeExample: {
-          good: 'if "name" in person:\n    print(person["name"])',
+          good: 'person = {"name": "ゆい", "age": 10}\nprint(person.keys())\n# 結果: dict_keys([\'name\', \'age\'])',
         },
       },
       {
-        title: ".keys()で在庫確認",
-        content: "まずは.keys()で「在庫確認」をしてから探すと安心です。では練習しましょう。",
-        characterMessage: "まずは.keys()で「在庫確認」をしてから探すと安心です。では練習しましょう。",
+        title: "値の一覧を見る .values()",
+        content: "辞書.values() と書くと、今度は値のほうをまとめて取り出せます。こちらは dict_values([...]) という形で表示されます。",
+        characterMessage: ".keys() は見出し、.values() は中身。対になっています。",
+        codeExample: {
+          good: 'fruits = {"apple": 100, "banana": 80}\nprint(fruits.values())\n# 結果: dict_values([100, 80])',
+        },
+      },
+      {
+        title: "練習してみましょう",
+        content: "in でキーを確かめたり、.keys() や .values() で一覧を見たりしてみましょう。",
+        characterMessage: "まずは在庫確認から。それが司書の作法です。",
       },
     ],
   },
   {
     lessonId: "9-6",
     characterName: "ディクト",
-    characterEmoji: "🐧",
+    characterEmoji: "📚",
     characterImage: "/images/characters/dict.png",
     slides: [
       {
-        title: "辞書クイズ！",
-        content: "お見事です。辞書についてたくさん学びましたね。最後に、これまでの知識を確認するクイズに挑戦しましょう。",
-        characterMessage: "お見事です。辞書についてたくさん学びましたね。",
+        title: "辞書の総復習です",
+        content: "辞書の作り方、値の取り出し方、追加と変更、キーの確認。ここまでよく学びましたね。最後にクイズで確かめましょう。",
+        characterMessage: "お見事です。では、覚えているか確かめてみましょう。",
       },
       {
-        title: "クイズに挑戦",
-        content: "最後に、これまでの知識を確認するクイズに挑戦しましょう。",
-        characterMessage: "最後に、これまでの知識を確認するクイズに挑戦しましょう。",
-      },
-      {
-        title: "学んだことを確認",
-        content: "辞書の作り方、値の取り出し方、追加・変更、キーの確認...全部覚えていますか？",
-        characterMessage: "辞書の作り方、値の取り出し方、追加・変更、キーの確認...全部覚えていますか？",
+        title: "クイズの進め方",
+        content: "4つの選択肢から正しい答えを選びます。まちがえても大丈夫。なぜそうなるかの説明が出るので、読んでからもう一度挑戦してください。",
+        characterMessage: "まちがえた理由がわかれば、それは前進です。",
       },
       {
         title: "すべての情報には見出しがある",
-        content: "すべての情報には、ふさわしい「見出し」があるのです。では、始めましょう。",
-        characterMessage: "すべての情報には、ふさわしい「見出し」があるのです。では、始めましょう。",
+        content: "リストが「順番」で、辞書が「名前」。使い分けられるようになれば、扱えるデータがぐっと増えます。では、始めましょう。",
+        characterMessage: "すべての情報には、ふさわしい見出しがあるのです。",
       },
     ],
   },

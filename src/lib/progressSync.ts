@@ -1,6 +1,8 @@
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "./firebase";
 import { getLevelInfo } from "@/utils/progress";
+import { getReviewState, saveReviewState } from "@/utils/reviewSystem";
+import { ReviewItem } from "@/types/review";
 
 export interface ProgressData {
   visibleLessons: string[];
@@ -12,6 +14,8 @@ export interface ProgressData {
   lastStudyDate: string | null;
   missionProgress: { [lessonId: string]: number };
   lastOpenedMission?: { lessonId: string; missionId: number; timestamp: number } | null;
+  // 復習キュー（端末を変えても消えないようにクラウドにも保存する）
+  reviewItems?: ReviewItem[];
 }
 
 const DEFAULT_PROGRESS: ProgressData = {
@@ -83,6 +87,23 @@ export const syncProgressOnLogin = async (uid: string): Promise<void> => {
         JSON.stringify(cloudProgress.lastOpenedMission)
       );
     }
+
+    // 復習キューを復元（ローカルとクラウドで新しい方を残す）
+    if (cloudProgress.reviewItems && cloudProgress.reviewItems.length > 0) {
+      const local = getReviewState();
+      const merged = new Map<string, ReviewItem>();
+      for (const item of cloudProgress.reviewItems) merged.set(item.odaiId, item);
+      for (const item of local.items) {
+        const cloud = merged.get(item.odaiId);
+        if (!cloud || new Date(item.lastReviewDate) > new Date(cloud.lastReviewDate)) {
+          merged.set(item.odaiId, item);
+        }
+      }
+      saveReviewState({
+        items: Array.from(merged.values()),
+        lastUpdated: new Date().toISOString(),
+      });
+    }
   }
 };
 
@@ -133,6 +154,7 @@ export const getLocalProgress = (): ProgressData => {
     lastStudyDate: progress.lastStudyDate || null,
     missionProgress: missionProgress,
     lastOpenedMission: lastOpenedMission,
+    reviewItems: getReviewState().items,
   };
 };
 

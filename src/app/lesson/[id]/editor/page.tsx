@@ -47,6 +47,9 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { playBlockAddSound, playBlockRemoveSound, playCorrectSound, playIncorrectSound } from "@/utils/sounds";
 import { addToReviewList } from "@/utils/reviewSystem";
+import { generateCode, normalizeCode } from "@/utils/codeGen";
+import { checkAnswer } from "@/utils/answerCheck";
+import { MissionInfo, GeneratedCode, AnswerExample } from "@/components/MissionInfo";
 
 // ヒント回数管理用の定数と関数
 const DAILY_HINT_KEY = "codeblock_daily_hints";
@@ -108,112 +111,6 @@ type EditorPageProps = {
     id: string;
   }>;
 };
-
-// スペースを追加すべきか判定
-function shouldAddSpace(current: WordBlock, next: WordBlock): boolean {
-  // 改行ブロックの後にはスペース不要
-  if (current.text === "↵") {
-    return false;
-  }
-  // 改行ブロックの前にはスペース不要
-  if (next.text === "↵") {
-    return false;
-  }
-  // インデントブロックの後にはスペース不要
-  if (current.text === "    " || current.type === "indent") {
-    return false;
-  }
-  // 括弧や演算子の前後にはスペース不要
-  if (current.text === "(" || next.text === ")" || next.text === "(") {
-    return false;
-  }
-  if (current.text === ")") {
-    return false;
-  }
-  // 引用符の前後にはスペース不要
-  if (current.text === '"' || next.text === '"') {
-    return false;
-  }
-  // 代入演算子・コロン・括弧・引用符の前後にはスペース不要（比較演算子>=, <=, ==, !=はスペースあり）
-  if (["=", ":", "(", ")", '"'].includes(current.text)) {
-    return false;
-  }
-  if (["=", ":", "(", ")", '"'].includes(next.text)) {
-    return false;
-  }
-  // 文字列の後にはスペース不要（次の文字列や演算子が来る場合）
-  if (current.type === "string" && (next.type === "string" || next.type === "operator")) {
-    return false;
-  }
-  return true;
-}
-
-// Pythonコード生成
-function generateCode(selectedBlocks: WordBlock[]): string {
-  let code = "";
-
-  selectedBlocks.forEach((block, index) => {
-    if (block.text === "↵") {
-      code += "\n";
-    } else if (block.text === "    ") {
-      // インデント（4スペース）
-      code += "    ";
-    } else {
-      code += block.text;
-    }
-
-    // スペースを追加（特定の条件で）
-    // ただし、現在のブロックまたは次のブロックが改行を含む場合は追加しない
-    const nextBlock = selectedBlocks[index + 1];
-    if (
-      nextBlock &&
-      !block.text.includes("\n") &&
-      !nextBlock.text.includes("\n") &&
-      shouldAddSpace(block, nextBlock)
-    ) {
-      code += " ";
-    }
-  });
-
-  return code.trim();
-}
-
-// コードを正規化する関数（省略形を展開形に変換して比較できるようにする）
-const normalizeCode = (code: string): string => {
-  let normalized = code;
-  
-  // 各行を処理
-  const lines = normalized.split('\n');
-  const normalizedLines = lines.map(line => {
-    // -= の変換: variable -= value → variable = variable - value
-    // 例: count -= 1 → count = count - 1
-    line = line.replace(/^(\s*)(\w+)\s*-=\s*(.+)$/gm, '$1$2 = $2 - $3');
-    
-    // += の変換: variable += value → variable = variable + value
-    // 例: total += i → total = total + i
-    line = line.replace(/^(\s*)(\w+)\s*\+=\s*(.+)$/gm, '$1$2 = $2 + $3');
-    
-    // *= の変換: variable *= value → variable = variable * value
-    line = line.replace(/^(\s*)(\w+)\s*\*=\s*(.+)$/gm, '$1$2 = $2 * $3');
-    
-    // /= の変換: variable /= value → variable = variable / value
-    line = line.replace(/^(\s*)(\w+)\s*\/=\s*(.+)$/gm, '$1$2 = $2 / $3');
-    
-    return line;
-  });
-  
-  return normalizedLines.join('\n');
-};
-
-// 期待されるコードを取得
-function getExpectedCode(lessonId: string): string {
-  if (lessonId === "1-1") return 'print("Hello World")';
-  if (lessonId === "1-2") return 'print(123)';
-  if (lessonId === "1-3") return 'print(1 + 2)';
-  if (lessonId === "2-1") return 'name = "Yuki"\nprint(name)';
-  if (lessonId === "3-1") return 'if age >= 10:\n    print("10歳以上です")';
-  return "";
-}
 
 // APIを呼び出してPythonコードを実行
 async function executePythonCode(
@@ -343,6 +240,10 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
   const wrongMissionIdsRef = useRef<number[]>([]);
   const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
   const [showNextButton, setShowNextButton] = useState(false);
+  // 選択式で誤答したときのフィードバック
+  const [quizFeedback, setQuizFeedback] = useState<string | null>(null);
+  // 3回間違えたら正解例を見せる
+  const [showAnswerExample, setShowAnswerExample] = useState(false);
   const handleCheckRef = useRef<(() => Promise<void>) | undefined>(undefined);
   const goToNextMissionRef = useRef<(() => void) | undefined>(undefined);
   
@@ -546,6 +447,9 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     return lines;
   }, [selectedBlocks]);
 
+  // 並べたブロックから生成される実際のPythonコード（入力に合わせて随時更新）
+  const livePythonCode = useMemo(() => generateCode(selectedBlocks), [selectedBlocks]);
+
   // 現在のインデントレベルを計算する関数
   const getCurrentIndentLevel = (blocks: WordBlock[]): number => {
     if (blocks.length === 0) return 0;
@@ -600,13 +504,14 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     if (newBlock.text === "↵") {
       const indentBlock = getIndentBlock();
       // インデントブロックが利用可能な場合のみ自動インデントを有効化
-      // レッスン4, 5, 6, 7, 8で有効
+      // レッスン4, 5, 6, 7, 8, 9で有効（9はif文と組み合わせる問題でインデントを使う）
       if (indentBlock && lessonId && (
-        lessonId.startsWith("4-") || 
-        lessonId.startsWith("5-") || 
-        lessonId.startsWith("6-") || 
-        lessonId.startsWith("7-") || 
-        lessonId.startsWith("8-")
+        lessonId.startsWith("4-") ||
+        lessonId.startsWith("5-") ||
+        lessonId.startsWith("6-") ||
+        lessonId.startsWith("7-") ||
+        lessonId.startsWith("8-") ||
+        lessonId.startsWith("9-")
       )) {
         // 現在のインデントレベルを計算
         const indentLevel = getCurrentIndentLevel(selectedBlocks);
@@ -662,7 +567,9 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     setExecutionResult(null);
     setSelectedChoice(null);
     setShowNextButton(false);
-    
+    setQuizFeedback(null);
+    setShowAnswerExample(false);
+
     // ヒント機能の状態をリセット（各問題ごとに1回ヒントを表示できるようにする）
     setWrongCount(0);
     setHintShown(false);
@@ -940,6 +847,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       // 不正解回数をカウント
       setWrongCount(prev => {
         const newCount = prev + 1;
+        // 3回間違えたら正解例を見せる（ヒントを使い切っても手詰まりにならないように）
+        if (newCount >= 3) setShowAnswerExample(true);
         
         if (newCount >= 3 && !hintShownRef.current) {
           hintShownRef.current = true; // refを先に更新
@@ -973,12 +882,20 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         });
       }
       
-      // 不正解の場合、少し待ってからリセット
-      setTimeout(() => {
-        setExecutionResult(null);
-        setSelectedChoice(null);
-      }, 2000);
+      // 不正解のときこそ説明が要る。自動で消さず、読んでから自分で次に進んでもらう
+      setQuizFeedback(
+        currentMission.hint ||
+          currentMission.explanation ||
+          "コードを上から1行ずつ読んで、変数の中身がどう変わるか追いかけてみよう！"
+      );
     }
+  };
+
+  // 選択式でもう一度考える
+  const retryQuiz = () => {
+    setExecutionResult(null);
+    setSelectedChoice(null);
+    setQuizFeedback(null);
   };
 
   // 確認ボタンの処理
@@ -1019,6 +936,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         // エラー時も不正解としてカウント
         setWrongCount(prev => {
           const newCount = prev + 1;
+          // 3回間違えたら正解例を見せる（ヒントを使い切っても手詰まりにならないように）
+          if (newCount >= 3) setShowAnswerExample(true);
           
           if (newCount >= 3 && !hintShownRef.current) {
             
@@ -1049,402 +968,14 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       }
 
       const actualOutput = output || "";
-      const expectedOutput = currentMission?.expectedOutput || "";
 
-      // スペースを保持したまま、前後の空白と末尾の改行のみ除去
-      const normalizedActual = actualOutput.trim();
-      const normalizedExpected = expectedOutput.trim();
-
-      // 出力結果の比較
-      const outputMatches = normalizedActual === normalizedExpected;
-
-      // 特定レッスンでの追加チェック
-      let codeIsValid = true;
-      let codeErrorMessage = "";
-
-      // レッスン3-1（データ型を知ろう）の場合、正しいデータ型を使っているかチェック
-      if (lessonId === "3-1") {
-        const missionId = currentMission?.id;
-        
-        // 問2: 整数42を表示（"42"を使っていたら不正解）
-        if (missionId === 2) {
-          if (code.includes('"42"') || code.includes("'42'")) {
-            codeIsValid = false;
-            codeErrorMessage = "整数（int型）の 42 を使ってね！「\"42\"」は文字列だよ！";
-          }
-        }
-        
-        // 問3: 真偽値Trueを表示（"True"を使っていたら不正解）
-        if (missionId === 3) {
-          if (code.includes('"True"') || code.includes("'True'")) {
-            codeIsValid = false;
-            codeErrorMessage = "真偽値（bool型）の True を使ってね！「\"True\"」は文字列だよ！";
-          }
-        }
-        
-        // 問4: 真偽値Falseを表示（"False"を使っていたら不正解）
-        if (missionId === 4) {
-          if (code.includes('"False"') || code.includes("'False'")) {
-            codeIsValid = false;
-            codeErrorMessage = "真偽値（bool型）の False を使ってね！「\"False\"」は文字列だよ！";
-          }
-        }
-        
-        // 問5: 小数3.14を表示（"3.14"を使っていたら不正解）
-        if (missionId === 5) {
-          if (code.includes('"3.14"') || code.includes("'3.14'")) {
-            codeIsValid = false;
-            codeErrorMessage = "小数（float型）の 3.14 を使ってね！「\"3.14\"」は文字列だよ！";
-          }
-        }
-        
-        // 問6: 整数100を表示（"100"を使っていたら不正解）
-        if (missionId === 6) {
-          if (code.includes('"100"') || code.includes("'100'")) {
-            codeIsValid = false;
-            codeErrorMessage = "整数（int型）の 100 を使ってね！「\"100\"」は文字列だよ！";
-          }
-        }
-      }
-
-      // レッスン3-2（型を調べよう）の場合、type()を使っているかチェック
-      if (lessonId === "3-2") {
-        if (!code.includes("type(")) {
-          codeIsValid = false;
-          codeErrorMessage = "type()を使ってデータの型を調べてね！";
-        }
-      }
-
-      // レッスン3-3（型を変換しよう）の場合、int()/str()/float()のいずれかを使っているかチェック
-      if (lessonId === "3-3") {
-        // print()を除外してからチェック（"print(" の中に "int(" が含まれるため）
-        const codeForCheck = code.replace(/print\s*\(/g, "___PRINT___(");
-        console.log("=== レッスン3-3チェック開始 ===");
-        console.log("生成されたコード:", code);
-        console.log("チェック用コード:", codeForCheck);
-        
-        const hasIntConversion = codeForCheck.includes("int(");
-        const hasStrConversion = codeForCheck.includes("str(");
-        const hasFloatConversion = codeForCheck.includes("float(");
-        console.log("int()あり:", hasIntConversion, "str()あり:", hasStrConversion, "float()あり:", hasFloatConversion);
-        
-        if (!hasIntConversion && !hasStrConversion && !hasFloatConversion) {
-          console.log("型変換関数なし → 不正解にする");
-          codeIsValid = false;
-          codeErrorMessage = "int()、str()、float()のどれかを使って型を変換してね！";
-        } else {
-          console.log("型変換関数あり → OK");
-        }
-      }
-
-      // レッスン4-1（条件分岐を知ろう）の場合、if文を使っているかチェック
-      if (lessonId === "4-1") {
-        if (!code.includes("if ")) {
-          codeIsValid = false;
-          codeErrorMessage = "if文を使って条件分岐を書こう";
-        }
-      }
-
-      // レッスン4-2（比較演算子を使おう）の場合、比較演算子を使っているかチェック
-      if (lessonId === "4-2") {
-        // 比較演算子のリスト（<= や >= を先にチェックするため、長いものから順に）
-        const comparisonOperators = ["!=", "<=", ">=", "==", "<", ">"];
-        const hasComparisonOperator = comparisonOperators.some(op => code.includes(op));
-        
-        if (!hasComparisonOperator) {
-          codeIsValid = false;
-          // 「=」が含まれているが「==」ではない場合のメッセージ
-          if (code.includes("=") && !code.includes("==")) {
-            codeErrorMessage = "「=」ではなく「==」を使って比較しよう！「=」は代入、「==」は比較だよ";
-          } else {
-            codeErrorMessage = "比較演算子（==, !=, <, >, <=, >=）を使って条件を書こう";
-          }
-        }
-      }
-
-      // レッスン4-3（if/elseを使おう）の場合、ifとelseを使っているかチェック
-      if (lessonId === "4-3") {
-        if (!code.includes("if ")) {
-          codeIsValid = false;
-          codeErrorMessage = "if文を使って条件分岐を書こう！";
-        } else if (!code.includes("else:")) {
-          codeIsValid = false;
-          codeErrorMessage = "elseを使ってどちらの場合も書こう！";
-        } else if (!code.includes("\n")) {
-          codeIsValid = false;
-          codeErrorMessage = "↵（エンター）ブロックを使って改行しよう！";
-        }
-      }
-
-      // レッスン4-4（elifを使おう）の場合、elif, elseを使っているかチェック
-      if (lessonId === "4-4") {
-        const hasElif = code.includes("elif ");
-        const hasElse = code.includes("else:");
-        
-        if (!hasElif) {
-          codeIsValid = false;
-          codeErrorMessage = "elifを使って複数の条件を書こう";
-        } else if (!hasElse) {
-          codeIsValid = false;
-          codeErrorMessage = "elseを使ってどれにも当てはまらない場合を書こう";
-        } else if (currentMission?.correctCode) {
-          // 正解コードが定義されている場合、構造をチェック
-          const normalizeCode = (codeStr: string) => {
-            return codeStr
-              .replace(/\s+/g, " ")
-              .replace(/\s*:\s*/g, ":")
-              .replace(/\s*\(\s*/g, "(")
-              .replace(/\s*\)\s*/g, ")")
-              .trim();
-          };
-          
-          const normalizedUserCode = normalizeCode(code);
-          const normalizedCorrectCode = normalizeCode(currentMission.correctCode);
-          
-          // 完全一致チェック
-          if (normalizedUserCode !== normalizedCorrectCode) {
-            // if/elif/elseの構造を抽出してチェック
-            const extractIfElifElseStructure = (codeStr: string) => {
-              const structure: Array<{ type: "if" | "elif" | "else"; condition: string | null; print: string }> = [];
-              
-              // if文を抽出
-              const ifMatch = codeStr.match(/if\s+(.+?):/);
-              if (ifMatch) {
-                const condition = ifMatch[1].trim().replace(/\s+/g, " ");
-                const printMatch = codeStr.substring(ifMatch.index || 0).match(/print\s*\(\s*"([^"]+)"\s*\)/);
-                structure.push({
-                  type: "if",
-                  condition: condition,
-                  print: printMatch ? printMatch[1] : ""
-                });
-              }
-              
-              // elif文を抽出
-              const elifMatches = Array.from(codeStr.matchAll(/elif\s+(.+?):/g));
-              for (const match of elifMatches) {
-                const condition = match[1].trim().replace(/\s+/g, " ");
-                const printMatch = codeStr.substring(match.index || 0).match(/print\s*\(\s*"([^"]+)"\s*\)/);
-                structure.push({
-                  type: "elif",
-                  condition: condition,
-                  print: printMatch ? printMatch[1] : ""
-                });
-              }
-              
-              // else文を抽出
-              const elseMatch = codeStr.match(/else\s*:/);
-              if (elseMatch) {
-                const printMatch = codeStr.substring(elseMatch.index || 0).match(/print\s*\(\s*"([^"]+)"\s*\)/);
-                structure.push({
-                  type: "else",
-                  condition: null,
-                  print: printMatch ? printMatch[1] : ""
-                });
-              }
-              
-              return structure;
-            };
-            
-            const userStructure = extractIfElifElseStructure(code);
-            const correctStructure = extractIfElifElseStructure(currentMission.correctCode);
-            
-            // 構造の数が一致しているか
-            if (userStructure.length !== correctStructure.length) {
-              codeIsValid = false;
-              codeErrorMessage = "elifとelseの構造が正しくありません。もう一度確認してね！";
-            } else {
-              // 各ブロックをチェック
-              for (let i = 0; i < correctStructure.length; i++) {
-                const correct = correctStructure[i];
-                const user = userStructure[i];
-                
-                // タイプが一致しているか
-                if (correct.type !== user.type) {
-                  codeIsValid = false;
-                  codeErrorMessage = `正しい順序でelifとelseを使ってね！`;
-                  break;
-                }
-                
-                // 条件が一致しているか（ifとelifの場合）
-                if (correct.condition && user.condition) {
-                  if (correct.condition !== user.condition) {
-                    codeIsValid = false;
-                    codeErrorMessage = `条件式が正しくありません。「${correct.condition}」を使ってね！`;
-                    break;
-                  }
-                }
-                
-                // 出力文字列が一致しているか
-                if (correct.print && user.print) {
-                  if (correct.print !== user.print) {
-                    codeIsValid = false;
-                    codeErrorMessage = `出力する文字列が正しくありません。「${correct.print}」を出力してね！`;
-                    break;
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-
-      // レッスン4-5（論理演算子を使おう）の場合、and, or, notのいずれかを使っているかチェック
-      if (lessonId === "4-5") {
-        const hasAnd = code.includes(" and ");
-        const hasOr = code.includes(" or ");
-        const hasNot = code.includes("not ");
-        
-        if (!hasAnd && !hasOr && !hasNot) {
-          codeIsValid = false;
-          codeErrorMessage = "論理演算子（and, or, not）を使って条件を組み合わせよう";
-        } else if (currentMission?.correctCode) {
-          // 正解コードが定義されている場合、より厳密なチェック
-          const normalizeCode = (codeStr: string) => {
-            return codeStr
-              .replace(/\s+/g, " ")
-              .replace(/\s*:\s*/g, ":")
-              .replace(/\s*\(\s*/g, "(")
-              .replace(/\s*\)\s*/g, ")")
-              .trim();
-          };
-          
-          const normalizedUserCode = normalizeCode(code);
-          const normalizedCorrectCode = normalizeCode(currentMission.correctCode);
-          
-          if (normalizedUserCode !== normalizedCorrectCode) {
-            const extractCondition = (codeStr: string) => {
-              const match = codeStr.match(/if\s+(.+?):/);
-              if (!match) return null;
-              const condition = match[1].trim();
-              
-              // and, or, notを検出
-              const parts = condition.split(/\s+(and|or)\s+/);
-              const hasNotOp = condition.includes("not ");
-              
-              return {
-                op: parts.find(p => p === "and" || p === "or") || (hasNotOp ? "not" : null),
-                conditions: parts.filter((_, i) => i % 2 === 0).map(c => c.trim().replace(/^not\s+/, "")).sort()
-              };
-            };
-            
-            const userCond = extractCondition(code);
-            const correctCond = extractCondition(currentMission.correctCode);
-            
-            if (userCond && correctCond) {
-              if (userCond.op !== correctCond.op) {
-                codeIsValid = false;
-                const expectedOp = correctCond.op === "and" ? "and" : correctCond.op === "or" ? "or" : "not";
-                codeErrorMessage = `正しい論理演算子（${expectedOp}）を使ってね！`;
-              } else if (userCond.conditions.join("|") !== correctCond.conditions.join("|")) {
-                codeIsValid = false;
-                codeErrorMessage = "条件式が正しくありません。もう一度確認してね！";
-              }
-            } else {
-              codeIsValid = false;
-              codeErrorMessage = "if文の構造が正しくありません。もう一度確認してね！";
-            }
-          }
-        }
-      }
-
-      // レッスン1-4（文字列連結）の場合、「+」を使っているかチェック
-      if (lessonId === "1-4") {
-        if (!code.includes("+")) {
-          codeIsValid = false;
-          codeErrorMessage = "「+」を使って文字列をつなげてね！";
-        }
-      }
-
-      // レッスン1-5（文字列を繰り返そう）の場合、文字列 * 数字のパターンを使っているかチェック
-      if (lessonId === "1-5") {
-        // 文字列（"..."または'...'）の後に * が来て、その後に数字が来るパターンをチェック
-        const hasStringMultiplyPattern = /["'][^"']*["']\s*\*\s*\d+/.test(code) || /\d+\s*\*\s*["'][^"']*["']/.test(code);
-        if (!hasStringMultiplyPattern) {
-          codeIsValid = false;
-          codeErrorMessage = "文字列と「*」と数字を使って文字列を繰り返してね！例: \"Hi\" * 3";
-        }
-      }
-
-      // レッスン5-1（繰り返しを知ろう）の場合、for文とrange()を使っているかチェック
-      if (lessonId === "5-1") {
-        const hasFor = code.includes("for ");
-        const hasRange = code.includes("range(");
-        
-        if (!hasFor) {
-          codeIsValid = false;
-          codeErrorMessage = "for文を使って繰り返しを書こう！";
-        } else if (!hasRange) {
-          codeIsValid = false;
-          codeErrorMessage = "range()を使って繰り返す回数を指定しよう！";
-        }
-      }
-
-      // レッスン5-5（while文を使おう）の場合、while文を使っているかチェック
-      if (lessonId === "5-5") {
-        const hasWhile = code.includes("while ");
-        
-        if (!hasWhile) {
-          codeIsValid = false;
-          codeErrorMessage = "while文を使って繰り返しを書こう！";
-        }
-      }
-
-      // レッスン2（変数）の場合、変数を定義してprint内で使っているかチェック
-      if (lessonId?.startsWith("2-")) {
-        if (!code.includes("=")) {
-          codeIsValid = false;
-          codeErrorMessage = "変数を使って値を入れてね！「=」を使おう！";
-        } else {
-          // レッスン2-4（変数の上書き）の場合、=が2回以上使われているかチェック
-          if (lessonId === "2-4") {
-            const equalsCount = (code.match(/=/g) || []).length;
-            if (equalsCount < 2) {
-              codeIsValid = false;
-              codeErrorMessage = "変数に値を入れた後、もう一度値を入れ直してね！";
-            }
-          }
-
-          // レッスン2-5（変数同士を組み合わせよう）の場合、=が2回以上使われているかチェック
-          if (lessonId === "2-5") {
-            const equalsCount = (code.match(/=/g) || []).length;
-            if (equalsCount < 2) {
-              codeIsValid = false;
-              codeErrorMessage = "2つ以上の変数を作って組み合わせてね！";
-            }
-          }
-          
-          // 変数名を抽出（= の前にある単語）
-          if (codeIsValid) {
-            // すべての変数定義を抽出
-            const variableMatches = code.matchAll(/(\w+)\s*=/g);
-            const variableNames: string[] = [];
-            for (const match of variableMatches) {
-              variableNames.push(match[1]);
-            }
-            
-            if (variableNames.length > 0) {
-              // print()内で変数が使用されているかチェック
-              // print(変数名) の形式をチェック（文字列内は除外）
-              const printMatches = code.matchAll(/print\s*\([^)]*\)/g);
-              let variableUsedInPrint = false;
-              for (const printMatch of printMatches) {
-                const printContent = printMatch[0];
-                // 文字列（"..." または '...'）を除去してから変数名をチェック
-                const withoutStrings = printContent.replace(/["'][^"']*["']/g, '');
-                // 定義された変数のうち、少なくとも1つがprint()内で使用されているかチェック
-                if (variableNames.some(varName => withoutStrings.includes(varName))) {
-                  variableUsedInPrint = true;
-                  break;
-                }
-              }
-              if (!variableUsedInPrint) {
-                codeIsValid = false;
-                codeErrorMessage = "変数をprint()内で使ってね！";
-              }
-            }
-          }
-        }
-      }
+      // 出力一致とコード構造を、3画面共通のロジックでまとめて判定する
+      const result = currentMission
+        ? checkAnswer(lessonId || "", currentMission, code, actualOutput)
+        : { correct: false, message: "問題を読み込めませんでした。" };
+      const outputMatches = result.correct;
+      const codeIsValid = result.correct;
+      const codeErrorMessage = result.message || "";
 
       // 両方の条件を満たした場合のみ正解
       if (outputMatches && codeIsValid) {
@@ -1552,6 +1083,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         // 不正解回数をカウント
         setWrongCount(prev => {
           const newCount = prev + 1;
+          // 3回間違えたら正解例を見せる（ヒントを使い切っても手詰まりにならないように）
+          if (newCount >= 3) setShowAnswerExample(true);
           
           if (newCount >= 3 && !hintShownRef.current) {
             hintShownRef.current = true; // refを先に更新
@@ -1595,6 +1128,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       // エラー時も不正解としてカウント
       setWrongCount(prev => {
         const newCount = prev + 1;
+        // 3回間違えたら正解例を見せる（ヒントを使い切っても手詰まりにならないように）
+        if (newCount >= 3) setShowAnswerExample(true);
         
         if (newCount >= 3 && !hintShownRef.current) {
           hintShownRef.current = true;
@@ -1961,25 +1496,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
               </div>
             )}
             
-            {/* 説明 */}
-            <div className="flex-1 min-w-0">
-              <p className="text-sm md:text-base text-gray-700 mb-2 leading-relaxed"><FuriganaText text={currentMission.description} /></p>
-              {currentMission?.prefixCode && (
-                <div className="bg-gray-700 rounded-lg p-2 mt-3">
-                  <p className="text-xs text-gray-400 mb-1">変数の設定（自動で入力されます）:</p>
-                  <pre className="text-yellow-400 font-mono text-sm">{currentMission.prefixCode}</pre>
-                </div>
-              )}
-              {/* 期待される出力 - クイズ形式以外の場合のみ表示 */}
-              {currentMission?.type !== "quiz" && !currentMission?.hideExpectedOutput && (
-                <div className="bg-gray-800 rounded-lg p-2 mt-3">
-                  <p className="text-xs text-gray-400 mb-1"><F reading="きたい">期待</F>される<F reading="しゅつりょく">出力</F>:</p>
-                  <pre className="text-green-400 font-mono text-sm">
-                    {currentMission.expectedOutput}
-                  </pre>
-                </div>
-              )}
-            </div>
+            {/* 説明・前提コード・期待される出力 */}
+            <MissionInfo mission={currentMission} />
           </div>
         </div>
 
@@ -1988,10 +1506,12 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           // 選択式問題のUI
           <div className="mb-4">
             {/* コード表示 */}
-            <div className="bg-gray-900 rounded-xl p-4 mb-4">
-              <pre className="text-green-400 font-mono text-sm whitespace-pre-wrap">{currentMission.codeToRead}</pre>
-            </div>
-            
+            {currentMission.codeToRead && (
+              <div className="bg-gray-900 rounded-xl p-4 mb-4">
+                <pre className="text-green-400 font-mono text-sm whitespace-pre-wrap">{currentMission.codeToRead}</pre>
+              </div>
+            )}
+
             {/* 選択肢 */}
             <h3 className="text-sm font-bold mb-2 text-gray-700"><F reading="せんたくし">選択肢</F>から<F reading="えら">選</F>んでね</h3>
             <div className="grid grid-cols-2 gap-2">
@@ -2013,6 +1533,30 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                 </button>
               ))}
             </div>
+
+            {/* 誤答時のフィードバック（一番学べる瞬間に何も出ないのを防ぐ） */}
+            {quizFeedback && executionResult?.success === false && (
+              <div className="mt-4 p-4 bg-amber-50 border-2 border-amber-300 rounded-xl">
+                <p className="text-amber-900 font-bold text-sm mb-1">
+                  🤔 おしい！ここを<F reading="かんが">考</F>えてみよう
+                </p>
+                <p className="text-amber-800 text-sm leading-relaxed">{quizFeedback}</p>
+                <button
+                  type="button"
+                  onClick={retryQuiz}
+                  className="mt-3 bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-5 rounded-full text-sm transition-all"
+                >
+                  もう<F reading="いちど">一度</F><F reading="こた">答</F>える
+                </button>
+              </div>
+            )}
+
+            {/* 正解時の解説 */}
+            {executionResult?.success && currentMission?.explanation && (
+              <div className="mt-4 p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
+                <p className="text-blue-800 text-sm leading-relaxed">💡 {currentMission.explanation}</p>
+              </div>
+            )}
           </div>
         ) : (
           // 従来のブロック形式のUI
@@ -2072,6 +1616,14 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                 </div>
               </div>
             </div>
+
+            {/* 組み立てたPythonコード（ブロックと本物のコードを結びつける） */}
+            <GeneratedCode code={livePythonCode} />
+
+            {/* 3回間違えたら正解例を見せる */}
+            {showAnswerExample && currentMission?.correctCode && (
+              <AnswerExample code={currentMission.correctCode} />
+            )}
           </>
         )}
 

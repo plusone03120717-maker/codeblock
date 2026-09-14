@@ -88,9 +88,6 @@ export default function ReviewSection() {
       const rate = getOverallRetentionRate();
       const reviewStats = getReviewStats();
       
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ReviewSection.tsx:12',message:'updateReviewInfo',data:{reviewCount:count,retentionRate:rate},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-      // #endregion
       
       setReviewCount(count);
       setRetentionRate(rate);

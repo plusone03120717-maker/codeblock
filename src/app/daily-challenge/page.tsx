@@ -40,62 +40,10 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { playBlockAddSound, playBlockRemoveSound, playCorrectSound, playIncorrectSound } from "@/utils/sounds";
-
-// スペースを追加すべきか判定
-function shouldAddSpace(current: WordBlock, next: WordBlock): boolean {
-  if (current.text === "↵") {
-    return false;
-  }
-  if (next.text === "↵") {
-    return false;
-  }
-  if (current.text === "(" || next.text === ")" || next.text === "(") {
-    return false;
-  }
-  if (current.text === ")") {
-    return false;
-  }
-  if (current.text === '"' || next.text === '"') {
-    return false;
-  }
-  if (["=", ">=", ":", "(", ")", '"'].includes(current.text)) {
-    return false;
-  }
-  if (["=", ">=", ":", "(", ")", '"'].includes(next.text)) {
-    return false;
-  }
-  if (current.type === "string" && (next.type === "string" || next.type === "operator")) {
-    return false;
-  }
-  return true;
-}
-
-// Pythonコード生成
-function generateCode(selectedBlocks: WordBlock[]): string {
-  let code = "";
-
-  selectedBlocks.forEach((block, index) => {
-    if (block.text === "↵") {
-      code += "\n";
-    } else if (block.text === "    ") {
-      code += "    ";
-    } else {
-      code += block.text;
-    }
-
-    const nextBlock = selectedBlocks[index + 1];
-    if (
-      nextBlock &&
-      !block.text.includes("\n") &&
-      !nextBlock.text.includes("\n") &&
-      shouldAddSpace(block, nextBlock)
-    ) {
-      code += " ";
-    }
-  });
-
-  return code.trim();
-}
+import { generateCode, normalizeCode } from "@/utils/codeGen";
+import { checkAnswer } from "@/utils/answerCheck";
+import { MissionInfo, GeneratedCode, AnswerExample } from "@/components/MissionInfo";
+import { Mission } from "@/types";
 
 // APIを呼び出してPythonコードを実行
 async function executePythonCode(
@@ -201,7 +149,15 @@ export default function DailyChallengePage() {
   const { furiganaEnabled, toggleFurigana } = useFurigana();
   const [state, setState] = useState<DailyChallengeState | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentMission, setCurrentMission] = useState<any>(null);
+  const [currentMission, setCurrentMission] = useState<Mission | null>(null);
+  const [currentLessonId, setCurrentLessonId] = useState<string>("");
+  // 選択式問題のための状態
+  const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
+  const [quizFeedback, setQuizFeedback] = useState<string | null>(null);
+  const [, setWrongCount] = useState(0); // 値は使わず、3回目で正解例を出すためだけに数える
+  const [showAnswerExample, setShowAnswerExample] = useState(false);
+  // その問題を一度も間違えずに正解できたか（統計に本当の正誤を残すため）
+  const [answeredCorrectly, setAnsweredCorrectly] = useState(true);
   const [selectedBlocks, setSelectedBlocks] = useState<WordBlock[]>([]);
   const [generatedCode, setGeneratedCode] = useState<string>("");
   const [executionResult, setExecutionResult] = useState<ExecutionResult>(null);
@@ -275,18 +231,24 @@ export default function DailyChallengePage() {
     const missionId = parseInt(parts[2] || parts[1]);
     
     const mission = getMission(lessonId, missionId);
-    
+
     if (!mission) {
       console.error('Mission not found:', currentQ.missionId, 'lessonId:', lessonId, 'missionId:', missionId);
     } else {
       setCurrentMission(mission);
+      setCurrentLessonId(lessonId);
     }
-    
+
     setSelectedBlocks([]);
     setGeneratedCode("");
     setExecutionResult(null);
     setImageError(false);
     setShowNextButton(false);
+    setSelectedChoice(null);
+    setQuizFeedback(null);
+    setAnsweredCorrectly(true);
+    setWrongCount(0);
+    setShowAnswerExample(false);
   };
 
   useEffect(() => {
@@ -320,6 +282,12 @@ export default function DailyChallengePage() {
   }, [currentMission?.availableBlocks]);
 
   // 表示用に行ごとにブロックをグループ化
+  // 選択式問題かどうか
+  const isQuiz = currentMission?.type === "quiz";
+
+  // 並べたブロックから生成される実際のPythonコード
+  const livePythonCode = useMemo(() => generateCode(selectedBlocks), [selectedBlocks]);
+
   const blockLines = useMemo(() => {
     const lines: { blocks: { block: WordBlock; index: number }[] }[] = [];
     let currentLine: { block: WordBlock; index: number }[] = [];
@@ -388,6 +356,49 @@ export default function DailyChallengePage() {
     setShowNextButton(false);
   };
 
+  // 間違えたことを記録する（統計と正解例の表示に使う）
+  const markWrong = () => {
+    setAnsweredCorrectly(false);
+    setWrongCount(prev => {
+      const next = prev + 1;
+      if (next >= 3) setShowAnswerExample(true);
+      return next;
+    });
+  };
+
+  // 選択式問題の判定
+  const handleQuizAnswer = (choiceIndex: number) => {
+    if (!currentMission || executionResult) return;
+
+    setSelectedChoice(choiceIndex);
+
+    if (choiceIndex === currentMission.correctAnswer) {
+      setExecutionResult({ success: true, output: currentMission.expectedOutput });
+      playCorrectSound();
+      setShowNextButton(true);
+    } else {
+      setExecutionResult({
+        success: false,
+        output: currentMission.choices?.[choiceIndex] || "",
+        error: "残念！もう一度考えてみよう！",
+      });
+      playIncorrectSound();
+      markWrong();
+      setQuizFeedback(
+        currentMission.hint ||
+          currentMission.explanation ||
+          "コードを上から1行ずつ読んで、値がどう変わるか追いかけてみよう！"
+      );
+    }
+  };
+
+  // 選択式でもう一度考える
+  const retryQuiz = () => {
+    setExecutionResult(null);
+    setSelectedChoice(null);
+    setQuizFeedback(null);
+  };
+
   // 確認ボタンの処理
   const handleCheck = async () => {
     if (selectedBlocks.length === 0) {
@@ -403,31 +414,31 @@ export default function DailyChallengePage() {
     setGeneratedCode(code);
 
     try {
-      let codeToExecute = code;
+      let codeToExecute = normalizeCode(code);
       if (currentMission?.prefixCode) {
-        codeToExecute = currentMission.prefixCode + "\n" + code;
+        codeToExecute = currentMission.prefixCode + "\n" + codeToExecute;
       }
       const { output, error } = await executePythonCode(codeToExecute);
-      
+
       if (error) {
         setExecutionResult({
           success: false,
           error: `エラー: ${error}`,
         });
         playIncorrectSound();
+        markWrong();
         setIsExecuting(false);
         return;
       }
 
       const actualOutput = output || "";
-      const expectedOutput = currentMission?.expectedOutput || "";
 
-      const normalizedActual = actualOutput.trim();
-      const normalizedExpected = expectedOutput.trim();
+      // レッスン・復習とまったく同じ基準で判定する
+      const result = currentMission
+        ? checkAnswer(currentLessonId, currentMission, code, actualOutput)
+        : { correct: false, message: "問題を読み込めませんでした。" };
 
-      const outputMatches = normalizedActual === normalizedExpected;
-
-      if (outputMatches) {
+      if (result.correct) {
         setExecutionResult({
           success: true,
           output: actualOutput,
@@ -439,10 +450,11 @@ export default function DailyChallengePage() {
         setExecutionResult({
           success: false,
           output: actualOutput,
-          error: "期待される出力と異なります。もう一度試してみましょう！",
+          error: result.message,
         });
-        
+
         playIncorrectSound();
+        markWrong();
       }
     } catch (error) {
       setExecutionResult({
@@ -461,10 +473,12 @@ export default function DailyChallengePage() {
   const handleNext = () => {
     if (!state || executionResult?.success !== true) return;
     
+    // 「一度も間違えずに正解できたか」を記録する。
+    // 以前は常に true を渡していたので、累計正解数が必ず満点になっていた。
     const updatedState = answerDailyChallengeQuestion(
       state,
       state.currentQuestion,
-      true
+      answeredCorrectly
     );
     
     setState(updatedState);
@@ -498,17 +512,16 @@ export default function DailyChallengePage() {
         
         if (showNextButton) {
           handleNext();
-        } else {
-          if (!isExecuting) {
-            handleCheckRef.current?.();
-          }
+        } else if (!isQuiz && !isExecuting) {
+          // 選択式は選択肢をクリックして答えるので、Enterでは実行しない
+          handleCheckRef.current?.();
         }
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [showNextButton, isExecuting]);
+  }, [showNextButton, isExecuting, isQuiz]);
 
   if (isLoading) {
     return (
@@ -633,30 +646,75 @@ export default function DailyChallengePage() {
               </div>
             )}
             
-            {/* 説明 */}
-            <div className="flex-1 min-w-0">
-              <p className="text-sm md:text-base text-gray-700 mb-2 leading-relaxed">
-                <FuriganaText text={currentMission.description} />
-              </p>
-              {currentMission?.prefixCode && (
-                <div className="bg-gray-700 rounded-lg p-2 mt-3">
-                  <p className="text-xs text-gray-400 mb-1">変数の設定（自動で入力されます）:</p>
-                  <pre className="text-yellow-400 font-mono text-sm">{currentMission.prefixCode}</pre>
-                </div>
-              )}
-              {/* 期待される出力 */}
-              {!currentMission?.hideExpectedOutput && (
-                <div className="bg-gray-800 rounded-lg p-2 mt-3">
-                  <p className="text-xs text-gray-400 mb-1"><F reading="きたい">期待</F>される<F reading="しゅつりょく">出力</F>:</p>
-                  <pre className="text-green-400 font-mono text-sm">
-                    {currentMission.expectedOutput}
-                  </pre>
-                </div>
-              )}
-            </div>
+            {/* 説明・前提コード・期待される出力 */}
+            <MissionInfo mission={currentMission} />
           </div>
         </div>
 
+        {/* 選択式問題 */}
+        {isQuiz ? (
+          <div className="mb-4">
+            {currentMission.codeToRead && (
+              <div className="bg-gray-900 rounded-xl p-4 mb-4">
+                <pre className="text-green-400 font-mono text-sm whitespace-pre-wrap">
+                  {currentMission.codeToRead}
+                </pre>
+              </div>
+            )}
+            <h3 className="text-sm font-bold mb-2 text-gray-700">
+              <F reading="せんたくし">選択肢</F>から<F reading="えら">選</F>んでね
+            </h3>
+            <div className="grid grid-cols-2 gap-2">
+              {currentMission.choices?.map((choice, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleQuizAnswer(index)}
+                  disabled={executionResult !== null}
+                  className={`p-3 rounded-xl font-bold text-left transition-all border-2 ${
+                    selectedChoice === index
+                      ? executionResult?.success
+                        ? "bg-green-100 border-green-500 text-green-700"
+                        : "bg-red-100 border-red-500 text-red-700"
+                      : "bg-white border-gray-200 hover:border-purple-400 hover:bg-purple-50"
+                  } ${executionResult !== null ? "cursor-not-allowed" : "cursor-pointer"}`}
+                >
+                  <span className="text-purple-500 mr-2">{String.fromCharCode(65 + index)}.</span>
+                  {choice}
+                </button>
+              ))}
+            </div>
+
+            {quizFeedback && executionResult?.success === false && (
+              <div className="mt-4 p-4 bg-amber-50 border-2 border-amber-300 rounded-xl">
+                <p className="text-amber-900 font-bold text-sm mb-1">🤔 おしい！ここを考えてみよう</p>
+                <p className="text-amber-800 text-sm leading-relaxed">{quizFeedback}</p>
+                <button
+                  type="button"
+                  onClick={retryQuiz}
+                  className="mt-3 bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-5 rounded-full text-sm transition-all"
+                >
+                  もう一度答える
+                </button>
+              </div>
+            )}
+
+            {executionResult?.success && currentMission?.explanation && (
+              <div className="mt-4 p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
+                <p className="text-blue-800 text-sm leading-relaxed">💡 {currentMission.explanation}</p>
+              </div>
+            )}
+
+            {executionResult?.success && (
+              <button
+                onClick={handleNext}
+                className="mt-4 w-full bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white font-bold py-3 rounded-full shadow-lg transition-all"
+              >
+                {state.currentQuestion >= 2 ? "結果を見る 🎉" : "次の問題へ →"}
+              </button>
+            )}
+          </div>
+        ) : (
+        <>
         {/* 回答エリア */}
         <div className="mb-4">
           <h3 className="text-sm font-bold mb-2 text-gray-700">あなたの<F reading="こた">答</F>え</h3>
@@ -712,12 +770,23 @@ export default function DailyChallengePage() {
           </div>
         </div>
 
+        {/* 組み立てたPythonコード */}
+        <GeneratedCode code={livePythonCode} />
+
+        {/* 3回間違えたら正解例を見せる */}
+        {showAnswerExample && currentMission?.correctCode && (
+          <AnswerExample code={currentMission.correctCode} />
+        )}
+
         {/* 固定ボタン分の余白 */}
         <div className="h-40"></div>
+        </>
+        )}
       </div>
 
-      {/* ボタンと結果表示（画面下部に固定） */}
-      <div 
+      {/* ボタンと結果表示（画面下部に固定）- 選択式では使わない */}
+      {!isQuiz && (
+      <div
         style={{
           position: 'fixed',
           bottom: 0,
@@ -843,6 +912,7 @@ export default function DailyChallengePage() {
           )}
         </div>
       </div>
+      )}
     </div>
   );
 }
