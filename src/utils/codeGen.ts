@@ -31,6 +31,10 @@ const OPERATORS = new Set([
   ">",
   "<=",
   ">=",
+  "+=",
+  "-=",
+  "*=",
+  "/=",
 ]);
 /** 前後に必ず空白が必要なキーワード */
 const SPACED_KEYWORDS = new Set([
@@ -95,8 +99,16 @@ export function shouldAddSpace(current: WordBlock, next: WordBlock): boolean {
 /** 選択されたブロック列からPythonコードを生成する */
 export function generateCode(selectedBlocks: WordBlock[]): string {
   let code = "";
+  // 開いている括弧の種類。スライス hello[6:11] のコロンを辞書 {"a": 1} と区別するのに使う
+  const brackets: string[] = [];
 
   selectedBlocks.forEach((block, index) => {
+    if (block.text === "[" || block.text === "(" || block.text === "{") {
+      brackets.push(block.text);
+    } else if (block.text === "]" || block.text === ")" || block.text === "}") {
+      brackets.pop();
+    }
+
     if (block.text === NEWLINE_BLOCK) {
       code += "\n";
     } else if (block.text === INDENT_BLOCK) {
@@ -106,8 +118,11 @@ export function generateCode(selectedBlocks: WordBlock[]): string {
     }
 
     const nextBlock = selectedBlocks[index + 1];
+    const isSliceColon =
+      block.text === ":" && brackets[brackets.length - 1] === "[";
     if (
       nextBlock &&
+      !isSliceColon &&
       !block.text.includes("\n") &&
       !nextBlock.text.includes("\n") &&
       shouldAddSpace(block, nextBlock)
@@ -126,8 +141,8 @@ export function generateCode(selectedBlocks: WordBlock[]): string {
 
 /**
  * 省略形（+= など）を展開形に直す。
- * 現状のブロックには += 系が無いため実質的に何もしないが、
- * 将来ブロックを追加したときに判定側が壊れないように残している。
+ * += 系のブロックは 2-4・5-5 の一部の問題で使う。
+ * 構造チェックは展開前のコードで行うので、「+= を使ったか」も判定できる。
  */
 export function normalizeCode(code: string): string {
   return code
