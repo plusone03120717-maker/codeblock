@@ -15,6 +15,7 @@ import {
   getRetentionLevel,
 } from "@/utils/reviewSystem";
 import { addXP } from "@/utils/progress";
+import { saveLocalProgressToCloud } from "@/lib/progressSync";
 import { useAuth } from "@/contexts/AuthContext";
 import { F, FW, FuriganaText } from "@/components/Furigana";
 import {
@@ -36,57 +37,9 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { playBlockAddSound, playBlockRemoveSound, playCorrectSound, playIncorrectSound } from "@/utils/sounds";
-
-// スペースを追加すべきか判定
-function shouldAddSpace(current: WordBlock, next: WordBlock): boolean {
-  if (current.text === "↵") return false;
-  if (next.text === "↵") return false;
-  if (current.text === "(" || next.text === ")" || next.text === "(") return false;
-  if (current.text === ")") return false;
-  if (current.text === '"' || next.text === '"') return false;
-  if (["=", ">=", ":", "(", ")", '"'].includes(current.text)) return false;
-  if (["=", ">=", ":", "(", ")", '"'].includes(next.text)) return false;
-  if (current.type === "string" && (next.type === "string" || next.type === "operator")) return false;
-  return true;
-}
-
-// Pythonコード生成
-function generateCode(selectedBlocks: WordBlock[]): string {
-  let code = "";
-  selectedBlocks.forEach((block, index) => {
-    if (block.text === "↵") {
-      code += "\n";
-    } else if (block.text === "    ") {
-      code += "    ";
-    } else {
-      code += block.text;
-    }
-    const nextBlock = selectedBlocks[index + 1];
-    if (
-      nextBlock &&
-      !block.text.includes("\n") &&
-      !nextBlock.text.includes("\n") &&
-      shouldAddSpace(block, nextBlock)
-    ) {
-      code += " ";
-    }
-  });
-  return code.trim();
-}
-
-// コードを正規化する関数
-const normalizeCode = (code: string): string => {
-  let normalized = code;
-  const lines = normalized.split('\n');
-  const normalizedLines = lines.map(line => {
-    line = line.replace(/^(\s*)(\w+)\s*-=\s*(.+)$/gm, '$1$2 = $2 - $3');
-    line = line.replace(/^(\s*)(\w+)\s*\+=\s*(.+)$/gm, '$1$2 = $2 + $3');
-    line = line.replace(/^(\s*)(\w+)\s*\*=\s*(.+)$/gm, '$1$2 = $2 * $3');
-    line = line.replace(/^(\s*)(\w+)\s*\/=\s*(.+)$/gm, '$1$2 = $2 / $3');
-    return line;
-  });
-  return normalizedLines.join('\n');
-};
+import { generateCode, normalizeCode } from "@/utils/codeGen";
+import { checkAnswer } from "@/utils/answerCheck";
+import { MissionInfo, GeneratedCode, AnswerExample } from "@/components/MissionInfo";
 
 // APIを呼び出してPythonコードを実行
 async function executePythonCode(
@@ -202,6 +155,12 @@ export default function ReviewPage() {
   const [imageError, setImageError] = useState(false);
   const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
   const [showNextButton, setShowNextButton] = useState(false);
+  // 誤答時のフィードバック
+  const [quizFeedback, setQuizFeedback] = useState<string | null>(null);
+  const [, setWrongCount] = useState(0); // 値は使わず、3回目で正解例を出すためだけに数える
+  const [showAnswerExample, setShowAnswerExample] = useState(false);
+  // 同じ問題を何度も送信しても、成績としては1回だけ数える
+  const recordedRef = useRef<Set<string>>(new Set());
   const [completedCount, setCompletedCount] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [showCompletionScreen, setShowCompletionScreen] = useState(false);
@@ -257,16 +216,8 @@ export default function ReviewPage() {
     const missionIndexStr = parts.pop();
     const lessonId = parts.join('-');
     const missionIndex = parseInt(missionIndexStr || '0', 10);
-    
-    // デバッグ用ログ
-    console.log('currentItem:', currentReviewItem);
-    console.log('lessonId:', lessonId);
-    console.log('missionIndex:', missionIndex);
-    
-    const mission = getMission(lessonId, missionIndex);
-    console.log('mission:', mission);
-    
-    return mission;
+
+    return getMission(lessonId, missionIndex);
   }, [currentReviewItem]);
 
   const lesson = currentReviewItem
@@ -305,7 +256,17 @@ export default function ReviewPage() {
     setExecutionResult(null);
     setSelectedChoice(null);
     setShowNextButton(false);
+    setQuizFeedback(null);
+    setWrongCount(0);
+    setShowAnswerExample(false);
   }, [currentIndex]);
+
+  // 選択式でもう一度考える
+  const retryQuiz = () => {
+    setExecutionResult(null);
+    setSelectedChoice(null);
+    setQuizFeedback(null);
+  };
 
   // 定着度が上がったかチェック（更新前のstreakと更新後のstreakを比較）
   const checkRetentionUpgrade = (beforeStreak: number, afterStreak: number): boolean => {
@@ -374,6 +335,9 @@ export default function ReviewPage() {
   };
 
   // 表示用に行ごとにブロックをグループ化
+  // 並べたブロックから生成される実際のPythonコード
+  const livePythonCode = useMemo(() => generateCode(selectedBlocks), [selectedBlocks]);
+
   const blockLines = useMemo(() => {
     const lines: { blocks: { block: WordBlock; index: number }[] }[] = [];
     let currentLine: { block: WordBlock; index: number }[] = [];
@@ -417,25 +381,27 @@ export default function ReviewPage() {
       });
       playCorrectSound();
       
-      // 復習結果を更新
-      if (currentReviewItem) {
+      // 復習結果を更新（1問につき1回だけ記録する）
+      if (currentReviewItem && !recordedRef.current.has(currentReviewItem.odaiId)) {
+        recordedRef.current.add(currentReviewItem.odaiId);
         const beforeStreak = currentReviewItem.correctStreak;
         updateReviewResult(currentReviewItem.odaiId, true);
-        
+          if (user) saveLocalProgressToCloud(user.uid);
+
         // 更新後のstreakを取得（正解したので+1）
         const afterStreak = beforeStreak + 1;
-        
+
         // 定着度が上がったかチェック
         if (checkRetentionUpgrade(beforeStreak, afterStreak)) {
           setRetentionUpgrades(prev => prev + 1);
         }
-        
+
         // XPを付与（1問5XP）
         addXP(5);
         setEarnedXP(prev => prev + 5);
         setCorrectCount(prev => prev + 1);
       }
-      
+
       setShowNextButton(true);
     } else {
       setExecutionResult({
@@ -444,16 +410,20 @@ export default function ReviewPage() {
         error: "残念！もう一度考えてみよう！",
       });
       playIncorrectSound();
-      
-      // 復習結果を更新
-      if (currentReviewItem) {
+
+      // 1問目の解答だけを成績として記録する
+      if (currentReviewItem && !recordedRef.current.has(currentReviewItem.odaiId)) {
+        recordedRef.current.add(currentReviewItem.odaiId);
         updateReviewResult(currentReviewItem.odaiId, false);
+          if (user) saveLocalProgressToCloud(user.uid);
       }
-      
-      setTimeout(() => {
-        setExecutionResult(null);
-        setSelectedChoice(null);
-      }, 2000);
+
+      // 自動で消さず、なぜ違うのかを読んでから次に進んでもらう
+      setQuizFeedback(
+        currentMission.hint ||
+          currentMission.explanation ||
+          "コードを上から1行ずつ読んで、値がどう変わるか追いかけてみよう！"
+      );
     }
   };
 
@@ -490,52 +460,28 @@ export default function ReviewPage() {
       }
 
       const actualOutput = output || "";
-      const expectedOutput = currentMission?.expectedOutput || "";
-      const normalizedActual = actualOutput.trim();
-      const normalizedExpected = expectedOutput.trim();
-      const outputMatches = normalizedActual === normalizedExpected;
+      const reviewLessonId = currentReviewItem?.lessonId || "";
 
-      // コード構造チェック
-      let codeIsValid = true;
-      let codeErrorMessage = "";
+      // レッスン画面とまったく同じ基準で判定する（復習だけ甘くならないように）
+      const result = currentMission
+        ? checkAnswer(reviewLessonId, currentMission, code, actualOutput)
+        : { correct: false, message: "問題を読み込めませんでした。" };
 
-      const reviewLessonId = currentReviewItem?.lessonId;
-
-      // レッスン4-3（if/else）: if・else・比較演算子・改行の存在を確認
-      if (reviewLessonId === "4-3") {
-        const comparisonOperators = ["!=", "<=", ">=", "==", "<", ">"];
-        const hasComparison = comparisonOperators.some(op => code.includes(op));
-        if (!code.includes("if ")) {
-          codeIsValid = false;
-          codeErrorMessage = "if文を使って条件分岐を書こう！";
-        } else if (!code.includes("else:")) {
-          codeIsValid = false;
-          codeErrorMessage = "elseを使ってどちらの場合も書こう！";
-        } else if (!hasComparison) {
-          codeIsValid = false;
-          codeErrorMessage = "比較演算子（>, <, >=, <=, ==）を使って条件を書こう！";
-        } else if (!code.includes("\n")) {
-          codeIsValid = false;
-          codeErrorMessage = "↵（エンター）ブロックを使って改行しよう！";
-        }
-      }
-
-      if (outputMatches && codeIsValid) {
+      if (result.correct) {
         setExecutionResult({
           success: true,
           output: actualOutput,
         });
         playCorrectSound();
 
-        // 復習結果を更新
-        if (currentReviewItem) {
+        // 復習結果を更新（1問につき1回だけ記録する）
+        if (currentReviewItem && !recordedRef.current.has(currentReviewItem.odaiId)) {
+          recordedRef.current.add(currentReviewItem.odaiId);
           const beforeStreak = currentReviewItem.correctStreak;
           updateReviewResult(currentReviewItem.odaiId, true);
-
-          // 更新後のstreakを取得（正解したので+1）
+          if (user) saveLocalProgressToCloud(user.uid);
           const afterStreak = beforeStreak + 1;
 
-          // 定着度が上がったかチェック
           if (checkRetentionUpgrade(beforeStreak, afterStreak)) {
             setRetentionUpgrades(prev => prev + 1);
           }
@@ -551,14 +497,23 @@ export default function ReviewPage() {
         setExecutionResult({
           success: false,
           output: actualOutput,
-          error: !codeIsValid ? codeErrorMessage : "期待される出力と異なります。もう一度試してみましょう！",
+          error: result.message,
         });
         playIncorrectSound();
 
-        // 復習結果を更新
-        if (currentReviewItem) {
+        // 1問目の解答だけを成績として記録する。
+        // 同じ問題に何度も挑戦した回数で定着率が下がらないようにするため。
+        if (currentReviewItem && !recordedRef.current.has(currentReviewItem.odaiId)) {
+          recordedRef.current.add(currentReviewItem.odaiId);
           updateReviewResult(currentReviewItem.odaiId, false);
+          if (user) saveLocalProgressToCloud(user.uid);
         }
+
+        setWrongCount(prev => {
+          const next = prev + 1;
+          if (next >= 3) setShowAnswerExample(true);
+          return next;
+        });
       }
     } catch (error) {
       setExecutionResult({
@@ -781,36 +736,20 @@ export default function ReviewPage() {
               </div>
             )}
             
-            <div className="flex-1 min-w-0">
-              <p className="text-sm md:text-base text-gray-700 mb-2 leading-relaxed">
-                <FuriganaText text={currentMission.description} />
-              </p>
-              {currentMission?.prefixCode && (
-                <div className="bg-gray-700 rounded-lg p-2 mt-3">
-                  <p className="text-xs text-gray-400 mb-1">変数の設定（自動で入力されます）:</p>
-                  <pre className="text-yellow-400 font-mono text-sm">{currentMission.prefixCode}</pre>
-                </div>
-              )}
-              {currentMission?.type !== "quiz" && !currentMission?.hideExpectedOutput && (
-                <div className="bg-gray-800 rounded-lg p-2 mt-3">
-                  <p className="text-xs text-gray-400 mb-1">期待される出力:</p>
-                  <pre className="text-green-400 font-mono text-sm">
-                    {currentMission.expectedOutput}
-                  </pre>
-                </div>
-              )}
-            </div>
+            <MissionInfo mission={currentMission} />
           </div>
         </div>
 
         {/* 回答エリア */}
         {currentMission?.type === "quiz" ? (
           <div className="mb-4">
-            <div className="bg-gray-900 rounded-xl p-4 mb-4">
-              <pre className="text-green-400 font-mono text-sm whitespace-pre-wrap">
-                {currentMission.codeToRead}
-              </pre>
-            </div>
+            {currentMission.codeToRead && (
+              <div className="bg-gray-900 rounded-xl p-4 mb-4">
+                <pre className="text-green-400 font-mono text-sm whitespace-pre-wrap">
+                  {currentMission.codeToRead}
+                </pre>
+              </div>
+            )}
             <h3 className="text-sm font-bold mb-2 text-gray-700">選択肢から選んでね</h3>
             <div className="grid grid-cols-2 gap-2">
               {currentMission.choices?.map((choice, index) => (
@@ -831,6 +770,28 @@ export default function ReviewPage() {
                 </button>
               ))}
             </div>
+
+            {/* 誤答時のフィードバック */}
+            {quizFeedback && executionResult?.success === false && (
+              <div className="mt-4 p-4 bg-amber-50 border-2 border-amber-300 rounded-xl">
+                <p className="text-amber-900 font-bold text-sm mb-1">🤔 おしい！ここを考えてみよう</p>
+                <p className="text-amber-800 text-sm leading-relaxed">{quizFeedback}</p>
+                <button
+                  type="button"
+                  onClick={retryQuiz}
+                  className="mt-3 bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-5 rounded-full text-sm transition-all"
+                >
+                  もう一度答える
+                </button>
+              </div>
+            )}
+
+            {/* 正解時の解説 */}
+            {executionResult?.success && currentMission?.explanation && (
+              <div className="mt-4 p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
+                <p className="text-blue-800 text-sm leading-relaxed">💡 {currentMission.explanation}</p>
+              </div>
+            )}
           </div>
         ) : (
           <>
@@ -886,6 +847,14 @@ export default function ReviewPage() {
                 </div>
               </div>
             </div>
+
+            {/* 組み立てたPythonコード */}
+            <GeneratedCode code={livePythonCode} />
+
+            {/* 3回間違えたら正解例を見せる */}
+            {showAnswerExample && currentMission?.correctCode && (
+              <AnswerExample code={currentMission.correctCode} />
+            )}
           </>
         )}
 

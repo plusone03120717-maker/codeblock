@@ -7,6 +7,7 @@ import {
   getTodayDateJST,
   getYesterdayDateJST,
   getAvailableUnits,
+  getClearedLessonIds,
   selectDailyQuestions,
 } from './dailyChallengeUtils';
 
@@ -20,15 +21,9 @@ const DAILY_CHALLENGE_STATS_KEY = 'codeblock_daily_challenge_stats';
 export function getDailyChallengeState(): DailyChallengeState | null {
   if (typeof window === 'undefined') return null;
   
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'dailyChallengeStorage.ts:20',message:'getDailyChallengeState entry',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-  // #endregion
   
   const stored = localStorage.getItem(DAILY_CHALLENGE_STATE_KEY);
   
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'dailyChallengeStorage.ts:24',message:'localStorage read',data:{hasStored:!!stored,storedLength:stored?.length||0},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-  // #endregion
   
   if (!stored) return null;
   
@@ -36,24 +31,15 @@ export function getDailyChallengeState(): DailyChallengeState | null {
     const state: DailyChallengeState = JSON.parse(stored);
     const today = getTodayDateJST();
     
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'dailyChallengeStorage.ts:32',message:'date comparison',data:{stateDate:state.date,todayDate:today,matches:state.date===today},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A,C'})}).catch(()=>{});
-    // #endregion
     
     // 日付が今日でなければnull（新しいチャレンジが必要）
     if (state.date !== today) {
       return null;
     }
     
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'dailyChallengeStorage.ts:39',message:'getDailyChallengeState returning state',data:{completed:state.completed,currentQuestion:state.currentQuestion,questionCount:state.questions.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-    // #endregion
     
     return state;
   } catch (e) {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'dailyChallengeStorage.ts:44',message:'JSON parse error',data:{error:String(e)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-    // #endregion
     return null;
   }
 }
@@ -177,17 +163,14 @@ export function updateDailyChallengeStats(
 export function generateNewDailyChallenge(
   userProgress: Record<string, boolean> | null
 ): DailyChallengeState {
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'dailyChallengeStorage.ts:142',message:'generateNewDailyChallenge entry',data:{userProgressKeys:userProgress?Object.keys(userProgress):null,userProgressCount:userProgress?Object.keys(userProgress).length:0},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-  // #endregion
   
   const today = getTodayDateJST();
   const availableUnits = getAvailableUnits(userProgress);
-  const questions = selectDailyQuestions(availableUnits);
+  const questions = selectDailyQuestions(
+    availableUnits,
+    getClearedLessonIds(userProgress)
+  );
   
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'dailyChallengeStorage.ts:147',message:'before state creation',data:{today,availableUnits,questionCount:questions.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D,E'})}).catch(()=>{});
-  // #endregion
   
   const state: DailyChallengeState = {
     date: today,
@@ -200,9 +183,6 @@ export function generateNewDailyChallenge(
   
   saveDailyChallengeState(state);
   
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'dailyChallengeStorage.ts:160',message:'generateNewDailyChallenge result',data:{stateDate:state.date,questionCount:state.questions.length,missionIds:state.questions.map(q=>q.missionId)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-  // #endregion
   
   return state;
 }

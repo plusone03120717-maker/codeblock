@@ -38,13 +38,7 @@ export function saveReviewState(state: ReviewState): void {
     const jsonData = JSON.stringify(updatedState);
     localStorage.setItem(STORAGE_KEY, jsonData);
     
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'reviewSystem.ts:38',message:'saveReviewState success',data:{itemsCount:updatedState.items.length,storageKey:STORAGE_KEY},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-    // #endregion
   } catch (error) {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'reviewSystem.ts:40',message:'saveReviewState error',data:{error:error instanceof Error ? error.message : String(error)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-    // #endregion
     console.error("Failed to save review state:", error);
   }
 }
@@ -57,24 +51,14 @@ export function addToReviewList(
   odaiIndex: number,
   lessonTitle: string
 ): void {
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'reviewSystem.ts:47',message:'addToReviewList called',data:{lessonId,odaiIndex,lessonTitle},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-  // #endregion
   
   const state = getReviewState();
   const odaiId = `${lessonId}-${odaiIndex}`;
-
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'reviewSystem.ts:53',message:'odaiId generated',data:{odaiId,existingItemsCount:state.items.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-  // #endregion
 
   // 既に存在するかチェック
   const existingIndex = state.items.findIndex((item) => item.odaiId === odaiId);
   
   if (existingIndex >= 0) {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'reviewSystem.ts:59',message:'item already exists, skipping',data:{odaiId,existingIndex},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
     // 既に存在する場合は何もしない（重複追加を防ぐ）
     return;
   }
@@ -95,16 +79,9 @@ export function addToReviewList(
     totalCorrect: 0,
   };
 
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'reviewSystem.ts:78',message:'new item created',data:{newItem},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-  // #endregion
-
   state.items.push(newItem);
   saveReviewState(state);
   
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'reviewSystem.ts:81',message:'saveReviewState called',data:{itemsCount:state.items.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-  // #endregion
 }
 
 /**
@@ -120,16 +97,10 @@ export function getTodayReviewItems(): ReviewItem[] {
     nextReview.setHours(0, 0, 0, 0);
     const shouldReview = nextReview <= today;
     
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'reviewSystem.ts:94',message:'checking review item',data:{odaiId:item.odaiId,nextReviewDate:item.nextReviewDate,nextReview:nextReview.toISOString(),today:today.toISOString(),shouldReview},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-    // #endregion
     
     return shouldReview;
   });
   
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'reviewSystem.ts:96',message:'getTodayReviewItems result',data:{totalItems:state.items.length,filteredCount:filtered.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-  // #endregion
   
   return filtered;
 }

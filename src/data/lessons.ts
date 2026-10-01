@@ -117,8 +117,8 @@ export const lessons: Lesson[] = [
     unitNumber: 3,
     subNumber: 1,
     title: "データ型を知ろう",
-    description: "文字列・数値・真偽値の違いを学ぼう",
-    difficulty: "ふつう",
+    description: "文字列・整数・小数・真偽値の違いを学ぼう",
+    difficulty: "かんたん",
   },
   {
     id: "3-2",
@@ -133,7 +133,7 @@ export const lessons: Lesson[] = [
     unitNumber: 3,
     subNumber: 3,
     title: "型を変換しよう",
-    description: "int()やstr()を使って型を変換しよう",
+    description: "int()・str()・float()を使って型を変換しよう",
     difficulty: "ふつう",
   },
   {
@@ -174,7 +174,7 @@ export const lessons: Lesson[] = [
     subNumber: 4,
     title: "elifを使おう",
     description: "複数の条件で分岐しよう",
-    difficulty: "ふつう",
+    difficulty: "むずかしい",
   },
   {
     id: "4-5",
@@ -182,7 +182,7 @@ export const lessons: Lesson[] = [
     subNumber: 5,
     title: "論理演算子を使おう",
     description: "and, or, notで条件を組み合わせよう",
-    difficulty: "ふつう",
+    difficulty: "むずかしい",
   },
   {
     id: "4-6",
@@ -190,7 +190,7 @@ export const lessons: Lesson[] = [
     subNumber: 6,
     title: "条件分岐クイズ！",
     description: "コードを読んで出力を予測しよう",
-    difficulty: "ふつう",
+    difficulty: "むずかしい",
   },
   {
     id: "5-1",
@@ -198,7 +198,7 @@ export const lessons: Lesson[] = [
     subNumber: 1,
     title: "繰り返しを知ろう",
     description: "for文とrange()の基本を学ぼう",
-    difficulty: "かんたん",
+    difficulty: "ふつう",
   },
   {
     id: "5-2",
@@ -206,7 +206,7 @@ export const lessons: Lesson[] = [
     subNumber: 2,
     title: "何回繰り返す？",
     description: "range()の数字を変えてみよう",
-    difficulty: "かんたん",
+    difficulty: "ふつう",
   },
   {
     id: "5-3",
@@ -214,7 +214,7 @@ export const lessons: Lesson[] = [
     subNumber: 3,
     title: "変数iを使おう",
     description: "ループカウンターを出力してみよう",
-    difficulty: "かんたん",
+    difficulty: "ふつう",
   },
   {
     id: "5-4",
@@ -222,7 +222,7 @@ export const lessons: Lesson[] = [
     subNumber: 4,
     title: "繰り返しで計算しよう",
     description: "ループで合計を求めてみよう",
-    difficulty: "かんたん",
+    difficulty: "むずかしい",
   },
   {
     id: "5-5",
@@ -230,7 +230,7 @@ export const lessons: Lesson[] = [
     subNumber: 5,
     title: "while文を使おう",
     description: "条件がTrueの間、繰り返そう",
-    difficulty: "かんたん",
+    difficulty: "むずかしい",
   },
   {
     id: "5-6",
@@ -238,7 +238,7 @@ export const lessons: Lesson[] = [
     subNumber: 6,
     title: "ループクイズ！",
     description: "コードを読んで出力を予測しよう",
-    difficulty: "ふつう",
+    difficulty: "むずかしい",
   },
   {
     id: "6-1",
@@ -246,7 +246,7 @@ export const lessons: Lesson[] = [
     subNumber: 1,
     title: "リストって何？",
     description: "データを順番に並べて管理しよう",
-    difficulty: "かんたん",
+    difficulty: "ふつう",
   },
   {
     id: "6-2",
@@ -254,7 +254,7 @@ export const lessons: Lesson[] = [
     subNumber: 2,
     title: "インデックスを使おう",
     description: "リストの要素に番号でアクセスしよう",
-    difficulty: "かんたん",
+    difficulty: "ふつう",
   },
   {
     id: "6-3",
@@ -262,7 +262,7 @@ export const lessons: Lesson[] = [
     subNumber: 3,
     title: "リストに追加しよう",
     description: "appendで要素を追加しよう",
-    difficulty: "かんたん",
+    difficulty: "ふつう",
   },
   {
     id: "6-4",
@@ -270,7 +270,7 @@ export const lessons: Lesson[] = [
     subNumber: 4,
     title: "リストの長さを調べよう",
     description: "lenでリストの要素数を数えよう",
-    difficulty: "かんたん",
+    difficulty: "ふつう",
   },
   {
     id: "6-5",
@@ -278,7 +278,7 @@ export const lessons: Lesson[] = [
     subNumber: 5,
     title: "リストとループ",
     description: "for文でリストの要素を順番に処理しよう",
-    difficulty: "かんたん",
+    difficulty: "むずかしい",
   },
   {
     id: "6-6",
@@ -286,7 +286,7 @@ export const lessons: Lesson[] = [
     subNumber: 6,
     title: "リストクイズ！",
     description: "リストの知識を総復習しよう",
-    difficulty: "ふつう",
+    difficulty: "むずかしい",
   },
   {
     id: "7-1",
@@ -294,7 +294,7 @@ export const lessons: Lesson[] = [
     subNumber: 1,
     title: "関数って何？",
     description: "自分だけのレシピを作ろう",
-    difficulty: "かんたん",
+    difficulty: "ふつう",
   },
   {
     id: "7-2",
@@ -302,7 +302,7 @@ export const lessons: Lesson[] = [
     subNumber: 2,
     title: "関数を呼び出そう",
     description: "作ったレシピを実行しよう",
-    difficulty: "かんたん",
+    difficulty: "ふつう",
   },
   {
     id: "7-3",
@@ -310,7 +310,7 @@ export const lessons: Lesson[] = [
     subNumber: 3,
     title: "何度も呼び出そう",
     description: "同じ関数を繰り返し使おう",
-    difficulty: "かんたん",
+    difficulty: "ふつう",
   },
   {
     id: "7-4",
@@ -318,7 +318,7 @@ export const lessons: Lesson[] = [
     subNumber: 4,
     title: "引数を使おう①",
     description: "関数に材料を渡そう",
-    difficulty: "かんたん",
+    difficulty: "むずかしい",
   },
   {
     id: "7-5",
@@ -326,7 +326,7 @@ export const lessons: Lesson[] = [
     subNumber: 5,
     title: "引数を使おう②",
     description: "複数の材料を渡そう",
-    difficulty: "かんたん",
+    difficulty: "むずかしい",
   },
   {
     id: "7-6",
@@ -334,7 +334,7 @@ export const lessons: Lesson[] = [
     subNumber: 6,
     title: "関数クイズ！",
     description: "関数の知識を総復習しよう",
-    difficulty: "ふつう",
+    difficulty: "むずかしい",
   },
   {
     id: "8-1",
@@ -342,7 +342,7 @@ export const lessons: Lesson[] = [
     subNumber: 1,
     title: "戻り値って何？",
     description: "関数から結果を受け取ろう",
-    difficulty: "かんたん",
+    difficulty: "むずかしい",
   },
   {
     id: "8-2",
@@ -350,7 +350,7 @@ export const lessons: Lesson[] = [
     subNumber: 2,
     title: "戻り値を受け取ろう",
     description: "結果を変数に入れて使おう",
-    difficulty: "かんたん",
+    difficulty: "むずかしい",
   },
   {
     id: "8-3",
@@ -358,7 +358,7 @@ export const lessons: Lesson[] = [
     subNumber: 3,
     title: "計算する関数を作ろう",
     description: "引数を計算して結果を返そう",
-    difficulty: "かんたん",
+    difficulty: "むずかしい",
   },
   {
     id: "8-4",
@@ -366,7 +366,7 @@ export const lessons: Lesson[] = [
     subNumber: 4,
     title: "関数とリスト",
     description: "リストを渡して、リストを受け取ろう",
-    difficulty: "かんたん",
+    difficulty: "むずかしい",
   },
   {
     id: "8-5",
@@ -374,7 +374,7 @@ export const lessons: Lesson[] = [
     subNumber: 5,
     title: "関数とループ",
     description: "ループの中で関数を使おう",
-    difficulty: "かんたん",
+    difficulty: "むずかしい",
   },
   {
     id: "8-6",
@@ -382,7 +382,7 @@ export const lessons: Lesson[] = [
     subNumber: 6,
     title: "戻り値クイズ！",
     description: "戻り値の知識を総復習しよう",
-    difficulty: "ふつう",
+    difficulty: "むずかしい",
   },
   {
     id: "9-1",
@@ -390,7 +390,7 @@ export const lessons: Lesson[] = [
     subNumber: 1,
     title: "辞書って何？",
     description: "データを名前で管理する辞書を学ぼう",
-    difficulty: "かんたん",
+    difficulty: "ふつう",
   },
   {
     id: "9-2",
@@ -398,7 +398,7 @@ export const lessons: Lesson[] = [
     subNumber: 2,
     title: "辞書を作ろう",
     description: "辞書を作成する方法を学ぼう",
-    difficulty: "かんたん",
+    difficulty: "ふつう",
   },
   {
     id: "9-3",
@@ -406,7 +406,7 @@ export const lessons: Lesson[] = [
     subNumber: 3,
     title: "値を取り出そう",
     description: "辞書から値を取り出す方法を学ぼう",
-    difficulty: "かんたん",
+    difficulty: "ふつう",
   },
   {
     id: "9-4",
@@ -414,7 +414,7 @@ export const lessons: Lesson[] = [
     subNumber: 4,
     title: "値を追加・変更しよう",
     description: "辞書に値を追加・変更する方法を学ぼう",
-    difficulty: "かんたん",
+    difficulty: "むずかしい",
   },
   {
     id: "9-5",
@@ -422,7 +422,7 @@ export const lessons: Lesson[] = [
     subNumber: 5,
     title: "キーがあるか確認しよう",
     description: "辞書にキーが存在するか確認する方法を学ぼう",
-    difficulty: "かんたん",
+    difficulty: "むずかしい",
   },
   {
     id: "9-6",
@@ -430,7 +430,7 @@ export const lessons: Lesson[] = [
     subNumber: 6,
     title: "辞書クイズ！",
     description: "辞書の知識を総復習しよう",
-    difficulty: "ふつう",
+    difficulty: "むずかしい",
   },
 ]
 

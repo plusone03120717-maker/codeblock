@@ -6,17 +6,11 @@ import { getLessonMissions } from '@/data/missions';
  * 午前6時より前なら前日の日付を返す
  */
 export function getTodayDateJST(): string {
-  // #region agent log
   const now = new Date();
-  fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'dailyChallengeUtils.ts:9',message:'getTodayDateJST entry',data:{utcNow:now.toISOString()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-  // #endregion
-  
+
   // 日本時間に変換
   const jstTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
   
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'dailyChallengeUtils.ts:13',message:'JST time calculated',data:{jstHours:jstTime.getHours(),jstMinutes:jstTime.getMinutes(),isBefore6AM:jstTime.getHours()<6},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-  // #endregion
   
   // 午前6時より前なら前日扱い
   if (jstTime.getHours() < 6) {
@@ -30,9 +24,6 @@ export function getTodayDateJST(): string {
   
   const result = `${year}-${month}-${day}`;
   
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'dailyChallengeUtils.ts:24',message:'getTodayDateJST result',data:{resultDate:result,year,month,day},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-  // #endregion
   
   return result;
 }
@@ -72,32 +63,44 @@ export function getAvailableUnits(userProgress: Record<string, boolean> | null):
   if (!userProgress) {
     return [1];
   }
-  
+
   const availableUnits: number[] = [1]; // Unit 1は常に含める
-  
+
   // クリア済みレッスンからユニット番号を抽出
   // レッスンIDは "1-1", "1-2", "2-1" などの形式
+  // （以前は unitId <= 6 の上限があり、ユニット7〜9を学び終えても出題されなかった）
   Object.keys(userProgress).forEach(lessonId => {
     if (userProgress[lessonId]) {
       const unitId = parseInt(lessonId.split('-')[0]);
-      if (!availableUnits.includes(unitId) && unitId <= 6) {
+      if (!Number.isNaN(unitId) && !availableUnits.includes(unitId)) {
         availableUnits.push(unitId);
       }
     }
   });
-  
+
   return availableUnits.sort((a, b) => a - b);
+}
+
+/** クリア済みのレッスンIDの集合を返す（未習の問題を出題しないために使う） */
+export function getClearedLessonIds(
+  userProgress: Record<string, boolean> | null
+): Set<string> {
+  const cleared = new Set<string>();
+  if (!userProgress) return cleared;
+  Object.keys(userProgress).forEach(lessonId => {
+    if (userProgress[lessonId]) cleared.add(lessonId);
+  });
+  return cleared;
 }
 
 /**
  * 利用可能なユニットから3問をランダムに選出
  * 可能な限り異なるユニットから出題する
  */
-export function selectDailyQuestions(availableUnits: number[]): DailyChallengeQuestion[] {
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'dailyChallengeUtils.ts:82',message:'selectDailyQuestions entry',data:{availableUnits},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-  // #endregion
-  
+export function selectDailyQuestions(
+  availableUnits: number[],
+  clearedLessonIds?: Set<string>
+): DailyChallengeQuestion[] {
   const selectedQuestions: DailyChallengeQuestion[] = [];
   const usedMissionIds: Set<string> = new Set();
   
@@ -119,12 +122,17 @@ export function selectDailyQuestions(availableUnits: number[]): DailyChallengeQu
   
   for (const unitId of availableUnits) {
     // レッスンIDのパターンを作成（例: "1-1", "1-2", "2-1" など）
-    // Unit 1の場合は "1-1" から "1-10" 程度を想定
-    // Unit 2の場合は "2-1" から "2-10" 程度を想定
     for (let subNumber = 1; subNumber <= 20; subNumber++) {
       const lessonId = `${unitId}-${subNumber}`;
+
+      // まだ習っていないレッスンからは出題しない
+      // （ユニット1は入門なので、進捗が無いときでも出せるように例外扱い）
+      if (clearedLessonIds && clearedLessonIds.size > 0) {
+        if (!clearedLessonIds.has(lessonId) && unitId !== 1) continue;
+      }
+
       const missions = getLessonMissions(lessonId);
-      
+
       if (missions) {
         missions.forEach(mission => {
           allMissions.push({
@@ -132,6 +140,19 @@ export function selectDailyQuestions(availableUnits: number[]): DailyChallengeQu
             missionId: mission.id,
             unitId,
           });
+        });
+      }
+    }
+  }
+
+  // 候補が1問も無い場合は、ユニット1の全ミッションにフォールバックする
+  if (allMissions.length === 0) {
+    for (let subNumber = 1; subNumber <= 20; subNumber++) {
+      const lessonId = `1-${subNumber}`;
+      const missions = getLessonMissions(lessonId);
+      if (missions) {
+        missions.forEach(mission => {
+          allMissions.push({ lessonId, missionId: mission.id, unitId: 1 });
         });
       }
     }
@@ -185,10 +206,6 @@ export function selectDailyQuestions(availableUnits: number[]): DailyChallengeQu
     
     usedMissionIds.add(missionIdString);
   }
-  
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/5177b56d-da0c-4bea-ba85-d7fa6767810c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'dailyChallengeUtils.ts:189',message:'selectDailyQuestions result',data:{questionCount:selectedQuestions.length,questionIds:selectedQuestions.map(q=>q.missionId),questions:selectedQuestions.map(q=>({missionId:q.missionId,lessonId:q.lessonId,unitId:q.unitId}))},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-  // #endregion
   
   return selectedQuestions;
 }
