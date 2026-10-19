@@ -43,3 +43,6 @@ next-env.d.ts
 # sitemap
 /public/sitemap*.xml
 /public/robots.txt
+
+# Supabase への移行で書き出したデータ（メール・パスワードの暗号が入る。コミットしない）
+.migration-data/
