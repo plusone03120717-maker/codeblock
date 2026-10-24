@@ -19,7 +19,7 @@ const NAV: { key: Tab; icon: string; label: string; soon?: boolean }[] = [
   { key: "students", icon: "👥", label: "生徒とプラン" },
   { key: "classroom", icon: "🏫", label: "いまの教室", soon: true },
   { key: "weak", icon: "📊", label: "苦手", soon: true },
-  { key: "course", icon: "⚙️", label: "コースの切りかえ", soon: true },
+  { key: "course", icon: "⚙️", label: "コース切りかえ", soon: true },
 ];
 
 const SOON_TEXT: Record<Exclude<Tab, "students">, { title: string; body: string[] }> = {
@@ -207,12 +207,12 @@ export default function AdminPage() {
           <button
             key={n.key}
             onClick={() => setTab(n.key)}
-            className={`flex items-center gap-2.5 rounded-[14px] px-3.5 py-[11px] text-left text-[14.5px] font-bold ${
+            className={`flex items-center gap-2.5 whitespace-nowrap rounded-[14px] px-3.5 py-[11px] text-left text-[14.5px] font-bold ${
               tab === n.key ? "bg-[#efe9ff] text-[#7448f0]" : "text-[#6d6893] hover:bg-[#f7f6fc]"
             }`}
           >
             {n.icon} {n.label}
-            {n.soon && <span className="ml-auto rounded-full bg-[#f0eef7] px-2 text-[11px] text-[#8a85ad]">準備中</span>}
+            {n.soon && <span className="ml-auto whitespace-nowrap rounded-full bg-[#f0eef7] px-2 text-[11px] text-[#8a85ad]">準備中</span>}
           </button>
         ))}
         <div className="mt-auto px-2.5 text-xs font-bold text-[#6d6893]">
