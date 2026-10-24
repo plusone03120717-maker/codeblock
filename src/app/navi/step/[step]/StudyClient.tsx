@@ -9,7 +9,7 @@ import { YouTubePlayer, type PlayerHandle } from '@/components/navi/YouTubePlaye
 import { NaviHeader } from '@/components/navi/NaviHeader'
 import { EndPopup } from '@/components/navi/EndPopup'
 import { getNaviStep } from '@/data/navi/steps'
-import { judgeByRunOnly, sectionPassed } from '@/lib/navi/judge'
+import { sectionPassed, studentNote } from '@/lib/navi/judge'
 import {
   codeblockCompleted,
   fmtTime,
@@ -83,8 +83,12 @@ export function StudyClient({ step: stepNo }: { step: number }) {
     const newly: number[] = []
     step.sections.forEach((sec, i) => {
       if (p.passed.includes(i) || !reached(i)) return
-      const ok = judgeByRunOnly(sec) ? r.ok : sectionPassed(sec, r.output, code)
-      if (ok) newly.push(i)
+      if (sectionPassed(sec, r, code)) newly.push(i)
+    })
+    // エラーを見る見出しは、そのあとの見出しが合格したら、見たことにして合格にする（止まらないように）
+    const maxPassed = Math.max(-1, ...p.passed, ...newly)
+    step.sections.forEach((sec, i) => {
+      if (sec.expectError && i < maxPassed && !p.passed.includes(i) && !newly.includes(i)) newly.push(i)
     })
     if (newly.length > 0) {
       save({ passed: [...p.passed, ...newly] })
@@ -112,8 +116,15 @@ export function StudyClient({ step: stepNo }: { step: number }) {
   const showEndCard = !!step.video && p.videoDone && !allSections
   const initialFiles = Object.keys(p.files).length > 0 ? p.files : { [step.fileName]: `# ${step.title} を見ながら、同じコードを打ってみよう\n` }
   const inputsHint = nextSection >= 0 ? step.sections[nextSection].inputs : undefined
+  const nextNote = nextSection >= 0 && reached(nextSection) ? studentNote(step.sections[nextSection]) : undefined
 
-  const banner =
+  const noteBar = nextNote ? (
+    <div className="flex-none border-b border-[#3a3462] bg-[#2b2650] px-[18px] py-2 text-[13px] font-bold leading-relaxed text-[#ffe6a8]">
+      💡 「{step.sections[nextSection].title}」：{nextNote}
+    </div>
+  ) : null
+
+  const mainBanner =
     showEndCard && nextSection >= 0 ? (
       <div className="flex flex-none items-center gap-2.5 bg-[#ffd23f] px-[18px] py-2.5 text-[15px] font-black text-[#2a2452]">
         👉 つぎは「{step.sections[nextSection].title}」の結果を出そう
@@ -127,6 +138,12 @@ export function StudyClient({ step: stepNo }: { step: number }) {
         </span>
       </div>
     )
+  const banner = (
+    <>
+      {mainBanner}
+      {noteBar}
+    </>
+  )
 
   const learnedToday = passedToday.map((i) => step.sections[i].title)
   const action = nextAction(step, p)
@@ -152,7 +169,11 @@ export function StudyClient({ step: stepNo }: { step: number }) {
             <span className="text-[#c9c2ee]">›</span>
             <span className="flex items-center gap-2 rounded-full bg-white py-1.5 pl-2 pr-4 text-[#6d6893] shadow-sm">
               <i className="grid h-6 w-6 place-items-center rounded-full bg-[#f0eef7] text-[13px] not-italic">2</i>
-              {step.codeblock.length > 0 ? `CodeBlock ${step.codeblock[0]}〜${step.codeblock[step.codeblock.length - 1]}` : 'チャレンジ（できたら）'}
+              {step.codeblock.length > 0
+                ? `CodeBlock ${step.codeblock.length === 1 ? step.codeblock[0] : `${step.codeblock[0]}〜${step.codeblock[step.codeblock.length - 1]}`}`
+                : step.codeblockPlanned && step.codeblockPlanned.length > 0
+                  ? `CodeBlock ${step.codeblockPlanned.join('・')}（準備中）`
+                  : '苦手のふくしゅう（できたら）'}
             </span>
           </div>
           <div className="flex items-center gap-2.5 text-sm font-bold text-[#6d6893]">

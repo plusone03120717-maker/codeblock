@@ -1,0 +1,2222 @@
+[
+ {
+  "step": 1,
+  "unit": 1,
+  "title": "#2 print で表示しよう",
+  "video": {
+   "no": "#2",
+   "id": "tmjpfqnzSSw",
+   "length": 448,
+   "end": 406
+  },
+  "fileName": "step01.py",
+  "sections": [
+   {
+    "title": "print で「こんにちは」",
+    "start": 86,
+    "code": "print(\"こんにちは\")",
+    "expected": [
+     "こんにちは"
+    ],
+    "mustUse": [
+     "print("
+    ]
+   },
+   {
+    "title": "カッコを消すとエラー",
+    "start": 178,
+    "code": "print(\"こんにちは\"",
+    "expected": [],
+    "note": "エラーを見る場面。わざとカッコを1つ消して実行し、エラーが出ればOK。見たら print(\"こんにちは\") にもどしてから次へ",
+    "expectError": true
+   },
+   {
+    "title": "計算の答えを出す",
+    "start": 217,
+    "code": "print(1 + 5)",
+    "expected": [
+     "6"
+    ]
+   },
+   {
+    "title": "\" \" でかこむと文字のまま",
+    "start": 292,
+    "code": "print(\"1+5\")",
+    "expected": [
+     "1+5"
+    ]
+   },
+   {
+    "title": "カンマで並べて出す",
+    "start": 348,
+    "code": "print(\"1+5の答えは\", 1 + 5)",
+    "expected": [
+     "1+5の答えは 6"
+    ],
+    "mustUse": [
+     ","
+    ]
+   }
+  ],
+  "learn": [
+   "print( ) で、コンピューターに文字や答えを出せる",
+   "\" \" でかこむと「文字列」になって、そのまま出る",
+   "カッコがたりないとエラーになる。エラーが出たらコードを見なおす",
+   "カンマで区切ると、文字と計算の答えを並べて出せる"
+  ],
+  "codeblock": [
+   "1-1",
+   "1-2",
+   "1-3"
+  ],
+  "review": {
+   "question": "print(\"1+5\") を実行すると、何が出る？",
+   "choices": [
+    "6",
+    "1+5",
+    "エラーになる"
+   ],
+   "answer": 1
+  }
+ },
+ {
+  "step": 2,
+  "unit": 1,
+  "title": "#3 変数",
+  "video": {
+   "no": "#3",
+   "id": "R1MUyId2Ftc",
+   "length": 571,
+   "end": 566
+  },
+  "fileName": "step02.py",
+  "sections": [
+   {
+    "title": "変数 tate に 10 を入れる",
+    "start": 180,
+    "code": "tate = 10\nprint(tate)",
+    "expected": [
+     "10"
+    ]
+   },
+   {
+    "title": "変数 yoko も作る",
+    "start": 295,
+    "code": "yoko = 3\nprint(yoko)",
+    "expected": [
+     "3"
+    ]
+   },
+   {
+    "title": "たて × よこ を計算",
+    "start": 324,
+    "code": "print(tate * yoko)",
+    "expected": [
+     "30"
+    ],
+    "mustUse": [
+     "*"
+    ]
+   },
+   {
+    "title": "台形の面積",
+    "start": 370,
+    "code": "jotei = 5\nkatei = 10\ntakasa = 6\nprint((jotei + katei) * takasa / 2)",
+    "expected": [
+     "45.0"
+    ]
+   },
+   {
+    "title": "変数 menseki で見やすく",
+    "start": 467,
+    "code": "menseki = (jotei + katei) * takasa / 2\nprint(menseki)",
+    "expected": [
+     "45.0"
+    ],
+    "mustUse": [
+     "menseki"
+    ],
+    "note": "前の見出しの print((jotei + katei) * takasa / 2) の行を消して、menseki の行は takasa の下に書く（動画と同じ）"
+   }
+  ],
+  "learn": [
+   "変数は、数や文字を入れておく箱。名前 = 中身 で作る",
+   "print(tate) のように \" \" をつけないと、箱の中身が出る",
+   "かけ算は *、わり算は /。わり算の答えは 45.0 のように .0 がつく",
+   "式を変数に入れると、コードが読みやすくなる"
+  ],
+  "codeblock": [
+   "2-1",
+   "2-2"
+  ],
+  "review": {
+   "question": "tate = 10、yoko = 3 のとき、print(tate * yoko) で出るのは？",
+   "choices": [
+    "13",
+    "30",
+    "tate * yoko"
+   ],
+   "answer": 1
+  }
+ },
+ {
+  "step": 3,
+  "unit": 1,
+  "title": "#4 台形の面積アプリ",
+  "video": {
+   "no": "#4",
+   "id": "FmQSDPM1cNA",
+   "length": 359,
+   "end": 318
+  },
+  "fileName": "step03.py",
+  "sections": [
+   {
+    "title": "input で上底をきく",
+    "start": 73,
+    "code": "jotei = float(input(\"上底はいくつ？\"))",
+    "expected": [],
+    "inputs": [
+     "5"
+    ],
+    "mustUse": [
+     "input(",
+     "float("
+    ],
+    "note": "「上底はいくつ？」と聞かれて、数を入れてエラーが出なければ合格。質問の文は字幕から（「？」は推測）"
+   },
+   {
+    "title": "下底と高さもきく",
+    "start": 180,
+    "code": "katei = float(input(\"下底はいくつ？\"))\ntakasa = float(input(\"高さはいくつ？\"))",
+    "expected": [],
+    "inputs": [
+     "5",
+     "10",
+     "6"
+    ],
+    "mustUse": [
+     "input("
+    ],
+    "note": "3つの質問に答えて、エラーが出なければ合格"
+   },
+   {
+    "title": "面積を計算して表示",
+    "start": 225,
+    "code": "menseki = (jotei + katei) * takasa / 2\nprint(\"台形の面積は\", menseki, \"です\")",
+    "expected": [
+     "台形の面積は 45.0 です"
+    ],
+    "inputs": [
+     "5",
+     "10",
+     "6"
+    ],
+    "mustUse": [
+     "menseki"
+    ]
+   }
+  ],
+  "learn": [
+   "input( ) で、使う人に質問して答えを入れてもらえる",
+   "入れてもらった答えは、変数に入れて計算に使える",
+   "float( ) は今は「おまじない」。次の回で意味がわかる",
+   "カンマで「台形の面積は 45.0 です」のように並べて出せる"
+  ],
+  "codeblock": [
+   "1-6",
+   "2-3",
+   "1-7"
+  ],
+  "review": {
+   "question": "input(\"上底はいくつ？\") は、何をするコード？",
+   "choices": [
+    "使う人に質問して、答えを入れてもらう",
+    "答えを画面に出すだけ",
+    "計算をする"
+   ],
+   "answer": 0
+  }
+ },
+ {
+  "step": 4,
+  "unit": 1,
+  "title": "#5 データ型",
+  "video": {
+   "no": "#5",
+   "id": "YQ916-GV0gQ",
+   "length": 420,
+   "end": 381
+  },
+  "fileName": "step04.py",
+  "sections": [
+   {
+    "title": "float を消すとエラー",
+    "start": 197,
+    "code": "jotei = input(\"上底はいくつ？\")\nkatei = input(\"下底はいくつ？\")\ntakasa = input(\"高さはいくつ？\")",
+    "expected": [],
+    "inputs": [
+     "5",
+     "10",
+     "6"
+    ],
+    "note": "エラーを見る場面。前の回の台形アプリ（5行）を書き、1〜3行目の float( ) を消して実行する。エラーが出ればOK",
+    "expectError": true
+   },
+   {
+    "title": "float でなおす",
+    "start": 244,
+    "code": "jotei = float(input(\"上底はいくつ？\"))\nkatei = float(input(\"下底はいくつ？\"))\ntakasa = float(input(\"高さはいくつ？\"))",
+    "expected": [
+     "台形の面積は 45.0 です"
+    ],
+    "inputs": [
+     "5",
+     "10",
+     "6"
+    ],
+    "mustUse": [
+     "float("
+    ],
+    "note": "1〜3行目に float( ) をもどす。台形アプリ全体が動けば合格"
+   },
+   {
+    "title": "\"ハロー\" + 10 はエラー",
+    "start": 265,
+    "code": "print(\"ハロー\" + 10)",
+    "expected": [],
+    "inputs": [
+     "5",
+     "10",
+     "6"
+    ],
+    "note": "エラーを見る場面（文字と数は + できない）。エラーを見たら、この行は消してから次へ",
+    "expectError": true
+   },
+   {
+    "title": "str( ) で数を文字に",
+    "start": 302,
+    "code": "print(\"ハロー\" + str(10))",
+    "expected": [
+     "ハロー10"
+    ],
+    "inputs": [
+     "5",
+     "10",
+     "6"
+    ],
+    "mustUse": [
+     "str("
+    ]
+   },
+   {
+    "title": "文字 × 数 はくりかえし",
+    "start": 327,
+    "code": "print(\"ハロー\" * 10)",
+    "expected": [
+     "ハローハローハローハローハローハローハローハローハローハロー"
+    ],
+    "inputs": [
+     "5",
+     "10",
+     "6"
+    ],
+    "mustUse": [
+     "* 10"
+    ]
+   }
+  ],
+  "learn": [
+   "データ型は4つ：str（文字列）・int（整数）・float（小数）・bool（合っているか）",
+   "input( ) で入れたものは文字列。float( ) で数にかえると計算できる",
+   "型がちがうものを + するとエラー。str(10) で文字にそろえる",
+   "\"ハロー\" * 10 は、ハローを10回くりかえす"
+  ],
+  "codeblock": [
+   "3-1",
+   "3-2",
+   "3-3"
+  ],
+  "review": {
+   "question": "print(\"ハロー\" + str(10)) で出るのは？",
+   "choices": [
+    "ハロー10",
+    "ハロー + 10",
+    "エラーになる"
+   ],
+   "answer": 0
+  }
+ },
+ {
+  "step": 5,
+  "unit": 1,
+  "title": "#6 コードを短く書く",
+  "video": {
+   "no": "#6",
+   "id": "1wxGHBxIGkg",
+   "length": 237,
+   "end": 197
+  },
+  "fileName": "step05.py",
+  "sections": [
+   {
+    "title": "x に 50 を足す（長い書き方）",
+    "start": 73,
+    "code": "x = 100\nprint(x)\nx = x + 50\nprint(x)",
+    "expected": [
+     "100",
+     "150"
+    ]
+   },
+   {
+    "title": "+= で短く書く",
+    "start": 117,
+    "code": "x += 50",
+    "expected": [
+     "100",
+     "150"
+    ],
+    "mustUse": [
+     "+="
+    ],
+    "note": "3行目の x = x + 50 を、この1行に書きかえる。結果は前と同じ 100 と 150 になれば合格"
+   },
+   {
+    "title": "ひき算・かけ算・わり算も",
+    "start": 133,
+    "code": "x -= 50\nx *= 2\nx /= 4\nprint(x)",
+    "expected": [
+     "50.0"
+    ],
+    "mustUse": [
+     "-=",
+     "*=",
+     "/="
+    ],
+    "note": "推測：動画はスライドで -= *= /= を見せるだけなので、数は推測。150 → 100 → 200 → 50.0 になる"
+   },
+   {
+    "title": "文字にも *= が使える",
+    "start": 146,
+    "code": "hello = \"こんにちは\"\nhello *= 3\nprint(hello)",
+    "expected": [
+     "こんにちはこんにちはこんにちは"
+    ],
+    "mustUse": [
+     "*="
+    ]
+   }
+  ],
+  "learn": [
+   "x = x + 50 は、x の中身に 50 を足して入れなおすこと",
+   "x += 50 と短く書いても同じ意味",
+   "-=・*=・/= も使える。文字にも *= でくりかえせる",
+   "見たことのないコードは、調べるくせをつけよう"
+  ],
+  "codeblock": [
+   "1-4",
+   "1-5",
+   "2-4"
+  ],
+  "review": {
+   "question": "x = 100 のあと x += 50 をすると、x はいくつ？",
+   "choices": [
+    "50",
+    "100",
+    "150"
+   ],
+   "answer": 2
+  }
+ },
+ {
+  "step": 6,
+  "unit": 1,
+  "title": "作品：自分の計算アプリ",
+  "video": null,
+  "fileName": "step06.py",
+  "sections": [
+   {
+    "title": "見本を動かす：長方形の面積",
+    "start": 0,
+    "code": "tate = float(input(\"たてはいくつ？\"))\nyoko = float(input(\"よこはいくつ？\"))\nmenseki = tate * yoko\nprint(\"長方形の面積は\", menseki, \"です\")",
+    "expected": [
+     "長方形の面積は 20.0 です"
+    ],
+    "inputs": [
+     "4",
+     "5"
+    ],
+    "mustUse": [
+     "input(",
+     "float("
+    ]
+   },
+   {
+    "title": "見本を動かす：お買い物の合計",
+    "start": 0,
+    "code": "kosu = int(input(\"お菓子はいくつ買う？\"))\ngoukei = 120 * kosu\nprint(\"合計は\" + str(goukei) + \"円です\")\ngoukei *= 2\nprint(\"2回買うと\" + str(goukei) + \"円です\")",
+    "expected": [
+     "合計は360円です",
+     "2回買うと720円です"
+    ],
+    "inputs": [
+     "4",
+     "5",
+     "3"
+    ],
+    "mustUse": [
+     "int(",
+     "str("
+    ]
+   },
+   {
+    "title": "自分の計算を1つ足す",
+    "start": 0,
+    "code": "heikin = (tate + yoko) / 2\nprint(\"たてとよこの平均は\", heikin)",
+    "expected": [
+     "たてとよこの平均は 4.5"
+    ],
+    "inputs": [
+     "4",
+     "5",
+     "3"
+    ],
+    "note": "見本の式の例。数・質問・式を自分で決めたものに変えてよい（変えたら結果も変わる）。エラーが出ずに最後まで動けば合格にしてよい"
+   }
+  ],
+  "learn": [
+   "input・float・int を使って、自分の計算アプリが作れる",
+   "str( ) で数を文字にすると、+ でつなげられる",
+   "*= で、中身を何倍にもできる",
+   "数や質問を変えると、自分だけのアプリになる"
+  ],
+  "codeblock": [
+   "2-5",
+   "2-6",
+   "3-4"
+  ],
+  "review": {
+   "question": "int(input(\"いくつ？\")) の int( ) は何のため？",
+   "choices": [
+    "入れた答えを整数にして、計算できるようにする",
+    "答えを文字のままにする",
+    "質問を2回する"
+   ],
+   "answer": 0
+  }
+ },
+ {
+  "step": 7,
+  "unit": 2,
+  "title": "#7 文字数と取り出し",
+  "video": {
+   "no": "#7",
+   "id": "XOWMcR0f8n0",
+   "length": 560,
+   "end": 520
+  },
+  "fileName": "step07.py",
+  "sections": [
+   {
+    "title": "「今どうしてる？」を作る",
+    "start": 68,
+    "code": "tweet = input(\"今どうしてる？\")\nprint(tweet)",
+    "expected": [
+     "ゲームしてる"
+    ],
+    "inputs": [
+     "ゲームしてる"
+    ],
+    "mustUse": [
+     "input("
+    ]
+   },
+   {
+    "title": "len( ) で文字数を数える",
+    "start": 166,
+    "code": "hello = \"こんにちは\"\nprint(len(hello))",
+    "expected": [
+     "5"
+    ],
+    "inputs": [
+     "ゲームしてる"
+    ],
+    "mustUse": [
+     "len("
+    ]
+   },
+   {
+    "title": "[6:12] で一部を取り出す",
+    "start": 256,
+    "code": "hello = \"こんにちは、私は瞳です。\"\nprint(hello[6:12])",
+    "expected": [
+     "私は瞳です。"
+    ],
+    "inputs": [
+     "ゲームしてる"
+    ],
+    "mustUse": [
+     "[6:12]"
+    ],
+    "note": "推測：字幕は「こんにちは私は瞳です」だが、動画の [6:12]・[:6]・[-6:] がちょうど合うように「、」と「。」を入れた"
+   },
+   {
+    "title": "[:6] と [-6:] でも取り出す",
+    "start": 400,
+    "code": "print(hello[:6])\nprint(hello[-6:])",
+    "expected": [
+     "こんにちは、",
+     "私は瞳です。"
+    ],
+    "inputs": [
+     "ゲームしてる"
+    ],
+    "mustUse": [
+     "[:6]",
+     "[-6:]"
+    ]
+   }
+  ],
+  "learn": [
+   "len( ) で、文字の数を数えられる",
+   "文字には、左から 0・1・2…と番号がついている",
+   "[6:12] のように番号で、文字の一部を取り出せる",
+   "[-6:] のように、うしろから数えることもできる"
+  ],
+  "codeblock": [
+   "21-1"
+  ],
+  "review": {
+   "question": "hello = \"こんにちは\" のとき、print(len(hello)) で出るのは？",
+   "choices": [
+    "4",
+    "5",
+    "こんにちは"
+   ],
+   "answer": 1
+  }
+ },
+ {
+  "step": 8,
+  "unit": 2,
+  "title": "#8 if と else（つぶやきアプリ）",
+  "video": {
+   "no": "#8",
+   "id": "QrzSFUJE40g",
+   "length": 365,
+   "end": 326
+  },
+  "fileName": "step08.py",
+  "sections": [
+   {
+    "title": "前の回のつづき：今どうしてる？",
+    "start": 24,
+    "code": "tweet = input(\"今どうしてる？\")",
+    "expected": [],
+    "inputs": [
+     "きょうは公園でサッカーをしました"
+    ],
+    "mustUse": [
+     "input("
+    ],
+    "note": "前の回と同じ1行。print はまだ書かない。答えを入れてエラーが出なければ合格"
+   },
+   {
+    "title": "if で10文字をこえたら注意",
+    "start": 105,
+    "code": "if len(tweet) > 10:\n    print(\"文字数が多すぎるよ\")",
+    "expected": [
+     "文字数が多すぎるよ"
+    ],
+    "inputs": [
+     "きょうは公園でサッカーをしました"
+    ],
+    "mustUse": [
+     "if len(tweet) > 10:"
+    ]
+   },
+   {
+    "title": "else で、10文字までならそのまま",
+    "start": 230,
+    "code": "else:\n    print(tweet)",
+    "expected": [
+     "おやつ食べてる"
+    ],
+    "inputs": [
+     "おやつ食べてる"
+    ],
+    "mustUse": [
+     "else:"
+    ],
+    "note": "10文字までの答え（例：おやつ食べてる）を入れて、そのまま出れば合格"
+   }
+  ],
+  "learn": [
+   "if は「もしも」。条件のあとに : を書く",
+   "if の中の行は、半角4文字の字下げ（インデント）をつける",
+   "else は「でなければ」。if に合わないときに動く",
+   "len(tweet) > 10 で「10文字より多い」を調べられる"
+  ],
+  "codeblock": [
+   "4-1"
+  ],
+  "review": {
+   "question": "if len(tweet) > 10: のとき、ちょうど10文字だとどうなる？",
+   "choices": [
+    "if の中が動く",
+    "else の中が動く",
+    "エラーになる"
+   ],
+   "answer": 1
+  }
+ },
+ {
+  "step": 9,
+  "unit": 2,
+  "title": "#9 くらべる記号と elif",
+  "video": {
+   "no": "#9",
+   "id": "4AHDum6ynhk",
+   "length": 372,
+   "end": 333
+  },
+  "fileName": "step09.py",
+  "sections": [
+   {
+    "title": ">= で70点以上",
+    "start": 98,
+    "code": "score = 70\nif score >= 70:\n    print(\"頑張りましたね\")\nelse:\n    print(\"もう少し頑張りましょう\")",
+    "expected": [
+     "頑張りましたね"
+    ],
+    "mustUse": [
+     ">="
+    ]
+   },
+   {
+    "title": "= をとって > にすると？",
+    "start": 116,
+    "code": "if score > 70:",
+    "expected": [
+     "もう少し頑張りましょう"
+    ],
+    "mustUse": [
+     "score > 70"
+    ],
+    "note": "2行目を書きかえる。70 は「70より大きい」に入らないので else に行く"
+   },
+   {
+    "title": "80点で分けるコード",
+    "start": 166,
+    "code": "score = 70\nif score >= 80:\n    print(\"大変よくできました\")\nelse:\n    print(\"もっと頑張りましょう\")\nprint(\"次回のテストをお楽しみに\")",
+    "expected": [
+     "もっと頑張りましょう",
+     "次回のテストをお楽しみに"
+    ],
+    "mustUse": [
+     "score >= 80"
+    ],
+    "note": "前のコードは消して、新しく書く（動画と同じ）"
+   },
+   {
+    "title": "elif で60点以上をふやす",
+    "start": 208,
+    "code": "elif score >= 60:\n    print(\"よくできましたね\")",
+    "expected": [
+     "よくできましたね",
+     "次回のテストをお楽しみに"
+    ],
+    "mustUse": [
+     "elif score >= 60:"
+    ],
+    "note": "else の上に入れる。elif の行は字下げしない"
+   },
+   {
+    "title": "elif をもう1つ（4段階）",
+    "start": 264,
+    "code": "elif score >= 40:\n    print(\"もう少し頑張りましょう\")",
+    "expected": [
+     "よくできましたね",
+     "次回のテストをお楽しみに"
+    ],
+    "mustUse": [
+     "elif score >= 40:"
+    ],
+    "note": "1つ目の elif の下・else の上に入れる。score が 70 のままなので結果は前と同じ（score を 50 にすると「もう少し頑張りましょう」）"
+   }
+  ],
+  "learn": [
+   ">= は「以上」、> は「より大きい」。= があると、その数もふくむ",
+   "== は「同じ」、!= は「ちがう」",
+   "elif で、条件をいくつもふやせる",
+   "上から順に調べて、合ったところだけが動く"
+  ],
+  "codeblock": [
+   "4-2",
+   "4-3",
+   "4-4"
+  ],
+  "review": {
+   "question": "score = 70 で if score > 70: のとき、動くのは？",
+   "choices": [
+    "if の中",
+    "else の中",
+    "両方"
+   ],
+   "answer": 1
+  }
+ },
+ {
+  "step": 10,
+  "unit": 3,
+  "title": "#10 リストとおみくじ",
+  "video": {
+   "no": "#10",
+   "id": "RDTkdNYG4qk",
+   "length": 454,
+   "end": 414
+  },
+  "fileName": "step10.py",
+  "sections": [
+   {
+    "title": "ランチのリストを作る",
+    "start": 100,
+    "code": "lunch = [\"ラーメン\", \"カレー\", \"ハンバーガー\", \"うどん\"]\nprint(lunch)",
+    "expected": [
+     "['ラーメン', 'カレー', 'ハンバーガー', 'うどん']"
+    ],
+    "mustUse": [
+     "["
+    ],
+    "note": "推測：メニューの中身は推測（ハンバーガーが3つ目なのは字幕どおり）。自分の好きなメニューにしてよい"
+   },
+   {
+    "title": "番号で1つだけ出す",
+    "start": 182,
+    "code": "print(lunch[2])",
+    "expected": [
+     "ハンバーガー"
+    ],
+    "mustUse": [
+     "[2]"
+    ]
+   },
+   {
+    "title": "おみくじアプリ（random.choice）",
+    "start": 241,
+    "code": "import random\nomikuji = [\"大吉\", \"中吉\", \"小吉\"]\nkekka = random.choice(omikuji)\nprint(\"今日のあなたの運勢は\", kekka, \"です\")",
+    "expected": [],
+    "mustUse": [
+     "import random",
+     "random.choice("
+    ],
+    "note": "ランダムなので結果は毎回ちがう。「今日のあなたの運勢は 大吉 です」のように、くじのどれかが出れば合格。変数名 kekka と表示の形は推測"
+   },
+   {
+    "title": "課題：if で一言ずつ変える",
+    "start": 394,
+    "code": "if kekka == \"大吉\":\n    print(\"最高の一日になるよ！\")\nelif kekka == \"中吉\":\n    print(\"いいことがありそう\")\nelse:\n    print(\"のんびりいこう\")",
+    "expected": [],
+    "mustUse": [
+     "if kekka =="
+    ],
+    "note": "推測：動画が出す課題の答えの例。ランダムなので、出たくじに合った一言が出れば合格。一言は自由"
+   }
+  ],
+  "learn": [
+   "リストは、たくさんのデータを入れるかご。[ ] とカンマで作る",
+   "lunch[2] のように番号（インデックス）で1つ取り出す。番号は0から",
+   "import random と random.choice( ) で、リストからランダムに1つ選べる",
+   "if を使うと、出たくじで一言を変えられる"
+  ],
+  "codeblock": [
+   "6-1",
+   "6-2"
+  ],
+  "review": {
+   "question": "lunch = [\"ラーメン\", \"カレー\", \"ハンバーガー\"] のとき、lunch[1] は？",
+   "choices": [
+    "ラーメン",
+    "カレー",
+    "ハンバーガー"
+   ],
+   "answer": 1
+  }
+ },
+ {
+  "step": 11,
+  "unit": 3,
+  "title": "#11 リストの便利な道具",
+  "video": {
+   "no": "#11",
+   "id": "Zo6vVL8-dkE",
+   "length": 524,
+   "end": 485
+  },
+  "fileName": "step11.py",
+  "sections": [
+   {
+    "title": "sum で合計",
+    "start": 35,
+    "code": "tensu = [80, 65, 90, 70]\ntotal = sum(tensu)\nprint(total)",
+    "expected": [
+     "305"
+    ],
+    "mustUse": [
+     "sum("
+    ],
+    "note": "推測：リストの名前と数は推測。自分の点数に変えてよい（変えたら結果も変わる）"
+   },
+   {
+    "title": "max と min",
+    "start": 112,
+    "code": "print(max(tensu))\nprint(min(tensu))",
+    "expected": [
+     "90",
+     "65"
+    ],
+    "mustUse": [
+     "max(",
+     "min("
+    ]
+   },
+   {
+    "title": "len で数・sorted で並べかえ",
+    "start": 188,
+    "code": "print(len(tensu))\nprint(sorted(tensu))",
+    "expected": [
+     "4",
+     "[65, 70, 80, 90]"
+    ],
+    "mustUse": [
+     "len(",
+     "sorted("
+    ]
+   },
+   {
+    "title": ".append( ) で追加",
+    "start": 285,
+    "code": "lunch = [\"ラーメン\", \"カレー\", \"ハンバーガー\", \"うどん\"]\nlunch.append(\"パスタ\")\nprint(lunch)",
+    "expected": [
+     "['ラーメン', 'カレー', 'ハンバーガー', 'うどん', 'パスタ']"
+    ],
+    "mustUse": [
+     ".append("
+    ],
+    "note": "推測：前の回のランチのリスト（中身は推測）。足すメニューも推測"
+   },
+   {
+    "title": ".pop( ) で取り出す・.index( ) で番号",
+    "start": 350,
+    "code": "toridasu = lunch.pop(2)\nprint(lunch)\nprint(toridasu)\nprint(lunch.index(\"カレー\"))",
+    "expected": [
+     "['ラーメン', 'カレー', 'うどん', 'パスタ']",
+     "ハンバーガー",
+     "1"
+    ],
+    "mustUse": [
+     ".pop(",
+     ".index("
+    ]
+   }
+  ],
+  "learn": [
+   "sum で合計、max でいちばん大きい数、min でいちばん小さい数",
+   "len でリストの数、sorted で小さい順に並べかえ",
+   ".append( ) で追加、.pop( ) で取り出し",
+   ".index( ) で、その要素が何番目かわかる"
+  ],
+  "codeblock": [
+   "6-3",
+   "6-4",
+   "21-2"
+  ],
+  "review": {
+   "question": "tensu = [80, 65, 90] のとき、max(tensu) は？",
+   "choices": [
+    "65",
+    "80",
+    "90"
+   ],
+   "answer": 2
+  }
+ },
+ {
+  "step": 12,
+  "unit": 3,
+  "title": "#12 足し算アプリとなぞなぞ",
+  "video": {
+   "no": "#12",
+   "id": "YwO1IyAnFgQ",
+   "length": 550,
+   "end": 510
+  },
+  "fileName": "step12.py",
+  "sections": [
+   {
+    "title": "randint でランダムな数",
+    "start": 78,
+    "code": "import random\nsuji1 = random.randint(1, 100)\nsuji2 = random.randint(1, 100)\nprint(suji1)",
+    "expected": [],
+    "mustUse": [
+     "random.randint(1, 100)"
+    ],
+    "note": "ランダムなので、1〜100のどれかの数が出れば合格。変数名 suji1・suji2 は推測（字幕は「数字1」「数字2」）"
+   },
+   {
+    "title": "合計と質問（str でそろえる）",
+    "start": 204,
+    "code": "goukei = suji1 + suji2\nkotae = input(str(suji1) + \"+\" + str(suji2) + \"はいくつ？\")",
+    "expected": [],
+    "inputs": [
+     "10"
+    ],
+    "mustUse": [
+     "str(suji1)"
+    ],
+    "note": "print(suji1) の行は消す。動画ではまず str( ) なしで書いてエラーを見せる（4:32）。「○+○はいくつ？」と聞かれて、エラーが出なければ合格。質問の形は推測"
+   },
+   {
+    "title": "if で正解・不正解",
+    "start": 311,
+    "code": "if goukei == kotae:\n    print(\"正解です\")\nelse:\n    print(\"不正解です\")",
+    "expected": [
+     "不正解です"
+    ],
+    "inputs": [
+     "10"
+    ],
+    "mustUse": [
+     "if goukei == kotae:"
+    ],
+    "note": "動画のとおり、正しい答えを入れても「不正解です」になる（kotae が文字のままだから）"
+   },
+   {
+    "title": "int( ) で答えを数に",
+    "start": 400,
+    "code": "kotae = int(input(str(suji1) + \"+\" + str(suji2) + \"はいくつ？\"))",
+    "expected": [
+     "正解です"
+    ],
+    "mustUse": [
+     "int(input("
+    ],
+    "note": "kotae の行をこの1行に書きかえる。問題の数はランダムなので inputs は決められない。正しい答えを入れて「正解です」が出れば合格"
+   },
+   {
+    "title": "なぞなぞアプリ",
+    "start": 426,
+    "code": "import random\nmondai = [\"パンはパンでも食べられないパンは？\", \"上は大水、下は大火事、これなあに？\"]\nkotaelist = [\"フライパン\", \"おふろ\"]\nban = random.randint(0, 1)\nkaito = input(mondai[ban])\nif kaito == kotaelist[ban]:\n    print(\"正解です\")\nelse:\n    print(\"不正解です\")",
+    "expected": [],
+    "mustUse": [
+     "random.randint(0, 1)"
+    ],
+    "note": "推測：動画を止めて自分で作る場面。見本（7:51〜）の問題・変数名は推測。新しいファイル（または前のコードを消して）で、import random を1行目に書く。問題が出て、答えると「正解です」か「不正解です」が出れば合格。なぞなぞは自分のものに変えてよい"
+   }
+  ],
+  "learn": [
+   "random.randint(1, 100) で、1〜100のランダムな数が作れる",
+   "数と文字を + でつなぐときは、str( ) で型をそろえる",
+   "input の答えは文字。int( ) で数にしないと、正しくても「不正解」になる",
+   "問題と答えのリストを同じ番号で使うと、なぞなぞアプリが作れる"
+  ],
+  "codeblock": [
+   "21-3"
+  ],
+  "review": {
+   "question": "input( ) で入れた \"8\" と、数の 8 を == でくらべると？",
+   "choices": [
+    "等しい（True）",
+    "等しくない（False）",
+    "エラーになる"
+   ],
+   "answer": 1
+  }
+ },
+ {
+  "step": 13,
+  "unit": 4,
+  "title": "#13 for でくりかえす",
+  "video": {
+   "no": "#13",
+   "id": "khnY_Fg1gso",
+   "length": 332,
+   "end": 292
+  },
+  "fileName": "step13.py",
+  "sections": [
+   {
+    "title": "range で 0〜5 を出す",
+    "start": 74,
+    "code": "for i in range(6):\n    print(i)",
+    "expected": [
+     "0",
+     "1",
+     "2",
+     "3",
+     "4",
+     "5"
+    ],
+    "mustUse": [
+     "range(6)"
+    ]
+   },
+   {
+    "title": "5の段",
+    "start": 135,
+    "code": "for i in range(10):\n    print(5 * i)",
+    "expected": [
+     "0",
+     "5",
+     "10",
+     "15",
+     "20",
+     "25",
+     "30",
+     "35",
+     "40",
+     "45"
+    ],
+    "mustUse": [
+     "5 * i"
+    ]
+   },
+   {
+    "title": "式もいっしょに出す",
+    "start": 165,
+    "code": "for i in range(10):\n    print(\"5 ×\", i, \"=\", 5 * i)",
+    "expected": [
+     "5 × 0 = 0",
+     "5 × 1 = 5",
+     "5 × 2 = 10",
+     "5 × 3 = 15",
+     "5 × 4 = 20",
+     "5 × 5 = 25",
+     "5 × 6 = 30",
+     "5 × 7 = 35",
+     "5 × 8 = 40",
+     "5 × 9 = 45"
+    ],
+    "note": "推測：動画は答えの前に「何をしているか」の文を足す。文の形は推測。5の段の print の行を書きかえる"
+   },
+   {
+    "title": "1からはじめる",
+    "start": 201,
+    "code": "for i in range(9):\n    print(\"5 ×\", i + 1, \"=\", 5 * (i + 1))",
+    "expected": [
+     "5 × 1 = 5",
+     "5 × 2 = 10",
+     "5 × 3 = 15",
+     "5 × 4 = 20",
+     "5 × 5 = 25",
+     "5 × 6 = 30",
+     "5 × 7 = 35",
+     "5 × 8 = 40",
+     "5 × 9 = 45"
+    ],
+    "mustUse": [
+     "i + 1"
+    ],
+    "note": "i に 1 を足して、くりかえす回数を1つへらす（range(9)）。5の段のコードを書きかえる"
+   },
+   {
+    "title": "リストを for で1つずつ",
+    "start": 228,
+    "code": "lunch = [\"ラーメン\", \"カレー\", \"ハンバーガー\", \"うどん\"]\nfor i in lunch:\n    print(i)",
+    "expected": [
+     "ラーメン",
+     "カレー",
+     "ハンバーガー",
+     "うどん"
+    ],
+    "mustUse": [
+     "in lunch"
+    ],
+    "note": "推測：リストの中身は推測（前の回のランチのリスト）"
+   }
+  ],
+  "learn": [
+   "for i in range(6): で、中を6回くりかえす。i は 0・1・2…と増える",
+   "5 * i で、5の段が作れる",
+   "i + 1 にすると、1から始められる",
+   "for i in リスト: で、リストの中身を1つずつ取り出せる"
+  ],
+  "codeblock": [
+   "5-1",
+   "5-2",
+   "6-5"
+  ],
+  "review": {
+   "question": "for i in range(3): の中で print(i) をすると、出る数は？",
+   "choices": [
+    "0・1・2",
+    "1・2・3",
+    "3だけ"
+   ],
+   "answer": 0
+  }
+ },
+ {
+  "step": 14,
+  "unit": 4,
+  "title": "#14 九九と偶数（前半）",
+  "video": {
+   "no": "#14",
+   "id": "vRqLn3YNIoE",
+   "length": 446,
+   "end": 220
+  },
+  "fileName": "step14.py",
+  "sections": [
+   {
+    "title": "for の中に for（九九）",
+    "start": 35,
+    "code": "for i in range(10):\n    for j in range(10):\n        print(i * j)",
+    "expected": [
+     "0",
+     "0",
+     "0",
+     "0",
+     "0",
+     "0",
+     "0",
+     "0",
+     "0",
+     "0",
+     "0",
+     "1",
+     "2",
+     "3",
+     "4",
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "0",
+     "2",
+     "4",
+     "6",
+     "8",
+     "10",
+     "12",
+     "14",
+     "16",
+     "18",
+     "0",
+     "3",
+     "6",
+     "9",
+     "12",
+     "15",
+     "18",
+     "21",
+     "24",
+     "27",
+     "0",
+     "4",
+     "8",
+     "12",
+     "16",
+     "20",
+     "24",
+     "28",
+     "32",
+     "36",
+     "0",
+     "5",
+     "10",
+     "15",
+     "20",
+     "25",
+     "30",
+     "35",
+     "40",
+     "45",
+     "0",
+     "6",
+     "12",
+     "18",
+     "24",
+     "30",
+     "36",
+     "42",
+     "48",
+     "54",
+     "0",
+     "7",
+     "14",
+     "21",
+     "28",
+     "35",
+     "42",
+     "49",
+     "56",
+     "63",
+     "0",
+     "8",
+     "16",
+     "24",
+     "32",
+     "40",
+     "48",
+     "56",
+     "64",
+     "72",
+     "0",
+     "9",
+     "18",
+     "27",
+     "36",
+     "45",
+     "54",
+     "63",
+     "72",
+     "81"
+    ],
+    "mustUse": [
+     "for j in range(10):"
+    ]
+   },
+   {
+    "title": "1の段からにするには？",
+    "start": 156,
+    "code": "for i in range(9):\n    for j in range(9):\n        print((i + 1) * (j + 1))",
+    "expected": [
+     "1",
+     "2",
+     "3",
+     "4",
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "2",
+     "4",
+     "6",
+     "8",
+     "10",
+     "12",
+     "14",
+     "16",
+     "18",
+     "3",
+     "6",
+     "9",
+     "12",
+     "15",
+     "18",
+     "21",
+     "24",
+     "27",
+     "4",
+     "8",
+     "12",
+     "16",
+     "20",
+     "24",
+     "28",
+     "32",
+     "36",
+     "5",
+     "10",
+     "15",
+     "20",
+     "25",
+     "30",
+     "35",
+     "40",
+     "45",
+     "6",
+     "12",
+     "18",
+     "24",
+     "30",
+     "36",
+     "42",
+     "48",
+     "54",
+     "7",
+     "14",
+     "21",
+     "28",
+     "35",
+     "42",
+     "49",
+     "56",
+     "63",
+     "8",
+     "16",
+     "24",
+     "32",
+     "40",
+     "48",
+     "56",
+     "64",
+     "72",
+     "9",
+     "18",
+     "27",
+     "36",
+     "45",
+     "54",
+     "63",
+     "72",
+     "81"
+    ],
+    "mustUse": [
+     "i + 1"
+    ],
+    "note": "推測：動画は「考えてみてください」で答えを見せない。#13 と同じく +1 する答えの例。前の九九を書きかえる（range(1, 10) を使う答えでもよい）"
+   },
+   {
+    "title": "for の中に if（偶数だけ）",
+    "start": 163,
+    "code": "for i in range(10):\n    if i % 2 == 0:\n        print(i)",
+    "expected": [
+     "0",
+     "2",
+     "4",
+     "6",
+     "8"
+    ],
+    "mustUse": [
+     "% 2 == 0"
+    ],
+    "note": "推測：字幕は「0から10までの中で偶数」と「10回くりかえす」。range(10) にした（range(11) なら 10 も出る）"
+   }
+  ],
+  "learn": [
+   "for の中に for を書くと、九九のような表が作れる",
+   "中の for はもう1つ字下げして、ちがう名前（j）を使う",
+   "i % 2 == 0 で「2でわり切れる＝偶数」を調べられる",
+   "for の中に if を書いて、合うものだけ出せる"
+  ],
+  "codeblock": [
+   "5-3",
+   "5-4",
+   "6-6"
+  ],
+  "review": {
+   "question": "i % 2 == 0 が True になるのは、i がどんな数のとき？",
+   "choices": [
+    "偶数",
+    "奇数",
+    "0だけ"
+   ],
+   "answer": 0
+  }
+ },
+ {
+  "step": 15,
+  "unit": 4,
+  "title": "#14 break・continue・while（後半）",
+  "video": {
+   "no": "#14",
+   "id": "vRqLn3YNIoE",
+   "length": 446,
+   "start": 200,
+   "end": 407
+  },
+  "fileName": "step15.py",
+  "sections": [
+   {
+    "title": "0〜9 を出すいつものコード",
+    "start": 212,
+    "code": "for i in range(10):\n    print(i)",
+    "expected": [
+     "0",
+     "1",
+     "2",
+     "3",
+     "4",
+     "5",
+     "6",
+     "7",
+     "8",
+     "9"
+    ]
+   },
+   {
+    "title": "break でとちゅうで止める",
+    "start": 238,
+    "code": "    if i >= 5:\n        break",
+    "expected": [
+     "0",
+     "1",
+     "2",
+     "3",
+     "4"
+    ],
+    "mustUse": [
+     "break"
+    ],
+    "note": "for の中・print(i) の上に入れる。5から先が出なければ合格"
+   },
+   {
+    "title": "continue でとばす",
+    "start": 262,
+    "code": "for i in range(10):\n    if i % 2 == 0:\n        continue\n    print(i)",
+    "expected": [
+     "1",
+     "3",
+     "5",
+     "7",
+     "9"
+    ],
+    "mustUse": [
+     "continue"
+    ]
+   },
+   {
+    "title": "while でくりかえす",
+    "start": 340,
+    "code": "n = 0\nwhile n <= 5:\n    print(n)\n    n += 1",
+    "expected": [
+     "0",
+     "1",
+     "2",
+     "3",
+     "4",
+     "5"
+    ],
+    "mustUse": [
+     "while n <= 5:",
+     "n += 1"
+    ]
+   }
+  ],
+  "learn": [
+   "break で、くりかえしをとちゅうで止められる",
+   "continue で、その回だけとばして次へ進める",
+   "while は「〜の間」くりかえす。n += 1 を忘れずに",
+   "if と組み合わせて、いつ止めるか・とばすかを決める"
+  ],
+  "codeblock": [
+   "5-5",
+   "5-6"
+  ],
+  "review": {
+   "question": "while n <= 5: の中に n += 1 を書き忘れると、どうなる？",
+   "choices": [
+    "ずっと止まらない",
+    "1回で止まる",
+    "エラーになる"
+   ],
+   "answer": 0
+  }
+ },
+ {
+  "step": 16,
+  "unit": 4,
+  "title": "作品：じゃんけん（作品1）",
+  "video": null,
+  "fileName": "step16.py",
+  "sections": [
+   {
+    "title": "見本を動かす：勝ち負けの判定",
+    "start": 0,
+    "code": "you = input(\"グー・チョキ・パーのどれ？ \")\ncom = \"チョキ\"\nprint(\"あなた：\", you, \"　コンピュータ：\", com)\nif you == com:\n    print(\"あいこ！もう一回！\")\nelif (you == \"グー\" and com == \"チョキ\") or (you == \"チョキ\" and com == \"パー\") or (you == \"パー\" and com == \"グー\"):\n    print(\"あなたの勝ち！\")\nelse:\n    print(\"あなたの負け…\")",
+    "expected": [
+     "あなた： グー 　コンピュータ： チョキ",
+     "あなたの勝ち！"
+    ],
+    "inputs": [
+     "グー"
+    ],
+    "mustUse": [
+     "elif",
+     "and",
+     "or"
+    ],
+    "note": "コンピュータの手をまず「チョキ」に決めて、判定だけをためす。グーを入れて「あなたの勝ち！」が出れば合格"
+   },
+   {
+    "title": "見本を完成：ランダムとくりかえし",
+    "start": 0,
+    "code": "import random\n\nhands = [\"グー\", \"チョキ\", \"パー\"]\nresult = \"あいこ\"\n\nwhile result == \"あいこ\":\n    you = input(\"グー・チョキ・パーのどれ？ \")\n    com = random.choice(hands)\n    print(\"あなた：\", you, \"　コンピュータ：\", com)\n    if you == com:\n        result = \"あいこ\"\n        print(\"あいこ！もう一回！\")\n    elif (you == \"グー\" and com == \"チョキ\") or (you == \"チョキ\" and com == \"パー\") or (you == \"パー\" and com == \"グー\"):\n        result = \"勝ち\"\n        print(\"あなたの勝ち！\")\n    else:\n        result = \"負け\"\n        print(\"あなたの負け…\")",
+    "expected": [],
+    "mustUse": [
+     "random.choice(",
+     "while"
+    ],
+    "note": "作品1の見本。コンピュータの手がランダムなので結果は毎回ちがう。あいこなら「もう一回」と聞きなおし、勝ちか負けが出たら終われば合格"
+   }
+  ],
+  "learn": [
+   "input・リスト・random.choice・if・while を組み合わせると、ゲームが作れる",
+   "and は「かつ」、or は「または」",
+   "while result == \"あいこ\": で、勝負がつくまでくりかえせる",
+   "コンピュータの手を先に決めてためすと、まちがいを見つけやすい"
+  ],
+  "codeblock": [
+   "4-5",
+   "4-6"
+  ],
+  "review": {
+   "question": "(you == \"グー\" and com == \"チョキ\") が True になるのは？",
+   "choices": [
+    "あなたがグーで、コンピュータがチョキのとき",
+    "どちらかがグーのとき",
+    "あいこのとき"
+   ],
+   "answer": 0
+  }
+ },
+ {
+  "step": 17,
+  "unit": 5,
+  "title": "#15 関数を作る",
+  "video": {
+   "no": "#15",
+   "id": "araV-Soh2Xo",
+   "length": 326,
+   "end": 287
+  },
+  "fileName": "step17.py",
+  "sections": [
+   {
+    "title": "def で関数を作る",
+    "start": 210,
+    "code": "def hello():\n    print(\"こんにちは\")",
+    "expected": [],
+    "mustUse": [
+     "def hello():"
+    ],
+    "note": "作っただけでは何も出ない。エラーが出なければ合格"
+   },
+   {
+    "title": "関数を呼び出す",
+    "start": 253,
+    "code": "hello()",
+    "expected": [
+     "こんにちは"
+    ],
+    "mustUse": [
+     "hello()"
+    ]
+   },
+   {
+    "title": "何回でも呼べる",
+    "start": 267,
+    "code": "hello()\nhello()",
+    "expected": [
+     "こんにちは",
+     "こんにちは"
+    ],
+    "note": "推測：動画は1回だけ呼ぶ。何回でも使えることを確かめる練習"
+   }
+  ],
+  "learn": [
+   "関数は「命令のまとまり」。スクラッチの「ブロック定義」と同じ",
+   "def hello(): で関数を作り、中は字下げして書く",
+   "hello() と書くと、作った関数が動く（カッコをわすれずに）",
+   "作っただけでは動かない。呼び出したときに動く"
+  ],
+  "codeblock": [
+   "7-1",
+   "7-2",
+   "7-3"
+  ],
+  "review": {
+   "question": "def hello(): で作った関数を動かすには、何と書く？",
+   "choices": [
+    "hello",
+    "hello()",
+    "def hello()"
+   ],
+   "answer": 1
+  }
+ },
+ {
+  "step": 18,
+  "unit": 5,
+  "title": "#16 引数と return",
+  "video": {
+   "no": "#16",
+   "id": "Tt9r7jZfg7w",
+   "length": 508,
+   "end": 469
+  },
+  "fileName": "step18.py",
+  "sections": [
+   {
+    "title": "消費税の関数（引数と戻り値）",
+    "start": 112,
+    "code": "def shohizei(kingaku):\n    shohizei_kekka = kingaku * 0.1\n    return shohizei_kekka",
+    "expected": [],
+    "mustUse": [
+     "return"
+    ],
+    "note": "作っただけでは何も出ない。変数名 shohizei_kekka は推測（字幕は「消費税結果」）"
+   },
+   {
+    "title": "消費税の関数を使う",
+    "start": 210,
+    "code": "print(shohizei(1350))",
+    "expected": [
+     "135.0"
+    ],
+    "mustUse": [
+     "shohizei(1350)"
+    ]
+   },
+   {
+    "title": "引数だけの関数 hello2",
+    "start": 236,
+    "code": "def hello2(name):\n    print(name + \"さん、こんにちは\")\nhello2(\"たろう\")",
+    "expected": [
+     "たろうさん、こんにちは"
+    ],
+    "mustUse": [
+     "def hello2(name):"
+    ],
+    "note": "推測：あいさつの文と入れる名前は推測。自分の名前にしてよい"
+   },
+   {
+    "title": "戻り値だけの関数 おみくじ",
+    "start": 306,
+    "code": "import random\ndef omikuji():\n    omikuji_list = [\"大吉\", \"中吉\", \"小吉\"]\n    omikuji_kekka = random.choice(omikuji_list)\n    return omikuji_kekka",
+    "expected": [],
+    "mustUse": [
+     "def omikuji():",
+     "return"
+    ],
+    "note": "作っただけでは何も出ない。リストの中身と変数名は推測"
+   },
+   {
+    "title": "おみくじの関数を使う",
+    "start": 396,
+    "code": "print(omikuji())",
+    "expected": [],
+    "mustUse": [
+     "omikuji()"
+    ],
+    "note": "ランダムなので、くじのどれか（大吉・中吉・小吉）が出れば合格"
+   }
+  ],
+  "learn": [
+   "引数は、関数にわたすデータ。def shohizei(kingaku): のように書く",
+   "return で、関数の答えを外にわたせる（戻り値）",
+   "引数だけの関数・戻り値だけの関数もある",
+   "print(shohizei(1350)) で、答えをそのまま表示できる"
+  ],
+  "codeblock": [
+   "7-4",
+   "8-1",
+   "8-2"
+  ],
+  "card": {
+   "title": "return のいいかえ",
+   "body": "return は「答えを関数の外にわたしたいとき」に使うよ。動画では「関数の中で変数に入れたら return」と言っているけど、大事なのは、外で print したり計算に使ったりしたい答えがあるかどうか。答えを外で使いたいなら return を書こう。"
+  },
+  "review": {
+   "question": "def shohizei(kingaku): の kingaku のように、関数にわたすデータを何という？",
+   "choices": [
+    "戻り値",
+    "引数",
+    "リスト"
+   ],
+   "answer": 1
+  }
+ },
+ {
+  "step": 19,
+  "unit": 5,
+  "title": "#16.1 引数を2つにする",
+  "video": {
+   "no": "#16.1",
+   "id": "WnPA59Hs7ls",
+   "length": 217,
+   "end": 110
+  },
+  "fileName": "step19.py",
+  "sections": [
+   {
+    "title": "引数が2つの関数",
+    "start": 50,
+    "code": "def menseki(tate, yoko):\n    menseki_kekka = tate * yoko\n    return menseki_kekka",
+    "expected": [],
+    "mustUse": [
+     "def menseki(tate, yoko):",
+     "return"
+    ],
+    "note": "作っただけでは何も出ない。変数名 menseki_kekka は推測（字幕は「面積結果」）"
+   },
+   {
+    "title": "面積の関数を使う",
+    "start": 97,
+    "code": "print(menseki(12, 8))",
+    "expected": [
+     "96"
+    ],
+    "mustUse": [
+     "menseki(12, 8)"
+    ],
+    "note": "推測：わたす数は推測（CodeBlock 8-3 の area(12, 8) にそろえた）"
+   },
+   {
+    "title": "数を変えてもう一度",
+    "start": 107,
+    "code": "print(menseki(3, 4))",
+    "expected": [
+     "12"
+    ],
+    "note": "推測：動画にはない練習。何回でも、ちがう数で使える"
+   }
+  ],
+  "learn": [
+   "引数は、カンマで区切って2つ以上にできる",
+   "def menseki(tate, yoko): で、たてとよこを受け取る",
+   "return で、面積の答えを外にわたす",
+   "menseki(12, 8) のように、わたす数もカンマで区切る"
+  ],
+  "codeblock": [
+   "7-5",
+   "7-6",
+   "8-3"
+  ],
+  "review": {
+   "question": "def menseki(tate, yoko): に menseki(5, 3) とわたすと、tate に入るのは？",
+   "choices": [
+    "5",
+    "3",
+    "15"
+   ],
+   "answer": 0
+  }
+ },
+ {
+  "step": 20,
+  "unit": 5,
+  "title": "作品：じゃんけん関数版（作品3）",
+  "video": null,
+  "fileName": "step20.py",
+  "sections": [
+   {
+    "title": "judge( ) を作ってためす",
+    "start": 0,
+    "code": "def judge(you, com):\n    if you == com:\n        return \"あいこ\"\n    elif (you == \"グー\" and com == \"チョキ\") or (you == \"チョキ\" and com == \"パー\") or (you == \"パー\" and com == \"グー\"):\n        return \"あなたの勝ち！\"\n    else:\n        return \"あなたの負け…\"\nprint(judge(\"グー\", \"チョキ\"))",
+    "expected": [
+     "あなたの勝ち！"
+    ],
+    "mustUse": [
+     "def judge(you, com):",
+     "return"
+    ]
+   },
+   {
+    "title": "ほかの手でもためす",
+    "start": 0,
+    "code": "print(judge(\"パー\", \"チョキ\"))\nprint(judge(\"グー\", \"グー\"))",
+    "expected": [
+     "あなたの負け…",
+     "あいこ"
+    ]
+   },
+   {
+    "title": "見本を完成：judge( ) でじゃんけん",
+    "start": 0,
+    "code": "import random\n\ndef judge(you, com):\n    if you == com:\n        return \"あいこ\"\n    elif (you == \"グー\" and com == \"チョキ\") or (you == \"チョキ\" and com == \"パー\") or (you == \"パー\" and com == \"グー\"):\n        return \"あなたの勝ち！\"\n    else:\n        return \"あなたの負け…\"\n\n\nhands = [\"グー\", \"チョキ\", \"パー\"]\nresult = \"あいこ\"\n\nwhile result == \"あいこ\":\n    you = input(\"グー・チョキ・パーのどれ？ \")\n    com = random.choice(hands)\n    print(\"コンピュータ：\", com)\n    result = judge(you, com)\n    print(result)\n    if result == \"あいこ\":\n        print(\"もう一回！\")",
+    "expected": [],
+    "mustUse": [
+     "judge(you, com)",
+     "while"
+    ],
+    "note": "作品3の見本（ためしの print は消す）。コンピュータの手がランダムなので結果は毎回ちがう。あいこなら「もう一回！」、勝ちか負けが出たら終われば合格"
+   }
+  ],
+  "learn": [
+   "勝ち負けの判定を、judge( ) という関数にまとめられる",
+   "引数で2つの手を受け取り、return で結果を返す",
+   "関数にしておくと、何回でも同じ判定が使える",
+   "関数だけを先にためすと、まちがいが見つけやすい"
+  ],
+  "codeblock": [],
+  "review": {
+   "question": "judge(\"パー\", \"グー\") の戻り値は？",
+   "choices": [
+    "あいこ",
+    "あなたの勝ち！",
+    "あなたの負け…"
+   ],
+   "answer": 1
+  }
+ },
+ {
+  "step": 21,
+  "unit": 6,
+  "title": "#18 ボタンのアプリ",
+  "video": {
+   "no": "#18",
+   "id": "v8DK9sqQaA8",
+   "length": 480,
+   "end": 440
+  },
+  "fileName": "step21.py",
+  "sections": [
+   {
+    "title": "tkinter で窓を出す",
+    "start": 156,
+    "code": "import tkinter as tk\nroot = tk.Tk()\nroot.geometry(\"200x100\")\ntk.mainloop()",
+    "expected": [],
+    "mustUse": [
+     "import tkinter as tk",
+     "tk.Tk()",
+     "mainloop()"
+    ],
+    "note": "アプリの窓が開けば合格（よこ200・たて100の、からっぽの窓）"
+   },
+   {
+    "title": "ラベルとボタンを作る",
+    "start": 221,
+    "code": "lbl = tk.Label(text=\"ラベル\")\nbtn = tk.Button(text=\"プッシュ\")",
+    "expected": [],
+    "mustUse": [
+     "tk.Label(",
+     "tk.Button("
+    ],
+    "note": "tk.mainloop() の上に書く。まだ窓には出ない。窓が開いてエラーが出なければ合格。推測：文字（ラベル・プッシュ）は字幕から（英字の LABEL・PUSH かもしれない）"
+   },
+   {
+    "title": "pack( ) で窓に並べる",
+    "start": 292,
+    "code": "lbl.pack()\nbtn.pack()",
+    "expected": [],
+    "mustUse": [
+     ".pack()"
+    ],
+    "note": "アプリの窓に「ラベル」の文字と「プッシュ」のボタンが出れば合格"
+   },
+   {
+    "title": "ボタンで「こんにちは」に変える",
+    "start": 321,
+    "code": "def change_label():\n    lbl.config(text=\"こんにちは\")\nbtn = tk.Button(text=\"プッシュ\", command=change_label)",
+    "expected": [],
+    "mustUse": [
+     "def change_label",
+     "command"
+    ],
+    "note": "関数は import の下に書き、btn の行に command=change_label を足す（change_label のうしろに ( ) はつけない）。アプリの窓でボタンを押して「こんにちは」に変われば合格。関数名は推測（字幕は「チェンジラベル」）"
+   }
+  ],
+  "learn": [
+   "import tkinter as tk で、窓のあるアプリが作れる",
+   "tk.Tk() で窓を作り、geometry(\"200x100\") で大きさを決める",
+   "Label は文字、Button はボタン。.pack() で窓に並べる",
+   "command= で、ボタンを押したときに動く関数を決める"
+  ],
+  "codeblock": [
+   "21-4"
+  ],
+  "card": {
+   "title": "アプリの窓",
+   "body": "このアプリでは、tkinter で作った画面は「アプリの窓」に開くよ。動画のパソコンと同じように、ボタンを押して試せるよ。"
+  },
+  "review": {
+   "question": "root.geometry(\"200x100\") の 200 は何？",
+   "choices": [
+    "よこの大きさ",
+    "たての大きさ",
+    "ボタンの数"
+   ],
+   "answer": 0
+  },
+  "appWindow": true
+ },
+ {
+  "step": 22,
+  "unit": 6,
+  "title": "#19 おみくじアプリ（アプリの窓）",
+  "video": {
+   "no": "#19",
+   "id": "DASU2jOOlYQ",
+   "length": 344,
+   "end": 304
+  },
+  "fileName": "step22.py",
+  "sections": [
+   {
+    "title": "窓を作る（400×300）",
+    "start": 37,
+    "code": "import tkinter as tk\nimport random\nroot = tk.Tk()\nroot.geometry(\"400x300\")\ntk.mainloop()",
+    "expected": [],
+    "mustUse": [
+     "import random",
+     "geometry(\"400x300\")"
+    ],
+    "note": "アプリの窓が開けば合格（よこ400・たて300）"
+   },
+   {
+    "title": "窓にタイトルをつける",
+    "start": 91,
+    "code": "root.title(\"おみくじ\")",
+    "expected": [],
+    "mustUse": [
+     ".title("
+    ],
+    "note": "tk.mainloop() の上に書く。窓のタイトルが「おみくじ」になれば合格"
+   },
+   {
+    "title": "ラベルと「占う」ボタン",
+    "start": 130,
+    "code": "lbl = tk.Label(text=\"今日のあなたの運勢は\")\nbtn = tk.Button(text=\"占う\")\nlbl.pack()\nbtn.pack()",
+    "expected": [],
+    "mustUse": [
+     "tk.Label(",
+     "tk.Button("
+    ],
+    "note": "アプリの窓に「今日のあなたの運勢は」と「占う」ボタンが出れば合格"
+   },
+   {
+    "title": "ボタンでくじを引く",
+    "start": 203,
+    "code": "def uranau():\n    kuji = [\"大吉\", \"中吉\", \"小吉\", \"凶\"]\n    kekka = random.choice(kuji)\n    lbl.config(text=kekka)\nbtn = tk.Button(text=\"占う\", command=uranau)",
+    "expected": [],
+    "mustUse": [
+     "random.choice(",
+     "command"
+    ],
+    "note": "関数は import の下に書き、btn の行に command=uranau を足す。アプリの窓で「占う」を押して、くじのどれかが出れば合格。関数名・くじの中身は推測（自分のくじにしてよい）"
+   }
+  ],
+  "learn": [
+   "title( ) で、窓にタイトルをつけられる",
+   "ボタンを押したら、random.choice でくじを引く関数を動かせる",
+   "lbl.config(text=…) で、ラベルの文字を書きかえる",
+   "前の回の書き方を組み合わせると、新しいアプリが作れる"
+  ],
+  "codeblock": [],
+  "review": {
+   "question": "ボタンを押すと uranau 関数が動くようにするには？",
+   "choices": [
+    "command=uranau",
+    "command=uranau()",
+    "text=uranau"
+   ],
+   "answer": 0
+  },
+  "appWindow": true
+ },
+ {
+  "step": 23,
+  "unit": 6,
+  "title": "#20 画像を開くアプリ",
+  "video": {
+   "no": "#20",
+   "id": "nfTayeRBDqY",
+   "length": 458,
+   "end": 419,
+   "skips": [
+    {
+     "from": 67,
+     "to": 131,
+     "label": "pip install の場面（このアプリには Pillow がもう入っている）"
+    }
+   ]
+  },
+  "fileName": "step23.py",
+  "sections": [
+   {
+    "title": "モジュールを読みこむ（# でメモ）",
+    "start": 189,
+    "code": "import tkinter as tk\nimport tkinter.filedialog as fd  # ファイル画面を使うモジュール\nimport PIL.Image  # 画像を使うモジュール\nimport PIL.ImageTk  # 窓に画像を出すモジュール",
+    "expected": [],
+    "mustUse": [
+     "import PIL.Image",
+     "#"
+    ],
+    "note": "見本のはじめの4行。# のあとはメモ（動画と同じメモでなくてよい）。エラーが出なければ合格"
+   },
+   {
+    "title": "窓を作る",
+    "start": 266,
+    "code": "root = tk.Tk()\nroot.geometry(\"400x350\")\ntk.mainloop()",
+    "expected": [],
+    "mustUse": [
+     "geometry(\"400x350\")"
+    ],
+    "note": "アプリの窓が開けば合格。窓の大きさ 400x350 は推測（この見本でよく使う数）"
+   },
+   {
+    "title": "「ファイルを開く」の関数",
+    "start": 302,
+    "code": "def openFile():\n    fpath = fd.askopenfilename()\n    if fpath:\n        dispPhoto(fpath)",
+    "expected": [],
+    "mustUse": [
+     "def openFile",
+     "askopenfilename"
+    ],
+    "note": "root = tk.Tk() の上に書く。窓が開いてエラーが出なければ合格"
+   },
+   {
+    "title": "画像を出す関数 dispPhoto",
+    "start": 345,
+    "code": "def dispPhoto(path):\n    newImage = PIL.Image.open(path).resize((300, 300))\n    imageData = PIL.ImageTk.PhotoImage(newImage)\n    imageLabel.configure(image=imageData)\n    imageLabel.image = imageData",
+    "expected": [],
+    "mustUse": [
+     "def dispPhoto",
+     "PIL.Image.open("
+    ],
+    "note": "openFile の上に書く。窓が開いてエラーが出なければ合格"
+   },
+   {
+    "title": "ボタンと画像の場所を並べる",
+    "start": 382,
+    "code": "btn = tk.Button(text=\"ファイルを開く\", command=openFile)\nimageLabel = tk.Label()\nbtn.pack()\nimageLabel.pack()",
+    "expected": [],
+    "mustUse": [
+     "command=openFile",
+     ".pack()"
+    ],
+    "note": "tk.mainloop() の上に書く。アプリの窓で「ファイルを開く」→見本の画像をえらんで、画像が出れば合格"
+   }
+  ],
+  "learn": [
+   "あとから入れて使う道具を「外部ライブラリ」という。画像は Pillow を使う",
+   "# のあとに書いた文はメモ。プログラムの動きには関係ない",
+   "ボタンを押すと openFile が動いて、画像をえらべる",
+   "dispPhoto で画像を読みこんで、窓に表示する"
+  ],
+  "codeblock": [],
+  "card": {
+   "title": "Pillow はもう入っている",
+   "body": "画像をあつかう Pillow は、このアプリにもう入っているよ。動画の pip install の場面はとばしてOK。あとから足して使う道具を「外部ライブラリ」というよ。"
+  },
+  "review": {
+   "question": "# のあとに書いた文は、どうなる？",
+   "choices": [
+    "メモになって、動かない",
+    "画面に表示される",
+    "エラーになる"
+   ],
+   "answer": 0
+  },
+  "appWindow": true
+ },
+ {
+  "step": 24,
+  "unit": 6,
+  "title": "#21 白黒とモザイク",
+  "video": {
+   "no": "#21",
+   "id": "zP5Vhy34qwM",
+   "length": 293,
+   "end": 253
+  },
+  "fileName": "step24.py",
+  "sections": [
+   {
+    "title": "convert(\"L\") で白黒に",
+    "start": 38,
+    "code": "    newImage = PIL.Image.open(path).convert(\"L\").resize((300, 300))",
+    "expected": [],
+    "mustUse": [
+     "convert(\"L\")"
+    ],
+    "note": "前の回のコードを開き、dispPhoto の中の newImage の行を書きかえる。アプリの窓で画像を開いて、白黒になれば合格"
+   },
+   {
+    "title": "resize を2回でモザイク",
+    "start": 152,
+    "code": "    newImage = PIL.Image.open(path).convert(\"L\").resize((32, 32)).resize((300, 300))",
+    "expected": [],
+    "mustUse": [
+     "resize((32, 32))"
+    ],
+    "note": "newImage の行に resize((32, 32)) を足す。画像がぼやければ合格。白黒のまま足すかは推測（字幕は「先ほどのコードに足す」）"
+   },
+   {
+    "title": "resample=0 でもっとモザイクに",
+    "start": 213,
+    "code": "    newImage = PIL.Image.open(path).convert(\"L\").resize((32, 32)).resize((300, 300), resample=0)",
+    "expected": [],
+    "mustUse": [
+     "resample=0"
+    ],
+    "note": "2つ目の resize のカッコの中に resample=0 を足す。四角いモザイクになれば合格"
+   },
+   {
+    "title": "数を変えてみる",
+    "start": 238,
+    "code": "    newImage = PIL.Image.open(path).convert(\"L\").resize((16, 16)).resize((300, 300), resample=0)",
+    "expected": [],
+    "mustUse": [
+     "resample=0"
+    ],
+    "note": "推測：動画にはない課題（エディターの課題「数を変えてみる」）。32 を 16 や 64 に変えて、モザイクの細かさが変われば合格"
+   }
+  ],
+  "learn": [
+   "convert(\"L\") で、画像を白黒にできる",
+   "resize((32, 32)) で小さくしてから大きくもどすと、モザイクになる",
+   "resample=0 をつけると、もっとモザイクっぽくなる",
+   "数を変えると、モザイクの細かさが変わる"
+  ],
+  "codeblock": [
+   "21-5"
+  ],
+  "card": {
+   "title": "(300, 300) のカッコ",
+   "body": "カッコが2つの (300, 300) は「タプル」というもので、あとの #22 で習うよ。今は「よこ300・たて300」と読めばOK。"
+  },
+  "review": {
+   "question": "モザイクは、どうやって作った？",
+   "choices": [
+    "一度小さくしてから、大きくもどす",
+    "色を白黒にする",
+    "画像を2つ重ねる"
+   ],
+   "answer": 0
+  },
+  "appWindow": true
+ },
+ {
+  "step": 25,
+  "unit": 6,
+  "title": "作品：画像加工アプリ（作品6）",
+  "video": null,
+  "fileName": "step25.py",
+  "sections": [
+   {
+    "title": "見本を動かす：ボタンで切りかえ",
+    "start": 0,
+    "code": "import tkinter as tk\nfrom tkinter import filedialog\nfrom PIL import Image, ImageTk\n\noriginal = None\nphoto = None\n\n\ndef show(img):\n    global photo\n    photo = ImageTk.PhotoImage(img)\n    label.config(image=photo)\n\n\ndef open_image():\n    global original\n    path = filedialog.askopenfilename(filetypes=[(\"画像\", \"*.png *.jpg *.jpeg\")])\n    if path != \"\":\n        original = Image.open(path)\n        original.thumbnail((500, 400))\n        show(original)\n\n\ndef to_original():\n    if original is not None:\n        show(original)\n\n\ndef to_gray():\n    if original is not None:\n        show(original.convert(\"L\"))\n\n\ndef to_mosaic():\n    if original is not None:\n        small = original.resize((original.width // 20, original.height // 20))\n        mosaic = small.resize(original.size, Image.NEAREST)\n        show(mosaic)\n\n\nwindow = tk.Tk()\nwindow.title(\"画像加工アプリ\")\n\nlabel = tk.Label(window, text=\"「画像をひらく」をおしてね\", width=60, height=20)\nlabel.pack()\n\ntk.Button(window, text=\"画像をひらく\", command=open_image).pack(side=tk.LEFT, expand=True, pady=10)\ntk.Button(window, text=\"もとにもどす\", command=to_original).pack(side=tk.LEFT, expand=True)\ntk.Button(window, text=\"白黒\", command=to_gray).pack(side=tk.LEFT, expand=True)\ntk.Button(window, text=\"モザイク\", command=to_mosaic).pack(side=tk.LEFT, expand=True)\n\nwindow.mainloop()",
+    "expected": [],
+    "mustUse": [
+     "convert(\"L\")",
+     "command=to_mosaic"
+    ],
+    "note": "作品6の見本。アプリの窓で「画像をひらく」→見本の画像をえらび、「白黒」「モザイク」「もとにもどす」で画像が切りかわれば合格"
+   },
+   {
+    "title": "アレンジ：モザイクの細かさを変える",
+    "start": 0,
+    "code": "        small = original.resize((original.width // 10, original.height // 10))",
+    "expected": [],
+    "mustUse": [
+     "original.resize("
+    ],
+    "note": "to_mosaic の中の small の行の 20 を、10 や 40 に変える。モザイクの細かさが変われば合格（数が小さいほど細かい）"
+   }
+  ],
+  "learn": [
+   "ボタンごとに関数を作ると、いろいろな加工を切りかえられる",
+   "開いた画像を original にしまっておくと、もとにもどせる",
+   "白黒は convert(\"L\")、モザイクは小さくしてから大きくもどす",
+   "数を変えて、自分の好きなモザイクにできる"
+  ],
+  "codeblock": [],
+  "review": {
+   "question": "作品6で「もとにもどす」ができるのはなぜ？",
+   "choices": [
+    "開いた画像を original にしまっておいたから",
+    "画像をもう一度ダウンロードするから",
+    "白黒を2回するから"
+   ],
+   "answer": 0
+  },
+  "appWindow": true
+ }
+]

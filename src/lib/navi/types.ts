@@ -12,7 +12,10 @@ export type NaviSection = {
   mustUse?: string[]
   // input() に入れる値
   inputs?: string[]
+  // 生徒向けの説明（「エラーを見る場面」など）。「推測」と書いた文は作る人向けなので画面に出さない
   note?: string
+  // わざとエラーを出して確かめる見出し（エラーが出たら合格）
+  expectError?: boolean
 }
 
 export type NaviVideo = {
@@ -34,6 +37,8 @@ export type NaviStep = {
   sections: NaviSection[]
   learn: string[]
   codeblock: string[]
+  // まだ CodeBlock にない、これから作るレッスン（準備中として見せる）
+  codeblockPlanned?: string[]
   card?: { title: string; body: string }
   review: { question: string; choices: string[]; answer: number }
   appWindow?: boolean

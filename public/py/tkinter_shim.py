@@ -434,6 +434,12 @@ class Radiobutton(Checkbutton):
         return node
 
 
+def mainloop(n=0):
+    """tk.mainloop()（窓ではなく tkinter そのものから呼ぶ書き方）"""
+    if _default_root is not None:
+        _default_root.mainloop()
+
+
 def _messagebox_showinfo(title=None, message=None, **options):
     _navi_bridge.message("info", str(title or ""), str(message or ""))
     return "ok"
