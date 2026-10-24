@@ -117,6 +117,8 @@ export const isPremiumPlan = (plan: SubscriptionPlan): boolean => {
 // レッスンにアクセスできるか
 export const canAccessLesson = (plan: SubscriptionPlan, lessonNumber: number): boolean => {
   const features = PLAN_FEATURES[plan];
+  // 21番台は Python ナビ（新しいコース）専用。全レッスンを開けるプランなら開ける
+  if (lessonNumber >= 21) return features.maxLesson >= 9;
   return lessonNumber <= features.maxLesson;
 };
 
