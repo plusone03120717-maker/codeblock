@@ -15,6 +15,9 @@ function LoginContent() {
   const [rememberUserId, setRememberUserId] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
+  // ログインのあとに戻る場所（?next=/navi など。同じサイトの中の道だけ）
+  const nextParam = searchParams.get("next");
+  const afterLogin = nextParam && nextParam.startsWith("/") && !nextParam.startsWith("//") ? nextParam : "/";
 
   useEffect(() => {
     const savedUserId = localStorage.getItem("rememberedUserId");
@@ -49,7 +52,7 @@ function LoginContent() {
         localStorage.removeItem("rememberedUserId");
       }
       
-      router.push("/");
+      router.push(afterLogin);
     } catch (err: any) {
       if (err.code === "auth/wrong-password" || err.code === "auth/user-not-found" || err.code === "auth/invalid-credential") {
         setError("ユーザーIDまたはパスワードが間違っています");
@@ -68,7 +71,7 @@ function LoginContent() {
     setLoading(true);
     try {
       await loginWithGoogle();
-      router.push("/");
+      router.push(afterLogin);
     } catch (err: any) {
       setError("Googleログインに失敗しました");
     } finally {
