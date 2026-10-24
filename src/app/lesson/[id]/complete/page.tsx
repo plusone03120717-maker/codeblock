@@ -15,6 +15,8 @@ import {
   getProgress
 } from "@/utils/progress";
 import { F, FW } from "@/components/Furigana";
+import { naviAfterLesson } from "@/lib/navi/progress";
+import { NAVI_STEPS } from "@/data/navi/steps";
 
 type CompletePageProps = {
   params: Promise<{
@@ -34,6 +36,8 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
   const [levelInfo, setLevelInfo] = useState(getLevelInfo(0));
   const [levelProgress, setLevelProgress] = useState(0);
   const [xpProcessed, setXpProcessed] = useState(false);
+  // Python ナビ（新しいコース）で進めている生徒のときだけ入る
+  const [navi, setNavi] = useState<{ next: string | null } | null>(null);
 
   useEffect(() => {
     params.then((p) => {
@@ -69,6 +73,7 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
     }
     
     markLessonComplete(lessonId);
+    setNavi(naviAfterLesson(lessonId, NAVI_STEPS));
   }, [lessonId, xpProcessed]);
 
   const currentLesson = lessonId ? getLesson(lessonId) : undefined;
@@ -216,6 +221,31 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
           )}
 
           {/* ナビゲーションボタン */}
+          {navi ? (
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/navi"
+                className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-8 py-3 rounded-full text-lg font-bold transition-all text-center"
+              >
+                Python ナビにもどる
+              </Link>
+              {navi.next ? (
+                <button
+                  onClick={() => router.push(`/lesson/${navi.next}`)}
+                  className="bg-gradient-to-r from-green-300 to-emerald-400 hover:from-green-400 hover:to-emerald-500 text-white px-8 py-3 rounded-full text-lg font-bold shadow-lg hover:shadow-xl transition-all"
+                >
+                  つぎは CodeBlock {navi.next} →
+                </button>
+              ) : (
+                <button
+                  onClick={() => router.push("/navi")}
+                  className="bg-gradient-to-r from-orange-300 to-orange-500 text-white px-8 py-3 rounded-full text-lg font-bold shadow-lg transition-all"
+                >
+                  ステップクリア！ ナビへ →
+                </button>
+              )}
+            </div>
+          ) : (
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/"
@@ -239,6 +269,7 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
               </div>
             )}
           </div>
+          )}
         </div>
 
         {/* 統計カード */}

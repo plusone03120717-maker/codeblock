@@ -91,3 +91,21 @@ export function nextAction(step: NaviStep, p: StepProgress): NextAction {
 export const resumeFrom = (pos: number) => Math.max(0, Math.floor(pos) - 10)
 
 export const fmtTime = (sec: number) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}`
+
+// CodeBlock のレッスンを終えたとき（完了画面から呼ぶ）。
+// ナビで進めている生徒で、いまのステップのレッスンなら、つぎのレッスン（なければ null）を返す。
+// ナビを使っていない生徒（今までのコース）には null を返し、完了画面は今までどおり。
+export function naviAfterLesson(lessonId: string, steps: NaviStep[]): { next: string | null } | null {
+  if (typeof window === 'undefined' || !localStorage.getItem(KEY)) return null
+  const state = loadNavi()
+  const step = steps.find((s) => s.step === state.current)
+  if (!step || !step.codeblock.includes(lessonId)) return null
+  const completed = codeblockCompleted()
+  const next = step.codeblock.find((id) => id !== lessonId && !completed.includes(id)) ?? null
+  if (!next) {
+    state.steps[step.step] = { ...stepProgress(state, step.step), done: true }
+    state.current = step.step + 1
+    saveNavi(state)
+  }
+  return { next }
+}
