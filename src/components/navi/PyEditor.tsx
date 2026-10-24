@@ -2,7 +2,7 @@
 
 // Python ナビのエディター：上にコード、下にターミナル（とアプリの窓）。
 // Python はブラウザの中（public/py/worker.js の Pyodide）で動く。
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { EditorView, basicSetup } from 'codemirror'
 import { keymap } from '@codemirror/view'
 import { EditorState } from '@codemirror/state'
@@ -23,7 +23,16 @@ export type RunResult = { ok: boolean; output: string; error?: PyError }
 type Props = {
   initialFiles: Record<string, string>
   onRunFinished?: (result: RunResult) => void
-  height?: number
+  // 数を渡すとその高さ、'fill' で親の高さいっぱい
+  height?: number | 'fill'
+  // エディターをさわったとき（動画を止めるのに使う）
+  onFocus?: () => void
+  onFilesChange?: (files: Record<string, string>) => void
+  // 上の案内の帯
+  banner?: ReactNode
+  // input() の回に、ターミナルの上に出す「入れる値」
+  inputsHint?: string[]
+  highlight?: boolean
 }
 
 const editorTheme = EditorView.theme(
@@ -53,7 +62,7 @@ const codeColors = HighlightStyle.define([
   { tag: [t.operator, t.punctuation, t.bracket], color: '#dcdcf0' },
 ])
 
-export function PyEditor({ initialFiles, onRunFinished, height = 640 }: Props) {
+export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, onFilesChange, banner, inputsHint, highlight }: Props) {
   const [files, setFiles] = useState<Record<string, string>>(initialFiles)
   const [active, setActive] = useState(Object.keys(initialFiles)[0])
   const [lines, setLines] = useState<Line[]>([])
@@ -75,6 +84,19 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640 }: Props) {
     filesRef.current = files
     activeRef.current = active
   }, [files, active])
+
+  // 親から渡される関数は ref で持つ（変わるたびに Python の係を作り直さないため）
+  const onRunFinishedRef = useRef(onRunFinished)
+  useEffect(() => {
+    onRunFinishedRef.current = onRunFinished
+  }, [onRunFinished])
+  const onFilesChangeRef = useRef(onFilesChange)
+  useEffect(() => {
+    onFilesChangeRef.current = onFilesChange
+  }, [onFilesChange])
+  useEffect(() => {
+    onFilesChangeRef.current?.(files)
+  }, [files])
 
   const push = useCallback((line: Line) => setLines((prev) => [...prev, line]), [])
 
@@ -125,20 +147,20 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640 }: Props) {
           if (m.ok) {
             push({ kind: 'ok', text: m.appOpen ? 'アプリの窓をひらきました →' : 'おわりました' })
             setStatus(m.appOpen ? 'app' : 'ready')
-            onRunFinished?.({ ok: true, output: outputRef.current })
+            onRunFinishedRef.current?.({ ok: true, output: outputRef.current })
           } else {
             const err = m.error as PyError
             push({ kind: 'err', text: `${err.type}: ${err.message}` })
             push({ kind: 'explain', text: friendlyError(err), trace: err.trace })
             setStatus('ready')
-            onRunFinished?.({ ok: false, output: outputRef.current, error: err })
+            onRunFinishedRef.current?.({ ok: false, output: outputRef.current, error: err })
           }
           break
         }
       }
     }
     workerRef.current = w
-  }, [appendStream, onRunFinished, push])
+  }, [appendStream, push])
 
   useEffect(() => {
     startWorker()
@@ -229,8 +251,14 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640 }: Props) {
   const busy = status === 'running'
   const showApp = tk !== null
 
+  const termHeight = height === 'fill' ? 270 : Math.round(height * 0.42)
+
   return (
-    <div className="flex flex-col overflow-hidden rounded-[22px] bg-[#23203b] shadow-lg" style={{ height }}>
+    <div
+      className={`flex flex-col overflow-hidden rounded-[22px] bg-[#23203b] shadow-lg ${highlight ? 'ring-[3px] ring-[#ffc21a] ring-offset-0 shadow-[0_0_0_9px_rgba(255,210,63,.25)]' : ''}`}
+      style={{ height: height === 'fill' ? '100%' : height }}
+    >
+      {banner}
       {/* 上の帯：ファイルと実行 */}
       <div className="flex h-[52px] flex-none items-center gap-2 bg-[#1b1832] px-3">
         {Object.keys(files).map((name) => (
@@ -268,14 +296,14 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640 }: Props) {
       </div>
 
       {/* コード */}
-      <div ref={editorHost} className="min-h-0 flex-1 overflow-hidden" />
+      <div ref={editorHost} onMouseDownCapture={() => onFocus?.()} onKeyDownCapture={() => onFocus?.()} className="min-h-0 flex-1 overflow-hidden" />
 
       <div className="flex h-[10px] flex-none items-center justify-center bg-[#1b1832]">
         <span className="h-1 w-11 rounded bg-[#3a3462]" />
       </div>
 
       {/* ターミナル（とアプリの窓） */}
-      <div className={`grid flex-none bg-[#120f24] ${showApp ? 'grid-cols-[0.75fr_1.4fr]' : 'grid-cols-1'}`} style={{ height: Math.round(height * 0.42) }}>
+      <div className={`grid flex-none bg-[#120f24] ${showApp ? 'grid-cols-[0.75fr_1.4fr]' : 'grid-cols-1'}`} style={{ height: termHeight }}>
         <div className="flex min-h-0 flex-col border-r border-[#241f40]">
           <div className="flex h-[38px] flex-none items-center gap-4 border-b border-[#241f40] px-4 text-[13px] font-bold text-[#8a85ad]">
             <b className="-mb-[10px] border-b-2 border-[#ffd23f] pb-2 text-white">ターミナル</b>
@@ -284,6 +312,14 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640 }: Props) {
               🗑 けす
             </button>
           </div>
+          {inputsHint && inputsHint.length > 0 && (
+            <div className="flex-none border-b border-[#241f40] bg-[rgba(255,210,63,.08)] px-4 py-1.5 text-[13px] font-bold text-[#ffe6a8]">
+              入れる値：{inputsHint.map((v, i) => (
+                <span key={i} className="mx-1 rounded bg-[rgba(255,210,63,.2)] px-1.5 font-mono text-white">{v}</span>
+              ))}
+              <span className="ml-1 text-[#9d98c2]">（この順に入れると、動画と同じ結果になるよ）</span>
+            </div>
+          )}
           <div className="min-h-0 flex-1 overflow-y-auto px-4 py-2 font-mono text-[15px] leading-[1.75] text-[#cfcbe8]">
             {lines.map((l, i) => {
               if (l.kind === 'cmd')
