@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { lessons, getLesson } from "@/data/lessons";
+import { getLesson } from "@/data/lessons";
 import { getLessonMissions, getMission } from "@/data/missions";
 import { getTutorial } from "@/data/tutorials";
 import { characterProfiles, getCharacterByUnit } from "@/data/characterProfiles";
@@ -377,7 +377,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     wrongMissionIdsRef.current = wrongMissionIds;
   }, [wrongMissionIds]);
 
-  const lesson = lessonId ? lessons.find((l) => l.id === lessonId) : undefined;
+  const lesson = lessonId ? getLesson(lessonId) : undefined;
   const missions = lessonId ? getLessonMissions(lessonId) : undefined;
   
   // 現在のミッションを取得

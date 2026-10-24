@@ -1347,12 +1347,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "このコードで、表示されない数はどれ？",
       "type": "quiz",
       "choices": [
-        "1",
         "2",
         "3",
-        "4"
+        "4",
+        "1"
       ],
-      "correctAnswer": 3,
+      "correctAnswer": 2,
       "expectedOutput": "4",
       "explanation": "randint(1, 3) は 1・2・3 のどれか。さいごの 3 も入るけど、4 は出ないよ。",
       "availableBlocks": [],
@@ -1397,12 +1397,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "input( ) で入れた 7 は、どんな種類のデータになる？",
       "type": "quiz",
       "choices": [
-        "数（int）",
-        "文字（str）",
         "小数（float）",
-        "リスト"
+        "リスト",
+        "数（int）",
+        "文字（str）"
       ],
-      "correctAnswer": 1,
+      "correctAnswer": 3,
       "expectedOutput": "文字（str）",
       "explanation": "input( ) で入れたものは、数に見えても文字（str）なんだ。",
       "availableBlocks": [],
@@ -1414,12 +1414,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "このコードを実行すると何が表示される？",
       "type": "quiz",
       "choices": [
+        "エラー",
         "True",
         "False",
-        "8",
-        "エラー"
+        "8"
       ],
-      "correctAnswer": 1,
+      "correctAnswer": 2,
       "expectedOutput": "False",
       "explanation": "\"8\" は文字、8 は数。種類がちがうので == は False になるよ。",
       "availableBlocks": [],
@@ -1447,12 +1447,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "足し算アプリで、正しい答えを入れたのに「不正解」になった。どこを直す？",
       "type": "quiz",
       "choices": [
-        "a = 3 の行",
         "if kotae == a + b: を int(kotae) == a + b にする",
         "print(\"正解\") の行",
-        "else: の行"
+        "else: の行",
+        "a = 3 の行"
       ],
-      "correctAnswer": 1,
+      "correctAnswer": 0,
       "expectedOutput": "if kotae == a + b: を int(kotae) == a + b にする",
       "explanation": "kotae は文字なので、int( ) で数にしてからくらべると正しく判定できるよ。",
       "availableBlocks": [],
@@ -1464,12 +1464,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "random.randint(1, 10) で出る数はどれ？",
       "type": "quiz",
       "choices": [
+        "0〜10",
         "0〜9",
         "1〜9",
-        "1〜10",
-        "0〜10"
+        "1〜10"
       ],
-      "correctAnswer": 2,
+      "correctAnswer": 3,
       "expectedOutput": "1〜10",
       "explanation": "randint は、さいしょの数とさいごの数のどちらも入るよ。だから 1〜10。",
       "availableBlocks": []
@@ -1480,12 +1480,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "このコードで、入れた名前を使ってあいさつしたい。表示は？（名前に「ゆい」と入れた）",
       "type": "quiz",
       "choices": [
+        "エラー",
         "こんにちは name",
         "こんにちは ゆい",
-        "こんにちはゆい",
-        "エラー"
+        "こんにちはゆい"
       ],
-      "correctAnswer": 1,
+      "correctAnswer": 2,
       "expectedOutput": "こんにちは ゆい",
       "explanation": "name には入れた「ゆい」が入る。カンマで区切ると、あいだにスペースが入るよ。",
       "availableBlocks": [],
@@ -1516,12 +1516,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "root.geometry(\"200x100\") の 200 は何？",
       "type": "quiz",
       "choices": [
-        "窓のよこの長さ",
         "窓のたての長さ",
         "文字の大きさ",
-        "ボタンの数"
+        "ボタンの数",
+        "窓のよこの長さ"
       ],
-      "correctAnswer": 0,
+      "correctAnswer": 3,
       "expectedOutput": "窓のよこの長さ",
       "explanation": "\"よこ x たて\" の順。200 がよこ、100 がたてだよ。",
       "availableBlocks": [],
@@ -1533,12 +1533,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "Label を作ったのに、窓に出てこない。たりないのはどれ？",
       "type": "quiz",
       "choices": [
-        "lbl.pack()",
-        "print(lbl)",
         "lbl = 0",
-        "tk.Label()"
+        "tk.Label()",
+        "lbl.pack()",
+        "print(lbl)"
       ],
-      "correctAnswer": 0,
+      "correctAnswer": 2,
       "expectedOutput": "lbl.pack()",
       "explanation": "作っただけでは窓に出ないよ。pack( ) で窓にならべると見えるようになる。",
       "availableBlocks": [],
@@ -1550,12 +1550,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "ボタンを押したら change_label を動かしたい。正しい書き方は？",
       "type": "quiz",
       "choices": [
+        "tk.Button(command=\"change_label\")",
         "tk.Button(text=\"プッシュ\", command=change_label)",
         "tk.Button(text=\"プッシュ\", command=change_label())",
-        "tk.Button(text=\"プッシュ\", change_label)",
-        "tk.Button(command=\"change_label\")"
+        "tk.Button(text=\"プッシュ\", change_label)"
       ],
-      "correctAnswer": 0,
+      "correctAnswer": 1,
       "expectedOutput": "tk.Button(text=\"プッシュ\", command=change_label)",
       "explanation": "command= には関数の名前だけを書くよ。( ) をつけると、押す前に動いてしまう。",
       "availableBlocks": []
@@ -1582,12 +1582,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "mainloop( ) はどこに書く？",
       "type": "quiz",
       "choices": [
-        "いちばん最後",
         "いちばん最初",
         "Label の前",
-        "どこでもいい"
+        "どこでもいい",
+        "いちばん最後"
       ],
-      "correctAnswer": 0,
+      "correctAnswer": 3,
       "expectedOutput": "いちばん最後",
       "explanation": "mainloop( ) は「窓を開いて待つ」合図。部品をぜんぶ作ってから、最後に書くよ。",
       "availableBlocks": []
@@ -1598,12 +1598,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "tkinter を tk という短い名前で使うための1行はどれ？",
       "type": "quiz",
       "choices": [
-        "import tkinter as tk",
-        "import tk",
         "tkinter = tk",
-        "from tk import tkinter"
+        "from tk import tkinter",
+        "import tkinter as tk",
+        "import tk"
       ],
-      "correctAnswer": 0,
+      "correctAnswer": 2,
       "expectedOutput": "import tkinter as tk",
       "explanation": "as tk をつけると、tkinter を tk と書けるようになるよ。",
       "availableBlocks": []
@@ -1614,12 +1614,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "窓のタイトルを「おみくじ」にするのはどれ？",
       "type": "quiz",
       "choices": [
+        "print(\"おみくじ\")",
         "root.title(\"おみくじ\")",
         "root.geometry(\"おみくじ\")",
-        "tk.Label(text=\"おみくじ\")",
-        "print(\"おみくじ\")"
+        "tk.Label(text=\"おみくじ\")"
       ],
-      "correctAnswer": 0,
+      "correctAnswer": 1,
       "expectedOutput": "root.title(\"おみくじ\")",
       "explanation": "title( ) で窓の上に出る名前を決められるよ。",
       "availableBlocks": []
@@ -1647,12 +1647,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "ボタンを押すたびに、ちがうくじを出したい。関数の中で使うのはどれ？",
       "type": "quiz",
       "choices": [
-        "random.choice(kuji)",
         "kuji[0]",
         "len(kuji)",
-        "sorted(kuji)"
+        "sorted(kuji)",
+        "random.choice(kuji)"
       ],
-      "correctAnswer": 0,
+      "correctAnswer": 3,
       "expectedOutput": "random.choice(kuji)",
       "explanation": "random.choice で毎回ランダムにえらぶと、押すたびに結果が変わるよ。",
       "availableBlocks": []
@@ -1663,12 +1663,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "Label と Button を作って pack( ) した。窓の中で上に出るのは？",
       "type": "quiz",
       "choices": [
-        "ラベル",
-        "プッシュ",
         "ならばない",
-        "エラー"
+        "エラー",
+        "ラベル",
+        "プッシュ"
       ],
-      "correctAnswer": 0,
+      "correctAnswer": 2,
       "expectedOutput": "ラベル",
       "explanation": "pack( ) は、先に書いたものから上にならべていくよ。",
       "availableBlocks": [],
@@ -1698,12 +1698,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "モザイクにするには、どうすればいい？",
       "type": "quiz",
       "choices": [
-        "小さくしてから、もとの大きさにもどす",
         "白黒にする",
         "上下を入れかえる",
-        "色をこくする"
+        "色をこくする",
+        "小さくしてから、もとの大きさにもどす"
       ],
-      "correctAnswer": 0,
+      "correctAnswer": 3,
       "expectedOutput": "小さくしてから、もとの大きさにもどす",
       "explanation": "一度うんと小さくして、また大きくすると、細かいところが四角くなってモザイクになるよ。",
       "availableBlocks": []
@@ -1714,12 +1714,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "resize((32, 32)) の 32 を 16 にすると、モザイクはどうなる？",
       "type": "quiz",
       "choices": [
-        "四角が大きく、あらくなる",
-        "四角が小さく、細かくなる",
         "変わらない",
-        "白黒になる"
+        "白黒になる",
+        "四角が大きく、あらくなる",
+        "四角が小さく、細かくなる"
       ],
-      "correctAnswer": 0,
+      "correctAnswer": 2,
       "expectedOutput": "四角が大きく、あらくなる",
       "explanation": "小さくするほど、もどしたときの四角は大きくなる。だから 16 のほうがあらいモザイクだよ。",
       "availableBlocks": []
@@ -1730,12 +1730,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "Pillow のような、あとから足して使う道具のまとまりを何という？",
       "type": "quiz",
       "choices": [
+        "コメント",
         "外部ライブラリ",
         "変数",
-        "リスト",
-        "コメント"
+        "リスト"
       ],
-      "correctAnswer": 0,
+      "correctAnswer": 1,
       "expectedOutput": "外部ライブラリ",
       "explanation": "Python に最初から入っていない道具を外部ライブラリというよ。このアプリには Pillow が入っている。",
       "availableBlocks": []
@@ -1763,12 +1763,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "(300, 300) のようにカッコで2つの数をまとめたものは、何を表している？",
       "type": "quiz",
       "choices": [
-        "よことたての大きさ",
         "色",
         "ファイルの名前",
-        "回数"
+        "回数",
+        "よことたての大きさ"
       ],
-      "correctAnswer": 0,
+      "correctAnswer": 3,
       "expectedOutput": "よことたての大きさ",
       "explanation": "(よこ, たて) の大きさだよ。カッコでまとめたものは、あとのタプルの回でくわしく習うよ。",
       "availableBlocks": [],
@@ -1780,12 +1780,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "画像ファイルを開くのはどれ？",
       "type": "quiz",
       "choices": [
-        "PIL.Image.open(path)",
-        "print(path)",
         "tk.Label(path)",
-        "path.pack()"
+        "path.pack()",
+        "PIL.Image.open(path)",
+        "print(path)"
       ],
-      "correctAnswer": 0,
+      "correctAnswer": 2,
       "expectedOutput": "PIL.Image.open(path)",
       "explanation": "Image.open( ) で画像ファイルを開いて、プログラムで使えるようにするよ。",
       "availableBlocks": []
@@ -1796,12 +1796,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "画像を窓に出すために、ImageTk.PhotoImage( ) をするのはなぜ？",
       "type": "quiz",
       "choices": [
+        "小さくするため",
         "tkinter で表示できる形にするため",
         "白黒にするため",
-        "保存するため",
-        "小さくするため"
+        "保存するため"
       ],
-      "correctAnswer": 0,
+      "correctAnswer": 1,
       "expectedOutput": "tkinter で表示できる形にするため",
       "explanation": "Pillow の画像を、tkinter のラベルに出せる形にかえているんだ。",
       "availableBlocks": []
@@ -1828,12 +1828,12 @@ export const naviMissions: Record<string, Mission[]> = {
       "description": "「ファイルを開く」ボタンを押したときに画像を選ぶ画面を出すのはどれ？",
       "type": "quiz",
       "choices": [
-        "filedialog.askopenfilename()",
         "random.choice()",
         "len()",
-        "root.title()"
+        "root.title()",
+        "filedialog.askopenfilename()"
       ],
-      "correctAnswer": 0,
+      "correctAnswer": 3,
       "expectedOutput": "filedialog.askopenfilename()",
       "explanation": "askopenfilename( ) でファイルを選ぶ画面が出るよ。このアプリでは見本の画像を選べる。",
       "availableBlocks": []
