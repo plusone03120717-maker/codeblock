@@ -1,3 +1,5 @@
+import { naviTutorials } from "@/data/navi/lessons21";
+
 export interface LessonTutorial {
   lessonId: string;
   characterName: string;
@@ -2022,5 +2024,6 @@ export const tutorials: LessonTutorial[] = [
 ];
 
 export function getTutorial(lessonId: string): LessonTutorial | undefined {
-  return tutorials.find((t) => t.lessonId === lessonId);
+  // Python ナビ専用の 21番台は別のファイル
+  return tutorials.find((t) => t.lessonId === lessonId) ?? naviTutorials.find((t) => t.lessonId === lessonId);
 }

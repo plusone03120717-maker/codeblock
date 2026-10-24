@@ -1,4 +1,5 @@
 import { Mission, WordBlock } from "@/types";
+import { naviMissions } from "@/data/navi/lessons21";
 
 // ミッションデータをレッスンIDで管理
 const missionsByLesson: Record<string, Mission[]> = {
@@ -10869,12 +10870,13 @@ const missionsByLesson: Record<string, Mission[]> = {
 
 // レッスンのミッション一覧を取得
 export function getLessonMissions(lessonId: string): Mission[] | undefined {
-  return missionsByLesson[lessonId];
+  // Python ナビ専用の 21番台は別のファイル
+  return missionsByLesson[lessonId] ?? naviMissions[lessonId];
 }
 
 // 特定のミッションを取得
 export function getMission(lessonId: string, missionId: number): Mission | undefined {
-  const missions = missionsByLesson[lessonId];
+  const missions = getLessonMissions(lessonId);
   if (!missions) return undefined;
   return missions.find((m) => m.id === missionId);
 }
