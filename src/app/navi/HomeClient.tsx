@@ -3,7 +3,7 @@
 // Python ナビのホーム：ナビ（VTuber）が「前回のつづき」と、つぎにやること1つを案内する
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { NaviHeader } from '@/components/navi/NaviHeader'
 import { NAVI_STEPS, getNaviStep, nextReadyStep, prevReadyStep, readyStep } from '@/data/navi/steps'
 import { UNIT_NAMES, inStep, videoLabel, type NaviStep } from '@/lib/navi/types'
@@ -20,8 +20,9 @@ import {
 } from '@/lib/navi/progress'
 import { useAuth } from '@/contexts/AuthContext'
 import { useNaviVoice } from '@/components/navi/useNaviVoice'
+import { useBreathing } from '@/components/navi/useBreathing'
 import { naviLessonLabel } from '@/data/navi/finish31'
-import { FIRST_TIME_SPEECH, REVIEW_RIGHT_SPEECH, REVIEW_WRONG_SPEECH, newStepSpeech, returnSpeech } from '@/lib/navi/speech'
+import { FIRST_TIME_SPEECH, REVIEW_RIGHT_SPEECH, REVIEW_WRONG_SPEECH, byeSpeech, newStepSpeech, returnSpeech } from '@/lib/navi/speech'
 
 // ステップの数（単元ごと）：本編 U1〜U6（steps.json から）
 const UNIT_STEPS: Record<number, NaviStep[]> = NAVI_STEPS.reduce<Record<number, NaviStep[]>>((m, s) => ({ ...m, [s.unit]: [...(m[s.unit] ?? []), s] }), {})
@@ -66,18 +67,31 @@ export function HomeClient() {
   const [state, setState] = useState<NaviState | null>(null)
   const [review, setReview] = useState<{ step: NaviStep; q: NonNullable<NaviStep['review']>; picked: number | null } | null>(null)
   const voice = useNaviVoice()
+  // 「今日はおわる」からもどってきたとき（?bye=1）は、いちかがねぎらう
+  const [bye, setBye] = useState(false)
+  // いちかの呼吸とゆらぎ（計算アプリと同じ動き）
+  const rig = useRef<HTMLDivElement>(null)
+  useBreathing(rig, voice.speaking, state !== null)
 
   useEffect(() => {
     // ブラウザの保存（localStorage）は表示のあとでしか読めないので、ここで1回だけ入れる
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setState(loadNavi())
+    if (new URLSearchParams(window.location.search).get('bye')) {
+      setBye(true)
+      // 開き直したときは、ふつうの「おかえり」にもどす
+      window.history.replaceState(null, '', '/navi')
+    }
   }, [])
 
   // ナビが声で言う文（吹き出しと同じ中身を、読みまちがえない書き方にしたもの）
   const d = state ? derive(state) : null
+  const lastSession = state?.sessions[state.sessions.length - 1]
   const speech = !d
     ? ''
-    : d.firstTime
+    : bye
+      ? byeSpeech(lastSession?.learned.length ?? 0)
+      : d.firstTime
       ? FIRST_TIME_SPEECH
       : d.newStep
         ? newStepSpeech(d.step, d.action, { returning: d.returning, prev: d.prevDone ? d.prev : null, needReview: d.needReview })
@@ -97,7 +111,22 @@ export function HomeClient() {
   const name = user?.displayName ?? ''
   const completed = codeblockCompleted()
 
-  const bubble = firstTime ? (
+  const learnedToday = lastSession?.learned.length ?? 0
+  const bubble = bye ? (
+    <>
+      おつかれさま{name && `、${name}さん`}！ 今日も よくがんばったね。
+      <br />
+      {learnedToday > 0 && (
+        <>
+          わかったことが <b>{learnedToday}つ</b> ふえたよ。
+          <br />
+        </>
+      )}
+      つぎに来たら、<b>{actionTitle(step, action)}</b>！
+      <br />
+      またね！
+    </>
+  ) : firstTime ? (
     <>
       はじめまして{name && `、${name}さん`}！ いちかだよ。
       <br />
@@ -166,21 +195,24 @@ export function HomeClient() {
             {!voice.unavailable && <VoiceControls voice={voice} />}
           </div>
           {/* 話しているあいだは「ふつう」と「話す」を声の大きさで切りかえる（目の形が同じ2枚）。3枚とも先に読みこんでおく */}
-          {(['smile', 'normal', 'talk'] as const).map((face) => {
-            const show = voice.speaking ? (voice.mouthOpen ? 'talk' : 'normal') : 'smile'
-            return (
-              <Image
-                key={face}
-                src={`/navi/bob_${face}.webp`}
-                alt={face === 'smile' ? 'いちか' : ''}
-                width={520}
-                height={520}
-                unoptimized
-                priority
-                className={`pointer-events-none absolute left-1/2 top-10 w-[520px] max-w-none -translate-x-1/2 ${show === face ? 'opacity-100' : 'opacity-0'}`}
-              />
-            )
-          })}
+          {/* 呼吸とゆらぎは、3枚まとめて動かす（足もとを中心に） */}
+          <div ref={rig} className="pointer-events-none absolute inset-0 origin-[50%_85%] will-change-transform">
+            {(['smile', 'normal', 'talk'] as const).map((face) => {
+              const show = voice.speaking ? (voice.mouthOpen ? 'talk' : 'normal') : 'smile'
+              return (
+                <Image
+                  key={face}
+                  src={`/navi/bob_${face}.webp`}
+                  alt={face === 'smile' ? 'いちか' : ''}
+                  width={520}
+                  height={520}
+                  unoptimized
+                  priority
+                  className={`pointer-events-none absolute left-1/2 top-10 w-[520px] max-w-none -translate-x-1/2 ${show === face ? 'opacity-100' : 'opacity-0'}`}
+                />
+              )
+            })}
+          </div>
           <div className="absolute inset-x-0 bottom-0 z-[1] h-[330px] bg-[linear-gradient(transparent,rgba(255,255,255,.95)_45%)]" />
           <div className="relative z-10 mt-auto rounded-[20px] bg-white px-5 py-4 text-base font-bold leading-[1.75] shadow-sm">{bubble}</div>
         </section>

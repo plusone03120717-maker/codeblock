@@ -52,3 +52,10 @@ export function newStepSpeech(step: NaviStep, a: NextAction, o: { returning: boo
 
 export const REVIEW_RIGHT_SPEECH = 'せいかい！ よく覚えていたね。'
 export const REVIEW_WRONG_SPEECH = 'おしい！ 正しいのは、チェックのついた答えだよ。'
+
+// 「今日はおわる」を押してホームにもどったときの、ねぎらいのひとこと（2026-10-25 依頼主）
+const KAZU = ['', 'ひとつ', 'ふたつ', 'みっつ', 'よっつ', 'いつつ', 'むっつ', 'ななつ', 'やっつ', 'ここのつ', 'とお']
+export function byeSpeech(learnedCount: number): string {
+  const got = learnedCount > 0 ? `わかったことが、${KAZU[learnedCount] ?? `${learnedCount}こ`}、ふえたよ。` : ''
+  return `おつかれさま！ 今日も、よくがんばったね。${got}つぎに来たら、つづきから始めよう。またね！`
+}
