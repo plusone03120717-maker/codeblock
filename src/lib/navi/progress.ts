@@ -5,7 +5,8 @@ import type { NaviStep } from './types'
 export type StepProgress = {
   videoPos: number // 動画をどこまで見たか（秒）
   videoDone: boolean // 最後まで見たか
-  passed: number[] // 結果が合った見出しの番号
+  passed: number[] // 結果が合った見出しの番号（チャレンジで「こたえを見て次へ」にしたものも入る）
+  revealed?: number[] // チャレンジで、こたえを見て次へ進んだ見出し（自分で正解したものとは分けて残す）
   files: Record<string, string> // エディターのコード
   done: boolean // ステップをクリアしたか
 }
