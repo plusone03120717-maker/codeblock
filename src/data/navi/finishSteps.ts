@@ -38,6 +38,14 @@ export const finishStepLessons: Lesson[] = [
     "difficulty": "かんたん"
   },
   {
+    "id": "31-6",
+    "unitNumber": 31,
+    "subNumber": 6,
+    "title": "ステップ6の仕上げ",
+    "description": "＋ で文字をつなぎ、＊ で文字をくりかえそう",
+    "difficulty": "かんたん"
+  },
+  {
     "id": "31-8",
     "unitNumber": 31,
     "subNumber": 8,
@@ -1011,6 +1019,178 @@ export const finishStepMissions: Record<string, Mission[]> = {
             "\"menseki\""
           ],
           "message": "\" \" でかこむと、箱の中身ではなく文字のまま出るよ！"
+        }
+      ]
+    }
+  ],
+  "31-6": [
+    {
+      "id": 1,
+      "type": "quiz",
+      "title": "つなぐと？",
+      "description": "このコードを実行すると、何が出る？",
+      "codeToRead": "print(\"たこ\" + \"やき\")",
+      "choices": [
+        "たこ やき",
+        "たこやき",
+        "エラーになる"
+      ],
+      "correctAnswer": 1,
+      "expectedOutput": "たこやき",
+      "hint": "＋ は、文字と文字をどうするかな？",
+      "explanation": "＋ で文字と文字をつなぐと、あいだにスペースは入らない。たこやき と出るよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 2,
+      "type": "quiz",
+      "title": "くりかえすと？",
+      "description": "このコードを実行すると、何が出る？",
+      "codeToRead": "print(\"ニャー\" * 2)",
+      "choices": [
+        "ニャーニャー",
+        "ニャー2",
+        "エラーになる"
+      ],
+      "correctAnswer": 0,
+      "expectedOutput": "ニャーニャー",
+      "hint": "＊ 2 は、何回くりかえすかな？",
+      "explanation": "文字 * 2 で、2回くりかえす。ニャーニャー と出るよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 3,
+      "type": "quiz",
+      "title": "エラーを直そう",
+      "description": "実行したら「TypeError: can only concatenate str (not \"int\") to str」と出た。どう直す？",
+      "codeToRead": "print(\"レベル\" + 5)",
+      "choices": [
+        "+ を * にする",
+        "レベル の \" \" をとる",
+        "5 を \"5\" のように \" \" でかこむ"
+      ],
+      "correctAnswer": 2,
+      "expectedOutput": "5 を \"5\" のように \" \" でかこむ",
+      "hint": "文字と数は、＋ でつなげるかな？",
+      "explanation": "文字と数は ＋ でつなげないので TypeError。数も \" \" でかこんで \"5\" にすれば、レベル5 と出るよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 4,
+      "title": "名前とつなぐ",
+      "description": "namae の箱を使って「ゆうきさん、こんにちは」と表示しよう！",
+      "expectedOutput": "ゆうきさん、こんにちは",
+      "correctCode": "print(namae + \"さん、こんにちは\")",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b1",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b2",
+          "text": "namae",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b3",
+          "text": "+",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b4",
+          "text": "\"さん、こんにちは\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b5",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b6",
+          "text": "\"namae\"",
+          "type": "string",
+          "color": "bg-green-200"
+        }
+      ],
+      "prefixCode": "namae = \"ゆうき\"",
+      "rules": [
+        {
+          "forbids": [
+            "\"namae\""
+          ],
+          "message": "\" \" でかこむと、箱の中身ではなく文字のまま出るよ！"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "線をひく",
+      "description": "「=」を 15回 くりかえして、線を表示しよう！",
+      "expectedOutput": "===============",
+      "correctCode": "print(\"=\" * 15)",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b1",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b2",
+          "text": "\"=\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b3",
+          "text": "*",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b4",
+          "text": "15",
+          "type": "number",
+          "color": "bg-yellow-100"
+        },
+        {
+          "id": "b5",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b6",
+          "text": "+",
+          "type": "operator",
+          "color": "bg-orange-200"
+        }
+      ],
+      "rules": [
+        {
+          "requires": [
+            "*"
+          ],
+          "message": "くりかえすときは ＊ を使うよ！"
         }
       ]
     }
@@ -5552,6 +5732,22 @@ export const finishStepTutorials: LessonTutorial[] = [
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "ue = 5\nshita = 10\ntakasa = 6\nprint((ue + shita) * takasa / 2)  # 45.0"
+        }
+      }
+    ]
+  },
+  {
+    "lessonId": "31-6",
+    "characterName": "いちか",
+    "characterEmoji": "🙂",
+    "characterImage": "/navi/bob_smile.webp",
+    "slides": [
+      {
+        "title": "5問で仕上げよう",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "characterMessage": "わからなくなったら、ヒントを見てね。",
+        "codeExample": {
+          "good": "print(\"パイ\" + \"ソン\")  # パイソン"
         }
       }
     ]

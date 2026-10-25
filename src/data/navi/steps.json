@@ -582,11 +582,115 @@
   "unit": 1,
   "title": "文字をつなぐ",
   "fileName": "step06.py",
-  "video": null,
-  "planned": true,
-  "sections": [],
-  "learn": [],
-  "codeblock": []
+  "sections": [
+   {
+    "title": "＋ で文字をつなぐ",
+    "start": 41,
+    "code": "print(\"こんにち\" + \"は\")",
+    "expected": [
+     "こんにちは"
+    ],
+    "mustUse": [
+     "+"
+    ],
+    "pauseAt": 107
+   },
+   {
+    "title": "箱の文字とつなぐ",
+    "start": 74,
+    "code": "namae = \"いちか\"\nprint(namae + \"さん、こんにちは\")",
+    "expected": [],
+    "mustMatch": "namae\\s*=\\s*\"[^\"]+\"[\\s\\S]*print\\(\\s*namae\\s*\\+",
+    "outputPattern": "さん、?こんにちは$",
+    "pauseAt": 107,
+    "note": "namae の箱に名前を入れて、namae + \"さん、こんにちは\" を出そう。名前は何でもOK"
+   },
+   {
+    "title": "＊ で文字をくりかえす",
+    "start": 109,
+    "code": "print(\"ハ\" * 3)\nprint(\"-\" * 20)",
+    "expected": [
+     "ハハハ",
+     "--------------------"
+    ],
+    "mustUse": [
+     "*"
+    ],
+    "pauseAt": 141
+   },
+   {
+    "title": "文字と数をつなぐ",
+    "start": 143,
+    "code": "print(\"ステップ\" + \"6\")",
+    "expected": [
+     "ステップ6"
+    ],
+    "pauseAt": 177,
+    "note": "6 も \" \" でかこんで、文字どうしにしてからつなごう。ステップ6 が出ればOK"
+   },
+   {
+    "title": "チャレンジ① おはようございます",
+    "start": 181,
+    "pauseAt": 237,
+    "code": "print(\"おはよう\" + \"ございます\")",
+    "expected": [
+     "おはようございます"
+    ],
+    "mustMatch": "\"おはよう\"\\s*\\+\\s*\"ございます\"",
+    "challenge": true,
+    "note": "おはよう と ございます を、＋ でつないで出そう。おはようございます が出ればOK",
+    "answerNote": "\"おはよう\" + \"ございます\" で、2つの文字がつながる"
+   },
+   {
+    "title": "チャレンジ② ワンを 3回",
+    "start": 195,
+    "pauseAt": 237,
+    "code": "print(\"ワン\" * 3)",
+    "expected": [
+     "ワンワンワン"
+    ],
+    "mustMatch": "\"ワン\"\\s*\\*\\s*3",
+    "challenge": true,
+    "note": "ワン を ＊ で3回くりかえそう。ワンワンワン が出ればOK",
+    "answerNote": "\"ワン\" * 3 で、ワン が3回くりかえされる"
+   },
+   {
+    "title": "チャレンジ③ ポチはワンワン",
+    "start": 207,
+    "pauseAt": 237,
+    "code": "namae = \"ポチ\"\nprint(namae + \"は\" + \"ワン\" * 2)",
+    "expected": [
+     "ポチはワンワン"
+    ],
+    "mustMatch": "namae\\s*=\\s*\"ポチ\"[\\s\\S]*print\\([^\\n]*namae[^\\n]*\\*",
+    "challenge": true,
+    "note": "namae に ポチ を入れて、namae・＋・＊ を使って ポチはワンワン を出そう",
+    "answerNote": "namae + \"は\" + \"ワン\" * 2。＊ が先に計算されて ワンワン になってから、つながる"
+   }
+  ],
+  "video": {
+   "no": "⑥",
+   "id": "bF5Cr8KtFCc",
+   "length": 271,
+   "end": 264
+  },
+  "learn": [
+   "＋ で、文字と文字をつなげる（\"パイ\" + \"ソン\" → パイソン）",
+   "箱に入れた文字も、＋ でつなげる（namae + \"さん\"）",
+   "＊ で、文字をくりかえせる。文字と数は ＋ でつなげないので、数も \" \" でかこむ"
+  ],
+  "codeblock": [
+   "31-6"
+  ],
+  "review": {
+   "question": "print(\"ラ\" * 3) を実行すると、何が出る？",
+   "choices": [
+    "ラ3",
+    "ラララ",
+    "エラーになる"
+   ],
+   "answer": 1
+  }
  },
  {
   "step": 7,
