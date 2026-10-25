@@ -105,9 +105,7 @@ const FAQ = [
   { q: "対象年齢は何歳ですか？", a: "10〜15歳を主な対象としていますが、プログラミング初心者の方であれば年齢問わずお使いいただけます。ふりがな機能もあるので、漢字が苦手なお子さまでも安心です。" },
   { q: "プログラミング未経験でも大丈夫？", a: "はい、大丈夫です！CodeBlockはプログラミング未経験のお子さま向けに作られています。ドラッグ＆ドロップでコードを組み立てるので、タイピングが苦手でも楽しく学べます。" },
   { q: "スマホやタブレットでも使えますか？", a: "はい、スマートフォンやタブレットのブラウザからご利用いただけます。ただし、画面が大きいパソコンやタブレットでの学習をおすすめします。" },
-  { q: "無料でどこまで遊べますか？", a: "無料でレッスン1-1〜1-3まで学習できます。print関数の基本を学び、プログラミングの楽しさを体験できます。気に入ったら有料プランでさらに学習を進めましょう！" },
-  { q: "支払い方法は何がありますか？", a: "クレジットカード（Visa、Mastercard、JCB、American Express）でお支払いいただけます。" },
-  { q: "解約はいつでもできますか？", a: "はい、いつでも解約できます。解約後も契約期間中はサービスをご利用いただけます。" },
+  { q: "無料でどこまで遊べますか？", a: "無料でレッスン1-1〜1-3まで学習できます。print関数の基本を学び、プログラミングの楽しさを体験できます。" },
   { q: "学校や塾で使うことはできますか？", a: "はい、教育機関でのご利用も歓迎です。団体向けプランについてはお問い合わせください。" },
 ];
 
@@ -581,58 +579,26 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 料金プラン */}
-      <section className="px-4 py-16 md:px-6 md:py-24">
-        <div className="mx-auto max-w-4xl">
-          <SectionTitle eyebrow="料金プラン" title="まずは無料でお試し" lead="レッスン1-1〜1-3が無料で遊べます。" />
-          <div className="grid gap-5 md:grid-cols-2">
-            <PlanCard
-              name="月額プラン"
-              price="¥980"
-              unit="/月"
-              sub="いつでも解約OK"
-              items={["すべてのレッスン", "AIヒント機能", "新レッスンも追加予定"]}
-              cta="月額で始める"
-            />
-            <PlanCard
-              featured
-              name="年間プラン"
-              price="¥6,800"
-              sub="月あたり567円"
-              badge="42%お得"
-              items={["すべてのレッスン", "AIヒント機能", "新レッスンも追加予定", "1年間利用可能"]}
-              cta="年間プランで始める"
-            />
-          </div>
-          <div className="mt-8 text-center">
-            <Link href="/login?mode=register" className={`${BTN_PRIMARY} h-14 px-9 text-[18px]`}>
-              無料ではじめる ▶
-            </Link>
-            <p className="mt-4 text-[13px] font-bold text-[#6d6893]">※ 料金は税込みです。有料プランはいつでもキャンセル可能です。</p>
-          </div>
-        </div>
-      </section>
-
       {/* 運営者 */}
-      <section className="bg-white px-4 py-16 md:px-6 md:py-24">
+      <section className="px-4 py-16 md:px-6 md:py-24">
         <div className="mx-auto max-w-3xl">
           <SectionTitle eyebrow="運営者について" title="プログラミングスクール plus one" lead="〜一つ一つの成長を大事に。〜" />
-          <div className="rounded-[24px] bg-[#f7f6fc] px-6 py-7 md:px-9">
+          <div className="rounded-[24px] bg-white shadow-sm px-6 py-7 md:px-9">
             <h3 className="text-[17px] font-black">私たちの想い</h3>
             <p className="mt-3 text-[15px] font-bold leading-[1.9] text-[#4a4470] [word-break:normal]">
               CodeBlockは、実際のプログラミング教室で子どもたちを指導している現役講師が開発した学習アプリです。教室での指導経験を通じて、子どもたちがつまずきやすいポイントや、楽しく学べる方法を日々研究してきました。その経験を活かし、お子さま一人ひとりの「わからない」に寄り添い、一つ一つの成長を大切にできるよう、CodeBlockを開発いたしました。プログラミングは難しいものではなく、楽しく学べるもの。その想いを込めて、お子さまの学習をサポートします。
             </p>
           </div>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <a href="mailto:plus.one.0312.0717@gmail.com" className="flex items-center gap-3 rounded-[20px] bg-[#f7f6fc] px-5 py-4 hover:bg-[#efe9ff]">
-              <span className="grid h-10 w-10 flex-none place-items-center rounded-full bg-white text-[18px] shadow-sm">✉️</span>
+            <a href="mailto:plus.one.0312.0717@gmail.com" className="flex items-center gap-3 rounded-[20px] bg-white shadow-sm px-5 py-4 hover:bg-[#efe9ff]">
+              <span className="grid h-10 w-10 flex-none place-items-center rounded-full bg-[#f5f3ff] text-[18px]">✉️</span>
               <span className="min-w-0">
                 <span className="block text-[12.5px] font-bold text-[#6d6893]">お問い合わせ</span>
                 <span className="block truncate text-[14.5px] font-black text-[#5a3fd6]">plus.one.0312.0717@gmail.com</span>
               </span>
             </a>
-            <a href="https://plus-one-naruse.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-[20px] bg-[#f7f6fc] px-5 py-4 hover:bg-[#efe9ff]">
-              <span className="grid h-10 w-10 flex-none place-items-center rounded-full bg-white text-[18px] shadow-sm">🏫</span>
+            <a href="https://plus-one-naruse.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-[20px] bg-white shadow-sm px-5 py-4 hover:bg-[#efe9ff]">
+              <span className="grid h-10 w-10 flex-none place-items-center rounded-full bg-[#f5f3ff] text-[18px]">🏫</span>
               <span>
                 <span className="block text-[12.5px] font-bold text-[#6d6893]">公式サイト</span>
                 <span className="block text-[14.5px] font-black text-[#5a3fd6]">plus one のホームページ ↗</span>
@@ -643,7 +609,7 @@ export default function LandingPage() {
       </section>
 
       {/* よくある質問 */}
-      <section className="px-4 py-16 md:px-6 md:py-24">
+      <section className="bg-white px-4 py-16 md:px-6 md:py-24">
         <div className="mx-auto max-w-3xl">
           <SectionTitle eyebrow="よくある質問" title="気になることは、ここで" />
           <div className="flex flex-col gap-3">
@@ -664,7 +630,7 @@ export default function LandingPage() {
       </section>
 
       {/* さいごの申しこみ */}
-      <section className="px-4 pb-16 md:px-6 md:pb-24">
+      <section className="px-4 py-16 md:px-6 md:py-24">
         <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[36px] bg-[linear-gradient(135deg,#7448f0,#4f7cff)] px-6 py-14 text-center text-white md:py-16">
           <span className="pointer-events-none absolute -left-10 -top-10 h-40 w-40 rounded-full bg-white/10" aria-hidden />
           <span className="pointer-events-none absolute -bottom-20 right-6 h-56 w-56 rounded-full bg-white/10" aria-hidden />
@@ -705,54 +671,6 @@ function FeatureCard({ title, body, band, children }: { title: string; body: str
         <h3 className="text-[19px] font-black">{title}</h3>
         <p className="mt-1.5 text-[14.5px] font-bold leading-relaxed text-[#6d6893]">{body}</p>
       </div>
-    </div>
-  );
-}
-
-function PlanCard({
-  name,
-  price,
-  unit,
-  sub,
-  badge,
-  items,
-  cta,
-  featured,
-}: {
-  name: string;
-  price: string;
-  unit?: string;
-  sub: string;
-  badge?: string;
-  items: string[];
-  cta: string;
-  featured?: boolean;
-}) {
-  return (
-    <div className={`relative flex flex-col rounded-[26px] px-7 py-7 ${featured ? "bg-white shadow-[0_0_0_3px_#7448f0,0_18px_40px_-20px_rgba(116,72,240,.6)]" : "bg-white shadow-sm"}`}>
-      {featured && (
-        <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-[#ffd23f] px-4 py-1 text-[13px] font-black text-[#5c4200] shadow-sm">おすすめ</span>
-      )}
-      <h3 className="text-center text-[16px] font-black text-[#6d6893]">{name}</h3>
-      <div className="mt-2 text-center text-[40px] font-black leading-none">
-        {price}
-        {unit && <span className="text-[16px] font-bold text-[#6d6893]">{unit}</span>}
-      </div>
-      <p className="mt-2 text-center text-[13.5px] font-bold text-[#6d6893]">
-        {sub}
-        {badge && <span className="ml-2 rounded-full bg-[#fff1b8] px-2 py-0.5 text-[12.5px] font-black text-[#6b4d00]">{badge}</span>}
-      </p>
-      <ul className="mt-5 flex-1 space-y-2.5 text-[14.5px] font-bold">
-        {items.map((it) => (
-          <li key={it} className="flex items-center gap-2.5">
-            <span className="grid h-5 w-5 flex-none place-items-center rounded-full bg-[#e2f7ec] text-[11px] text-[#11845a]">✓</span>
-            {it}
-          </li>
-        ))}
-      </ul>
-      <Link href="/login?mode=register" className={`${featured ? BTN_PRIMARY : BTN_GHOST} mt-6 h-12 w-full text-[15px]`}>
-        {cta}
-      </Link>
     </div>
   );
 }
