@@ -45,6 +45,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
   const [wrong, setWrong] = useState<{ section: number; hint: CodeHint | null } | null>(null) // ヒント3段目
   const [toast, setToast] = useState<{ titles: string[]; optional: boolean; all: boolean } | null>(null)
   const lastPlaying = useRef<number | null>(null) // 再生中に最後に見た秒（飛ばしたかを見る）
+  const lastTick = useRef<number | null>(null) // 最後に知らされた秒（止まっていても）
   const timers = useRef<ReturnType<typeof setTimeout>[]>([])
   useEffect(() => () => timers.current.forEach(clearTimeout), [])
   const later = (ms: number, f: () => void) => timers.current.push(setTimeout(f, ms))
@@ -90,7 +91,10 @@ export function StudyClient({ step: stepNo }: { step: number }) {
     } else if (++ticks.current % 10 === 0 && furthest > p.videoPos) {
       save({ videoPos: furthest })
     }
-    if (reachedEnd && remainingRequired(p.passed).length > 0) setEndCard(true)
+    // 「動画おわり」の板は、最後に着いたときに1回だけ出す（とじたあと、また出ないように）
+    const prevTick = lastTick.current
+    lastTick.current = sec
+    if (reachedEnd && prevTick !== null && prevTick < step.video.end && remainingRequired(p.passed).length > 0) setEndCard(true)
 
     if (!playing) return
     const prev = lastPlaying.current
