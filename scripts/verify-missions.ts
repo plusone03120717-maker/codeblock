@@ -1,6 +1,7 @@
 /**
  * 全ミッションの正解コードを検証する。
- *   npx jiti scripts/verify-missions.ts
+ *   PYTHONUTF8=1 JITI_ALIAS='{"@": "<リポジトリ>/src"}' npx jiti scripts/verify-missions.ts [31-]
+ *   （Windows では PYTHONUTF8=1 がないと日本語が化ける。src の中の "@/..." を読むのに JITI_ALIAS が要る）
  *
  * 1. 正解コードを、そのミッションのブロックだけで組み立てられるか
  * 2. 組み立てたブロックから generateCode した結果が正解コードと一致するか
@@ -10,6 +11,7 @@
 import { execFileSync } from "child_process";
 import { getLessonMissions } from "../src/data/missions";
 import { lessons } from "../src/data/lessons";
+import { finishLessons } from "../src/data/navi/finish31";
 import { generateCode, normalizeCode, NEWLINE_BLOCK, INDENT_BLOCK } from "../src/utils/codeGen";
 import { checkAnswer } from "../src/utils/answerCheck";
 import type { WordBlock } from "../src/types";
@@ -68,7 +70,8 @@ let checked = 0;
 let skippedQuiz = 0;
 const failures: string[] = [];
 
-for (const lesson of lessons) {
+// Python ナビの仕上げ（31番台）も見る。例: "31-" で仕上げだけ
+for (const lesson of [...lessons, ...finishLessons]) {
   if (only && !lesson.id.startsWith(only)) continue;
   for (const m of getLessonMissions(lesson.id) ?? []) {
     if (m.type === "quiz") {
