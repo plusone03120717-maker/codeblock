@@ -21,7 +21,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext'
 import { useNaviVoice } from '@/components/navi/useNaviVoice'
 import { naviLessonLabel } from '@/data/navi/finish31'
-import { FIRST_TIME_SPEECH, REVIEW_RIGHT_SPEECH, REVIEW_WRONG_SPEECH, returnSpeech } from '@/lib/navi/speech'
+import { FIRST_TIME_SPEECH, REVIEW_RIGHT_SPEECH, REVIEW_WRONG_SPEECH, newStepSpeech, returnSpeech } from '@/lib/navi/speech'
 
 // ステップの数（単元ごと）：本編 U1〜U6
 const UNIT_STEPS: Record<number, number[]> = { 1: [1, 2, 3, 4, 5, 6], 2: [7, 8, 9], 3: [10, 11, 12], 4: [13, 14, 15, 16], 5: [17, 18, 19, 20], 6: [21, 22, 23, 24, 25] }
@@ -45,11 +45,17 @@ function derive(state: NaviState) {
   const step = getNaviStep(state.current) ?? NAVI_STEPS[0]
   const p = stepProgress(state, step.step)
   const action = nextAction(step, p)
-  const firstTime = state.sessions.length === 0 && p.videoPos === 0 && p.passed.length === 0
+  // はじめて＝まだどのステップも何もしていない（ステップ1をクリアしたあとに「はじめまして」にもどらないように）
+  const started = Object.values(state.steps).some((sp) => sp.videoPos > 0 || sp.passed.length > 0 || sp.done)
+  const firstTime = state.sessions.length === 0 && !started
+  // 新しいステップのはじめ（前のステップをクリアしてきた）
+  const newStep = !firstTime && p.videoPos === 0 && p.passed.length === 0 && !p.videoDone
+  const prevDone = !!state.steps[step.step - 1]?.done
+  const returning = state.sessions.length > 0
   const last = state.sessions[state.sessions.length - 1]
   const lastStep = last ? getNaviStep(last.step) : undefined
   const needReview = !!lastStep && state.reviewAnswered[last.step] === false
-  return { step, p, action, firstTime, lastStep, needReview }
+  return { step, p, action, firstTime, newStep, prevDone, returning, lastStep, needReview }
 }
 
 export function HomeClient() {
@@ -67,7 +73,13 @@ export function HomeClient() {
 
   // ナビが声で言う文（吹き出しと同じ中身を、読みまちがえない書き方にしたもの）
   const d = state ? derive(state) : null
-  const speech = !d ? '' : d.firstTime ? FIRST_TIME_SPEECH : returnSpeech(d.step, d.action, d.p.videoPos, d.needReview)
+  const speech = !d
+    ? ''
+    : d.firstTime
+      ? FIRST_TIME_SPEECH
+      : d.newStep
+        ? newStepSpeech(d.step, d.action, { returning: d.returning, prevDone: d.prevDone, needReview: d.needReview })
+        : returnSpeech(d.step, d.action, d.p.videoPos, d.needReview)
 
   // ホームを開いたら、ナビが話す（声オフのときは話さない。オンにもどしたら、もう一度話す）
   const { ready: voiceReady, off: voiceOff, speak } = voice
@@ -77,7 +89,7 @@ export function HomeClient() {
 
   if (!state || !d) return null
 
-  const { step, p, action, firstTime, lastStep, needReview } = d
+  const { step, p, action, firstTime, newStep, prevDone, returning, lastStep, needReview } = d
   const name = user?.displayName ?? ''
   const completed = codeblockCompleted()
 
@@ -90,6 +102,18 @@ export function HomeClient() {
       Python は AI などでも使われていて、短く書けるのがいいところ。Scratch のブロックが文字になったと思ってね。
       <br />
       「はじめる」を押してみよう！
+    </>
+  ) : newStep ? (
+    <>
+      {returning && <>おかえり{name && `、${name}さん`}！ </>}
+      {prevDone && <>ステップ{step.step - 1}、クリアおめでとう！</>}
+      {(returning || prevDone) && <br />}
+      つぎは <em className="not-italic text-[#7448f0]">ステップ{step.step}「{step.title}」</em>だよ。
+      <br />
+      {needReview && <b>おさらい1問</b>}
+      {needReview ? 'のあと、' : ''}
+      <b>{actionTitle(step, action)}</b>！<br />
+      「はじめる」を押してね。
     </>
   ) : (
     <>

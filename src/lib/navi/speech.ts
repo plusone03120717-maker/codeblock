@@ -5,6 +5,7 @@
 // ・見出しの名前（print など）は言わず、画面を見てもらう
 import type { NaviStep } from './types'
 import type { NextAction } from './progress'
+import { isFinishLesson } from '@/data/navi/finish31'
 
 const lessonNo = (id: string) => id.replace('-', 'の')
 // 「分」は「ふん／ぷん」をまちがえやすいので、ひらがなで書く（3分 → さんぷん）
@@ -30,6 +31,7 @@ export const FIRST_TIME_SPEECH =
 function actionSpeech(step: NaviStep, a: NextAction): string {
   if (a.kind === 'video') return a.from > 0 ? '動画のつづきを、10秒もどして見よう' : `ステップ${step.step}の動画を見ながら、コードを打っていこう`
   if (a.kind === 'section') return '動画で打ったコードの、結果を出すところからだよ'
+  if (a.kind === 'codeblock' && isFinishLesson(a.lessonId)) return a.mission > 0 ? `仕上げの5問を、${a.mission + 1}問目からやろう` : '仕上げの5問をやろう'
   if (a.kind === 'codeblock') return a.mission > 0 ? `コードブロックの${lessonNo(a.lessonId)}を、${a.mission + 1}問目からやろう` : `コードブロックの${lessonNo(a.lessonId)}をやろう`
   return 'つぎのステップへ進もう'
 }
@@ -38,6 +40,14 @@ export function returnSpeech(step: NaviStep, a: NextAction, videoPos: number, ne
   const last = a.kind === 'video' && a.from > 0 && step.video ? `前回は、ステップ${step.step}の動画の、${minSec(videoPos)}のところで、おわりにしたね。` : '前回のつづきから始めよう。'
   const review = needReview ? 'まずは、おさらいを1問。そのあと、' : '今日は、'
   return `おかえり！ ${last}${review}${actionSpeech(step, a)}。「はじめる」を押してね。`
+}
+
+// 新しいステップのはじめ（前のステップをクリアしてきたとき）。「はじめまして」にはもどらない
+export function newStepSpeech(step: NaviStep, a: NextAction, o: { returning: boolean; prevDone: boolean; needReview: boolean }): string {
+  const hello = o.returning ? 'おかえり！ ' : ''
+  const clear = o.prevDone ? `ステップ${step.step - 1}、クリアおめでとう！ ` : ''
+  const review = o.needReview ? 'まずは、おさらいを1問。そのあと、' : ''
+  return `${hello}${clear}つぎは、ステップ${step.step}だよ。${review}${actionSpeech(step, a)}。「はじめる」を押してね。`
 }
 
 export const REVIEW_RIGHT_SPEECH = 'せいかい！ よく覚えていたね。'
