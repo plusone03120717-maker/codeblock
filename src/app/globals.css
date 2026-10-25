@@ -12,11 +12,9 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* 画面はぜんぶ明るい色でできているので、PC がダークモードでも明るいまま（文字だけ白くなって読めなくなっていた・2026-10-25） */
+:root {
+  color-scheme: light;
 }
 
 body {

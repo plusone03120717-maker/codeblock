@@ -132,7 +132,7 @@
     "mustUse": [
      "-"
     ],
-    "pauseAt": 178
+    "pauseAt": 177
    },
    {
     "title": "かけ算は *",
@@ -144,7 +144,7 @@
     "mustUse": [
      "*"
     ],
-    "pauseAt": 178
+    "pauseAt": 177
    },
    {
     "title": "わり算は /",
@@ -156,7 +156,7 @@
     "mustUse": [
      "/"
     ],
-    "pauseAt": 178
+    "pauseAt": 177
    },
    {
     "title": "計算のじゅんばん",
@@ -165,7 +165,7 @@
     "expected": [
      "14"
     ],
-    "pauseAt": 296
+    "pauseAt": 295
    },
    {
     "title": "かっこで先に計算",
@@ -177,12 +177,12 @@
     "mustUse": [
      "(2"
     ],
-    "pauseAt": 296
+    "pauseAt": 295
    },
    {
     "title": "チャレンジ① 100 から 1 をひく",
     "start": 299,
-    "pauseAt": 356,
+    "pauseAt": 355,
     "code": "print(100 - 1)",
     "expected": [
      "99"
@@ -195,7 +195,7 @@
    {
     "title": "チャレンジ② 120円のおかしを 3こ",
     "start": 311,
-    "pauseAt": 356,
+    "pauseAt": 355,
     "code": "print(120 * 3)",
     "expected": [
      "360"
@@ -208,7 +208,7 @@
    {
     "title": "チャレンジ③ 10 たす 20 を 3 でわる",
     "start": 324,
-    "pauseAt": 356,
+    "pauseAt": 355,
     "code": "print((10 + 20) / 3)",
     "expected": [
      "10.0"
@@ -248,11 +248,119 @@
   "unit": 1,
   "title": "あまりとわり算",
   "fileName": "step03.py",
-  "video": null,
-  "planned": true,
-  "sections": [],
-  "learn": [],
-  "codeblock": []
+  "sections": [
+   {
+    "title": "わり算の答えは小数",
+    "start": 26,
+    "code": "print(7 / 2)",
+    "expected": [
+     "3.5"
+    ],
+    "mustUse": [
+     "/"
+    ],
+    "pauseAt": 139
+   },
+   {
+    "title": "// で整数の答え",
+    "start": 56,
+    "code": "print(7 // 2)",
+    "expected": [
+     "3"
+    ],
+    "mustUse": [
+     "//"
+    ],
+    "pauseAt": 139
+   },
+   {
+    "title": "% であまり",
+    "start": 100,
+    "code": "print(7 % 2)",
+    "expected": [
+     "1"
+    ],
+    "mustUse": [
+     "%"
+    ],
+    "pauseAt": 139
+   },
+   {
+    "title": "おかしを分ける",
+    "start": 161,
+    "code": "print(17 // 5)\nprint(17 % 5)",
+    "expected": [
+     "3",
+     "2"
+    ],
+    "mustUse": [
+     "17"
+    ],
+    "pauseAt": 209
+   },
+   {
+    "title": "チャレンジ① 20 を 3 でわったあまり",
+    "start": 243,
+    "pauseAt": 302,
+    "code": "print(20 % 3)",
+    "expected": [
+     "2"
+    ],
+    "mustMatch": "print\\(\\s*20\\s*%\\s*3\\s*\\)",
+    "note": "あまりは %（Shift を押しながら 5 のキー）。2 が出ればOK",
+    "challenge": true,
+    "answerNote": "20 ÷ 3 = 6 あまり 2。% で、あまりの 2 が出る"
+   },
+   {
+    "title": "チャレンジ② 300円で 50円のアメは何こ",
+    "start": 254,
+    "pauseAt": 302,
+    "code": "print(300 // 50)",
+    "expected": [
+     "6"
+    ],
+    "mustMatch": "print\\(\\s*300\\s*//\\s*50\\s*\\)",
+    "note": "整数の答えは //（スラッシュ2つ）。6 が出ればOK",
+    "challenge": true,
+    "answerNote": "300 ÷ 50 = 6。// だと 6.0 ではなく 6 と、整数で出る"
+   },
+   {
+    "title": "チャレンジ③ 9 を 2 でわったあまり",
+    "start": 269,
+    "pauseAt": 302,
+    "code": "print(9 % 2)",
+    "expected": [
+     "1"
+    ],
+    "mustMatch": "print\\(\\s*9\\s*%\\s*2\\s*\\)",
+    "note": "あまりは %。1 が出ればOK（あまりが 1 なら奇数、0 なら偶数）",
+    "challenge": true,
+    "answerNote": "9 ÷ 2 = 4 あまり 1。あまりが 1 なので、9 は奇数"
+   }
+  ],
+  "video": {
+   "no": "③",
+   "id": "mFws4wKnDIo",
+   "length": 338,
+   "end": 331
+  },
+  "learn": [
+   "/ のわり算は、答えが小数になる（7 / 2 → 3.5）",
+   "// は小数のところを切りすてた整数の答え、% はわり算のあまり",
+   "0 でわるとエラーになる（算数と同じで、0 ではわれない）"
+  ],
+  "codeblock": [
+   "31-3"
+  ],
+  "review": {
+   "question": "print(7 // 2) を実行すると、何が出る？",
+   "choices": [
+    "3.5",
+    "3",
+    "1"
+   ],
+   "answer": 1
+  }
  },
  {
   "step": 4,
