@@ -5,15 +5,15 @@
   "title": "#2 print で表示しよう",
   "video": {
    "no": "#2",
-   "id": "tmjpfqnzSSw",
-   "length": 448,
-   "end": 406
+   "id": "QEV10U864X4",
+   "length": 546,
+   "end": 456
   },
   "fileName": "step01.py",
   "sections": [
    {
     "title": "print で「こんにちは」",
-    "start": 86,
+    "start": 124,
     "code": "print(\"こんにちは\")",
     "expected": [
      "こんにちは"
@@ -24,7 +24,7 @@
    },
    {
     "title": "カッコを消すとエラー",
-    "start": 178,
+    "start": 239,
     "code": "print(\"こんにちは\"",
     "expected": [],
     "note": "エラーを見る場面。わざとカッコを1つ消して実行し、エラーが出ればOK。見たら print(\"こんにちは\") にもどしてから次へ",
@@ -33,7 +33,7 @@
    },
    {
     "title": "計算の答えを出す",
-    "start": 217,
+    "start": 286,
     "code": "print(1 + 5)",
     "expected": [
      "6"
@@ -41,18 +41,18 @@
    },
    {
     "title": "\" \" でかこむと文字のまま",
-    "start": 292,
-    "code": "print(\"1+5\")",
+    "start": 355,
+    "code": "print(\"1 + 5\")",
     "expected": [
-     "1+5"
+     "1 + 5"
     ]
    },
    {
     "title": "カンマで並べて出す",
-    "start": 348,
-    "code": "print(\"1+5の答えは\", 1 + 5)",
+    "start": 398,
+    "code": "print(\"こたえは\", 1 + 5)",
     "expected": [
-     "1+5の答えは 6"
+     "こたえは 6"
     ],
     "mustUse": [
      ","
@@ -71,10 +71,10 @@
    "1-3"
   ],
   "review": {
-   "question": "print(\"1+5\") を実行すると、何が出る？",
+   "question": "print(\"1 + 5\") を実行すると、何が出る？",
    "choices": [
     "6",
-    "1+5",
+    "1 + 5",
     "エラーになる"
    ],
    "answer": 1
