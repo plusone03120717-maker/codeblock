@@ -8,11 +8,11 @@ import { PyEditor, type RunResult } from '@/components/navi/PyEditor'
 import { YouTubePlayer, type PlayerHandle } from '@/components/navi/YouTubePlayer'
 import { NaviHeader } from '@/components/navi/NaviHeader'
 import { EndPopup } from '@/components/navi/EndPopup'
-import { getNaviStep } from '@/data/navi/steps'
+import { getNaviStep, nextReadyStep } from '@/data/navi/steps'
 import { sectionPassed, studentNote } from '@/lib/navi/judge'
 import { dueAt, isRequired, pauseTimes, requiredIndexes } from '@/lib/navi/checkpoints'
 import { codeHint, type CodeHint } from '@/lib/navi/hint'
-import { videoLabel, type NaviSection } from '@/lib/navi/types'
+import { inStep, videoLabel, type NaviSection } from '@/lib/navi/types'
 import { friendlyError } from '@/lib/navi/friendlyError'
 import { isFinishLesson, naviLessonLabel } from '@/data/navi/finish31'
 import {
@@ -208,10 +208,23 @@ export function StudyClient({ step: stepNo }: { step: number }) {
     }
   }
 
-  if (!step) {
+  if (!step || step.planned) {
+    const next = nextReadyStep(stepNo)
     return (
-      <div className="p-10">
-        このステップはまだ準備中です。<Link href="/navi" className="text-[#7448f0] underline">ホームへ</Link>
+      <div className="p-10 text-[16px] font-bold">
+        このステップ{step ? `「${step.title}」` : ''}は、動画を準備中です。
+        {next !== null && (
+          <>
+            {' '}
+            <Link href={`/navi/step/${next}`} className="text-[#7448f0] underline">
+              ステップ{next} へ
+            </Link>
+            　
+          </>
+        )}
+        <Link href="/navi" className="text-[#7448f0] underline">
+          ホームへ
+        </Link>
       </div>
     )
   }
@@ -230,7 +243,15 @@ export function StudyClient({ step: stepNo }: { step: number }) {
   const completed = codeblockCompleted()
   const firstLesson = step.codeblock.find((id) => !completed.includes(id)) ?? step.codeblock[0]
   const showEndCard = !!step.video && endCard && !cp && !allSections
-  const initialFiles = Object.keys(p.files).length > 0 ? p.files : { [step.fileName]: `# ${step.title} を見ながら、同じコードを打ってみよう\n` }
+  const initialFiles =
+    Object.keys(p.files).length > 0
+      ? p.files
+      : {
+          // 前の動画を分けたステップで、前の部分のコードのつづきを打つときは、そのコードを先に入れておく
+          [step.fileName]: step.starter
+            ? `# ${step.title}：前のステップのコードのつづきから打とう\n${step.starter}\n`
+            : `# ${step.title} を見ながら、同じコードを打ってみよう\n`,
+        }
   const inputsHint = focus !== null ? step.sections[focus].inputs : nextSection >= 0 ? step.sections[nextSection].inputs : undefined
   const nextNote = focus !== null && reached(focus) ? studentNote(step.sections[focus]) : undefined
 
@@ -266,7 +287,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
   const action = nextAction(step, p)
   const nextText =
     action.kind === 'video'
-      ? `おさらい1問 → 動画の ${fmtTime(resumeFrom(p.videoPos))} から（10秒もどして）つづき。ホームでいちかが案内するよ`
+      ? `おさらい1問 → 動画の ${fmtTime(inStep(step, resumeFrom(p.videoPos)))} から（10秒もどして）つづき。ホームでいちかが案内するよ`
       : action.kind === 'section'
         ? `おさらい1問 → 「${step.sections[action.index].title}」の結果を出すところから。ホームでいちかが案内するよ`
         : action.kind === 'codeblock'
@@ -309,7 +330,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
           <div className="flex min-h-0 flex-col gap-3 overflow-y-auto pb-1">
             {step.video ? (
               <div className="relative flex-none overflow-hidden rounded-[22px] bg-[#1d1838] shadow-lg">
-                <YouTubePlayer ref={player} videoId={step.video.id} startAt={step.video.start ?? startAt} onTime={onTime} onEnded={onEnded} />
+                <YouTubePlayer ref={player} videoId={step.video.id} startAt={Math.max(step.video.start ?? 0, startAt)} onTime={onTime} onEnded={onEnded} />
                 {showEndCard && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[rgba(21,18,42,.9)] px-6 text-white">
                     <button onClick={() => setEndCard(false)} className="absolute right-3 top-3 rounded-full bg-white/10 px-3 py-1 text-[13px] font-bold text-[#cfcbe8] hover:bg-white/20">
@@ -533,7 +554,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
                 onClick={() => {
                   save({ done: true })
                   const state = loadNavi()
-                  state.current = stepNo + 1
+                  state.current = nextReadyStep(stepNo) ?? stepNo + 1
                   saveNavi(state)
                   router.push('/navi')
                 }}
@@ -555,7 +576,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
           learned={learnedToday}
           xp={learnedToday.length * XP_PER_SECTION}
           progressLines={[
-            ...(step.video ? [p.videoDone ? `${videoLabel(step)} は最後まで見た` : `${videoLabel(step)} は ${fmtTime(p.videoPos)} まで見た`] : []),
+            ...(step.video ? [p.videoDone ? `${videoLabel(step)} は最後まで見た` : `${videoLabel(step)} は ${fmtTime(inStep(step, p.videoPos))} まで見た`] : []),
             `エディターのコード（${Object.keys(p.files)[0] ?? step.fileName}）`,
             `見出しの結果 ${passedCount} / ${total}`,
           ]}

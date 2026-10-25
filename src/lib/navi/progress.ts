@@ -1,6 +1,7 @@
 // Python ナビの進み具合。
 // 今はブラウザ（localStorage）に保存する。Supabase に移したら、この中身だけを差しかえる。
 import type { NaviStep } from './types'
+import { getLessonMissions } from '@/data/missions'
 
 export type StepProgress = {
   videoPos: number // 動画をどこまで見たか（秒）
@@ -23,17 +24,36 @@ export type NaviState = {
   steps: Record<number, StepProgress>
   sessions: SessionLog[]
   reviewAnswered: Record<number, boolean> // おさらい1問に答えたか（次の回のはじめ）
+  v?: number // 記録の版。2＝55ステップ（2026-10-25 に25ステップから組みかえ）
+}
+
+// 25ステップのころの記録を、55ステップの番号に直す（分けたステップは前の部分へ）。
+// ステップ1はそのまま。ほかは見出しの番号が変わったので、進み具合は消して、いまのステップの番号だけ直す
+const OLD_TO_NEW: Record<number, number> = {
+  1: 1, 2: 4, 3: 8, 4: 9, 5: 10, 6: 11, 7: 13, 8: 15, 9: 17, 10: 21, 11: 24, 12: 26, 13: 30,
+  14: 34, 15: 36, 16: 38, 17: 40, 18: 41, 19: 43, 20: 45, 21: 47, 22: 50, 23: 51, 24: 52, 25: 54,
+}
+function migrate(state: NaviState): NaviState {
+  if (state.v === 2) return state
+  const map = (n: number) => OLD_TO_NEW[n] ?? n
+  return {
+    current: map(state.current),
+    steps: state.steps[1] ? { 1: state.steps[1] } : {},
+    sessions: state.sessions.map((s) => ({ ...s, step: map(s.step) })),
+    reviewAnswered: Object.fromEntries(Object.entries(state.reviewAnswered).map(([k, v]) => [map(Number(k)), v])),
+    v: 2,
+  }
 }
 
 const KEY = 'codeblock_navi_progress'
 
-const empty = (): NaviState => ({ current: 1, steps: {}, sessions: [], reviewAnswered: {} })
+const empty = (): NaviState => ({ current: 1, steps: {}, sessions: [], reviewAnswered: {}, v: 2 })
 
 export function loadNavi(): NaviState {
   if (typeof window === 'undefined') return empty()
   try {
     const raw = localStorage.getItem(KEY)
-    return raw ? { ...empty(), ...JSON.parse(raw) } : empty()
+    return raw ? migrate({ ...empty(), v: undefined, ...JSON.parse(raw) }) : empty()
   } catch {
     return empty()
   }
@@ -85,7 +105,11 @@ export function nextAction(step: NaviStep, p: StepProgress): NextAction {
   if (sectionsLeft.length > 0) return { kind: 'section', index: sectionsLeft[0] }
   const completed = codeblockCompleted()
   const lesson = step.codeblock.find((id) => !completed.includes(id))
-  if (lesson) return { kind: 'codeblock', lessonId: lesson, mission: codeblockMissionDone(lesson) }
+  // 問題の数をこえた記録（終わったのに完了が入っていないなど）は、はじめからにする
+  if (lesson) {
+    const done = codeblockMissionDone(lesson)
+    return { kind: 'codeblock', lessonId: lesson, mission: done >= (getLessonMissions(lesson)?.length ?? Infinity) ? 0 : done }
+  }
   return { kind: 'next-step' }
 }
 
@@ -106,7 +130,8 @@ export function naviAfterLesson(lessonId: string, steps: NaviStep[]): { next: st
   const next = step.codeblock.find((id) => id !== lessonId && !completed.includes(id)) ?? null
   if (!next) {
     state.steps[step.step] = { ...stepProgress(state, step.step), done: true }
-    state.current = step.step + 1
+    // 準備中のステップはとばす
+    state.current = steps.find((s) => s.step > step.step && !s.planned)?.step ?? step.step + 1
     saveNavi(state)
   }
   return { next }

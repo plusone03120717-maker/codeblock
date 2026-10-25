@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react'
 import { NaviHeader } from '@/components/navi/NaviHeader'
 import { YouTubePlayer, type PlayerHandle } from '@/components/navi/YouTubePlayer'
 import { NAVI_STEPS, getNaviStep } from '@/data/navi/steps'
-import { UNIT_NAMES, videoLabel, type NaviStep } from '@/lib/navi/types'
+import { UNIT_NAMES, inStep, videoLabel, type NaviStep } from '@/lib/navi/types'
 import { fmtTime, loadNavi, stepProgress, type NaviState } from '@/lib/navi/progress'
 
 const VIDEO_STEPS = NAVI_STEPS.filter((s) => s.video)
@@ -61,7 +61,7 @@ function VideoCard({ step, state, locked, onOpen }: { step: NaviStep; state: Nav
     : p.videoDone
       ? { text: '✔ 見た', cls: 'bg-[#e3f7ec] text-[#178a52]' }
       : p.videoPos > 0
-        ? { text: `▶ ${fmtTime(p.videoPos)} まで`, cls: 'bg-[#fff3d6] text-[#8a6400]' }
+        ? { text: `▶ ${fmtTime(inStep(step, p.videoPos))} まで`, cls: 'bg-[#fff3d6] text-[#8a6400]' }
         : { text: 'まだ見ていない', cls: 'bg-[#f0eef7] text-[#6d6893]' }
   return (
     <button
@@ -100,7 +100,7 @@ function Player({ step, onClose }: { step: NaviStep; onClose: () => void }) {
   const player = useRef<PlayerHandle>(null)
   const [time, setTime] = useState(0)
   // 見出しの場面（いちばん上に「はじめから」）
-  const chapters = [{ title: 'はじめから', start: 0 }, ...step.sections.filter((s) => s.start > 0)]
+  const chapters = [{ title: 'はじめから', start: step.video?.start ?? 0 }, ...step.sections.filter((s) => s.start > 0)]
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()

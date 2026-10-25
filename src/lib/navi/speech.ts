@@ -3,7 +3,7 @@
 // ・生徒の名前は言わない（漢字の名前を読みまちがえるため）
 // ・英語はカタカナ、記号や「3:20」「21-1」は読み方に直す。動画は「ステップ7の動画」と言う（①などの丸数字は読みまちがえやすい）
 // ・見出しの名前（print など）は言わず、画面を見てもらう
-import type { NaviStep } from './types'
+import { inStep, type NaviStep } from './types'
 import type { NextAction } from './progress'
 import { isFinishLesson } from '@/data/navi/finish31'
 
@@ -37,15 +37,15 @@ function actionSpeech(step: NaviStep, a: NextAction): string {
 }
 
 export function returnSpeech(step: NaviStep, a: NextAction, videoPos: number, needReview: boolean): string {
-  const last = a.kind === 'video' && a.from > 0 && step.video ? `前回は、ステップ${step.step}の動画の、${minSec(videoPos)}のところで、おわりにしたね。` : '前回のつづきから始めよう。'
+  const last = a.kind === 'video' && a.from > 0 && step.video ? `前回は、ステップ${step.step}の動画の、${minSec(inStep(step, videoPos))}のところで、おわりにしたね。` : '前回のつづきから始めよう。'
   const review = needReview ? 'まずは、おさらいを1問。そのあと、' : '今日は、'
   return `おかえり！ ${last}${review}${actionSpeech(step, a)}。「はじめる」を押してね。`
 }
 
 // 新しいステップのはじめ（前のステップをクリアしてきたとき）。「はじめまして」にはもどらない
-export function newStepSpeech(step: NaviStep, a: NextAction, o: { returning: boolean; prevDone: boolean; needReview: boolean }): string {
+export function newStepSpeech(step: NaviStep, a: NextAction, o: { returning: boolean; prev: number | null; needReview: boolean }): string {
   const hello = o.returning ? 'おかえり！ ' : ''
-  const clear = o.prevDone ? `ステップ${step.step - 1}、クリアおめでとう！ ` : ''
+  const clear = o.prev !== null ? `ステップ${o.prev}、クリアおめでとう！ ` : ''
   const review = o.needReview ? 'まずは、おさらいを1問。そのあと、' : ''
   return `${hello}${clear}つぎは、ステップ${step.step}だよ。${review}${actionSpeech(step, a)}。「はじめる」を押してね。`
 }

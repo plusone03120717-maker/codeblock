@@ -53,13 +53,22 @@ export type NaviStep = {
   // まだ CodeBlock にない、これから作るレッスン（準備中として見せる）
   codeblockPlanned?: string[]
   card?: { title: string; body: string }
-  review: { question: string; choices: string[]; answer: number }
+  // おさらい1問（つぎの回のはじめ）。分けたステップの前の部分などは無い
+  review?: { question: string; choices: string[]; answer: number }
   appWindow?: boolean
+  // 準備中（動画がまだ）。生徒はとばして次のステップへ進む。動画ができたら中身を入れて外す
+  planned?: boolean
+  // エディターの最初のコード（前の動画を分けたステップで、前の部分のコードの続きを打つとき）
+  starter?: string
 }
 
 // 動画の番号はステップの順（動画①・動画⑦…。サムネイルの「Python ①」と同じ）。前のシリーズの #2〜#21 は出さない
-const CIRCLED = '①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳㉑㉒㉓㉔㉕㉖㉗㉘㉙㉚'
-export const videoLabel = (step: NaviStep) => `動画${CIRCLED[step.step - 1] ?? step.step}`
+// 丸数字は ①〜⑳・㉑〜㉟・㊱〜㊿。51 からは「動画51」
+const circled = (n: number) =>
+  n >= 1 && n <= 20 ? String.fromCodePoint(0x2460 + n - 1) : n <= 35 ? String.fromCodePoint(0x3251 + n - 21) : n <= 50 ? String.fromCodePoint(0x32b1 + n - 36) : String(n)
+export const videoLabel = (step: NaviStep) => `動画${circled(step.step)}`
+// 動画の中の秒を、そのステップで見る部分の中の秒にする（前の動画を分けたステップは、途中から始まるので）
+export const inStep = (step: NaviStep, sec: number) => Math.max(0, sec - (step.video?.start ?? 0))
 
 export const UNIT_NAMES: Record<number, string> = {
   1: 'はじめての Python',
