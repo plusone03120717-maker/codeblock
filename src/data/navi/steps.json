@@ -369,45 +369,107 @@
   "fileName": "step04.py",
   "sections": [
    {
-    "title": "変数 tate に 10 を入れる",
-    "start": 180,
+    "title": "箱 tate に 10 を入れる",
+    "start": 79,
     "code": "tate = 10\nprint(tate)",
     "expected": [
      "10"
-    ]
-   },
-   {
-    "title": "変数 yoko も作る",
-    "start": 295,
-    "code": "yoko = 3\nprint(yoko)",
-    "expected": [
-     "3"
-    ]
+    ],
+    "mustUse": [
+     "="
+    ],
+    "pauseAt": 130
    },
    {
     "title": "たて × よこ を計算",
-    "start": 324,
-    "code": "print(tate * yoko)",
+    "start": 168,
+    "code": "yoko = 3\nprint(tate * yoko)",
     "expected": [
      "30"
     ],
     "mustUse": [
-     "*"
-    ]
+     "*",
+     "yoko"
+    ],
+    "pauseAt": 207
+   },
+   {
+    "title": "箱の中身をかえる",
+    "start": 208,
+    "code": "tate = 20",
+    "expected": [
+     "20",
+     "60"
+    ],
+    "mustUse": [
+     "20"
+    ],
+    "pauseAt": 234,
+    "note": "1行目の 10 を 20 に書きかえて実行しよう。20 と 60 が出ればOK"
+   },
+   {
+    "title": "チャレンジ① hako に 25 を入れて出す",
+    "start": 271,
+    "pauseAt": 330,
+    "code": "hako = 25\nprint(hako)",
+    "expected": [
+     "25"
+    ],
+    "mustMatch": "hako\\s*=\\s*25[\\s\\S]*print\\(\\s*hako\\s*\\)",
+    "challenge": true,
+    "note": "hako という箱に 25 を入れて、print(hako) で中身を出そう。25 が出ればOK",
+    "answerNote": "hako = 25 で箱に入れて、print(hako) で中身の 25 が出る（\" \" はつけない）"
+   },
+   {
+    "title": "チャレンジ② たて 6・よこ 8 の面積",
+    "start": 284,
+    "pauseAt": 330,
+    "code": "tate = 6\nyoko = 8\nprint(tate * yoko)",
+    "expected": [
+     "48"
+    ],
+    "mustMatch": "(?=[\\s\\S]*tate\\s*=\\s*6)(?=[\\s\\S]*yoko\\s*=\\s*8)[\\s\\S]*print\\(\\s*(tate\\s*\\*\\s*yoko|yoko\\s*\\*\\s*tate)\\s*\\)",
+    "challenge": true,
+    "note": "tate と yoko の中身を 6 と 8 にかえて、tate * yoko を出そう。48 が出ればOK",
+    "answerNote": "箱の中身を 6 と 8 にかえるだけで、tate * yoko の答えが 48 にかわる"
+   },
+   {
+    "title": "チャレンジ③ 80円のおかしを 4こ",
+    "start": 301,
+    "pauseAt": 330,
+    "code": "nedan = 80\nkosu = 4\nprint(nedan * kosu)",
+    "expected": [
+     "320"
+    ],
+    "mustMatch": "(?=[\\s\\S]*nedan\\s*=\\s*80)(?=[\\s\\S]*kosu\\s*=\\s*4)[\\s\\S]*print\\(\\s*(nedan\\s*\\*\\s*kosu|kosu\\s*\\*\\s*nedan)\\s*\\)",
+    "challenge": true,
+    "note": "nedan に 80、kosu に 4 を入れて、nedan * kosu を出そう。320 が出ればOK",
+    "answerNote": "nedan（ねだん）と kosu（こすう）の箱を作って、かけ算。80 × 4 = 320"
    }
   ],
   "video": {
-   "no": "#3",
-   "id": "R1MUyId2Ftc",
-   "length": 370,
-   "end": 370
+   "no": "④",
+   "id": "3CMHe6WGCLg",
+   "length": 368,
+   "end": 361
   },
   "learn": [
-   "変数は、数や文字を入れておく箱。名前 = 中身 で作る",
+   "変数は、数や文字を入れておく箱。名前 = 中身 で作る（= は「右を左の箱に入れる」）",
    "print(tate) のように \" \" をつけないと、箱の中身が出る",
-   "かけ算は *、わり算は /。わり算の答えは 45.0 のように .0 がつく"
+   "箱の名前で計算できる。中身をかえると、答えもかわる"
   ],
-  "codeblock": []
+  "codeblock": [
+   "31-4"
+  ],
+  "review": {
+   "question": "hako = 7 のあと、print(\"hako\") を実行すると、何が出る？",
+   "choices": [
+    "7",
+    "hako",
+    "エラーになる"
+   ],
+   "answer": 1
+  }
  },
  {
   "step": 5,

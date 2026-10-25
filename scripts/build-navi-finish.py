@@ -489,6 +489,23 @@ FRESH = {
         B("何こ買える？", "1こ 30円のガム。200円で何こ買えるかな？ 整数の答えを表示しよう！", "print(200 // 30)", "6", extra=["/"],
           rules=[("req", ["//"], "整数の答えは // で出すよ！")]),
     ]),
+    4: dict(desc="変数（箱）に数を入れて、表示や計算に使おう", example="tate = 10\nprint(tate)  # 10", qs=[
+        Q("箱の中身は？", "hako = 7\nprint(hako)", "7", ["hako", "エラーになる"],
+          "print の中の hako には、\" \" がついていないね。", "hako は箱の名前。print(hako) で、中身の 7 が出るよ。"),
+        Q("\" \" をつけると？", 'tate = 5\nprint("tate")', "tate", ["5", "エラーになる"],
+          "print の中の tate は、\" \" でかこんであるね。",
+          "\" \" でかこむと、ただの文字 tate が出る。箱の中身を出すなら print(tate) だよ。"),
+        Q("エラーを直そう", "print(haba)", "print の前に haba = 4 のように、箱を作る",
+          ["haba を \" \" でかこむ", "print を Print にする"],
+          "NameError は「その名前が、まだ作られていないよ」という意味。",
+          "haba という箱をまだ作っていないので NameError。先に haba = 4 のように作ろう。",
+          desc="実行したら「NameError: name 'haba' is not defined」と出た。どう直す？", run=False),
+        B("箱を作って表示", "変数 kazu に 12 を入れて、kazu の中身を表示しよう！", "kazu = 12\nprint(kazu)", "12",
+          extra=['"kazu"'], rules=[("forbids", ['"kazu"'], "\" \" でかこむと、箱の中身ではなく文字のまま出るよ！")]),
+        B("たて × よこ", "tate と yoko の箱を使って、長方形の面積を表示しよう！", "print(tate * yoko)", "48",
+          extra=["×", "+"], prefix="tate = 6\nyoko = 8",
+          rules=[("forbids", ["×"], "かけ算は × ではなく、* で書くよ！"), ("req", ["tate", "yoko"], "数ではなく、箱の名前で計算しよう！")]),
+    ]),
 }
 
 NEW_STEP = {2: 5, 3: 8, 4: 9, 5: 10, 6: 11, 7: 14, 8: 16, 9: 18, 10: 23, 11: 25, 12: 28, 13: 33, 14: 35, 15: 37,
