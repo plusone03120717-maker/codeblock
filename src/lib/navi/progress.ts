@@ -78,7 +78,8 @@ export type NextAction =
 
 // いまのステップで「つぎにやること」
 export function nextAction(step: NaviStep, p: StepProgress): NextAction {
-  const sectionsLeft = step.sections.map((_, i) => i).filter((i) => !p.passed.includes(i))
+  // 「できたら⭐」の見出しは数えない
+  const sectionsLeft = step.sections.map((_, i) => i).filter((i) => !step.sections[i].optional && !p.passed.includes(i))
   if (step.video && !p.videoDone) return { kind: 'video', from: p.videoPos }
   if (sectionsLeft.length > 0) return { kind: 'section', index: sectionsLeft[0] }
   const completed = codeblockCompleted()

@@ -16,6 +16,8 @@ export type NaviSection = {
   note?: string
   // わざとエラーを出して確かめる見出し（エラーが出たら合格）
   expectError?: boolean
+  // 「できたら⭐」の見出し（わざとエラーを出す・動画にない練習）。動画は止まらず、クリアの条件にも入らない
+  optional?: boolean
 }
 
 export type NaviVideo = {
