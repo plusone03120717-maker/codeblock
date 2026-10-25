@@ -506,6 +506,23 @@ FRESH = {
           extra=["×", "+"], prefix="tate = 6\nyoko = 8",
           rules=[("forbids", ["×"], "かけ算は × ではなく、* で書くよ！"), ("req", ["tate", "yoko"], "数ではなく、箱の名前で計算しよう！")]),
     ]),
+    5: dict(desc="箱をいくつも使って、台形などの面積を計算しよう", example="ue = 5\nshita = 10\ntakasa = 6\nprint((ue + shita) * takasa / 2)  # 45.0", qs=[
+        Q("台形の面積", "ue = 3\nshita = 5\ntakasa = 4\nprint((ue + shita) * takasa / 2)", "16.0", ["16", "32.0"],
+          "わり算 / が入っていると、答えに何がつくかな？", "(3 + 5) × 4 ÷ 2 = 16。わり算なので 16.0 と出るよ。"),
+        Q("箱に入れた答え", "tate = 3\nyoko = 4\nmenseki = tate * yoko\nprint(menseki)", "12", ["menseki", "tate * yoko"],
+          "menseki の箱には、何が入っているかな？", "menseki には tate * yoko の答え 12 が入る。print(menseki) で 12 が出るよ。"),
+        Q("エラーを直そう", "print(menseki)\nmenseki = 6 * 4", "menseki = 6 * 4 の行を、print より上に書く",
+          ["menseki を \" \" でかこむ", "* を × にする"],
+          "パイソンは、上の行から順番に動くよ。",
+          "1行目では menseki をまだ作っていないので NameError。箱を作る行を、先に書こう。",
+          desc="実行したら「NameError: name 'menseki' is not defined」と出た。どう直す？", run=False),
+        B("台形の面積", "ue・shita・takasa の箱を使って、台形の面積を表示しよう！", "print((ue + shita) * takasa / 2)", "21.0",
+          extra=["×", "÷"], prefix="ue = 3\nshita = 4\ntakasa = 6",
+          rules=[("forbids", ["×", "÷"], "かけ算は *、わり算は / で書くよ！"), ("req", ["(ue + shita)"], "上の辺と下の辺を、かっこで先にたそう！")]),
+        B("答えを箱に入れる", "三角形の面積を menseki に入れて、menseki を表示しよう！", "menseki = teihen * takasa / 2\nprint(menseki)", "12.0",
+          extra=['"menseki"'], prefix="teihen = 6\ntakasa = 4",
+          rules=[("forbids", ['"menseki"'], "\" \" でかこむと、箱の中身ではなく文字のまま出るよ！")]),
+    ]),
 }
 
 NEW_STEP = {2: 5, 3: 8, 4: 9, 5: 10, 6: 11, 7: 14, 8: 16, 9: 18, 10: 23, 11: 25, 12: 28, 13: 33, 14: 35, 15: 37,
@@ -573,7 +590,8 @@ def build():
     lessons, missions, tutorials = [], {}, []
     k = 0
     # 25ステップのころの仕上げ（NEW_STEP で新しい番号に）と、55ステップで新しく作った仕上げ（FRESH）
-    items = [(NEW_STEP[n], STEPS[n], VIDEO.get(n)) for n in STEPS] + [(n, FRESH[n], True) for n in FRESH]
+    # 動画を作り直したステップは、FRESH の新しい5問を使う（前の5問は使わない）
+    items = [(NEW_STEP[n], STEPS[n], VIDEO.get(n)) for n in STEPS if NEW_STEP[n] not in FRESH] + [(n, FRESH[n], True) for n in FRESH]
     for new, s, vid in sorted(items, key=lambda x: x[0]):
         lid = f"31-{new}"
         lessons.append(dict(id=lid, unitNumber=31, subNumber=new, title=f"ステップ{new}の仕上げ", description=s["desc"],

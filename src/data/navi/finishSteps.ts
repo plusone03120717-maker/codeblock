@@ -34,7 +34,7 @@ export const finishStepLessons: Lesson[] = [
     "unitNumber": 31,
     "subNumber": 5,
     "title": "ステップ5の仕上げ",
-    "description": "変数（箱）に入れて、計算や表示に使おう",
+    "description": "箱をいくつも使って、台形などの面積を計算しよう",
     "difficulty": "かんたん"
   },
   {
@@ -779,125 +779,157 @@ export const finishStepMissions: Record<string, Mission[]> = {
     {
       "id": 1,
       "type": "quiz",
-      "title": "箱の中身で計算",
+      "title": "台形の面積",
       "description": "このコードを実行すると、何が出る？",
-      "codeToRead": "tate = 4\nyoko = 5\nprint(tate * yoko)",
+      "codeToRead": "ue = 3\nshita = 5\ntakasa = 4\nprint((ue + shita) * takasa / 2)",
       "choices": [
-        "9",
-        "20",
-        "tate * yoko"
+        "16",
+        "16.0",
+        "32.0"
       ],
       "correctAnswer": 1,
-      "expectedOutput": "20",
-      "hint": "tate と yoko には、何が入っているかな？",
-      "explanation": "tate は 4、yoko は 5。4 × 5 で 20 が出るよ。",
+      "expectedOutput": "16.0",
+      "hint": "わり算 / が入っていると、答えに何がつくかな？",
+      "explanation": "(3 + 5) × 4 ÷ 2 = 16。わり算なので 16.0 と出るよ。",
       "availableBlocks": []
     },
     {
       "id": 2,
       "type": "quiz",
-      "title": "\" \" があると？",
+      "title": "箱に入れた答え",
       "description": "このコードを実行すると、何が出る？",
-      "codeToRead": "name = \"いちか\"\nprint(\"name\")",
+      "codeToRead": "tate = 3\nyoko = 4\nmenseki = tate * yoko\nprint(menseki)",
       "choices": [
-        "name",
-        "いちか",
-        "エラーになる"
+        "12",
+        "menseki",
+        "tate * yoko"
       ],
       "correctAnswer": 0,
-      "expectedOutput": "name",
-      "hint": "print の中の name は \" \" でかこんであるね。",
-      "explanation": "\" \" でかこむと、ただの文字 name が出る。箱の中身を出すなら print(name) だよ。",
+      "expectedOutput": "12",
+      "hint": "menseki の箱には、何が入っているかな？",
+      "explanation": "menseki には tate * yoko の答え 12 が入る。print(menseki) で 12 が出るよ。",
       "availableBlocks": []
     },
     {
       "id": 3,
       "type": "quiz",
       "title": "エラーを直そう",
-      "description": "実行したら「NameError: name 'takasa' is not defined」と出た。どう直す？",
-      "codeToRead": "print(takasa)",
+      "description": "実行したら「NameError: name 'menseki' is not defined」と出た。どう直す？",
+      "codeToRead": "print(menseki)\nmenseki = 6 * 4",
       "choices": [
-        "takasa を \" \" でかこむ",
-        "print を Print にする",
-        "print の前に takasa = 6 のように、箱を作る"
+        "menseki を \" \" でかこむ",
+        "* を × にする",
+        "menseki = 6 * 4 の行を、print より上に書く"
       ],
       "correctAnswer": 2,
-      "expectedOutput": "print の前に takasa = 6 のように、箱を作る",
-      "hint": "NameError は「その名前の箱がないよ」という意味。",
-      "explanation": "takasa という箱をまだ作っていないので NameError。先に takasa = 6 のように作ろう。",
+      "expectedOutput": "menseki = 6 * 4 の行を、print より上に書く",
+      "hint": "パイソンは、上の行から順番に動くよ。",
+      "explanation": "1行目では menseki をまだ作っていないので NameError。箱を作る行を、先に書こう。",
       "availableBlocks": []
     },
     {
       "id": 4,
-      "title": "箱を作って表示",
-      "description": "変数 kazu に 7 を入れて、kazu の中身を表示しよう！",
-      "expectedOutput": "7",
-      "correctCode": "kazu = 7\nprint(kazu)",
+      "title": "台形の面積",
+      "description": "ue・shita・takasa の箱を使って、台形の面積を表示しよう！",
+      "expectedOutput": "21.0",
+      "correctCode": "print((ue + shita) * takasa / 2)",
       "availableBlocks": [
         {
           "id": "b0",
-          "text": "kazu",
-          "type": "variable",
-          "color": "bg-sky-200"
-        },
-        {
-          "id": "b1",
-          "text": "=",
-          "type": "operator",
-          "color": "bg-orange-200"
-        },
-        {
-          "id": "b2",
-          "text": "7",
-          "type": "number",
-          "color": "bg-yellow-100"
-        },
-        {
-          "id": "nl3",
-          "text": "↵",
-          "type": "newline",
-          "color": "bg-pink-200"
-        },
-        {
-          "id": "b4",
           "text": "print",
           "type": "function",
           "color": "bg-yellow-200"
         },
         {
-          "id": "b5",
+          "id": "b1",
           "text": "(",
           "type": "bracket",
           "color": "bg-gray-200"
         },
         {
-          "id": "b6",
+          "id": "b2",
+          "text": "ue",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b3",
+          "text": "+",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b4",
+          "text": "shita",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b5",
           "text": ")",
           "type": "bracket",
           "color": "bg-gray-200"
         },
         {
+          "id": "b6",
+          "text": "*",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
           "id": "b7",
-          "text": "\"kazu\"",
-          "type": "string",
-          "color": "bg-green-200"
+          "text": "takasa",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b8",
+          "text": "/",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b9",
+          "text": "2",
+          "type": "number",
+          "color": "bg-yellow-100"
+        },
+        {
+          "id": "b10",
+          "text": "×",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b11",
+          "text": "÷",
+          "type": "variable",
+          "color": "bg-sky-200"
         }
       ],
+      "prefixCode": "ue = 3\nshita = 4\ntakasa = 6",
       "rules": [
         {
           "forbids": [
-            "\"kazu\""
+            "×",
+            "÷"
           ],
-          "message": "\" \" でかこむと、箱の中身ではなく文字のまま出るよ！"
+          "message": "かけ算は *、わり算は / で書くよ！"
+        },
+        {
+          "requires": [
+            "(ue + shita)"
+          ],
+          "message": "上の辺と下の辺を、かっこで先にたそう！"
         }
       ]
     },
     {
       "id": 5,
-      "title": "かけ算を箱に入れる",
-      "description": "tate × yoko の答えを変数 menseki に入れて、menseki を表示しよう！",
-      "expectedOutput": "30",
-      "correctCode": "menseki = tate * yoko\nprint(menseki)",
+      "title": "答えを箱に入れる",
+      "description": "三角形の面積を menseki に入れて、menseki を表示しよう！",
+      "expectedOutput": "12.0",
+      "correctCode": "menseki = teihen * takasa / 2\nprint(menseki)",
       "availableBlocks": [
         {
           "id": "b0",
@@ -913,7 +945,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
         },
         {
           "id": "b2",
-          "text": "tate",
+          "text": "teihen",
           "type": "variable",
           "color": "bg-sky-200"
         },
@@ -925,48 +957,60 @@ export const finishStepMissions: Record<string, Mission[]> = {
         },
         {
           "id": "b4",
-          "text": "yoko",
+          "text": "takasa",
           "type": "variable",
           "color": "bg-sky-200"
         },
         {
-          "id": "nl5",
+          "id": "b5",
+          "text": "/",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b6",
+          "text": "2",
+          "type": "number",
+          "color": "bg-yellow-100"
+        },
+        {
+          "id": "nl7",
           "text": "↵",
           "type": "newline",
           "color": "bg-pink-200"
         },
         {
-          "id": "b6",
+          "id": "b8",
           "text": "print",
           "type": "function",
           "color": "bg-yellow-200"
         },
         {
-          "id": "b7",
+          "id": "b9",
           "text": "(",
           "type": "bracket",
           "color": "bg-gray-200"
         },
         {
-          "id": "b8",
+          "id": "b10",
           "text": ")",
           "type": "bracket",
           "color": "bg-gray-200"
         },
         {
-          "id": "b9",
-          "text": "×",
-          "type": "operator",
-          "color": "bg-orange-200"
+          "id": "b11",
+          "text": "\"menseki\"",
+          "type": "string",
+          "color": "bg-green-200"
         }
       ],
-      "prefixCode": "tate = 10\nyoko = 3",
+      "prefixCode": "teihen = 6\ntakasa = 4",
       "rules": [
         {
           "forbids": [
-            "×"
+            "\"menseki\""
           ],
-          "message": "かけ算は × ではなく、* で書くよ！"
+          "message": "\" \" でかこむと、箱の中身ではなく文字のまま出るよ！"
         }
       ]
     }
@@ -5507,7 +5551,7 @@ export const finishStepTutorials: LessonTutorial[] = [
         "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
-          "good": "hako = 10\nprint(hako)  # 10"
+          "good": "ue = 5\nshita = 10\ntakasa = 6\nprint((ue + shita) * takasa / 2)  # 45.0"
         }
       }
     ]
