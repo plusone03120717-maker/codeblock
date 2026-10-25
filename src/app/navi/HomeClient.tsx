@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { NaviHeader } from '@/components/navi/NaviHeader'
 import { NAVI_STEPS, getNaviStep } from '@/data/navi/steps'
-import { UNIT_NAMES, type NaviStep } from '@/lib/navi/types'
+import { UNIT_NAMES, videoLabel, type NaviStep } from '@/lib/navi/types'
 import {
   codeblockCompleted,
   fmtTime,
@@ -27,7 +27,7 @@ import { FIRST_TIME_SPEECH, REVIEW_RIGHT_SPEECH, REVIEW_WRONG_SPEECH, returnSpee
 const UNIT_STEPS: Record<number, number[]> = { 1: [1, 2, 3, 4, 5, 6], 2: [7, 8, 9], 3: [10, 11, 12], 4: [13, 14, 15, 16], 5: [17, 18, 19, 20], 6: [21, 22, 23, 24, 25] }
 
 function actionTitle(step: NaviStep, a: NextAction): string {
-  if (a.kind === 'video') return a.from > 0 ? `動画 ${step.video?.no} を ${fmtTime(resumeFrom(a.from))} から` : `動画 ${step.video?.no} を見ながら打とう`
+  if (a.kind === 'video') return a.from > 0 ? `${videoLabel(step)} を ${fmtTime(resumeFrom(a.from))} から` : `${videoLabel(step)} を見ながら打とう`
   if (a.kind === 'section') return `「${step.sections[a.index].title}」の結果を出そう`
   if (a.kind === 'codeblock') return a.mission > 0 ? `${naviLessonLabel(a.lessonId)} の ${a.mission + 1}問目から` : `${naviLessonLabel(a.lessonId)} をやろう`
   return 'つぎのステップへ'
@@ -97,7 +97,7 @@ export function HomeClient() {
       <br />
       {action.kind === 'video' && action.from > 0 && step.video ? (
         <>
-          前回は <em className="not-italic text-[#7448f0]">動画 {step.video.no}</em> の{' '}
+          前回は <em className="not-italic text-[#7448f0]">{videoLabel(step)}</em> の{' '}
           <mark className="bg-[linear-gradient(transparent_60%,#ffd23f_60%)]">{fmtTime(p.videoPos)}</mark> でおわりにしたね。
         </>
       ) : (

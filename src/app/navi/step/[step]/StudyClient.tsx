@@ -12,7 +12,7 @@ import { getNaviStep } from '@/data/navi/steps'
 import { sectionPassed, studentNote } from '@/lib/navi/judge'
 import { dueAt, isRequired, pauseTimes, requiredIndexes } from '@/lib/navi/checkpoints'
 import { codeHint, type CodeHint } from '@/lib/navi/hint'
-import type { NaviSection } from '@/lib/navi/types'
+import { videoLabel, type NaviSection } from '@/lib/navi/types'
 import { friendlyError } from '@/lib/navi/friendlyError'
 import { isFinishLesson, naviLessonLabel } from '@/data/navi/finish31'
 import {
@@ -298,6 +298,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
           <div className="flex items-center gap-2.5 text-sm font-bold text-[#6d6893]">
             <Link href="/navi">‹ ホーム</Link>·<span>ステップ{step.step}</span>·
             <span className="text-[#2a2452]">
+              {step.video ? `${videoLabel(step)} ` : ''}
               {step.title}
               {step.video ? `（${fmtTime(step.video.length)}）` : ''}
             </span>
@@ -554,7 +555,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
           learned={learnedToday}
           xp={learnedToday.length * XP_PER_SECTION}
           progressLines={[
-            ...(step.video ? [p.videoDone ? `動画 ${step.video.no} は最後まで見た` : `動画 ${step.video.no} は ${fmtTime(p.videoPos)} まで見た`] : []),
+            ...(step.video ? [p.videoDone ? `${videoLabel(step)} は最後まで見た` : `${videoLabel(step)} は ${fmtTime(p.videoPos)} まで見た`] : []),
             `エディターのコード（${Object.keys(p.files)[0] ?? step.fileName}）`,
             `見出しの結果 ${passedCount} / ${total}`,
           ]}
