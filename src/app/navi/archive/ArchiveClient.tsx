@@ -7,13 +7,11 @@ import { useEffect, useRef, useState } from 'react'
 import { NaviHeader } from '@/components/navi/NaviHeader'
 import { YouTubePlayer, type PlayerHandle } from '@/components/navi/YouTubePlayer'
 import { NAVI_STEPS, getNaviStep } from '@/data/navi/steps'
-import { UNIT_NAMES, type NaviStep } from '@/lib/navi/types'
+import { UNIT_NAMES, videoLabel, type NaviStep } from '@/lib/navi/types'
 import { fmtTime, loadNavi, stepProgress, type NaviState } from '@/lib/navi/progress'
 
 const VIDEO_STEPS = NAVI_STEPS.filter((s) => s.video)
 
-// 題名の「#2 」は札で出すので、ここでは外す
-const titleOf = (s: NaviStep) => s.title.replace(/^#[\d.]+\s*/, '')
 const thumbOf = (s: NaviStep) => `/navi/thumbs/step-${String(s.step).padStart(2, '0')}.jpg`
 
 export function ArchiveClient() {
@@ -89,9 +87,9 @@ function VideoCard({ step, state, locked, onOpen }: { step: NaviStep; state: Nav
       </div>
       <div className="flex flex-1 flex-col gap-2 px-4 pb-4 pt-3">
         <div className="text-[13px] font-black text-[#7448f0]">
-          ステップ{step.step}・動画 {step.video?.no}
+          {videoLabel(step)}
         </div>
-        <div className="text-[16px] font-black leading-snug">{titleOf(step)}</div>
+        <div className="text-[16px] font-black leading-snug">{step.title}</div>
         <span className={`mt-auto self-start rounded-full px-3 py-1 text-[12.5px] font-black ${status.cls}`}>{status.text}</span>
       </div>
     </button>
@@ -120,9 +118,9 @@ function Player({ step, onClose }: { step: NaviStep; onClose: () => void }) {
         <div className="flex min-w-[520px] flex-1 flex-col gap-3">
           <div className="flex items-center gap-3">
             <span className="whitespace-nowrap rounded-full bg-[#ffd23f] px-3 py-1 text-[13px] font-black text-[#5c4300]">
-              ステップ{step.step}・動画 {step.video.no}
+              {videoLabel(step)}
             </span>
-            <span className="truncate text-[18px] font-black">{titleOf(step)}</span>
+            <span className="truncate text-[18px] font-black">{step.title}</span>
           </div>
           <div className="overflow-hidden rounded-[16px]">
             <YouTubePlayer ref={player} videoId={step.video.id} startAt={step.video.start ?? 0} onTime={(t) => setTime(t)} onEnded={() => {}} />

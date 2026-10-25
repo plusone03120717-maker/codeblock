@@ -57,6 +57,10 @@ export type NaviStep = {
   appWindow?: boolean
 }
 
+// 動画の番号はステップの順（動画①・動画⑦…。サムネイルの「Python ①」と同じ）。前のシリーズの #2〜#21 は出さない
+const CIRCLED = '①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳㉑㉒㉓㉔㉕㉖㉗㉘㉙㉚'
+export const videoLabel = (step: NaviStep) => `動画${CIRCLED[step.step - 1] ?? step.step}`
+
 export const UNIT_NAMES: Record<number, string> = {
   1: 'はじめての Python',
   2: 'もしも',

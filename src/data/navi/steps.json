@@ -2,7 +2,7 @@
  {
   "step": 1,
   "unit": 1,
-  "title": "#2 print で表示しよう",
+  "title": "文字や答えを表示しよう",
   "video": {
    "no": "#2",
    "id": "QEV10U864X4",
@@ -119,7 +119,7 @@
  {
   "step": 2,
   "unit": 1,
-  "title": "#3 変数",
+  "title": "変数",
   "video": {
    "no": "#3",
    "id": "R1MUyId2Ftc",
@@ -198,7 +198,7 @@
  {
   "step": 3,
   "unit": 1,
-  "title": "#4 台形の面積アプリ",
+  "title": "台形の面積アプリ",
   "video": {
    "no": "#4",
    "id": "FmQSDPM1cNA",
@@ -275,7 +275,7 @@
  {
   "step": 4,
   "unit": 1,
-  "title": "#5 データ型",
+  "title": "データ型",
   "video": {
    "no": "#5",
    "id": "YQ916-GV0gQ",
@@ -384,7 +384,7 @@
  {
   "step": 5,
   "unit": 1,
-  "title": "#6 コードを短く書く",
+  "title": "コードを短く書く",
   "video": {
    "no": "#6",
    "id": "1wxGHBxIGkg",
@@ -538,7 +538,7 @@
  {
   "step": 7,
   "unit": 2,
-  "title": "#7 文字数と取り出し",
+  "title": "文字数と取り出し",
   "video": {
    "no": "#7",
    "id": "XOWMcR0f8n0",
@@ -629,7 +629,7 @@
  {
   "step": 8,
   "unit": 2,
-  "title": "#8 if と else（つぶやきアプリ）",
+  "title": "if と else（つぶやきアプリ）",
   "video": {
    "no": "#8",
    "id": "QrzSFUJE40g",
@@ -703,7 +703,7 @@
  {
   "step": 9,
   "unit": 2,
-  "title": "#9 くらべる記号と elif",
+  "title": "くらべる記号と elif",
   "video": {
    "no": "#9",
    "id": "4AHDum6ynhk",
@@ -797,7 +797,7 @@
  {
   "step": 10,
   "unit": 3,
-  "title": "#10 リストとおみくじ",
+  "title": "リストとおみくじ",
   "video": {
    "no": "#10",
    "id": "RDTkdNYG4qk",
@@ -874,7 +874,7 @@
  {
   "step": 11,
   "unit": 3,
-  "title": "#11 リストの便利な道具",
+  "title": "リストの便利な道具",
   "video": {
    "no": "#11",
    "id": "Zo6vVL8-dkE",
@@ -970,7 +970,7 @@
  {
   "step": 12,
   "unit": 3,
-  "title": "#12 足し算アプリとなぞなぞ",
+  "title": "足し算アプリとなぞなぞ",
   "video": {
    "no": "#12",
    "id": "YwO1IyAnFgQ",
@@ -1062,7 +1062,7 @@
  {
   "step": 13,
   "unit": 4,
-  "title": "#13 for でくりかえす",
+  "title": "for でくりかえす",
   "video": {
    "no": "#13",
    "id": "khnY_Fg1gso",
@@ -1183,7 +1183,7 @@
  {
   "step": 14,
   "unit": 4,
-  "title": "#14 九九と偶数（前半）",
+  "title": "九九と偶数（前半）",
   "video": {
    "no": "#14",
    "id": "vRqLn3YNIoE",
@@ -1434,7 +1434,7 @@
  {
   "step": 15,
   "unit": 4,
-  "title": "#14 break・continue・while（後半）",
+  "title": "break・continue・while（後半）",
   "video": {
    "no": "#14",
    "id": "vRqLn3YNIoE",
@@ -1588,7 +1588,7 @@
  {
   "step": 17,
   "unit": 5,
-  "title": "#15 関数を作る",
+  "title": "関数を作る",
   "video": {
    "no": "#15",
    "id": "araV-Soh2Xo",
@@ -1651,7 +1651,7 @@
  {
   "step": 18,
   "unit": 5,
-  "title": "#16 引数と return",
+  "title": "引数と return",
   "video": {
    "no": "#16",
    "id": "Tt9r7jZfg7w",
@@ -1741,7 +1741,7 @@
  {
   "step": 19,
   "unit": 5,
-  "title": "#16.1 引数を2つにする",
+  "title": "引数を2つにする",
   "video": {
    "no": "#16.1",
    "id": "WnPA59Hs7ls",
@@ -1865,7 +1865,7 @@
  {
   "step": 21,
   "unit": 6,
-  "title": "#18 ボタンのアプリ",
+  "title": "ボタンのアプリ",
   "video": {
    "no": "#18",
    "id": "v8DK9sqQaA8",
@@ -1946,7 +1946,7 @@
  {
   "step": 22,
   "unit": 6,
-  "title": "#19 おみくじアプリ（アプリの窓）",
+  "title": "おみくじアプリ（アプリの窓）",
   "video": {
    "no": "#19",
    "id": "DASU2jOOlYQ",
@@ -2022,7 +2022,7 @@
  {
   "step": 23,
   "unit": 6,
-  "title": "#20 画像を開くアプリ",
+  "title": "画像を開くアプリ",
   "video": {
    "no": "#20",
    "id": "nfTayeRBDqY",
@@ -2120,7 +2120,7 @@
  {
   "step": 24,
   "unit": 6,
-  "title": "#21 白黒とモザイク",
+  "title": "白黒とモザイク",
   "video": {
    "no": "#21",
    "id": "zP5Vhy34qwM",
