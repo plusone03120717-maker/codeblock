@@ -82,7 +82,7 @@ export function HomeClient() {
 
   const bubble = firstTime ? (
     <>
-      はじめまして{name && `、${name}さん`}！ ナビだよ。
+      はじめまして{name && `、${name}さん`}！ いちかだよ。
       <br />
       プログラミングは、コンピューターへの<em className="not-italic text-[#7448f0]">命令を文字で書くこと</em>。
       <br />
@@ -130,7 +130,7 @@ export function HomeClient() {
         <section className="relative flex flex-col overflow-hidden rounded-[28px] bg-[linear-gradient(180deg,#d6eefb_0%,#eef7fd_70%,#fff_100%)] p-[22px] shadow-sm">
           <div className="relative z-10 flex items-center justify-between gap-2">
             <span className="inline-flex items-center gap-2 rounded-full bg-white py-1 pl-1.5 pr-3.5 text-sm font-black shadow-sm">
-              <span className="grid h-6 w-6 place-items-center rounded-full bg-[#ffd23f] text-[15px] font-black text-[#8a6400]">+</span>ナビ
+              <span className="grid h-6 w-6 place-items-center rounded-full bg-[#ffd23f] text-[15px] font-black text-[#8a6400]">+</span>いちか
             </span>
             {!voice.unavailable && <VoiceControls voice={voice} />}
           </div>
@@ -141,7 +141,7 @@ export function HomeClient() {
               <Image
                 key={face}
                 src={`/navi/bob_${face}.webp`}
-                alt={face === 'smile' ? 'ナビ' : ''}
+                alt={face === 'smile' ? 'いちか' : ''}
                 width={520}
                 height={520}
                 unoptimized
@@ -318,7 +318,7 @@ function VoiceControls({ voice }: { voice: ReturnType<typeof useNaviVoice> }) {
       {!voice.off &&
         (voice.blocked ? (
           <button onClick={voice.replay} className={`${pill} animate-pulse bg-[#ff8a1f] text-white`}>
-            🔊 ナビの声をきく
+            🔊 いちかの声をきく
           </button>
         ) : voice.speaking ? (
           <button onClick={voice.stop} className={`${pill} bg-white text-[#2a2452]`}>

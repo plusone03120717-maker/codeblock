@@ -241,7 +241,7 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
                   onClick={() => router.push("/navi")}
                   className="bg-gradient-to-r from-orange-300 to-orange-500 text-white px-8 py-3 rounded-full text-lg font-bold shadow-lg transition-all"
                 >
-                  ステップクリア！ ナビへ →
+                  ステップクリア！ Python ナビへ →
                 </button>
               )}
             </div>
