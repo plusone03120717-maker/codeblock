@@ -16,6 +16,9 @@ export function friendlyError(err: PyError): string {
   }
   if (type === 'SyntaxError' || type === 'IndentationError' || type === 'TabError') {
     const full = message.match(/invalid character '(.)'/)
+    // × ÷ には半角がないので、「半角で」ではなく、パイソンの記号を教える
+    if (full && full[1] === '×') return `${where}の × は、パイソンではつかえないよ。かけ算は * で書こう`
+    if (full && full[1] === '÷') return `${where}の ÷ は、パイソンではつかえないよ。わり算は / で書こう`
     if (full) return `${where}に、全角の「${full[1]}」が入っているよ。半角（英数字モード）で打ち直そう`
     if (message.includes('was never closed')) return `${where}のカッコ ( が閉じていないよ。 ) を足そう`
     if (message.includes('unterminated string literal') || message.includes('EOL while scanning'))

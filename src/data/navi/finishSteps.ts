@@ -6,6 +6,14 @@ import type { LessonTutorial } from "@/data/tutorials";
 
 export const finishStepLessons: Lesson[] = [
   {
+    "id": "31-2",
+    "unitNumber": 31,
+    "subNumber": 2,
+    "title": "ステップ2の仕上げ",
+    "description": "ひき算・かけ算・わり算と、計算のじゅんばん・かっこ",
+    "difficulty": "かんたん"
+  },
+  {
     "id": "31-5",
     "unitNumber": 31,
     "subNumber": 5,
@@ -200,6 +208,195 @@ export const finishStepLessons: Lesson[] = [
 ];
 
 export const finishStepMissions: Record<string, Mission[]> = {
+  "31-2": [
+    {
+      "id": 1,
+      "type": "quiz",
+      "title": "どっちが先？",
+      "description": "このコードを実行すると、何が出る？",
+      "codeToRead": "print(9 - 4 * 2)",
+      "choices": [
+        "10",
+        "1",
+        "9 - 4 * 2"
+      ],
+      "correctAnswer": 1,
+      "expectedOutput": "1",
+      "hint": "かけ算と、ひき算。どちらが先に計算されるかな？",
+      "explanation": "かけ算が先。4 * 2 = 8 を先に計算して、9 - 8 = 1 だよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 2,
+      "type": "quiz",
+      "title": "わり算の答え",
+      "description": "このコードを実行すると、何が出る？",
+      "codeToRead": "print(8 / 4)",
+      "choices": [
+        "2.0",
+        "2",
+        "8 / 4"
+      ],
+      "correctAnswer": 0,
+      "expectedOutput": "2.0",
+      "hint": "パイソンのわり算の答えには、何がつくかな？",
+      "explanation": "わり算の答えには .0 がつく。8 / 4 は 2.0 だよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 3,
+      "type": "quiz",
+      "title": "エラーを直そう",
+      "description": "実行したら「SyntaxError: invalid character '×'」と出た。どう直す？",
+      "codeToRead": "print(3 × 5)",
+      "choices": [
+        "3 と 5 を \" \" でかこむ",
+        "かっこをもう1つ足す",
+        "× を * にする"
+      ],
+      "correctAnswer": 2,
+      "expectedOutput": "× を * にする",
+      "hint": "× は、パイソンでつかえるかな？",
+      "explanation": "パイソンのかけ算は * （アスタリスク）。× はつかえないので SyntaxError になるよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 4,
+      "title": "おつりを出そう",
+      "description": "100円で 30円の あめを買った。おつりを計算して表示しよう！",
+      "expectedOutput": "70",
+      "correctCode": "print(100 - 30)",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b1",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b2",
+          "text": "100",
+          "type": "number",
+          "color": "bg-yellow-100"
+        },
+        {
+          "id": "b3",
+          "text": "-",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b4",
+          "text": "30",
+          "type": "number",
+          "color": "bg-yellow-100"
+        },
+        {
+          "id": "b5",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b6",
+          "text": "+",
+          "type": "operator",
+          "color": "bg-orange-200"
+        }
+      ],
+      "rules": [
+        {
+          "requires": [
+            "-"
+          ],
+          "message": "おつりは、ひき算（-）で出すよ！"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "かっこで先に",
+      "description": "4 + 6 を先に計算してから、3 をかけよう！",
+      "expectedOutput": "30",
+      "correctCode": "print((4 + 6) * 3)",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b1",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b2",
+          "text": "4",
+          "type": "number",
+          "color": "bg-yellow-100"
+        },
+        {
+          "id": "b3",
+          "text": "+",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b4",
+          "text": "6",
+          "type": "number",
+          "color": "bg-yellow-100"
+        },
+        {
+          "id": "b5",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b6",
+          "text": "*",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b7",
+          "text": "3",
+          "type": "number",
+          "color": "bg-yellow-100"
+        },
+        {
+          "id": "b8",
+          "text": "×",
+          "type": "operator",
+          "color": "bg-orange-200"
+        }
+      ],
+      "rules": [
+        {
+          "forbids": [
+            "×"
+          ],
+          "message": "かけ算は × ではなく、* で書くよ！"
+        },
+        {
+          "requires": [
+            "(4 + 6)"
+          ],
+          "message": "先にしたい 4 + 6 を、かっこでかこもう！"
+        }
+      ]
+    }
+  ],
   "31-5": [
     {
       "id": 1,
@@ -4873,6 +5070,22 @@ export const finishStepMissions: Record<string, Mission[]> = {
 };
 
 export const finishStepTutorials: LessonTutorial[] = [
+  {
+    "lessonId": "31-2",
+    "characterName": "いちか",
+    "characterEmoji": "🙂",
+    "characterImage": "/navi/bob_smile.webp",
+    "slides": [
+      {
+        "title": "5問で仕上げよう",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "characterMessage": "わからなくなったら、ヒントを見てね。",
+        "codeExample": {
+          "good": "print(9 - 5)  # 4"
+        }
+      }
+    ]
+  },
   {
     "lessonId": "31-5",
     "characterName": "いちか",

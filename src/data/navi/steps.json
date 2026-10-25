@@ -121,11 +121,127 @@
   "unit": 1,
   "title": "計算いろいろ",
   "fileName": "step02.py",
-  "video": null,
-  "planned": true,
-  "sections": [],
-  "learn": [],
-  "codeblock": []
+  "sections": [
+   {
+    "title": "ひき算",
+    "start": 82,
+    "code": "print(10 - 3)",
+    "expected": [
+     "7"
+    ],
+    "mustUse": [
+     "-"
+    ],
+    "pauseAt": 178
+   },
+   {
+    "title": "かけ算は *",
+    "start": 112,
+    "code": "print(6 * 7)",
+    "expected": [
+     "42"
+    ],
+    "mustUse": [
+     "*"
+    ],
+    "pauseAt": 178
+   },
+   {
+    "title": "わり算は /",
+    "start": 137,
+    "code": "print(10 / 2)",
+    "expected": [
+     "5.0"
+    ],
+    "mustUse": [
+     "/"
+    ],
+    "pauseAt": 178
+   },
+   {
+    "title": "計算のじゅんばん",
+    "start": 213,
+    "code": "print(2 + 3 * 4)",
+    "expected": [
+     "14"
+    ],
+    "pauseAt": 296
+   },
+   {
+    "title": "かっこで先に計算",
+    "start": 253,
+    "code": "print((2 + 3) * 4)",
+    "expected": [
+     "20"
+    ],
+    "mustUse": [
+     "(2"
+    ],
+    "pauseAt": 296
+   },
+   {
+    "title": "チャレンジ① 100 から 1 をひく",
+    "start": 299,
+    "pauseAt": 356,
+    "code": "print(100 - 1)",
+    "expected": [
+     "99"
+    ],
+    "mustMatch": "print\\(\\s*100\\s*-\\s*1\\s*\\)",
+    "note": "ひき算は -（ほのキー）。99 が出ればOK",
+    "challenge": true,
+    "answerNote": "ひき算はマイナス。100 - 1 で 99 が出る"
+   },
+   {
+    "title": "チャレンジ② 120円のおかしを 3こ",
+    "start": 311,
+    "pauseAt": 356,
+    "code": "print(120 * 3)",
+    "expected": [
+     "360"
+    ],
+    "mustMatch": "print\\(\\s*(120\\s*\\*\\s*3|3\\s*\\*\\s*120)\\s*\\)",
+    "note": "かけ算は *（Shift を押しながら け のキー）。360 が出ればOK",
+    "challenge": true,
+    "answerNote": "1こ 120円 × 3こ。かけ算は * で書く"
+   },
+   {
+    "title": "チャレンジ③ 10 たす 20 を 3 でわる",
+    "start": 324,
+    "pauseAt": 356,
+    "code": "print((10 + 20) / 3)",
+    "expected": [
+     "10.0"
+    ],
+    "mustMatch": "\\(\\s*10\\s*\\+\\s*20\\s*\\)\\s*/\\s*3",
+    "note": "先にたし算をしたいので、かっこを使おう。10.0 が出ればOK",
+    "challenge": true,
+    "answerNote": "かっこの中の 10 + 20 が先に計算されて 30。30 / 3 で 10.0（わり算なので .0 がつく）"
+   }
+  ],
+  "video": {
+   "no": "②",
+   "id": "DqmmylwXGeo",
+   "length": 400,
+   "end": 394
+  },
+  "learn": [
+   "ひき算は -、かけ算は *、わり算は /。× や ÷ を使うとエラーになる",
+   "わり算 / の答えには、5.0 のように .0 がつく",
+   "かけ算・わり算が先に計算される。先にしたい計算は ( ) でかこむ"
+  ],
+  "codeblock": [
+   "31-2"
+  ],
+  "review": {
+   "question": "print(2 + 3 * 4) を実行すると、何が出る？",
+   "choices": [
+    "20",
+    "14",
+    "エラーになる"
+   ],
+   "answer": 1
+  }
  },
  {
   "step": 3,
