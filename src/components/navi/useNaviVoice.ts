@@ -86,25 +86,35 @@ export function useNaviVoice() {
   }, [])
 
   // 口の動き：声の大きさが分かるときはそれで、分からないときは一定の間隔で開け閉めする
+  // パクパクしすぎないように、声の大きさをならし、開く・閉じるの境目をずらし、
+  // 一度切り替えたら少しのあいだ（約0.12秒）同じ形のままにする
   const startMouth = useCallback(() => {
     const a = analyser.current
     if (a) {
       const buf = new Uint8Array(a.fftSize)
       let open = false
-      const tick = () => {
+      let level = 0
+      let last = performance.now()
+      let lastSwitch = 0
+      const tick = (now = performance.now()) => {
+        const dt = Math.min(0.05, Math.max(0.001, (now - last) / 1000))
+        last = now
         a.getByteTimeDomainData(buf)
         let sum = 0
         for (const v of buf) sum += (v - 128) * (v - 128)
-        const next = Math.sqrt(sum / buf.length) > 6
-        if (next !== open) {
+        const rms = Math.sqrt(sum / buf.length)
+        level += (rms - level) * (1 - Math.exp(-dt / 0.04))
+        const next = open ? level > 6 : level > 9
+        if (next !== open && now - lastSwitch > 120) {
           open = next
+          lastSwitch = now
           setMouthOpen(next)
         }
         raf.current = requestAnimationFrame(tick)
       }
       tick()
     } else {
-      flap.current = setInterval(() => setMouthOpen((o) => !o), 140)
+      flap.current = setInterval(() => setMouthOpen((o) => !o), 220)
     }
   }, [])
 
