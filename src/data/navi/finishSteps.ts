@@ -22,6 +22,14 @@ export const finishStepLessons: Lesson[] = [
     "difficulty": "かんたん"
   },
   {
+    "id": "31-4",
+    "unitNumber": 31,
+    "subNumber": 4,
+    "title": "ステップ4の仕上げ",
+    "description": "変数（箱）に数を入れて、表示や計算に使おう",
+    "difficulty": "かんたん"
+  },
+  {
     "id": "31-5",
     "unitNumber": 31,
     "subNumber": 5,
@@ -572,6 +580,197 @@ export const finishStepMissions: Record<string, Mission[]> = {
             "//"
           ],
           "message": "整数の答えは // で出すよ！"
+        }
+      ]
+    }
+  ],
+  "31-4": [
+    {
+      "id": 1,
+      "type": "quiz",
+      "title": "箱の中身は？",
+      "description": "このコードを実行すると、何が出る？",
+      "codeToRead": "hako = 7\nprint(hako)",
+      "choices": [
+        "hako",
+        "7",
+        "エラーになる"
+      ],
+      "correctAnswer": 1,
+      "expectedOutput": "7",
+      "hint": "print の中の hako には、\" \" がついていないね。",
+      "explanation": "hako は箱の名前。print(hako) で、中身の 7 が出るよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 2,
+      "type": "quiz",
+      "title": "\" \" をつけると？",
+      "description": "このコードを実行すると、何が出る？",
+      "codeToRead": "tate = 5\nprint(\"tate\")",
+      "choices": [
+        "tate",
+        "5",
+        "エラーになる"
+      ],
+      "correctAnswer": 0,
+      "expectedOutput": "tate",
+      "hint": "print の中の tate は、\" \" でかこんであるね。",
+      "explanation": "\" \" でかこむと、ただの文字 tate が出る。箱の中身を出すなら print(tate) だよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 3,
+      "type": "quiz",
+      "title": "エラーを直そう",
+      "description": "実行したら「NameError: name 'haba' is not defined」と出た。どう直す？",
+      "codeToRead": "print(haba)",
+      "choices": [
+        "haba を \" \" でかこむ",
+        "print を Print にする",
+        "print の前に haba = 4 のように、箱を作る"
+      ],
+      "correctAnswer": 2,
+      "expectedOutput": "print の前に haba = 4 のように、箱を作る",
+      "hint": "NameError は「その名前が、まだ作られていないよ」という意味。",
+      "explanation": "haba という箱をまだ作っていないので NameError。先に haba = 4 のように作ろう。",
+      "availableBlocks": []
+    },
+    {
+      "id": 4,
+      "title": "箱を作って表示",
+      "description": "変数 kazu に 12 を入れて、kazu の中身を表示しよう！",
+      "expectedOutput": "12",
+      "correctCode": "kazu = 12\nprint(kazu)",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "kazu",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b1",
+          "text": "=",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b2",
+          "text": "12",
+          "type": "number",
+          "color": "bg-yellow-100"
+        },
+        {
+          "id": "nl3",
+          "text": "↵",
+          "type": "newline",
+          "color": "bg-pink-200"
+        },
+        {
+          "id": "b4",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b5",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b6",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b7",
+          "text": "\"kazu\"",
+          "type": "string",
+          "color": "bg-green-200"
+        }
+      ],
+      "rules": [
+        {
+          "forbids": [
+            "\"kazu\""
+          ],
+          "message": "\" \" でかこむと、箱の中身ではなく文字のまま出るよ！"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "たて × よこ",
+      "description": "tate と yoko の箱を使って、長方形の面積を表示しよう！",
+      "expectedOutput": "48",
+      "correctCode": "print(tate * yoko)",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b1",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b2",
+          "text": "tate",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b3",
+          "text": "*",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b4",
+          "text": "yoko",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b5",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b6",
+          "text": "×",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b7",
+          "text": "+",
+          "type": "operator",
+          "color": "bg-orange-200"
+        }
+      ],
+      "prefixCode": "tate = 6\nyoko = 8",
+      "rules": [
+        {
+          "forbids": [
+            "×"
+          ],
+          "message": "かけ算は × ではなく、* で書くよ！"
+        },
+        {
+          "requires": [
+            "tate",
+            "yoko"
+          ],
+          "message": "数ではなく、箱の名前で計算しよう！"
         }
       ]
     }
@@ -5277,6 +5476,22 @@ export const finishStepTutorials: LessonTutorial[] = [
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "print(7 % 2)  # 1"
+        }
+      }
+    ]
+  },
+  {
+    "lessonId": "31-4",
+    "characterName": "いちか",
+    "characterEmoji": "🙂",
+    "characterImage": "/navi/bob_smile.webp",
+    "slides": [
+      {
+        "title": "5問で仕上げよう",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "characterMessage": "わからなくなったら、ヒントを見てね。",
+        "codeExample": {
+          "good": "tate = 10\nprint(tate)  # 10"
         }
       }
     ]
