@@ -36,7 +36,7 @@ export function friendlyError(err: PyError): string {
   }
   if (type === 'TypeError') {
     if (message.includes('can only concatenate str') || message.includes("unsupported operand type(s) for +: 'int' and 'str'"))
-      return `${where}：文字と数は + でつなげないよ。str() で数を文字にしよう`
+      return `${where}：文字と数は + でつなげないよ。数も " " でかこもう`
     if (message.includes('takes') && message.includes('positional argument'))
       return `${where}：関数に渡すもの（引数）の数が合っていないよ`
     if (message.includes('not callable')) return `${where}：( ) をつけて呼べないものに ( ) がついているよ`
