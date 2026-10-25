@@ -13,6 +13,7 @@ import { sectionPassed, studentNote } from '@/lib/navi/judge'
 import { dueAt, isRequired, pauseTimes, requiredIndexes } from '@/lib/navi/checkpoints'
 import { codeHint, type CodeHint } from '@/lib/navi/hint'
 import { friendlyError } from '@/lib/navi/friendlyError'
+import { isFinishLesson, naviLessonLabel } from '@/data/navi/finish31'
 import {
   codeblockCompleted,
   fmtTime,
@@ -248,7 +249,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
       : action.kind === 'section'
         ? `おさらい1問 → 「${step.sections[action.index].title}」の結果を出すところから。ホームでいちかが案内するよ`
         : action.kind === 'codeblock'
-          ? `おさらい1問 → CodeBlock ${action.lessonId} から。ホームでいちかが案内するよ`
+          ? `おさらい1問 → ${naviLessonLabel(action.lessonId)} から。ホームでいちかが案内するよ`
           : 'つぎのステップから。ホームでいちかが案内するよ'
 
   return (
@@ -265,7 +266,9 @@ export function StudyClient({ step: stepNo }: { step: number }) {
             <span className="flex items-center gap-2 rounded-full bg-white py-1.5 pl-2 pr-4 text-[#6d6893] shadow-sm">
               <i className="grid h-6 w-6 place-items-center rounded-full bg-[#f0eef7] text-[13px] not-italic">2</i>
               {step.codeblock.length > 0
-                ? `CodeBlock ${step.codeblock.length === 1 ? step.codeblock[0] : `${step.codeblock[0]}〜${step.codeblock[step.codeblock.length - 1]}`}`
+                ? step.codeblock.length === 1
+                  ? naviLessonLabel(step.codeblock[0])
+                  : `CodeBlock ${step.codeblock[0]}〜${step.codeblock[step.codeblock.length - 1]}`
                 : step.codeblockPlanned && step.codeblockPlanned.length > 0
                   ? `CodeBlock ${step.codeblockPlanned.join('・')}（準備中）`
                   : '苦手のふくしゅう（できたら）'}
@@ -485,7 +488,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
                 onClick={() => save({ done: true })}
                 className="flex h-[52px] items-center rounded-full bg-[#ff8a1f] px-6 font-black whitespace-nowrap text-white shadow-[0_5px_0_#db6500]"
               >
-                ② CodeBlock {firstLesson} に進む ›
+                ② {naviLessonLabel(firstLesson)} に進む ›
               </Link>
             ) : (
               <button
@@ -503,7 +506,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
             )
           ) : (
             <span className="flex h-[52px] items-center whitespace-nowrap rounded-full bg-[#ebe8f5] px-6 font-black text-[#625d8a]">
-              🔒 {!videoOk && !allSections ? '2つそろうと' : 'あと少しで'} CodeBlock に進める
+              🔒 {!videoOk && !allSections ? '2つそろうと' : 'あと少しで'} {step.codeblock.some(isFinishLesson) ? '仕上げ' : 'CodeBlock'} に進める
             </span>
           )}
         </div>
@@ -646,7 +649,7 @@ function ClearToast({ titles, optional, all }: { titles: string[]; optional: boo
       <div className={`rounded-[20px] px-7 py-4 text-center text-white shadow-[0_12px_30px_rgba(0,0,0,.35)] ${optional ? 'bg-[#e0a100]' : 'bg-[#22b573]'}`}>
         <div className="text-[24px] font-black">{all ? '🎉 ぜんぶクリア！' : optional ? '⭐ できたら クリア！' : '✔ 見出しクリア！'}</div>
         <div className="mt-1 text-[15px] font-bold">{titles.map((t) => `「${t}」`).join('')}</div>
-        {all && <div className="mt-1 text-[14px] font-bold">下の「CodeBlock に進む」へ</div>}
+        {all && <div className="mt-1 text-[14px] font-bold">下の「② … に進む」へ</div>}
       </div>
     </div>
   )
