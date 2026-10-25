@@ -46,7 +46,8 @@ export function StudyClient({ step: stepNo }: { step: number }) {
   const [hintOpen, setHintOpen] = useState<number | null>(null) // ヒント2段目：動画のコードを見せている見出し
   const [wrong, setWrong] = useState<{ section: number; hint: CodeHint | null } | null>(null) // ヒント3段目
   const [answer, setAnswer] = useState<{ section: number; ok: boolean; error?: string } | null>(null) // チャレンジの「こたえの例」
-  const [toast, setToast] = useState<{ titles: string[]; optional: boolean; all: boolean } | null>(null)
+  // resume＝このあと動画のつづきを再生する・revealed＝まちがえて「こたえの例」を見て進んだ（「クリア！」とは言わない）
+  const [toast, setToast] = useState<{ titles: string[]; optional: boolean; all: boolean; resume: boolean; revealed: boolean } | null>(null)
   const lastPlaying = useRef<number | null>(null) // 再生中に最後に見た秒（飛ばしたかを見る）
   const lastTick = useRef<number | null>(null) // 最後に知らされた秒（止まっていても）
   const timers = useRef<ReturnType<typeof setTimeout>[]>([])
@@ -194,10 +195,17 @@ export function StudyClient({ step: stepNo }: { step: number }) {
         setHintOpen(null)
       }
       const left = remainingRequired(passed)
-      setToast({ titles: newly.map((i) => step.sections[i].title), optional: newly.every((i) => !isRequired(step, i)), all: left.length === 0 })
+      const resume = !!cp && dueAt(step, cp.at, passed, deferred).length === 0
+      setToast({
+        titles: newly.map((i) => step.sections[i].title),
+        optional: newly.every((i) => !isRequired(step, i)),
+        all: left.length === 0,
+        resume,
+        revealed: !!patch.revealed,
+      })
       later(2600, () => setToast(null))
       // 止まっていた見出しがそろったら、動画のつづきへ
-      if (cp && dueAt(step, cp.at, passed, deferred).length === 0) {
+      if (cp && resume) {
         const at = cp.at
         later(1600, () => {
           setCp(null)
@@ -373,7 +381,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
               <div className="flex flex-none items-center gap-3 rounded-[18px] bg-[#22b573] px-5 py-3.5 text-white shadow-sm">
                 <span className="text-[26px]">✔</span>
                 <div className="text-[17px] font-black">
-                  {toast.titles.map((t) => `「${t}」`).join('')}クリア！{cp && !toast.all ? ' 動画のつづきを再生するよ' : ''}
+                  {toastText(toast)}
                 </div>
               </div>
             )}
@@ -399,7 +407,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
                 code={hintOpen === focus ? step.sections[focus].code : null}
                 guessed={(step.sections[focus].note ?? '').includes('推測')}
                 wrong={wrong?.section === focus ? wrong : null}
-                passedTitles={toast && !toast.optional ? toast.titles : null}
+                passedText={toast && !toast.optional ? toastText(toast) : null}
                 onRewind={() => {
                   if (!step.video) return
                   // 止まっているときは10秒もどす（またここで止まる）。動画のあとは、その見出しの場面から
@@ -497,7 +505,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
               highlight={focus !== null && cp?.mode !== 'jump'}
               inputsHint={inputsHint}
               markLine={wrong?.hint?.kind === 'differs' || wrong?.hint?.kind === 'error' ? wrong.hint.line : null}
-              overlay={toast && <ClearToast titles={toast.titles} optional={toast.optional} all={toast.all} />}
+              overlay={toast && <ClearToast titles={toast.titles} optional={toast.optional} all={toast.all} revealed={toast.revealed} />}
               onFocus={() => player.current?.pause()}
               onFilesChange={(files) => {
                 const state = loadNavi()
@@ -657,25 +665,25 @@ function CheckpointPanel(props: {
   code: string | null
   guessed: boolean
   wrong: { hint: CodeHint | null } | null
-  passedTitles: string[] | null // いまクリアした見出し（緑で出す）
+  passedText: string | null // いまクリアした見出しの知らせ（緑で出す）
   onRewind: () => void
   onHint: () => void
   onLater: () => void
   onBack: () => void
 }) {
-  const { title, mode, hasVideo, code, guessed, wrong, passedTitles } = props
+  const { title, mode, hasVideo, code, guessed, wrong, passedText } = props
   const btn = 'whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13.5px] font-black'
   // 中身が変わったら、案内がまるごと見えるところまで左の列をスクロールする
   const box = useRef<HTMLDivElement>(null)
   useEffect(() => {
     box.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
-  }, [mode, code, wrong, passedTitles])
-  if (passedTitles) {
+  }, [mode, code, wrong, passedText])
+  if (passedText) {
     return (
       <div ref={box} className="flex flex-none items-center gap-3 rounded-[18px] bg-[#22b573] px-5 py-3.5 text-white shadow-sm">
         <span className="text-[26px]">✔</span>
         <div className="text-[17px] font-black">
-          {passedTitles.map((t) => `「${t}」`).join('')}クリア！{mode === 'pause' ? ' 動画のつづきを再生するよ' : ''}
+          {passedText}
         </div>
       </div>
     )
@@ -755,12 +763,20 @@ function CheckpointPanel(props: {
   )
 }
 
+// 緑の知らせの文。まちがえて「こたえの例」を見て進んだときは「クリア！」と言わない。つづきを再生するときだけ、そう言う
+function toastText(t: { titles: string[]; all: boolean; resume: boolean; revealed: boolean }): string {
+  const names = t.titles.map((x) => `「${x}」`).join('')
+  const head = t.revealed ? `${names}、こたえを見たね。` : `${names}クリア！`
+  if (t.all) return head
+  return head + (t.resume ? ' 動画のつづきを再生するよ' : ' つぎへ進もう')
+}
+
 // 「見出しクリア！」（エディターの上に大きく出す）
-function ClearToast({ titles, optional, all }: { titles: string[]; optional: boolean; all: boolean }) {
+function ClearToast({ titles, optional, all, revealed }: { titles: string[]; optional: boolean; all: boolean; revealed: boolean }) {
   return (
     <div className="pointer-events-none absolute inset-x-0 top-4 z-10 flex justify-center">
-      <div className={`rounded-[20px] px-7 py-4 text-center text-white shadow-[0_12px_30px_rgba(0,0,0,.35)] ${optional ? 'bg-[#e0a100]' : 'bg-[#22b573]'}`}>
-        <div className="text-[24px] font-black">{all ? '🎉 ぜんぶクリア！' : optional ? '⭐ できたら クリア！' : '✔ 見出しクリア！'}</div>
+      <div className={`rounded-[20px] px-7 py-4 text-center text-white shadow-[0_12px_30px_rgba(0,0,0,.35)] ${optional ? 'bg-[#e0a100]' : revealed ? 'bg-[#7448f0]' : 'bg-[#22b573]'}`}>
+        <div className="text-[24px] font-black">{all ? '🎉 ぜんぶクリア！' : optional ? '⭐ できたら クリア！' : revealed ? '👀 こたえを見たね' : '✔ 見出しクリア！'}</div>
         <div className="mt-1 text-[15px] font-bold">{titles.map((t) => `「${t}」`).join('')}</div>
         {all && <div className="mt-1 text-[14px] font-bold">下の「② … に進む」へ</div>}
       </div>

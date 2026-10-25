@@ -79,6 +79,16 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
   }, [lessonId, xpProcessed]);
 
   const currentLesson = lessonId ? getLesson(lessonId) : undefined;
+  // 仕上げ5問（31-N）のあとの、いちかのひとこと：ステップの名前と、つぎのステップを言う（2026-10-25）
+  const finishStep = lessonId && isFinishLesson(lessonId) ? Number(lessonId.split("-")[1]) : null;
+  const afterStep = finishStep ? NAVI_STEPS.find((s) => s.step > finishStep && !s.planned) : undefined;
+  const cheer = finishStep
+    ? navi && navi.next
+      ? `ステップ${finishStep}の仕上げ、クリア！ よくがんばったね。つぎの ${naviLessonLabel(navi.next)} もやってみよう！`
+      : afterStep
+        ? `ステップ${finishStep}、クリア！ よくがんばったね。つぎは ステップ${afterStep.step}「${afterStep.title}」だよ。Python ナビにもどろう！`
+        : `ステップ${finishStep}、クリア！ よくがんばったね。Python ナビにもどろう！`
+    : "おめでとう！よく頑張ったね！このレッスンを完璧にマスターできたよ！";
   const nextLesson = lessonId ? getNextLesson(lessonId) : undefined;
   const tutorial = lessonId ? getTutorial(lessonId) : undefined;
   const missionCount = (lessonId ? getLessonMissions(lessonId)?.length : undefined) ?? 10;
@@ -119,7 +129,7 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
         {/* ヘッダー */}
         <div className="mb-8">
           <Link
-            href="/"
+            href={finishStep ? "/navi" : "/"}
             className="inline-flex items-center gap-2 text-gray-700 hover:text-gray-900 font-semibold transition-colors mb-4"
           >
             <svg
@@ -130,7 +140,7 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
             >
               <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
             </svg>
-            ホームに戻る
+            {finishStep ? "Python ナビにもどる" : "ホームに戻る"}
           </Link>
         </div>
 
@@ -184,7 +194,7 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
                   </div>
 
                   <p className="text-base md:text-lg text-gray-800">
-                    おめでとう！よく頑張ったね！このレッスンを完璧にマスターできたよ！
+                    {cheer}
                   </p>
                 </div>
               </div>
@@ -224,7 +234,7 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
           )}
 
           {/* ナビゲーションボタン */}
-          {navi ? (
+          {navi || finishStep ? (
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/navi"
@@ -232,7 +242,7 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
               >
                 Python ナビにもどる
               </Link>
-              {navi.next ? (
+              {navi?.next ? (
                 <button
                   onClick={() => router.push(`/lesson/${navi.next}`)}
                   className="bg-gradient-to-r from-green-300 to-emerald-400 hover:from-green-400 hover:to-emerald-500 text-white px-8 py-3 rounded-full text-lg font-bold shadow-lg hover:shadow-xl transition-all"
@@ -308,7 +318,7 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
                 <span className="text-gray-600">{lessonId}</span>
               </div>
             )}
-            {nextLesson && (
+            {nextLesson && !finishStep && (
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-gray-700"><F reading="つぎ">次</F>のレッスン:</span>
                 <span className="text-gray-600">

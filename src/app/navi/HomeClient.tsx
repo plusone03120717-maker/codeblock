@@ -92,6 +92,8 @@ export function HomeClient() {
   if (!state || !d) return null
 
   const { step, p, action, firstTime, newStep, prev, prevDone, returning, lastStep, needReview } = d
+  // 新しいステップのはじめは、いまクリアしてきたステップでわかったことを見せる（前回のおわりの記録より新しいので）
+  const learnedFrom = (newStep && prevDone && prev !== null ? getNaviStep(prev) : undefined) ?? lastStep
   const name = user?.displayName ?? ''
   const completed = codeblockCompleted()
 
@@ -196,7 +198,9 @@ export function HomeClient() {
               <h2 className="text-[19px] font-black">
                 ステップ{step.step}　{step.title}
               </h2>
-              {!firstTime && <span className="rounded-full bg-[#ffd23f] px-3 py-0.5 text-[13px] font-bold text-[#5c4200]">前回のつづき</span>}
+              {!firstTime && (
+                <span className="rounded-full bg-[#ffd23f] px-3 py-0.5 text-[13px] font-bold text-[#5c4200]">{newStep ? '新しいステップ' : '前回のつづき'}</span>
+              )}
               <span className="ml-auto text-[13px] font-bold text-[#6d6893]">おわるときは「🏁 今日はおわる」を押してね。次はそこからつづくよ</span>
             </div>
             <div className="mt-4 grid grid-cols-[1.5fr_1fr] gap-[18px]">
@@ -218,21 +222,31 @@ export function HomeClient() {
                 )}
                 <Bar label="見出しの結果" value={requiredPassed / required.length} text={`${requiredPassed} / ${required.length}`} color="#22b573" />
                 <div className="mt-1 flex items-center justify-between gap-3">
-                  <span className="text-[13.5px] font-bold text-[#6d6893]">
-                    エディターに打ったコードも、
-                    <br />
-                    そのまま残っているよ{action.kind === 'video' && p.videoPos > 0 ? '（10秒もどして再生）' : ''}
-                  </span>
+                  {newStep ? (
+                    <span className="text-[13.5px] font-bold text-[#6d6893]">
+                      動画を見ながら、
+                      <br />
+                      同じコードを打っていこう
+                    </span>
+                  ) : (
+                    <span className="text-[13.5px] font-bold text-[#6d6893]">
+                      エディターに打ったコードも、
+                      <br />
+                      そのまま残っているよ{action.kind === 'video' && p.videoPos > 0 ? '（10秒もどして再生）' : ''}
+                    </span>
+                  )}
                   <button onClick={start} className="h-14 flex-none whitespace-nowrap rounded-full bg-[#ff8a1f] px-7 text-[17px] font-black text-white shadow-[0_5px_0_#db6500]">
                     はじめる ▶
                   </button>
                 </div>
               </div>
               <div className="rounded-[20px] bg-[#faf9fe] px-5 py-[18px]">
-                {lastStep && lastStep.learn.length > 0 && (
+                {learnedFrom && learnedFrom.learn.length > 0 && (
                   <div className="mb-3.5 flex flex-wrap items-center gap-1.5">
-                    <span className="mr-1 text-[13px] font-bold text-[#6d6893]">前回わかったこと</span>
-                    {lastStep.learn.slice(0, 3).map((l) => (
+                    <span className="mr-1 text-[13px] font-bold text-[#6d6893]">
+                      {learnedFrom === lastStep ? '前回わかったこと' : `ステップ${learnedFrom.step}でわかったこと`}
+                    </span>
+                    {learnedFrom.learn.slice(0, 3).map((l) => (
                       <span key={l} className="rounded-full bg-[#e2f7ec] px-2.5 py-0.5 text-[13px] font-bold text-[#11845a]">
                         ✔ {l}
                       </span>

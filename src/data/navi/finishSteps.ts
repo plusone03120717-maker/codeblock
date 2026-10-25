@@ -14,6 +14,14 @@ export const finishStepLessons: Lesson[] = [
     "difficulty": "かんたん"
   },
   {
+    "id": "31-3",
+    "unitNumber": 31,
+    "subNumber": 3,
+    "title": "ステップ3の仕上げ",
+    "description": "わり算の / と //、あまりの %",
+    "difficulty": "かんたん"
+  },
+  {
     "id": "31-5",
     "unitNumber": 31,
     "subNumber": 5,
@@ -393,6 +401,177 @@ export const finishStepMissions: Record<string, Mission[]> = {
             "(4 + 6)"
           ],
           "message": "先にしたい 4 + 6 を、かっこでかこもう！"
+        }
+      ]
+    }
+  ],
+  "31-3": [
+    {
+      "id": 1,
+      "type": "quiz",
+      "title": "あまりは？",
+      "description": "このコードを実行すると、何が出る？",
+      "codeToRead": "print(17 % 5)",
+      "choices": [
+        "3",
+        "2",
+        "3.4"
+      ],
+      "correctAnswer": 1,
+      "expectedOutput": "2",
+      "hint": "% は、わり算の何を出すかな？",
+      "explanation": "17 ÷ 5 = 3 あまり 2。% は、あまりの 2 を出すよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 2,
+      "type": "quiz",
+      "title": "// の答え",
+      "description": "このコードを実行すると、何が出る？",
+      "codeToRead": "print(9 // 2)",
+      "choices": [
+        "4",
+        "4.5",
+        "1"
+      ],
+      "correctAnswer": 0,
+      "expectedOutput": "4",
+      "hint": "スラッシュ2つは、小数のところをどうするかな？",
+      "explanation": "9 / 2 は 4.5。// は小数のところを切りすてて 4 になるよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 3,
+      "type": "quiz",
+      "title": "エラーを直そう",
+      "description": "実行したら「ZeroDivisionError: division by zero」と出た。どう直す？",
+      "codeToRead": "print(10 / 0)",
+      "choices": [
+        "/ を // にする",
+        "かっこをもう1つ足す",
+        "0 ではない数でわる"
+      ],
+      "correctAnswer": 2,
+      "expectedOutput": "0 ではない数でわる",
+      "hint": "0 で、わり算はできるかな？",
+      "explanation": "算数と同じで、0 ではわれない。// にしても ZeroDivisionError になるよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 4,
+      "title": "あまりを出そう",
+      "description": "23 を 4 でわった、あまりを表示しよう！",
+      "expectedOutput": "3",
+      "correctCode": "print(23 % 4)",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b1",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b2",
+          "text": "23",
+          "type": "number",
+          "color": "bg-yellow-100"
+        },
+        {
+          "id": "b3",
+          "text": "%",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b4",
+          "text": "4",
+          "type": "number",
+          "color": "bg-yellow-100"
+        },
+        {
+          "id": "b5",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b6",
+          "text": "//",
+          "type": "operator",
+          "color": "bg-orange-200"
+        }
+      ],
+      "rules": [
+        {
+          "requires": [
+            "%"
+          ],
+          "message": "あまりは % で出すよ！"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "何こ買える？",
+      "description": "1こ 30円のガム。200円で何こ買えるかな？ 整数の答えを表示しよう！",
+      "expectedOutput": "6",
+      "correctCode": "print(200 // 30)",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b1",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b2",
+          "text": "200",
+          "type": "number",
+          "color": "bg-yellow-100"
+        },
+        {
+          "id": "b3",
+          "text": "//",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b4",
+          "text": "30",
+          "type": "number",
+          "color": "bg-yellow-100"
+        },
+        {
+          "id": "b5",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b6",
+          "text": "/",
+          "type": "operator",
+          "color": "bg-orange-200"
+        }
+      ],
+      "rules": [
+        {
+          "requires": [
+            "//"
+          ],
+          "message": "整数の答えは // で出すよ！"
         }
       ]
     }
@@ -5082,6 +5261,22 @@ export const finishStepTutorials: LessonTutorial[] = [
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "print(9 - 5)  # 4"
+        }
+      }
+    ]
+  },
+  {
+    "lessonId": "31-3",
+    "characterName": "いちか",
+    "characterEmoji": "🙂",
+    "characterImage": "/navi/bob_smile.webp",
+    "slides": [
+      {
+        "title": "5問で仕上げよう",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "characterMessage": "わからなくなったら、ヒントを見てね。",
+        "codeExample": {
+          "good": "print(7 % 2)  # 1"
         }
       }
     ]
