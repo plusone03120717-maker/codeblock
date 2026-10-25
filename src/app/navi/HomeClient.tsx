@@ -5,8 +5,8 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { NaviHeader } from '@/components/navi/NaviHeader'
-import { NAVI_STEPS, getNaviStep } from '@/data/navi/steps'
-import { UNIT_NAMES, videoLabel, type NaviStep } from '@/lib/navi/types'
+import { NAVI_STEPS, getNaviStep, nextReadyStep, prevReadyStep, readyStep } from '@/data/navi/steps'
+import { UNIT_NAMES, inStep, videoLabel, type NaviStep } from '@/lib/navi/types'
 import {
   codeblockCompleted,
   fmtTime,
@@ -23,11 +23,11 @@ import { useNaviVoice } from '@/components/navi/useNaviVoice'
 import { naviLessonLabel } from '@/data/navi/finish31'
 import { FIRST_TIME_SPEECH, REVIEW_RIGHT_SPEECH, REVIEW_WRONG_SPEECH, newStepSpeech, returnSpeech } from '@/lib/navi/speech'
 
-// ステップの数（単元ごと）：本編 U1〜U6
-const UNIT_STEPS: Record<number, number[]> = { 1: [1, 2, 3, 4, 5, 6], 2: [7, 8, 9], 3: [10, 11, 12], 4: [13, 14, 15, 16], 5: [17, 18, 19, 20], 6: [21, 22, 23, 24, 25] }
+// ステップの数（単元ごと）：本編 U1〜U6（steps.json から）
+const UNIT_STEPS: Record<number, NaviStep[]> = NAVI_STEPS.reduce<Record<number, NaviStep[]>>((m, s) => ({ ...m, [s.unit]: [...(m[s.unit] ?? []), s] }), {})
 
 function actionTitle(step: NaviStep, a: NextAction): string {
-  if (a.kind === 'video') return a.from > 0 ? `${videoLabel(step)} を ${fmtTime(resumeFrom(a.from))} から` : `${videoLabel(step)} を見ながら打とう`
+  if (a.kind === 'video') return a.from > 0 ? `${videoLabel(step)} を ${fmtTime(inStep(step, resumeFrom(a.from)))} から` : `${videoLabel(step)} を見ながら打とう`
   if (a.kind === 'section') return `「${step.sections[a.index].title}」の結果を出そう`
   if (a.kind === 'codeblock') return a.mission > 0 ? `${naviLessonLabel(a.lessonId)} の ${a.mission + 1}問目から` : `${naviLessonLabel(a.lessonId)} をやろう`
   return 'つぎのステップへ'
@@ -35,14 +35,15 @@ function actionTitle(step: NaviStep, a: NextAction): string {
 
 function actionHref(step: NaviStep, a: NextAction): string {
   if (a.kind === 'codeblock') return a.mission > 0 ? `/lesson/${a.lessonId}/editor` : `/lesson/${a.lessonId}`
-  if (a.kind === 'next-step') return `/navi/step/${step.step + 1}`
+  if (a.kind === 'next-step') return `/navi/step/${nextReadyStep(step.step) ?? step.step + 1}`
   return `/navi/step/${step.step}`
 }
 
 // いまのステップ・つぎにやること・はじめてか・おさらいがあるか
 function derive(state: NaviState) {
   // ステップのデータがまだ無いときは、ある最初のステップへ
-  const step = getNaviStep(state.current) ?? NAVI_STEPS[0]
+  // 準備中のステップにいるときは、次の準備できているステップへ
+  const step = getNaviStep(readyStep(state.current)) ?? NAVI_STEPS[0]
   const p = stepProgress(state, step.step)
   const action = nextAction(step, p)
   // はじめて＝まだどのステップも何もしていない（ステップ1をクリアしたあとに「はじめまして」にもどらないように）
@@ -50,19 +51,20 @@ function derive(state: NaviState) {
   const firstTime = state.sessions.length === 0 && !started
   // 新しいステップのはじめ（前のステップをクリアしてきた）
   const newStep = !firstTime && p.videoPos === 0 && p.passed.length === 0 && !p.videoDone
-  const prevDone = !!state.steps[step.step - 1]?.done
+  const prev = prevReadyStep(step.step)
+  const prevDone = prev !== null && !!state.steps[prev]?.done
   const returning = state.sessions.length > 0
   const last = state.sessions[state.sessions.length - 1]
   const lastStep = last ? getNaviStep(last.step) : undefined
-  const needReview = !!lastStep && state.reviewAnswered[last.step] === false
-  return { step, p, action, firstTime, newStep, prevDone, returning, lastStep, needReview }
+  const needReview = !!lastStep?.review && state.reviewAnswered[last.step] === false
+  return { step, p, action, firstTime, newStep, prev, prevDone, returning, lastStep, needReview }
 }
 
 export function HomeClient() {
   const router = useRouter()
   const { user } = useAuth()
   const [state, setState] = useState<NaviState | null>(null)
-  const [review, setReview] = useState<{ step: NaviStep; picked: number | null } | null>(null)
+  const [review, setReview] = useState<{ step: NaviStep; q: NonNullable<NaviStep['review']>; picked: number | null } | null>(null)
   const voice = useNaviVoice()
 
   useEffect(() => {
@@ -78,7 +80,7 @@ export function HomeClient() {
     : d.firstTime
       ? FIRST_TIME_SPEECH
       : d.newStep
-        ? newStepSpeech(d.step, d.action, { returning: d.returning, prevDone: d.prevDone, needReview: d.needReview })
+        ? newStepSpeech(d.step, d.action, { returning: d.returning, prev: d.prevDone ? d.prev : null, needReview: d.needReview })
         : returnSpeech(d.step, d.action, d.p.videoPos, d.needReview)
 
   // ホームを開いたら、ナビが話す（声オフのときは話さない。オンにもどしたら、もう一度話す）
@@ -89,7 +91,7 @@ export function HomeClient() {
 
   if (!state || !d) return null
 
-  const { step, p, action, firstTime, newStep, prevDone, returning, lastStep, needReview } = d
+  const { step, p, action, firstTime, newStep, prev, prevDone, returning, lastStep, needReview } = d
   const name = user?.displayName ?? ''
   const completed = codeblockCompleted()
 
@@ -106,7 +108,7 @@ export function HomeClient() {
   ) : newStep ? (
     <>
       {returning && <>おかえり{name && `、${name}さん`}！ </>}
-      {prevDone && <>ステップ{step.step - 1}、クリアおめでとう！</>}
+      {prevDone && <>ステップ{prev}、クリアおめでとう！</>}
       {(returning || prevDone) && <br />}
       つぎは <em className="not-italic text-[#7448f0]">ステップ{step.step}「{step.title}」</em>だよ。
       <br />
@@ -122,7 +124,7 @@ export function HomeClient() {
       {action.kind === 'video' && action.from > 0 && step.video ? (
         <>
           前回は <em className="not-italic text-[#7448f0]">{videoLabel(step)}</em> の{' '}
-          <mark className="bg-[linear-gradient(transparent_60%,#ffd23f_60%)]">{fmtTime(p.videoPos)}</mark> でおわりにしたね。
+          <mark className="bg-[linear-gradient(transparent_60%,#ffd23f_60%)]">{fmtTime(inStep(step, p.videoPos))}</mark> でおわりにしたね。
         </>
       ) : (
         <>前回のつづきから始めよう。</>
@@ -137,7 +139,7 @@ export function HomeClient() {
 
   const start = () => {
     voice.stop()
-    if (needReview && lastStep) setReview({ step: lastStep, picked: null })
+    if (needReview && lastStep?.review) setReview({ step: lastStep, q: lastStep.review, picked: null })
     else router.push(actionHref(step, action))
   }
 
@@ -148,7 +150,7 @@ export function HomeClient() {
   if (action.kind === 'video' && sectionsLeft.length > 0) after.push(`「${sectionsLeft[sectionsLeft.length - 1].title}」までの結果を出す`)
   const lessonsLeft = step.codeblock.filter((id) => !completed.includes(id))
   if (action.kind !== 'codeblock' && lessonsLeft.length > 0) after.push(lessonsLeft.map(naviLessonLabel).join('・'))
-  after.push(`ステップ${step.step + 1} へ`)
+  after.push(`ステップ${nextReadyStep(step.step) ?? step.step + 1} へ`)
 
   return (
     <div className="flex h-screen flex-col">
@@ -207,7 +209,12 @@ export function HomeClient() {
                   {actionTitle(step, action)}
                 </div>
                 {step.video && (
-                  <Bar label="動画" value={p.videoDone ? 1 : p.videoPos / step.video.end} text={p.videoDone ? '最後まで見た' : `${fmtTime(p.videoPos)} / ${fmtTime(step.video.length)}`} color="#ff8a1f" />
+                  <Bar
+                    label="動画"
+                    value={p.videoDone ? 1 : Math.max(0, p.videoPos - (step.video.start ?? 0)) / (step.video.end - (step.video.start ?? 0))}
+                    text={p.videoDone ? '最後まで見た' : `${fmtTime(Math.max(0, p.videoPos - (step.video.start ?? 0)))} / ${fmtTime(step.video.length)}`}
+                    color="#ff8a1f"
+                  />
                 )}
                 <Bar label="見出しの結果" value={requiredPassed / required.length} text={`${requiredPassed} / ${required.length}`} color="#22b573" />
                 <div className="mt-1 flex items-center justify-between gap-3">
@@ -253,15 +260,22 @@ export function HomeClient() {
               <div className="ml-auto flex gap-4 text-[12.5px] font-bold text-[#6d6893]">
                 <span>🟩 クリア</span>
                 <span>🟨 いまここ</span>
+                <span>⬜ 準備中</span>
               </div>
             </div>
             <div className="mt-4 flex items-center gap-3">
               {Object.entries(UNIT_STEPS).map(([u, steps]) => (
-                <div key={u} className="flex gap-1" style={{ flex: steps.length }}>
+                <div key={u} className="flex gap-0.5" style={{ flex: steps.length }}>
                   {steps.map((s) => {
-                    const sp = stepProgress(state, s)
-                    const cls = sp.done ? 'bg-[#22b573]' : s === step.step ? 'bg-[#ffd23f] shadow-[0_0_0_3px_#fff0b3]' : 'bg-[#ece9f6]'
-                    return <span key={s} title={`ステップ${s}`} className={`h-3.5 flex-1 rounded ${cls}`} />
+                    const sp = stepProgress(state, s.step)
+                    const cls = sp.done
+                      ? 'bg-[#22b573]'
+                      : s.step === step.step
+                        ? 'bg-[#ffd23f] shadow-[0_0_0_3px_#fff0b3]'
+                        : s.planned
+                          ? 'border border-dashed border-[#d6d1ec] bg-white'
+                          : 'bg-[#ece9f6]'
+                    return <span key={s.step} title={`ステップ${s.step}　${s.title}${s.planned ? '（準備中）' : ''}`} className={`h-3.5 flex-1 rounded ${cls}`} />
                   })}
                 </div>
               ))}
@@ -287,11 +301,11 @@ export function HomeClient() {
         <div className="fixed inset-0 z-50 grid place-items-center bg-[rgba(42,36,82,.55)]">
           <div className="w-[520px] rounded-[28px] bg-white px-8 py-7 shadow-xl">
             <div className="text-[13px] font-black tracking-widest text-[#8a6400]">前回のおさらい（1問）</div>
-            <div className="mt-2 text-[20px] font-black">{review.step.review.question}</div>
+            <div className="mt-2 text-[20px] font-black">{review.q.question}</div>
             <div className="mt-4 flex flex-col gap-2">
-              {review.step.review.choices.map((c, i) => {
+              {review.q.choices.map((c, i) => {
                 const picked = review.picked !== null
-                const right = i === review.step.review.answer
+                const right = i === review.q.answer
                 const cls = !picked
                   ? 'bg-[#f7f6fc] hover:bg-[#efe9ff]'
                   : right
@@ -305,7 +319,7 @@ export function HomeClient() {
                     disabled={picked}
                     onClick={() => {
                       setReview({ ...review, picked: i })
-                      if (!voice.off) speak(i === review.step.review.answer ? REVIEW_RIGHT_SPEECH : REVIEW_WRONG_SPEECH)
+                      if (!voice.off) speak(i === review.q.answer ? REVIEW_RIGHT_SPEECH : REVIEW_WRONG_SPEECH)
                     }} className={`rounded-2xl px-4 py-3 text-left text-[16px] font-bold ${cls}`}>
                     {picked && right ? '✔ ' : ''}
                     {c}
@@ -315,7 +329,7 @@ export function HomeClient() {
             </div>
             {review.picked !== null && (
               <div className="mt-4 flex items-center justify-between">
-                <span className="text-[15px] font-black">{review.picked === review.step.review.answer ? 'せいかい！ よく覚えていたね' : 'おしい！ 正しいのは ✔ の答えだよ'}</span>
+                <span className="text-[15px] font-black">{review.picked === review.q.answer ? 'せいかい！ よく覚えていたね' : 'おしい！ 正しいのは ✔ の答えだよ'}</span>
                 <button
                   onClick={() => {
                     const s = loadNavi()

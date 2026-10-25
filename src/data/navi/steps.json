@@ -3,12 +3,6 @@
   "step": 1,
   "unit": 1,
   "title": "文字や答えを表示しよう",
-  "video": {
-   "no": "#2",
-   "id": "QEV10U864X4",
-   "length": 546,
-   "end": 541
-  },
   "fileName": "step01.py",
   "sections": [
    {
@@ -97,6 +91,12 @@
     "answerNote": "カンマで、文字列と計算の答えをならべる。7 * 8 は計算されて 56 になるよ"
    }
   ],
+  "video": {
+   "no": "#2",
+   "id": "QEV10U864X4",
+   "length": 546,
+   "end": 541
+  },
   "learn": [
    "print( ) で、コンピューターに文字や答えを出せる",
    "\" \" でかこむと「文字列」になって、そのまま出る",
@@ -119,14 +119,30 @@
  {
   "step": 2,
   "unit": 1,
-  "title": "変数",
-  "video": {
-   "no": "#3",
-   "id": "R1MUyId2Ftc",
-   "length": 571,
-   "end": 566
-  },
+  "title": "計算いろいろ",
   "fileName": "step02.py",
+  "video": null,
+  "planned": true,
+  "sections": [],
+  "learn": [],
+  "codeblock": []
+ },
+ {
+  "step": 3,
+  "unit": 1,
+  "title": "あまりとわり算",
+  "fileName": "step03.py",
+  "video": null,
+  "planned": true,
+  "sections": [],
+  "learn": [],
+  "codeblock": []
+ },
+ {
+  "step": 4,
+  "unit": 1,
+  "title": "変数",
+  "fileName": "step04.py",
   "sections": [
    {
     "title": "変数 tate に 10 を入れる",
@@ -154,7 +170,27 @@
     "mustUse": [
      "*"
     ]
-   },
+   }
+  ],
+  "video": {
+   "no": "#3",
+   "id": "R1MUyId2Ftc",
+   "length": 370,
+   "end": 370
+  },
+  "learn": [
+   "変数は、数や文字を入れておく箱。名前 = 中身 で作る",
+   "print(tate) のように \" \" をつけないと、箱の中身が出る",
+   "かけ算は *、わり算は /。わり算の答えは 45.0 のように .0 がつく"
+  ],
+  "codeblock": []
+ },
+ {
+  "step": 5,
+  "unit": 1,
+  "title": "変数で台形の面積",
+  "fileName": "step05.py",
+  "sections": [
    {
     "title": "台形の面積",
     "start": 370,
@@ -176,14 +212,19 @@
     "note": "前の見出しの print((jotei + katei) * takasa / 2) の行を消して、menseki の行は takasa の下に書く（動画と同じ）"
    }
   ],
+  "video": {
+   "no": "#3",
+   "id": "R1MUyId2Ftc",
+   "length": 199,
+   "end": 566,
+   "start": 367
+  },
   "learn": [
-   "変数は、数や文字を入れておく箱。名前 = 中身 で作る",
-   "print(tate) のように \" \" をつけないと、箱の中身が出る",
    "かけ算は *、わり算は /。わり算の答えは 45.0 のように .0 がつく",
    "式を変数に入れると、コードが読みやすくなる"
   ],
   "codeblock": [
-   "31-2"
+   "31-5"
   ],
   "review": {
    "question": "tate = 10、yoko = 3 のとき、print(tate * yoko) で出るのは？",
@@ -196,16 +237,32 @@
   }
  },
  {
-  "step": 3,
+  "step": 6,
+  "unit": 1,
+  "title": "文字をつなぐ",
+  "fileName": "step06.py",
+  "video": null,
+  "planned": true,
+  "sections": [],
+  "learn": [],
+  "codeblock": []
+ },
+ {
+  "step": 7,
+  "unit": 1,
+  "title": "input で質問する",
+  "fileName": "step07.py",
+  "video": null,
+  "planned": true,
+  "sections": [],
+  "learn": [],
+  "codeblock": []
+ },
+ {
+  "step": 8,
   "unit": 1,
   "title": "台形の面積アプリ",
-  "video": {
-   "no": "#4",
-   "id": "FmQSDPM1cNA",
-   "length": 359,
-   "end": 318
-  },
-  "fileName": "step03.py",
+  "fileName": "step08.py",
   "sections": [
    {
     "title": "input で上底をきく",
@@ -253,6 +310,12 @@
     ]
    }
   ],
+  "video": {
+   "no": "#4",
+   "id": "FmQSDPM1cNA",
+   "length": 359,
+   "end": 318
+  },
   "learn": [
    "input( ) で、使う人に質問して答えを入れてもらえる",
    "入れてもらった答えは、変数に入れて計算に使える",
@@ -260,7 +323,7 @@
    "カンマで「台形の面積は 45.0 です」のように並べて出せる"
   ],
   "codeblock": [
-   "31-3"
+   "31-8"
   ],
   "review": {
    "question": "input(\"上底はいくつ？\") は、何をするコード？",
@@ -273,16 +336,10 @@
   }
  },
  {
-  "step": 4,
+  "step": 9,
   "unit": 1,
   "title": "データ型",
-  "video": {
-   "no": "#5",
-   "id": "YQ916-GV0gQ",
-   "length": 420,
-   "end": 381
-  },
-  "fileName": "step04.py",
+  "fileName": "step09.py",
   "sections": [
    {
     "title": "float を消すとエラー",
@@ -362,6 +419,12 @@
     ]
    }
   ],
+  "video": {
+   "no": "#5",
+   "id": "YQ916-GV0gQ",
+   "length": 420,
+   "end": 381
+  },
   "learn": [
    "データ型は4つ：str（文字列）・int（整数）・float（小数）・bool（合っているか）",
    "input( ) で入れたものは文字列。float( ) で数にかえると計算できる",
@@ -369,7 +432,7 @@
    "\"ハロー\" * 10 は、ハローを10回くりかえす"
   ],
   "codeblock": [
-   "31-4"
+   "31-9"
   ],
   "review": {
    "question": "print(\"ハロー\" + str(10)) で出るのは？",
@@ -382,16 +445,10 @@
   }
  },
  {
-  "step": 5,
+  "step": 10,
   "unit": 1,
   "title": "コードを短く書く",
-  "video": {
-   "no": "#6",
-   "id": "1wxGHBxIGkg",
-   "length": 237,
-   "end": 197
-  },
-  "fileName": "step05.py",
+  "fileName": "step10.py",
   "sections": [
    {
     "title": "x に 50 を足す（長い書き方）",
@@ -441,6 +498,12 @@
     ]
    }
   ],
+  "video": {
+   "no": "#6",
+   "id": "1wxGHBxIGkg",
+   "length": 237,
+   "end": 197
+  },
   "learn": [
    "x = x + 50 は、x の中身に 50 を足して入れなおすこと",
    "x += 50 と短く書いても同じ意味",
@@ -448,7 +511,7 @@
    "見たことのないコードは、調べるくせをつけよう"
   ],
   "codeblock": [
-   "31-5"
+   "31-10"
   ],
   "review": {
    "question": "x = 100 のあと x += 50 をすると、x はいくつ？",
@@ -461,11 +524,10 @@
   }
  },
  {
-  "step": 6,
+  "step": 11,
   "unit": 1,
   "title": "作品：自分の計算アプリ",
-  "video": null,
-  "fileName": "step06.py",
+  "fileName": "step11.py",
   "sections": [
    {
     "title": "見本を動かす：長方形の面積",
@@ -516,6 +578,7 @@
     "note": "見本の式の例。数・質問・式を自分で決めたものに変えてよい（変えたら結果も変わる）。エラーが出ずに最後まで動けば合格にしてよい"
    }
   ],
+  "video": null,
   "learn": [
    "input・float・int を使って、自分の計算アプリが作れる",
    "str( ) で数を文字にすると、+ でつなげられる",
@@ -523,7 +586,7 @@
    "数や質問を変えると、自分だけのアプリになる"
   ],
   "codeblock": [
-   "31-6"
+   "31-11"
   ],
   "review": {
    "question": "int(input(\"いくつ？\")) の int( ) は何のため？",
@@ -536,16 +599,21 @@
   }
  },
  {
-  "step": 7,
+  "step": 12,
+  "unit": 1,
+  "title": "アレンジ：計算アプリに機能を足す",
+  "fileName": "step12.py",
+  "video": null,
+  "planned": true,
+  "sections": [],
+  "learn": [],
+  "codeblock": []
+ },
+ {
+  "step": 13,
   "unit": 2,
-  "title": "文字数と取り出し",
-  "video": {
-   "no": "#7",
-   "id": "XOWMcR0f8n0",
-   "length": 560,
-   "end": 520
-  },
-  "fileName": "step07.py",
+  "title": "文字数を数える",
+  "fileName": "step13.py",
   "sections": [
    {
     "title": "「今どうしてる？」を作る",
@@ -574,7 +642,26 @@
     "mustUse": [
      "len("
     ]
-   },
+   }
+  ],
+  "video": {
+   "no": "#7",
+   "id": "XOWMcR0f8n0",
+   "length": 256,
+   "end": 256
+  },
+  "learn": [
+   "len( ) で、文字の数を数えられる",
+   "文字には、左から 0・1・2…と番号がついている"
+  ],
+  "codeblock": []
+ },
+ {
+  "step": 14,
+  "unit": 2,
+  "title": "文字を取り出す",
+  "fileName": "step14.py",
+  "sections": [
    {
     "title": "[6:12] で一部を取り出す",
     "start": 256,
@@ -607,14 +694,19 @@
     ]
    }
   ],
+  "video": {
+   "no": "#7",
+   "id": "XOWMcR0f8n0",
+   "length": 267,
+   "end": 520,
+   "start": 253
+  },
   "learn": [
-   "len( ) で、文字の数を数えられる",
-   "文字には、左から 0・1・2…と番号がついている",
    "[6:12] のように番号で、文字の一部を取り出せる",
    "[-6:] のように、うしろから数えることもできる"
   ],
   "codeblock": [
-   "31-7"
+   "31-14"
   ],
   "review": {
    "question": "hello = \"こんにちは\" のとき、print(len(hello)) で出るのは？",
@@ -627,16 +719,10 @@
   }
  },
  {
-  "step": 8,
+  "step": 15,
   "unit": 2,
-  "title": "if と else（つぶやきアプリ）",
-  "video": {
-   "no": "#8",
-   "id": "QrzSFUJE40g",
-   "length": 365,
-   "end": 326
-  },
-  "fileName": "step08.py",
+  "title": "if（もしも）",
+  "fileName": "step15.py",
   "sections": [
    {
     "title": "前の回のつづき：今どうしてる？",
@@ -664,7 +750,27 @@
     "mustUse": [
      "if len(tweet) > 10:"
     ]
-   },
+   }
+  ],
+  "video": {
+   "no": "#8",
+   "id": "QrzSFUJE40g",
+   "length": 230,
+   "end": 230
+  },
+  "learn": [
+   "if は「もしも」。条件のあとに : を書く",
+   "if の中の行は、半角4文字の字下げ（インデント）をつける",
+   "else は「でなければ」。if に合わないときに動く"
+  ],
+  "codeblock": []
+ },
+ {
+  "step": 16,
+  "unit": 2,
+  "title": "else（でなければ）",
+  "fileName": "step16.py",
+  "sections": [
    {
     "title": "else で、10文字までならそのまま",
     "start": 230,
@@ -681,14 +787,19 @@
     "note": "10文字までの答え（例：おやつ食べてる）を入れて、そのまま出れば合格"
    }
   ],
+  "video": {
+   "no": "#8",
+   "id": "QrzSFUJE40g",
+   "length": 99,
+   "end": 326,
+   "start": 227
+  },
   "learn": [
-   "if は「もしも」。条件のあとに : を書く",
-   "if の中の行は、半角4文字の字下げ（インデント）をつける",
    "else は「でなければ」。if に合わないときに動く",
    "len(tweet) > 10 で「10文字より多い」を調べられる"
   ],
   "codeblock": [
-   "31-8"
+   "31-16"
   ],
   "review": {
    "question": "if len(tweet) > 10: のとき、ちょうど10文字だとどうなる？",
@@ -698,19 +809,14 @@
     "エラーになる"
    ],
    "answer": 1
-  }
+  },
+  "starter": "tweet = input(\"今どうしてる？\")\nif len(tweet) > 10:\n    print(\"文字数が多すぎるよ\")"
  },
  {
-  "step": 9,
+  "step": 17,
   "unit": 2,
-  "title": "くらべる記号と elif",
-  "video": {
-   "no": "#9",
-   "id": "4AHDum6ynhk",
-   "length": 372,
-   "end": 333
-  },
-  "fileName": "step09.py",
+  "title": "くらべる記号",
+  "fileName": "step17.py",
   "sections": [
    {
     "title": ">= で70点以上",
@@ -734,7 +840,26 @@
      "score > 70"
     ],
     "note": "2行目を書きかえる。70 は「70より大きい」に入らないので else に行く"
-   },
+   }
+  ],
+  "video": {
+   "no": "#9",
+   "id": "4AHDum6ynhk",
+   "length": 166,
+   "end": 166
+  },
+  "learn": [
+   ">= は「以上」、> は「より大きい」。= があると、その数もふくむ",
+   "== は「同じ」、!= は「ちがう」"
+  ],
+  "codeblock": []
+ },
+ {
+  "step": 18,
+  "unit": 2,
+  "title": "elif",
+  "fileName": "step18.py",
+  "sections": [
    {
     "title": "80点で分けるコード",
     "start": 166,
@@ -775,14 +900,20 @@
     "note": "1つ目の elif の下・else の上に入れる。score が 70 のままなので結果は前と同じ（score を 50 にすると「もう少し頑張りましょう」）"
    }
   ],
+  "video": {
+   "no": "#9",
+   "id": "4AHDum6ynhk",
+   "length": 170,
+   "end": 333,
+   "start": 163
+  },
   "learn": [
-   ">= は「以上」、> は「より大きい」。= があると、その数もふくむ",
    "== は「同じ」、!= は「ちがう」",
    "elif で、条件をいくつもふやせる",
    "上から順に調べて、合ったところだけが動く"
   ],
   "codeblock": [
-   "31-9"
+   "31-18"
   ],
   "review": {
    "question": "score = 70 で if score > 70: のとき、動くのは？",
@@ -795,16 +926,32 @@
   }
  },
  {
-  "step": 10,
+  "step": 19,
+  "unit": 2,
+  "title": "and と or",
+  "fileName": "step19.py",
+  "video": null,
+  "planned": true,
+  "sections": [],
+  "learn": [],
+  "codeblock": []
+ },
+ {
+  "step": 20,
+  "unit": 2,
+  "title": "作品：つぶやきアプリを完成させる",
+  "fileName": "step20.py",
+  "video": null,
+  "planned": true,
+  "sections": [],
+  "learn": [],
+  "codeblock": []
+ },
+ {
+  "step": 21,
   "unit": 3,
-  "title": "リストとおみくじ",
-  "video": {
-   "no": "#10",
-   "id": "RDTkdNYG4qk",
-   "length": 454,
-   "end": 414
-  },
-  "fileName": "step10.py",
+  "title": "リスト",
+  "fileName": "step21.py",
   "sections": [
    {
     "title": "ランチのリストを作る",
@@ -828,7 +975,26 @@
     "mustUse": [
      "[2]"
     ]
-   },
+   }
+  ],
+  "video": {
+   "no": "#10",
+   "id": "RDTkdNYG4qk",
+   "length": 241,
+   "end": 241
+  },
+  "learn": [
+   "リストは、たくさんのデータを入れるかご。[ ] とカンマで作る",
+   "lunch[2] のように番号（インデックス）で1つ取り出す。番号は0から"
+  ],
+  "codeblock": []
+ },
+ {
+  "step": 22,
+  "unit": 3,
+  "title": "おみくじ",
+  "fileName": "step22.py",
+  "sections": [
    {
     "title": "おみくじアプリ（random.choice）",
     "start": 241,
@@ -839,7 +1005,26 @@
      "random.choice("
     ],
     "note": "ランダムなので結果は毎回ちがう。「今日のあなたの運勢は 大吉 です」のように、くじのどれかが出れば合格。変数名 kekka と表示の形は推測"
-   },
+   }
+  ],
+  "video": {
+   "no": "#10",
+   "id": "RDTkdNYG4qk",
+   "length": 156,
+   "end": 394,
+   "start": 238
+  },
+  "learn": [
+   "import random と random.choice( ) で、リストからランダムに1つ選べる"
+  ],
+  "codeblock": []
+ },
+ {
+  "step": 23,
+  "unit": 3,
+  "title": "おみくじに一言",
+  "fileName": "step23.py",
+  "sections": [
    {
     "title": "課題：if で一言ずつ変える",
     "start": 394,
@@ -848,18 +1033,21 @@
     "mustUse": [
      "if kekka =="
     ],
-    "note": "推測：動画が出す課題の答えの例。ランダムなので、出たくじに合った一言が出れば合格。一言は自由",
-    "optional": true
+    "note": "推測：動画が出す課題の答えの例。ランダムなので、出たくじに合った一言が出れば合格。一言は自由"
    }
   ],
+  "video": {
+   "no": "#10",
+   "id": "RDTkdNYG4qk",
+   "length": 23,
+   "end": 414,
+   "start": 391
+  },
   "learn": [
-   "リストは、たくさんのデータを入れるかご。[ ] とカンマで作る",
-   "lunch[2] のように番号（インデックス）で1つ取り出す。番号は0から",
-   "import random と random.choice( ) で、リストからランダムに1つ選べる",
    "if を使うと、出たくじで一言を変えられる"
   ],
   "codeblock": [
-   "31-10"
+   "31-23"
   ],
   "review": {
    "question": "lunch = [\"ラーメン\", \"カレー\", \"ハンバーガー\"] のとき、lunch[1] は？",
@@ -869,19 +1057,14 @@
     "ハンバーガー"
    ],
    "answer": 1
-  }
+  },
+  "starter": "lunch = [\"ラーメン\", \"カレー\", \"ハンバーガー\", \"うどん\"]\nprint(lunch)\nprint(lunch[2])\nimport random\nomikuji = [\"大吉\", \"中吉\", \"小吉\"]\nkekka = random.choice(omikuji)\nprint(\"今日のあなたの運勢は\", kekka, \"です\")"
  },
  {
-  "step": 11,
+  "step": 24,
   "unit": 3,
-  "title": "リストの便利な道具",
-  "video": {
-   "no": "#11",
-   "id": "Zo6vVL8-dkE",
-   "length": 524,
-   "end": 485
-  },
-  "fileName": "step11.py",
+  "title": "リストの計算",
+  "fileName": "step24.py",
   "sections": [
    {
     "title": "sum で合計",
@@ -920,7 +1103,27 @@
      "len(",
      "sorted("
     ]
-   },
+   }
+  ],
+  "video": {
+   "no": "#11",
+   "id": "Zo6vVL8-dkE",
+   "length": 285,
+   "end": 285
+  },
+  "learn": [
+   "sum で合計、max でいちばん大きい数、min でいちばん小さい数",
+   "len でリストの数、sorted で小さい順に並べかえ",
+   ".append( ) で追加、.pop( ) で取り出し"
+  ],
+  "codeblock": []
+ },
+ {
+  "step": 25,
+  "unit": 3,
+  "title": "リストを変える",
+  "fileName": "step25.py",
+  "sections": [
    {
     "title": ".append( ) で追加",
     "start": 285,
@@ -948,14 +1151,19 @@
     ]
    }
   ],
+  "video": {
+   "no": "#11",
+   "id": "Zo6vVL8-dkE",
+   "length": 203,
+   "end": 485,
+   "start": 282
+  },
   "learn": [
-   "sum で合計、max でいちばん大きい数、min でいちばん小さい数",
-   "len でリストの数、sorted で小さい順に並べかえ",
    ".append( ) で追加、.pop( ) で取り出し",
    ".index( ) で、その要素が何番目かわかる"
   ],
   "codeblock": [
-   "31-11"
+   "31-25"
   ],
   "review": {
    "question": "tensu = [80, 65, 90] のとき、max(tensu) は？",
@@ -968,16 +1176,10 @@
   }
  },
  {
-  "step": 12,
+  "step": 26,
   "unit": 3,
-  "title": "足し算アプリとなぞなぞ",
-  "video": {
-   "no": "#12",
-   "id": "YwO1IyAnFgQ",
-   "length": 550,
-   "end": 510
-  },
-  "fileName": "step12.py",
+  "title": "ランダムな数",
+  "fileName": "step26.py",
   "sections": [
    {
     "title": "randint でランダムな数",
@@ -988,7 +1190,25 @@
      "random.randint(1, 100)"
     ],
     "note": "ランダムなので、1〜100のどれかの数が出れば合格。変数名 suji1・suji2 は推測（字幕は「数字1」「数字2」）"
-   },
+   }
+  ],
+  "video": {
+   "no": "#12",
+   "id": "YwO1IyAnFgQ",
+   "length": 204,
+   "end": 204
+  },
+  "learn": [
+   "random.randint(1, 100) で、1〜100のランダムな数が作れる"
+  ],
+  "codeblock": []
+ },
+ {
+  "step": 27,
+  "unit": 3,
+  "title": "足し算アプリ",
+  "fileName": "step27.py",
+  "sections": [
    {
     "title": "合計と質問（str でそろえる）",
     "start": 204,
@@ -1028,7 +1248,30 @@
      "int(input("
     ],
     "note": "kotae の行をこの1行に書きかえる。問題の数はランダムなので inputs は決められない。正しい答えを入れて「正解です」が出れば合格"
-   },
+   }
+  ],
+  "video": {
+   "no": "#12",
+   "id": "YwO1IyAnFgQ",
+   "length": 225,
+   "end": 426,
+   "start": 201
+  },
+  "learn": [
+   "random.randint(1, 100) で、1〜100のランダムな数が作れる",
+   "数と文字を + でつなぐときは、str( ) で型をそろえる",
+   "input の答えは文字。int( ) で数にしないと、正しくても「不正解」になる",
+   "問題と答えのリストを同じ番号で使うと、なぞなぞアプリが作れる"
+  ],
+  "codeblock": [],
+  "starter": "import random\nsuji1 = random.randint(1, 100)\nsuji2 = random.randint(1, 100)"
+ },
+ {
+  "step": 28,
+  "unit": 3,
+  "title": "なぞなぞアプリ",
+  "fileName": "step28.py",
+  "sections": [
    {
     "title": "なぞなぞアプリ",
     "start": 426,
@@ -1040,14 +1283,18 @@
     "note": "推測：動画を止めて自分で作る場面。見本（7:51〜）の問題・変数名は推測。新しいファイル（または前のコードを消して）で、import random を1行目に書く。問題が出て、答えると「正解です」か「不正解です」が出れば合格。なぞなぞは自分のものに変えてよい"
    }
   ],
+  "video": {
+   "no": "#12",
+   "id": "YwO1IyAnFgQ",
+   "length": 87,
+   "end": 510,
+   "start": 423
+  },
   "learn": [
-   "random.randint(1, 100) で、1〜100のランダムな数が作れる",
-   "数と文字を + でつなぐときは、str( ) で型をそろえる",
-   "input の答えは文字。int( ) で数にしないと、正しくても「不正解」になる",
    "問題と答えのリストを同じ番号で使うと、なぞなぞアプリが作れる"
   ],
   "codeblock": [
-   "31-12"
+   "31-28"
   ],
   "review": {
    "question": "input( ) で入れた \"8\" と、数の 8 を == でくらべると？",
@@ -1060,16 +1307,21 @@
   }
  },
  {
-  "step": 13,
+  "step": 29,
+  "unit": 3,
+  "title": "作品：自分のクイズアプリ",
+  "fileName": "step29.py",
+  "video": null,
+  "planned": true,
+  "sections": [],
+  "learn": [],
+  "codeblock": []
+ },
+ {
+  "step": 30,
   "unit": 4,
-  "title": "for でくりかえす",
-  "video": {
-   "no": "#13",
-   "id": "khnY_Fg1gso",
-   "length": 332,
-   "end": 292
-  },
-  "fileName": "step13.py",
+  "title": "for と range",
+  "fileName": "step30.py",
   "sections": [
    {
     "title": "range で 0〜5 を出す",
@@ -1086,7 +1338,25 @@
     "mustUse": [
      "range(6)"
     ]
-   },
+   }
+  ],
+  "video": {
+   "no": "#13",
+   "id": "khnY_Fg1gso",
+   "length": 135,
+   "end": 135
+  },
+  "learn": [
+   "for i in range(6): で、中を6回くりかえす。i は 0・1・2…と増える"
+  ],
+  "codeblock": []
+ },
+ {
+  "step": 31,
+  "unit": 4,
+  "title": "5の段",
+  "fileName": "step31.py",
+  "sections": [
    {
     "title": "5の段",
     "start": 135,
@@ -1124,7 +1394,28 @@
      "5 × 9 = 45"
     ],
     "note": "推測：動画は答えの前に「何をしているか」の文を足す。文の形は推測。5の段の print の行を書きかえる"
-   },
+   }
+  ],
+  "video": {
+   "no": "#13",
+   "id": "khnY_Fg1gso",
+   "length": 69,
+   "end": 201,
+   "start": 132
+  },
+  "learn": [
+   "for i in range(6): で、中を6回くりかえす。i は 0・1・2…と増える",
+   "5 * i で、5の段が作れる",
+   "i + 1 にすると、1から始められる"
+  ],
+  "codeblock": []
+ },
+ {
+  "step": 32,
+  "unit": 4,
+  "title": "1から始める",
+  "fileName": "step32.py",
+  "sections": [
    {
     "title": "1からはじめる",
     "start": 201,
@@ -1144,7 +1435,27 @@
      "i + 1"
     ],
     "note": "i に 1 を足して、くりかえす回数を1つへらす（range(9)）。5の段のコードを書きかえる"
-   },
+   }
+  ],
+  "video": {
+   "no": "#13",
+   "id": "khnY_Fg1gso",
+   "length": 30,
+   "end": 228,
+   "start": 198
+  },
+  "learn": [
+   "i + 1 にすると、1から始められる",
+   "for i in リスト: で、リストの中身を1つずつ取り出せる"
+  ],
+  "codeblock": []
+ },
+ {
+  "step": 33,
+  "unit": 4,
+  "title": "リストを1つずつ",
+  "fileName": "step33.py",
+  "sections": [
    {
     "title": "リストを for で1つずつ",
     "start": 228,
@@ -1161,14 +1472,18 @@
     "note": "推測：リストの中身は推測（前の回のランチのリスト）"
    }
   ],
+  "video": {
+   "no": "#13",
+   "id": "khnY_Fg1gso",
+   "length": 67,
+   "end": 292,
+   "start": 225
+  },
   "learn": [
-   "for i in range(6): で、中を6回くりかえす。i は 0・1・2…と増える",
-   "5 * i で、5の段が作れる",
-   "i + 1 にすると、1から始められる",
    "for i in リスト: で、リストの中身を1つずつ取り出せる"
   ],
   "codeblock": [
-   "31-13"
+   "31-33"
   ],
   "review": {
    "question": "for i in range(3): の中で print(i) をすると、出る数は？",
@@ -1181,16 +1496,10 @@
   }
  },
  {
-  "step": 14,
+  "step": 34,
   "unit": 4,
-  "title": "九九と偶数（前半）",
-  "video": {
-   "no": "#14",
-   "id": "vRqLn3YNIoE",
-   "length": 446,
-   "end": 220
-  },
-  "fileName": "step14.py",
+  "title": "九九",
+  "fileName": "step34.py",
   "sections": [
    {
     "title": "for の中に for（九九）",
@@ -1394,7 +1703,27 @@
     ],
     "note": "推測：動画は「考えてみてください」で答えを見せない。#13 と同じく +1 する答えの例。前の九九を書きかえる（range(1, 10) を使う答えでもよい）",
     "optional": true
-   },
+   }
+  ],
+  "video": {
+   "no": "#14",
+   "id": "vRqLn3YNIoE",
+   "length": 163,
+   "end": 163
+  },
+  "learn": [
+   "for の中に for を書くと、九九のような表が作れる",
+   "中の for はもう1つ字下げして、ちがう名前（j）を使う",
+   "i % 2 == 0 で「2でわり切れる＝偶数」を調べられる"
+  ],
+  "codeblock": []
+ },
+ {
+  "step": 35,
+  "unit": 4,
+  "title": "偶数だけ",
+  "fileName": "step35.py",
+  "sections": [
    {
     "title": "for の中に if（偶数だけ）",
     "start": 163,
@@ -1412,14 +1741,19 @@
     "note": "推測：字幕は「0から10までの中で偶数」と「10回くりかえす」。range(10) にした（range(11) なら 10 も出る）"
    }
   ],
+  "video": {
+   "no": "#14",
+   "id": "vRqLn3YNIoE",
+   "length": 60,
+   "end": 220,
+   "start": 160
+  },
   "learn": [
-   "for の中に for を書くと、九九のような表が作れる",
-   "中の for はもう1つ字下げして、ちがう名前（j）を使う",
    "i % 2 == 0 で「2でわり切れる＝偶数」を調べられる",
    "for の中に if を書いて、合うものだけ出せる"
   ],
   "codeblock": [
-   "31-14"
+   "31-35"
   ],
   "review": {
    "question": "i % 2 == 0 が True になるのは、i がどんな数のとき？",
@@ -1432,17 +1766,10 @@
   }
  },
  {
-  "step": 15,
+  "step": 36,
   "unit": 4,
-  "title": "break・continue・while（後半）",
-  "video": {
-   "no": "#14",
-   "id": "vRqLn3YNIoE",
-   "length": 446,
-   "start": 200,
-   "end": 407
-  },
-  "fileName": "step15.py",
+  "title": "break と continue",
+  "fileName": "step36.py",
   "sections": [
    {
     "title": "0〜9 を出すいつものコード",
@@ -1491,7 +1818,28 @@
     "mustUse": [
      "continue"
     ]
-   },
+   }
+  ],
+  "video": {
+   "no": "#14",
+   "id": "vRqLn3YNIoE",
+   "length": 140,
+   "start": 200,
+   "end": 340
+  },
+  "learn": [
+   "break で、くりかえしをとちゅうで止められる",
+   "continue で、その回だけとばして次へ進める",
+   "while は「〜の間」くりかえす。n += 1 を忘れずに"
+  ],
+  "codeblock": []
+ },
+ {
+  "step": 37,
+  "unit": 4,
+  "title": "while",
+  "fileName": "step37.py",
+  "sections": [
    {
     "title": "while でくりかえす",
     "start": 340,
@@ -1510,14 +1858,18 @@
     ]
    }
   ],
+  "video": {
+   "no": "#14",
+   "id": "vRqLn3YNIoE",
+   "length": 70,
+   "start": 337,
+   "end": 407
+  },
   "learn": [
-   "break で、くりかえしをとちゅうで止められる",
-   "continue で、その回だけとばして次へ進める",
-   "while は「〜の間」くりかえす。n += 1 を忘れずに",
    "if と組み合わせて、いつ止めるか・とばすかを決める"
   ],
   "codeblock": [
-   "31-15"
+   "31-37"
   ],
   "review": {
    "question": "while n <= 5: の中に n += 1 を書き忘れると、どうなる？",
@@ -1530,11 +1882,10 @@
   }
  },
  {
-  "step": 16,
+  "step": 38,
   "unit": 4,
-  "title": "作品：じゃんけん（作品1）",
-  "video": null,
-  "fileName": "step16.py",
+  "title": "作品：じゃんけん",
+  "fileName": "step38.py",
   "sections": [
    {
     "title": "見本を動かす：勝ち負けの判定",
@@ -1566,6 +1917,7 @@
     "note": "作品1の見本。コンピュータの手がランダムなので結果は毎回ちがう。あいこなら「もう一回」と聞きなおし、勝ちか負けが出たら終われば合格"
    }
   ],
+  "video": null,
   "learn": [
    "input・リスト・random.choice・if・while を組み合わせると、ゲームが作れる",
    "and は「かつ」、or は「または」",
@@ -1573,7 +1925,7 @@
    "コンピュータの手を先に決めてためすと、まちがいを見つけやすい"
   ],
   "codeblock": [
-   "31-16"
+   "31-38"
   ],
   "review": {
    "question": "(you == \"グー\" and com == \"チョキ\") が True になるのは？",
@@ -1586,16 +1938,21 @@
   }
  },
  {
-  "step": 17,
+  "step": 39,
+  "unit": 4,
+  "title": "アレンジ：3回勝負と点数",
+  "fileName": "step39.py",
+  "video": null,
+  "planned": true,
+  "sections": [],
+  "learn": [],
+  "codeblock": []
+ },
+ {
+  "step": 40,
   "unit": 5,
   "title": "関数を作る",
-  "video": {
-   "no": "#15",
-   "id": "araV-Soh2Xo",
-   "length": 326,
-   "end": 287
-  },
-  "fileName": "step17.py",
+  "fileName": "step40.py",
   "sections": [
    {
     "title": "def で関数を作る",
@@ -1629,6 +1986,12 @@
     "note": "推測：動画は1回だけ呼ぶ。何回でも使えることを確かめる練習"
    }
   ],
+  "video": {
+   "no": "#15",
+   "id": "araV-Soh2Xo",
+   "length": 326,
+   "end": 287
+  },
   "learn": [
    "関数は「命令のまとまり」。スクラッチの「ブロック定義」と同じ",
    "def hello(): で関数を作り、中は字下げして書く",
@@ -1636,7 +1999,7 @@
    "作っただけでは動かない。呼び出したときに動く"
   ],
   "codeblock": [
-   "31-17"
+   "31-40"
   ],
   "review": {
    "question": "def hello(): で作った関数を動かすには、何と書く？",
@@ -1649,16 +2012,10 @@
   }
  },
  {
-  "step": 18,
+  "step": 41,
   "unit": 5,
-  "title": "引数と return",
-  "video": {
-   "no": "#16",
-   "id": "Tt9r7jZfg7w",
-   "length": 508,
-   "end": 469
-  },
-  "fileName": "step18.py",
+  "title": "引数",
+  "fileName": "step41.py",
   "sections": [
    {
     "title": "消費税の関数（引数と戻り値）",
@@ -1680,7 +2037,26 @@
     "mustUse": [
      "shohizei(1350)"
     ]
-   },
+   }
+  ],
+  "video": {
+   "no": "#16",
+   "id": "Tt9r7jZfg7w",
+   "length": 236,
+   "end": 236
+  },
+  "learn": [
+   "引数は、関数にわたすデータ。def shohizei(kingaku): のように書く",
+   "return で、関数の答えを外にわたせる（戻り値）"
+  ],
+  "codeblock": []
+ },
+ {
+  "step": 42,
+  "unit": 5,
+  "title": "return",
+  "fileName": "step42.py",
+  "sections": [
    {
     "title": "引数だけの関数 hello2",
     "start": 236,
@@ -1715,19 +2091,21 @@
     "note": "ランダムなので、くじのどれか（大吉・中吉・小吉）が出れば合格"
    }
   ],
+  "video": {
+   "no": "#16",
+   "id": "Tt9r7jZfg7w",
+   "length": 236,
+   "end": 469,
+   "start": 233
+  },
   "learn": [
-   "引数は、関数にわたすデータ。def shohizei(kingaku): のように書く",
    "return で、関数の答えを外にわたせる（戻り値）",
    "引数だけの関数・戻り値だけの関数もある",
    "print(shohizei(1350)) で、答えをそのまま表示できる"
   ],
   "codeblock": [
-   "31-18"
+   "31-42"
   ],
-  "card": {
-   "title": "return のいいかえ",
-   "body": "return は「答えを関数の外にわたしたいとき」に使うよ。動画では「関数の中で変数に入れたら return」と言っているけど、大事なのは、外で print したり計算に使ったりしたい答えがあるかどうか。答えを外で使いたいなら return を書こう。"
-  },
   "review": {
    "question": "def shohizei(kingaku): の kingaku のように、関数にわたすデータを何という？",
    "choices": [
@@ -1736,19 +2114,17 @@
     "リスト"
    ],
    "answer": 1
+  },
+  "card": {
+   "title": "return のいいかえ",
+   "body": "return は「答えを関数の外にわたしたいとき」に使うよ。動画では「関数の中で変数に入れたら return」と言っているけど、大事なのは、外で print したり計算に使ったりしたい答えがあるかどうか。答えを外で使いたいなら return を書こう。"
   }
  },
  {
-  "step": 19,
+  "step": 43,
   "unit": 5,
-  "title": "引数を2つにする",
-  "video": {
-   "no": "#16.1",
-   "id": "WnPA59Hs7ls",
-   "length": 217,
-   "end": 110
-  },
-  "fileName": "step19.py",
+  "title": "引数を2つに",
+  "fileName": "step43.py",
   "sections": [
    {
     "title": "引数が2つの関数",
@@ -1784,6 +2160,12 @@
     "optional": true
    }
   ],
+  "video": {
+   "no": "#16.1",
+   "id": "WnPA59Hs7ls",
+   "length": 217,
+   "end": 110
+  },
   "learn": [
    "引数は、カンマで区切って2つ以上にできる",
    "def menseki(tate, yoko): で、たてとよこを受け取る",
@@ -1791,7 +2173,7 @@
    "menseki(12, 8) のように、わたす数もカンマで区切る"
   ],
   "codeblock": [
-   "31-19"
+   "31-43"
   ],
   "review": {
    "question": "def menseki(tate, yoko): に menseki(5, 3) とわたすと、tate に入るのは？",
@@ -1804,11 +2186,21 @@
   }
  },
  {
-  "step": 20,
+  "step": 44,
   "unit": 5,
-  "title": "作品：じゃんけん関数版（作品3）",
+  "title": "関数を組み合わせる",
+  "fileName": "step44.py",
   "video": null,
-  "fileName": "step20.py",
+  "planned": true,
+  "sections": [],
+  "learn": [],
+  "codeblock": []
+ },
+ {
+  "step": 45,
+  "unit": 5,
+  "title": "作品：じゃんけん関数版",
+  "fileName": "step45.py",
   "sections": [
    {
     "title": "judge( ) を作ってためす",
@@ -1843,6 +2235,7 @@
     "note": "作品3の見本（ためしの print は消す）。コンピュータの手がランダムなので結果は毎回ちがう。あいこなら「もう一回！」、勝ちか負けが出たら終われば合格"
    }
   ],
+  "video": null,
   "learn": [
    "勝ち負けの判定を、judge( ) という関数にまとめられる",
    "引数で2つの手を受け取り、return で結果を返す",
@@ -1850,7 +2243,7 @@
    "関数だけを先にためすと、まちがいが見つけやすい"
   ],
   "codeblock": [
-   "31-20"
+   "31-45"
   ],
   "review": {
    "question": "judge(\"パー\", \"グー\") の戻り値は？",
@@ -1863,16 +2256,21 @@
   }
  },
  {
-  "step": 21,
+  "step": 46,
+  "unit": 5,
+  "title": "アレンジ：計算アプリを関数で作り直す",
+  "fileName": "step46.py",
+  "video": null,
+  "planned": true,
+  "sections": [],
+  "learn": [],
+  "codeblock": []
+ },
+ {
+  "step": 47,
   "unit": 6,
-  "title": "ボタンのアプリ",
-  "video": {
-   "no": "#18",
-   "id": "v8DK9sqQaA8",
-   "length": 480,
-   "end": 440
-  },
-  "fileName": "step21.py",
+  "title": "窓を出す",
+  "fileName": "step47.py",
   "sections": [
    {
     "title": "tkinter で窓を出す",
@@ -1885,7 +2283,26 @@
      "mainloop()"
     ],
     "note": "アプリの窓が開けば合格（よこ200・たて100の、からっぽの窓）"
-   },
+   }
+  ],
+  "video": {
+   "no": "#18",
+   "id": "v8DK9sqQaA8",
+   "length": 221,
+   "end": 221
+  },
+  "learn": [
+   "import tkinter as tk で、窓のあるアプリが作れる"
+  ],
+  "codeblock": [],
+  "appWindow": true
+ },
+ {
+  "step": 48,
+  "unit": 6,
+  "title": "ラベルとボタン",
+  "fileName": "step48.py",
+  "sections": [
    {
     "title": "ラベルとボタンを作る",
     "start": 221,
@@ -1906,7 +2323,29 @@
      ".pack()"
     ],
     "note": "アプリの窓に「ラベル」の文字と「プッシュ」のボタンが出れば合格"
-   },
+   }
+  ],
+  "video": {
+   "no": "#18",
+   "id": "v8DK9sqQaA8",
+   "length": 103,
+   "end": 321,
+   "start": 218
+  },
+  "learn": [
+   "tk.Tk() で窓を作り、geometry(\"200x100\") で大きさを決める",
+   "Label は文字、Button はボタン。.pack() で窓に並べる"
+  ],
+  "codeblock": [],
+  "appWindow": true,
+  "starter": "import tkinter as tk\nroot = tk.Tk()\nroot.geometry(\"200x100\")\ntk.mainloop()"
+ },
+ {
+  "step": 49,
+  "unit": 6,
+  "title": "ボタンで動かす",
+  "fileName": "step49.py",
+  "sections": [
    {
     "title": "ボタンで「こんにちは」に変える",
     "start": 321,
@@ -1919,19 +2358,19 @@
     "note": "関数は import の下に書き、btn の行に command=change_label を足す（change_label のうしろに ( ) はつけない）。アプリの窓でボタンを押して「こんにちは」に変われば合格。関数名は推測（字幕は「チェンジラベル」）"
    }
   ],
+  "video": {
+   "no": "#18",
+   "id": "v8DK9sqQaA8",
+   "length": 122,
+   "end": 440,
+   "start": 318
+  },
   "learn": [
-   "import tkinter as tk で、窓のあるアプリが作れる",
-   "tk.Tk() で窓を作り、geometry(\"200x100\") で大きさを決める",
-   "Label は文字、Button はボタン。.pack() で窓に並べる",
    "command= で、ボタンを押したときに動く関数を決める"
   ],
   "codeblock": [
-   "31-21"
+   "31-49"
   ],
-  "card": {
-   "title": "アプリの窓",
-   "body": "このアプリでは、tkinter で作った画面は「アプリの窓」に開くよ。動画のパソコンと同じように、ボタンを押して試せるよ。"
-  },
   "review": {
    "question": "root.geometry(\"200x100\") の 200 は何？",
    "choices": [
@@ -1941,19 +2380,18 @@
    ],
    "answer": 0
   },
-  "appWindow": true
+  "card": {
+   "title": "アプリの窓",
+   "body": "このアプリでは、tkinter で作った画面は「アプリの窓」に開くよ。動画のパソコンと同じように、ボタンを押して試せるよ。"
+  },
+  "appWindow": true,
+  "starter": "import tkinter as tk\nroot = tk.Tk()\nroot.geometry(\"200x100\")\nlbl = tk.Label(text=\"ラベル\")\nbtn = tk.Button(text=\"プッシュ\")\nlbl.pack()\nbtn.pack()\ntk.mainloop()"
  },
  {
-  "step": 22,
+  "step": 50,
   "unit": 6,
-  "title": "おみくじアプリ（アプリの窓）",
-  "video": {
-   "no": "#19",
-   "id": "DASU2jOOlYQ",
-   "length": 344,
-   "end": 304
-  },
-  "fileName": "step22.py",
+  "title": "おみくじアプリ",
+  "fileName": "step50.py",
   "sections": [
    {
     "title": "窓を作る（400×300）",
@@ -1999,6 +2437,12 @@
     "note": "関数は import の下に書き、btn の行に command=uranau を足す。アプリの窓で「占う」を押して、くじのどれかが出れば合格。関数名・くじの中身は推測（自分のくじにしてよい）"
    }
   ],
+  "video": {
+   "no": "#19",
+   "id": "DASU2jOOlYQ",
+   "length": 344,
+   "end": 304
+  },
   "learn": [
    "title( ) で、窓にタイトルをつけられる",
    "ボタンを押したら、random.choice でくじを引く関数を動かせる",
@@ -2006,7 +2450,7 @@
    "前の回の書き方を組み合わせると、新しいアプリが作れる"
   ],
   "codeblock": [
-   "31-22"
+   "31-50"
   ],
   "review": {
    "question": "ボタンを押すと uranau 関数が動くようにするには？",
@@ -2020,23 +2464,10 @@
   "appWindow": true
  },
  {
-  "step": 23,
+  "step": 51,
   "unit": 6,
-  "title": "画像を開くアプリ",
-  "video": {
-   "no": "#20",
-   "id": "nfTayeRBDqY",
-   "length": 458,
-   "end": 419,
-   "skips": [
-    {
-     "from": 67,
-     "to": 131,
-     "label": "pip install の場面（このアプリには Pillow がもう入っている）"
-    }
-   ]
-  },
-  "fileName": "step23.py",
+  "title": "画像を開く",
+  "fileName": "step51.py",
   "sections": [
    {
     "title": "モジュールを読みこむ（# でメモ）",
@@ -2093,6 +2524,19 @@
     "note": "tk.mainloop() の上に書く。アプリの窓で「ファイルを開く」→見本の画像をえらんで、画像が出れば合格"
    }
   ],
+  "video": {
+   "no": "#20",
+   "id": "nfTayeRBDqY",
+   "length": 458,
+   "end": 419,
+   "skips": [
+    {
+     "from": 67,
+     "to": 131,
+     "label": "pip install の場面（このアプリには Pillow がもう入っている）"
+    }
+   ]
+  },
   "learn": [
    "あとから入れて使う道具を「外部ライブラリ」という。画像は Pillow を使う",
    "# のあとに書いた文はメモ。プログラムの動きには関係ない",
@@ -2100,12 +2544,8 @@
    "dispPhoto で画像を読みこんで、窓に表示する"
   ],
   "codeblock": [
-   "31-23"
+   "31-51"
   ],
-  "card": {
-   "title": "Pillow はもう入っている",
-   "body": "画像をあつかう Pillow は、このアプリにもう入っているよ。動画の pip install の場面はとばしてOK。あとから足して使う道具を「外部ライブラリ」というよ。"
-  },
   "review": {
    "question": "# のあとに書いた文は、どうなる？",
    "choices": [
@@ -2115,19 +2555,17 @@
    ],
    "answer": 0
   },
+  "card": {
+   "title": "Pillow はもう入っている",
+   "body": "画像をあつかう Pillow は、このアプリにもう入っているよ。動画の pip install の場面はとばしてOK。あとから足して使う道具を「外部ライブラリ」というよ。"
+  },
   "appWindow": true
  },
  {
-  "step": 24,
+  "step": 52,
   "unit": 6,
-  "title": "白黒とモザイク",
-  "video": {
-   "no": "#21",
-   "id": "zP5Vhy34qwM",
-   "length": 293,
-   "end": 253
-  },
-  "fileName": "step24.py",
+  "title": "白黒にする",
+  "fileName": "step52.py",
   "sections": [
    {
     "title": "convert(\"L\") で白黒に",
@@ -2138,7 +2576,26 @@
      "convert(\"L\")"
     ],
     "note": "前の回のコードを開き、dispPhoto の中の newImage の行を書きかえる。アプリの窓で画像を開いて、白黒になれば合格"
-   },
+   }
+  ],
+  "video": {
+   "no": "#21",
+   "id": "zP5Vhy34qwM",
+   "length": 152,
+   "end": 152
+  },
+  "learn": [
+   "convert(\"L\") で、画像を白黒にできる"
+  ],
+  "codeblock": [],
+  "appWindow": true
+ },
+ {
+  "step": 53,
+  "unit": 6,
+  "title": "モザイク",
+  "fileName": "step53.py",
+  "sections": [
    {
     "title": "resize を2回でモザイク",
     "start": 152,
@@ -2171,19 +2628,21 @@
     "optional": true
    }
   ],
+  "video": {
+   "no": "#21",
+   "id": "zP5Vhy34qwM",
+   "length": 104,
+   "end": 253,
+   "start": 149
+  },
   "learn": [
-   "convert(\"L\") で、画像を白黒にできる",
    "resize((32, 32)) で小さくしてから大きくもどすと、モザイクになる",
    "resample=0 をつけると、もっとモザイクっぽくなる",
    "数を変えると、モザイクの細かさが変わる"
   ],
   "codeblock": [
-   "31-24"
+   "31-53"
   ],
-  "card": {
-   "title": "(300, 300) のカッコ",
-   "body": "カッコが2つの (300, 300) は「タプル」というもので、あとの #22 で習うよ。今は「よこ300・たて300」と読めばOK。"
-  },
   "review": {
    "question": "モザイクは、どうやって作った？",
    "choices": [
@@ -2193,14 +2652,17 @@
    ],
    "answer": 0
   },
+  "card": {
+   "title": "(300, 300) のカッコ",
+   "body": "カッコが2つの (300, 300) は「タプル」というもので、あとの #22 で習うよ。今は「よこ300・たて300」と読めばOK。"
+  },
   "appWindow": true
  },
  {
-  "step": 25,
+  "step": 54,
   "unit": 6,
-  "title": "作品：画像加工アプリ（作品6）",
-  "video": null,
-  "fileName": "step25.py",
+  "title": "作品：画像加工アプリ",
+  "fileName": "step54.py",
   "sections": [
    {
     "title": "見本を動かす：ボタンで切りかえ",
@@ -2224,6 +2686,7 @@
     "note": "to_mosaic の中の small の行の 20 を、10 や 40 に変える。モザイクの細かさが変われば合格（数が小さいほど細かい）"
    }
   ],
+  "video": null,
   "learn": [
    "ボタンごとに関数を作ると、いろいろな加工を切りかえられる",
    "開いた画像を original にしまっておくと、もとにもどせる",
@@ -2231,7 +2694,7 @@
    "数を変えて、自分の好きなモザイクにできる"
   ],
   "codeblock": [
-   "31-25"
+   "31-54"
   ],
   "review": {
    "question": "作品6で「もとにもどす」ができるのはなぜ？",
@@ -2243,5 +2706,16 @@
    "answer": 0
   },
   "appWindow": true
+ },
+ {
+  "step": 55,
+  "unit": 6,
+  "title": "アレンジ：ボタンを足す",
+  "fileName": "step55.py",
+  "video": null,
+  "planned": true,
+  "sections": [],
+  "learn": [],
+  "codeblock": []
  }
 ]

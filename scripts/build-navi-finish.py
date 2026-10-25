@@ -1,4 +1,4 @@
-"""Python ナビの「仕上げ5問」31-2〜31-25 を作る（src/data/navi/finishSteps.ts を書き出す）。
+"""Python ナビの「仕上げ5問」（25ステップのころの STEPS を、NEW_STEP で55ステップの番号にして）を作る（src/data/navi/finishSteps.ts を書き出す）。
   python scripts/build-navi-finish.py
 問題を直すときは、このファイルを直して作り直す（finishSteps.ts を手で直さない）。31-1 は finish31.ts に手で書いてある。
 ・形：結果の予想2問・まちがいを直す1問・ならべかえ2問（tkinter・Pillow の回は5問ともクイズ）
@@ -458,6 +458,10 @@ STEPS = {
 
 VIDEO = {2: "#3", 3: "#4", 4: "#5", 5: "#6", 7: "#7", 8: "#8", 9: "#9", 10: "#10", 11: "#11", 12: "#12", 13: "#13",
          14: "#14", 15: "#14", 17: "#15", 18: "#16", 19: "#16.1", 21: "#18", 22: "#19", 23: "#20", 24: "#21"}
+# 55ステップへの組みかえ（2026-10-25）：STEPS の番号（25ステップのころ）→ 仕上げをつける新しいステップ。
+# 前の動画を見出しで分けたステップは、後ろの部分（その動画の内容をぜんぶ見おわったところ）につける
+NEW_STEP = {2: 5, 3: 8, 4: 9, 5: 10, 6: 11, 7: 14, 8: 16, 9: 18, 10: 23, 11: 25, 12: 28, 13: 33, 14: 35, 15: 37,
+            16: 38, 17: 40, 18: 42, 19: 43, 20: 45, 21: 49, 22: 50, 23: 51, 24: 53, 25: 54}
 
 TOKEN = re.compile(r'"[^"]*"|==|!=|>=|<=|=>|\+=|-=|\*=|/=|//|[A-Za-z_][A-Za-z_0-9]*|\d+(?:\.\d+)?|[()\[\],:.+\-*/%=<>×]')
 
@@ -522,9 +526,10 @@ def build():
     k = 0
     for n in sorted(STEPS):
         s = STEPS[n]
-        lid = f"31-{n}"
+        new = NEW_STEP[n]
+        lid = f"31-{new}"
         vid = VIDEO.get(n)
-        lessons.append(dict(id=lid, unitNumber=31, subNumber=n, title=f"ステップ{n}の仕上げ", description=s["desc"],
+        lessons.append(dict(id=lid, unitNumber=31, subNumber=new, title=f"ステップ{new}の仕上げ", description=s["desc"],
                             difficulty="ふつう" if n >= 8 else "かんたん"))
         ms = []
         answers = []
@@ -558,7 +563,7 @@ def build():
                 answers.append(q["code"])
         missions[lid] = ms
         assert all(s["example"].split("  #")[0].strip() not in a for a in answers), (lid, "お手本が答えと同じ")
-        what = (f"動画 {vid} で習ったことを、5問でたしかめます。" if vid else "作品の回で使った書き方を、5問でたしかめます。")
+        what = ("さっきの動画で習ったことを、5問でたしかめます。" if vid else "作品の回で使った書き方を、5問でたしかめます。")
         kinds = ("コードを読んで答えるクイズです。" if s.get("quiz_only")
                  else "結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。")
         tutorials.append(dict(lessonId=lid, characterName="いちか", characterEmoji="🙂", characterImage="/navi/bob_smile.webp",
@@ -604,7 +609,7 @@ if __name__ == "__main__":
     lessons, missions, tutorials = build()
     j = lambda o: json.dumps(o, ensure_ascii=False, indent=2)  # noqa: E731
     OUT.write_text(
-        "// Python ナビの「仕上げ5問」31-2〜31-25（ステップ2〜25）。\n"
+        "// Python ナビの「仕上げ5問」。31-N はステップ N の仕上げ（55ステップ。番号は build-navi-finish.py の NEW_STEP）。\n"
         "// このファイルは scripts/build-navi-finish.py で作る。直すときはそちらを直して作り直す（手で直さない）。\n"
         "// 答えは scripts/build-navi-finish.py --check と scripts/verify-missions.ts で Python を動かして確かめてある。\n"
         'import type { Lesson, Mission } from "@/types";\n'

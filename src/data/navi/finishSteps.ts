@@ -1,4 +1,4 @@
-// Python ナビの「仕上げ5問」31-2〜31-25（ステップ2〜25）。
+// Python ナビの「仕上げ5問」。31-N はステップ N の仕上げ（55ステップ。番号は build-navi-finish.py の NEW_STEP）。
 // このファイルは scripts/build-navi-finish.py で作る。直すときはそちらを直して作り直す（手で直さない）。
 // 答えは scripts/build-navi-finish.py --check と scripts/verify-missions.ts で Python を動かして確かめてある。
 import type { Lesson, Mission } from "@/types";
@@ -6,51 +6,11 @@ import type { LessonTutorial } from "@/data/tutorials";
 
 export const finishStepLessons: Lesson[] = [
   {
-    "id": "31-2",
-    "unitNumber": 31,
-    "subNumber": 2,
-    "title": "ステップ2の仕上げ",
-    "description": "変数（箱）に入れて、計算や表示に使おう",
-    "difficulty": "かんたん"
-  },
-  {
-    "id": "31-3",
-    "unitNumber": 31,
-    "subNumber": 3,
-    "title": "ステップ3の仕上げ",
-    "description": "input で聞いて、答えを計算に使おう",
-    "difficulty": "かんたん"
-  },
-  {
-    "id": "31-4",
-    "unitNumber": 31,
-    "subNumber": 4,
-    "title": "ステップ4の仕上げ",
-    "description": "データ型（文字・数）のちがいと、型をそろえる方法",
-    "difficulty": "かんたん"
-  },
-  {
     "id": "31-5",
     "unitNumber": 31,
     "subNumber": 5,
     "title": "ステップ5の仕上げ",
-    "description": "+= などで、コードを短く書こう",
-    "difficulty": "かんたん"
-  },
-  {
-    "id": "31-6",
-    "unitNumber": 31,
-    "subNumber": 6,
-    "title": "ステップ6の仕上げ",
-    "description": "input・int・str・*= で、自分の計算アプリ",
-    "difficulty": "かんたん"
-  },
-  {
-    "id": "31-7",
-    "unitNumber": 31,
-    "subNumber": 7,
-    "title": "ステップ7の仕上げ",
-    "description": "len で文字数、[ ] で文字の一部を取り出そう",
+    "description": "変数（箱）に入れて、計算や表示に使おう",
     "difficulty": "かんたん"
   },
   {
@@ -58,79 +18,47 @@ export const finishStepLessons: Lesson[] = [
     "unitNumber": 31,
     "subNumber": 8,
     "title": "ステップ8の仕上げ",
-    "description": "if と else で、文字数によって出し方を変えよう",
-    "difficulty": "ふつう"
+    "description": "input で聞いて、答えを計算に使おう",
+    "difficulty": "かんたん"
   },
   {
     "id": "31-9",
     "unitNumber": 31,
     "subNumber": 9,
     "title": "ステップ9の仕上げ",
-    "description": ">=・> のちがいと、elif で条件をふやそう",
-    "difficulty": "ふつう"
+    "description": "データ型（文字・数）のちがいと、型をそろえる方法",
+    "difficulty": "かんたん"
   },
   {
     "id": "31-10",
     "unitNumber": 31,
     "subNumber": 10,
     "title": "ステップ10の仕上げ",
-    "description": "リストと番号、random でおみくじ",
-    "difficulty": "ふつう"
+    "description": "+= などで、コードを短く書こう",
+    "difficulty": "かんたん"
   },
   {
     "id": "31-11",
     "unitNumber": 31,
     "subNumber": 11,
     "title": "ステップ11の仕上げ",
-    "description": "sum・max・sorted と .append( )",
-    "difficulty": "ふつう"
-  },
-  {
-    "id": "31-12",
-    "unitNumber": 31,
-    "subNumber": 12,
-    "title": "ステップ12の仕上げ",
-    "description": "str・int で型をそろえて、足し算アプリ",
-    "difficulty": "ふつう"
-  },
-  {
-    "id": "31-13",
-    "unitNumber": 31,
-    "subNumber": 13,
-    "title": "ステップ13の仕上げ",
-    "description": "for と range でくりかえそう",
-    "difficulty": "ふつう"
+    "description": "input・int・str・*= で、自分の計算アプリ",
+    "difficulty": "かんたん"
   },
   {
     "id": "31-14",
     "unitNumber": 31,
     "subNumber": 14,
     "title": "ステップ14の仕上げ",
-    "description": "for の中に for・for の中に if",
-    "difficulty": "ふつう"
-  },
-  {
-    "id": "31-15",
-    "unitNumber": 31,
-    "subNumber": 15,
-    "title": "ステップ15の仕上げ",
-    "description": "break・continue・while",
-    "difficulty": "ふつう"
+    "description": "len で文字数、[ ] で文字の一部を取り出そう",
+    "difficulty": "かんたん"
   },
   {
     "id": "31-16",
     "unitNumber": 31,
     "subNumber": 16,
     "title": "ステップ16の仕上げ",
-    "description": "and・or と if で、じゃんけんの判定",
-    "difficulty": "ふつう"
-  },
-  {
-    "id": "31-17",
-    "unitNumber": 31,
-    "subNumber": 17,
-    "title": "ステップ17の仕上げ",
-    "description": "def で関数を作って、呼び出そう",
+    "description": "if と else で、文字数によって出し方を変えよう",
     "difficulty": "ふつう"
   },
   {
@@ -138,39 +66,7 @@ export const finishStepLessons: Lesson[] = [
     "unitNumber": 31,
     "subNumber": 18,
     "title": "ステップ18の仕上げ",
-    "description": "引数と return（戻り値）",
-    "difficulty": "ふつう"
-  },
-  {
-    "id": "31-19",
-    "unitNumber": 31,
-    "subNumber": 19,
-    "title": "ステップ19の仕上げ",
-    "description": "引数を2つにした関数",
-    "difficulty": "ふつう"
-  },
-  {
-    "id": "31-20",
-    "unitNumber": 31,
-    "subNumber": 20,
-    "title": "ステップ20の仕上げ",
-    "description": "じゃんけんの判定を judge( ) 関数に",
-    "difficulty": "ふつう"
-  },
-  {
-    "id": "31-21",
-    "unitNumber": 31,
-    "subNumber": 21,
-    "title": "ステップ21の仕上げ",
-    "description": "tkinter で、窓・ラベル・ボタンのアプリ",
-    "difficulty": "ふつう"
-  },
-  {
-    "id": "31-22",
-    "unitNumber": 31,
-    "subNumber": 22,
-    "title": "ステップ22の仕上げ",
-    "description": "ボタンでくじを引く、おみくじアプリ",
+    "description": ">=・> のちがいと、elif で条件をふやそう",
     "difficulty": "ふつう"
   },
   {
@@ -178,15 +74,7 @@ export const finishStepLessons: Lesson[] = [
     "unitNumber": 31,
     "subNumber": 23,
     "title": "ステップ23の仕上げ",
-    "description": "ファイルをえらんで、画像を窓に出すアプリ",
-    "difficulty": "ふつう"
-  },
-  {
-    "id": "31-24",
-    "unitNumber": 31,
-    "subNumber": 24,
-    "title": "ステップ24の仕上げ",
-    "description": "convert と resize で、白黒とモザイク",
+    "description": "リストと番号、random でおみくじ",
     "difficulty": "ふつう"
   },
   {
@@ -194,13 +82,125 @@ export const finishStepLessons: Lesson[] = [
     "unitNumber": 31,
     "subNumber": 25,
     "title": "ステップ25の仕上げ",
+    "description": "sum・max・sorted と .append( )",
+    "difficulty": "ふつう"
+  },
+  {
+    "id": "31-28",
+    "unitNumber": 31,
+    "subNumber": 28,
+    "title": "ステップ28の仕上げ",
+    "description": "str・int で型をそろえて、足し算アプリ",
+    "difficulty": "ふつう"
+  },
+  {
+    "id": "31-33",
+    "unitNumber": 31,
+    "subNumber": 33,
+    "title": "ステップ33の仕上げ",
+    "description": "for と range でくりかえそう",
+    "difficulty": "ふつう"
+  },
+  {
+    "id": "31-35",
+    "unitNumber": 31,
+    "subNumber": 35,
+    "title": "ステップ35の仕上げ",
+    "description": "for の中に for・for の中に if",
+    "difficulty": "ふつう"
+  },
+  {
+    "id": "31-37",
+    "unitNumber": 31,
+    "subNumber": 37,
+    "title": "ステップ37の仕上げ",
+    "description": "break・continue・while",
+    "difficulty": "ふつう"
+  },
+  {
+    "id": "31-38",
+    "unitNumber": 31,
+    "subNumber": 38,
+    "title": "ステップ38の仕上げ",
+    "description": "and・or と if で、じゃんけんの判定",
+    "difficulty": "ふつう"
+  },
+  {
+    "id": "31-40",
+    "unitNumber": 31,
+    "subNumber": 40,
+    "title": "ステップ40の仕上げ",
+    "description": "def で関数を作って、呼び出そう",
+    "difficulty": "ふつう"
+  },
+  {
+    "id": "31-42",
+    "unitNumber": 31,
+    "subNumber": 42,
+    "title": "ステップ42の仕上げ",
+    "description": "引数と return（戻り値）",
+    "difficulty": "ふつう"
+  },
+  {
+    "id": "31-43",
+    "unitNumber": 31,
+    "subNumber": 43,
+    "title": "ステップ43の仕上げ",
+    "description": "引数を2つにした関数",
+    "difficulty": "ふつう"
+  },
+  {
+    "id": "31-45",
+    "unitNumber": 31,
+    "subNumber": 45,
+    "title": "ステップ45の仕上げ",
+    "description": "じゃんけんの判定を judge( ) 関数に",
+    "difficulty": "ふつう"
+  },
+  {
+    "id": "31-49",
+    "unitNumber": 31,
+    "subNumber": 49,
+    "title": "ステップ49の仕上げ",
+    "description": "tkinter で、窓・ラベル・ボタンのアプリ",
+    "difficulty": "ふつう"
+  },
+  {
+    "id": "31-50",
+    "unitNumber": 31,
+    "subNumber": 50,
+    "title": "ステップ50の仕上げ",
+    "description": "ボタンでくじを引く、おみくじアプリ",
+    "difficulty": "ふつう"
+  },
+  {
+    "id": "31-51",
+    "unitNumber": 31,
+    "subNumber": 51,
+    "title": "ステップ51の仕上げ",
+    "description": "ファイルをえらんで、画像を窓に出すアプリ",
+    "difficulty": "ふつう"
+  },
+  {
+    "id": "31-53",
+    "unitNumber": 31,
+    "subNumber": 53,
+    "title": "ステップ53の仕上げ",
+    "description": "convert と resize で、白黒とモザイク",
+    "difficulty": "ふつう"
+  },
+  {
+    "id": "31-54",
+    "unitNumber": 31,
+    "subNumber": 54,
+    "title": "ステップ54の仕上げ",
     "description": "ボタンで切りかえる、画像加工アプリ",
     "difficulty": "ふつう"
   }
 ];
 
 export const finishStepMissions: Record<string, Mission[]> = {
-  "31-2": [
+  "31-5": [
     {
       "id": 1,
       "type": "quiz",
@@ -396,7 +396,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       ]
     }
   ],
-  "31-3": [
+  "31-8": [
     {
       "id": 1,
       "type": "quiz",
@@ -623,7 +623,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       ]
     }
   ],
-  "31-4": [
+  "31-9": [
     {
       "id": 1,
       "type": "quiz",
@@ -807,7 +807,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       ]
     }
   ],
-  "31-5": [
+  "31-10": [
     {
       "id": 1,
       "type": "quiz",
@@ -1009,7 +1009,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       ]
     }
   ],
-  "31-6": [
+  "31-11": [
     {
       "id": 1,
       "type": "quiz",
@@ -1218,7 +1218,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       ]
     }
   ],
-  "31-7": [
+  "31-14": [
     {
       "id": 1,
       "type": "quiz",
@@ -1397,7 +1397,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       ]
     }
   ],
-  "31-8": [
+  "31-16": [
     {
       "id": 1,
       "type": "quiz",
@@ -1654,7 +1654,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       ]
     }
   ],
-  "31-9": [
+  "31-18": [
     {
       "id": 1,
       "type": "quiz",
@@ -1905,7 +1905,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       ]
     }
   ],
-  "31-10": [
+  "31-23": [
     {
       "id": 1,
       "type": "quiz",
@@ -2113,7 +2113,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       ]
     }
   ],
-  "31-11": [
+  "31-25": [
     {
       "id": 1,
       "type": "quiz",
@@ -2292,7 +2292,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       ]
     }
   ],
-  "31-12": [
+  "31-28": [
     {
       "id": 1,
       "type": "quiz",
@@ -2501,7 +2501,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       ]
     }
   ],
-  "31-13": [
+  "31-33": [
     {
       "id": 1,
       "type": "quiz",
@@ -2739,7 +2739,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       ]
     }
   ],
-  "31-14": [
+  "31-35": [
     {
       "id": 1,
       "type": "quiz",
@@ -3006,7 +3006,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       ]
     }
   ],
-  "31-15": [
+  "31-37": [
     {
       "id": 1,
       "type": "quiz",
@@ -3274,7 +3274,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       ]
     }
   ],
-  "31-16": [
+  "31-38": [
     {
       "id": 1,
       "type": "quiz",
@@ -3525,7 +3525,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       ]
     }
   ],
-  "31-17": [
+  "31-40": [
     {
       "id": 1,
       "type": "quiz",
@@ -3739,7 +3739,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       ]
     }
   ],
-  "31-18": [
+  "31-42": [
     {
       "id": 1,
       "type": "quiz",
@@ -3941,7 +3941,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       ]
     }
   ],
-  "31-19": [
+  "31-43": [
     {
       "id": 1,
       "type": "quiz",
@@ -4173,7 +4173,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       ]
     }
   ],
-  "31-20": [
+  "31-45": [
     {
       "id": 1,
       "type": "quiz",
@@ -4435,7 +4435,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       ]
     }
   ],
-  "31-21": [
+  "31-49": [
     {
       "id": 1,
       "type": "quiz",
@@ -4522,7 +4522,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       "availableBlocks": []
     }
   ],
-  "31-22": [
+  "31-50": [
     {
       "id": 1,
       "type": "quiz",
@@ -4609,7 +4609,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       "availableBlocks": []
     }
   ],
-  "31-23": [
+  "31-51": [
     {
       "id": 1,
       "type": "quiz",
@@ -4696,7 +4696,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       "availableBlocks": []
     }
   ],
-  "31-24": [
+  "31-53": [
     {
       "id": 1,
       "type": "quiz",
@@ -4783,7 +4783,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
       "availableBlocks": []
     }
   ],
-  "31-25": [
+  "31-54": [
     {
       "id": 1,
       "type": "quiz",
@@ -4874,14 +4874,14 @@ export const finishStepMissions: Record<string, Mission[]> = {
 
 export const finishStepTutorials: LessonTutorial[] = [
   {
-    "lessonId": "31-2",
+    "lessonId": "31-5",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "動画 #3 で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "hako = 10\nprint(hako)  # 10"
@@ -4890,14 +4890,14 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-3",
+    "lessonId": "31-8",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "動画 #4 で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "name = input(\"名前は？\")\nprint(name)"
@@ -4906,14 +4906,14 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-4",
+    "lessonId": "31-9",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "動画 #5 で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "print(type(10))  # int"
@@ -4922,14 +4922,14 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-5",
+    "lessonId": "31-10",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "動画 #6 で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "y = 1\ny += 1\nprint(y)  # 2"
@@ -4938,7 +4938,7 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-6",
+    "lessonId": "31-11",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
@@ -4954,14 +4954,14 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-7",
+    "lessonId": "31-14",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "動画 #7 で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "word = \"Python\"\nprint(word[0])  # P"
@@ -4970,14 +4970,14 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-8",
+    "lessonId": "31-16",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "動画 #8 で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "if 5 > 3:\n    print(\"5 のほうが大きい\")"
@@ -4986,14 +4986,14 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-9",
+    "lessonId": "31-18",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "動画 #9 で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "score = 90\nif score >= 80:\n    print(\"大変よくできました\")"
@@ -5002,14 +5002,14 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-10",
+    "lessonId": "31-23",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "動画 #10 で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "colors = [\"赤\", \"青\"]\nprint(colors[1])  # 青"
@@ -5018,14 +5018,14 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-11",
+    "lessonId": "31-25",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "動画 #11 で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "nums = [3, 1, 2]\nprint(min(nums))  # 1"
@@ -5034,14 +5034,14 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-12",
+    "lessonId": "31-28",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "動画 #12 で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "a = 2\nprint(str(a) + \"こ\")  # 2こ"
@@ -5050,14 +5050,14 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-13",
+    "lessonId": "31-33",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "動画 #13 で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "for i in range(2):\n    print(\"やあ\")"
@@ -5066,14 +5066,14 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-14",
+    "lessonId": "31-35",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "動画 #14 で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "for i in range(2):\n    for j in range(2):\n        print(i, j)"
@@ -5082,14 +5082,14 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-15",
+    "lessonId": "31-37",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "動画 #14 で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "n = 3\nwhile n > 0:\n    print(n)\n    n -= 1"
@@ -5098,7 +5098,7 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-16",
+    "lessonId": "31-38",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
@@ -5114,14 +5114,14 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-17",
+    "lessonId": "31-40",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "動画 #15 で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "def bye():\n    print(\"またね\")\nbye()"
@@ -5130,14 +5130,14 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-18",
+    "lessonId": "31-42",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "動画 #16 で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "def double(n):\n    return n * 2\nprint(double(4))  # 8"
@@ -5146,14 +5146,14 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-19",
+    "lessonId": "31-43",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "動画 #16.1 で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "def kakeru(a, b):\n    return a * b\nprint(kakeru(2, 5))  # 10"
@@ -5162,7 +5162,7 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-20",
+    "lessonId": "31-45",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
@@ -5178,14 +5178,14 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-21",
+    "lessonId": "31-49",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "動画 #18 で習ったことを、5問でたしかめます。コードを読んで答えるクイズです。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。コードを読んで答えるクイズです。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "root = tk.Tk()\nroot.title(\"はじめての窓\")"
@@ -5194,14 +5194,14 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-22",
+    "lessonId": "31-50",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "動画 #19 で習ったことを、5問でたしかめます。コードを読んで答えるクイズです。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。コードを読んで答えるクイズです。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "root.geometry(\"400x300\")"
@@ -5210,14 +5210,14 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-23",
+    "lessonId": "31-51",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "動画 #20 で習ったことを、5問でたしかめます。コードを読んで答えるクイズです。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。コードを読んで答えるクイズです。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "import tkinter as tk  # 窓を作るモジュール"
@@ -5226,14 +5226,14 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-24",
+    "lessonId": "31-53",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "動画 #21 で習ったことを、5問でたしかめます。コードを読んで答えるクイズです。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。コードを読んで答えるクイズです。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "PIL.Image.open(path).resize((150, 150))"
@@ -5242,7 +5242,7 @@ export const finishStepTutorials: LessonTutorial[] = [
     ]
   },
   {
-    "lessonId": "31-25",
+    "lessonId": "31-54",
     "characterName": "いちか",
     "characterEmoji": "🙂",
     "characterImage": "/navi/bob_smile.webp",
