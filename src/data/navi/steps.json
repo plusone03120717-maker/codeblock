@@ -207,7 +207,7 @@
    },
    {
     "title": "チャレンジ③ 10 たす 20 を 3 でわる",
-    "start": 324,
+    "start": 327,
     "pauseAt": 355,
     "code": "print((10 + 20) / 3)",
     "expected": [
@@ -221,7 +221,7 @@
   ],
   "video": {
    "no": "②",
-   "id": "DqmmylwXGeo",
+   "id": "t6M3cvZ94D8",
    "length": 400,
    "end": 394
   },
@@ -326,7 +326,7 @@
    },
    {
     "title": "チャレンジ③ 9 を 2 でわったあまり",
-    "start": 269,
+    "start": 272,
     "pauseAt": 302,
     "code": "print(9 % 2)",
     "expected": [
@@ -340,7 +340,7 @@
   ],
   "video": {
    "no": "③",
-   "id": "mFws4wKnDIo",
+   "id": "8nsPXCaSpOU",
    "length": 338,
    "end": 331
   },
@@ -449,7 +449,7 @@
   ],
   "video": {
    "no": "④",
-   "id": "3CMHe6WGCLg",
+   "id": "N1Y9oihWEGw",
    "length": 368,
    "end": 361
   },
