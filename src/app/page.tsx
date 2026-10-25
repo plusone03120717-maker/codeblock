@@ -25,6 +25,7 @@ import Footer from "@/components/Footer";
 import { F, FW, FuriganaText } from "@/components/Furigana";
 import { UNIT_COLORS, getUnitGradient, getUnitSolid } from "@/utils/unitColors";
 import { useAuth } from "@/contexts/AuthContext";
+import { isNaviUser } from "@/lib/navi/access";
 import { logout } from "@/lib/auth";
 import ReviewSection from "@/components/ReviewSection";
 import { resetReviewData, getReviewCount } from "@/utils/reviewSystem";
@@ -1323,6 +1324,12 @@ export default function Home() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [selectedLessonNumber, setSelectedLessonNumber] = useState(0);
   const { language } = useLanguage();
+
+  // Python ナビ（新しいコース）を使うアカウントは、ナビのホームへ移る
+  const naviUser = isNaviUser(user?.uid);
+  useEffect(() => {
+    if (naviUser) router.replace("/navi");
+  }, [naviUser, router]);
   
   // すべてのフックを先に宣言（条件分岐の前に）
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
@@ -1602,6 +1609,15 @@ export default function Home() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-purple-600">
         <div className="text-white text-xl">読み込み中...</div>
+      </div>
+    );
+  }
+
+  // Python ナビを使うアカウントは、今までのホームを見せずにナビへ
+  if (naviUser) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f5f3ff]">
+        <div className="text-base font-bold text-[#6d6893]">Python ナビへ移動しています…</div>
       </div>
     );
   }

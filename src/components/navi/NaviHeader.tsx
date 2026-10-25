@@ -1,6 +1,8 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { logout } from '@/lib/auth'
 
 type Props = {
   step: number
@@ -10,6 +12,7 @@ type Props = {
 }
 
 export function NaviHeader({ step, unit, name, onEnd }: Props) {
+  const router = useRouter()
   return (
     <header className="flex h-[68px] items-center gap-7 border-b border-[#e6e1fa] bg-white px-8">
       <Link href="/navi" className="flex items-center gap-2.5 text-xl font-bold">
@@ -37,6 +40,18 @@ export function NaviHeader({ step, unit, name, onEnd }: Props) {
         </button>
       )}
       {name && <div className="text-sm font-bold">{name}</div>}
+      {/* 動画やエディターの画面では出さない（「今日はおわる」とまちがえないように） */}
+      {!onEnd && (
+        <button
+          onClick={async () => {
+            await logout()
+            router.push('/login')
+          }}
+          className="text-[13px] font-bold text-[#6d6893] underline-offset-2 hover:underline"
+        >
+          ログアウト
+        </button>
+      )}
     </header>
   )
 }
