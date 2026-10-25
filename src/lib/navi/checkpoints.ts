@@ -1,5 +1,5 @@
 // 見出しの終わりで動画を止める（チェックポイント）の決まり。
-// ・止める所は「次の見出しが始まる所」。最後の見出しは「最後まで見た」にする秒（video.end）
+// ・止める所は「次の見出しが始まる所」。最後の見出しは「最後まで見た」にする秒（video.end）。pauseAt があればその秒
 // ・「できたら⭐」の見出しでは止めない。クリアの条件にも入れない
 // ・止める所どうしが近いとき（12秒より近い）は、あとの方の1回にまとめる
 import type { NaviStep } from './types'
@@ -12,6 +12,7 @@ export const requiredIndexes = (step: NaviStep) => step.sections.map((_, i) => i
 
 // その見出しのコードが動画で打ち終わる秒
 export function pauseAtOf(step: NaviStep, i: number): number {
+  if (step.sections[i].pauseAt !== undefined) return step.sections[i].pauseAt as number
   const next = step.sections[i + 1]
   return next ? next.start : (step.video?.end ?? Infinity)
 }

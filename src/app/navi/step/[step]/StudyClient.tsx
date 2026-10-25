@@ -92,10 +92,18 @@ export function StudyClient({ step: stepNo }: { step: number }) {
     } else if (++ticks.current % 10 === 0 && furthest > p.videoPos) {
       save({ videoPos: furthest })
     }
-    // 「動画おわり」の板は、最後に着いたときに1回だけ出す（とじたあと、また出ないように）
+    // 「動画おわり」の板は、最後に着いたときに1回だけ出す（とじたあと、また出ないように）。
+    // その秒で止まる見出しがあるときは、止まったところの案内を出すので、板は重ねない（動画が見えなくなるので）
     const prevTick = lastTick.current
     lastTick.current = sec
-    if (reachedEnd && prevTick !== null && prevTick < step.video.end && remainingRequired(p.passed).length > 0) setEndCard(true)
+    if (
+      reachedEnd &&
+      prevTick !== null &&
+      prevTick < step.video.end &&
+      remainingRequired(p.passed).length > 0 &&
+      dueAt(step, sec, p.passed, deferred).length === 0
+    )
+      setEndCard(true)
 
     if (!playing) return
     const prev = lastPlaying.current
