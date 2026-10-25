@@ -1,7 +1,7 @@
 "use client";
 
 // CodeBlock の管理画面（先生の画面）。
-// 「生徒とプラン」は今までの管理画面の機能（人数・検索・プラン変更・進捗管理）をそのまま入れたもの。
+// 「生徒とプラン」は今までの管理画面の機能（人数・検索・プラン変更・進捗管理）をそのまま入れたものに、ユーザーの追加を足した。
 // Python ナビ（新しいコース）の「いまの教室」「苦手」「コースの切りかえ」は、Supabase に移したあとに中身を入れる。
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -11,6 +11,7 @@ import { UserProfile, SubscriptionPlan } from "@/types/user";
 import { getStudentProgress, setStudentProgress, LESSON_STRUCTURE, ALL_LESSON_IDS } from "@/utils/adminProgress";
 import { ProgressData } from "@/lib/progressSync";
 import { isAdminEmail } from "@/utils/admin";
+import { createUserByAdmin } from "@/lib/auth";
 import Link from "next/link";
 
 type Tab = "students" | "classroom" | "weak" | "course";
@@ -83,6 +84,16 @@ export default function AdminPage() {
   const [progressLoading, setProgressLoading] = useState(false);
   const [progressSaving, setProgressSaving] = useState(false);
   const [bulkUpToLesson, setBulkUpToLesson] = useState("");
+
+  // ユーザー追加の窓
+  const [addOpen, setAddOpen] = useState(false);
+  const [newUserId, setNewUserId] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [newDisplayName, setNewDisplayName] = useState("");
+  const [newPlan, setNewPlan] = useState<SubscriptionPlan>("plusone");
+  const [adding, setAdding] = useState(false);
+  const [addError, setAddError] = useState("");
+  const [added, setAdded] = useState<{ userId: string; password: string } | null>(null);
 
   // ログインしていなければログインの画面へ（終わったらここへ戻る）
   useEffect(() => {
@@ -170,6 +181,40 @@ export default function AdminPage() {
     }
   };
 
+  const handleOpenAdd = () => {
+    setNewUserId("");
+    setNewPassword("");
+    setNewDisplayName("");
+    setNewPlan("plusone");
+    setAddError("");
+    setAdded(null);
+    setAddOpen(true);
+  };
+
+  const handleAddUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAddError("");
+    if (newPassword.length < 6) {
+      setAddError("パスワードは6文字以上にしてください");
+      return;
+    }
+    setAdding(true);
+    try {
+      const uid = await createUserByAdmin(newUserId.trim(), newPassword, newDisplayName.trim());
+      if (newPlan !== "free") await changeUserPlan(uid, newPlan);
+      setAdded({ userId: newUserId.trim(), password: newPassword });
+      await loadUsers();
+    } catch (err) {
+      console.error("Error adding user:", err);
+      const { code, message } = err as { code?: string; message?: string };
+      if (code === "auth/email-already-in-use") setAddError("このユーザーIDは既に使われています");
+      else if (code === "auth/weak-password") setAddError("パスワードは6文字以上にしてください");
+      else setAddError(message || "エラーが発生しました");
+    } finally {
+      setAdding(false);
+    }
+  };
+
   if (authLoading || !user) {
     return <div className="grid min-h-screen place-items-center text-sm font-bold text-[#6d6893]">読みこみ中…</div>;
   }
@@ -227,6 +272,12 @@ export default function AdminPage() {
             <div className="flex items-center gap-3.5">
               <h1 className="text-[23px] font-black">生徒とプラン</h1>
               <span className="rounded-full bg-[#efe9ff] px-3 py-0.5 text-[13px] font-bold text-[#7448f0]">プランの変更・進捗の管理</span>
+              <button
+                onClick={handleOpenAdd}
+                className="ml-auto whitespace-nowrap rounded-full bg-[#7448f0] px-5 py-2 text-sm font-black text-white shadow-sm hover:bg-[#6439e0]"
+              >
+                ＋ ユーザーを追加
+              </button>
             </div>
 
             <div className="grid grid-cols-4 gap-3">
@@ -322,6 +373,99 @@ export default function AdminPage() {
           </section>
         )}
       </main>
+
+      {/* ユーザー追加の窓 */}
+      {addOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(42,36,82,.55)] p-4">
+          <div className="w-full max-w-md rounded-[22px] bg-white shadow-xl">
+            <div className="flex items-start justify-between border-b border-[#f0eef7] px-6 py-5">
+              <h2 className="text-xl font-black">＋ ユーザーを追加</h2>
+              <button onClick={() => setAddOpen(false)} className="text-2xl leading-none text-[#9893b5] hover:text-[#2a2452]">
+                ×
+              </button>
+            </div>
+
+            {added ? (
+              <div className="px-6 py-5">
+                <p className="text-[15px] font-black text-[#11845a]">✓ ユーザーを作りました</p>
+                <p className="mt-1 text-[13px] font-bold text-[#6d6893]">生徒には、このユーザーIDとパスワードでログインしてもらいます。</p>
+                <div className="mt-3 rounded-[14px] bg-[#faf9fe] px-4 py-3 text-sm font-bold">
+                  <div>ユーザーID：<span className="select-all font-black">{added.userId}</span></div>
+                  <div className="mt-1">パスワード：<span className="select-all font-black">{added.password}</span></div>
+                </div>
+                <div className="mt-5 flex justify-end gap-3">
+                  <button onClick={handleOpenAdd} className="rounded-full px-5 py-2 text-sm font-bold text-[#6d6893] shadow-[inset_0_0_0_2px_#e6e1fa]">
+                    続けて追加
+                  </button>
+                  <button onClick={() => setAddOpen(false)} className="rounded-full bg-[#7448f0] px-6 py-2 text-sm font-black text-white">
+                    とじる
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleAddUser} className="flex flex-col gap-3.5 px-6 py-5">
+                <label className="text-sm font-bold">
+                  ユーザーID
+                  <input
+                    value={newUserId}
+                    onChange={(e) => setNewUserId(e.target.value)}
+                    required
+                    autoComplete="off"
+                    placeholder="3文字以上・英数字と _"
+                    className="mt-1 w-full rounded-[12px] border border-[#e6e1fa] px-3 py-2 font-bold outline-none focus:ring-2 focus:ring-[#7448f0]"
+                  />
+                </label>
+                <label className="text-sm font-bold">
+                  パスワード
+                  <input
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    autoComplete="new-password"
+                    placeholder="6文字以上"
+                    className="mt-1 w-full rounded-[12px] border border-[#e6e1fa] px-3 py-2 font-bold outline-none focus:ring-2 focus:ring-[#7448f0]"
+                  />
+                </label>
+                <label className="text-sm font-bold">
+                  名前<span className="ml-1 text-xs text-[#9893b5]">（なくてもよい）</span>
+                  <input
+                    value={newDisplayName}
+                    onChange={(e) => setNewDisplayName(e.target.value)}
+                    autoComplete="off"
+                    className="mt-1 w-full rounded-[12px] border border-[#e6e1fa] px-3 py-2 font-bold outline-none focus:ring-2 focus:ring-[#7448f0]"
+                  />
+                </label>
+                <div className="text-sm font-bold">
+                  プラン
+                  <div className="mt-1 flex flex-wrap gap-1.5">
+                    {(["plusone", "free", "monthly", "yearly"] as SubscriptionPlan[]).map((plan) => (
+                      <button
+                        key={plan}
+                        type="button"
+                        onClick={() => setNewPlan(plan)}
+                        className={`rounded-full px-3.5 py-1.5 text-xs font-bold ${
+                          newPlan === plan ? "bg-[#7448f0] text-white" : "bg-[#efe9ff] text-[#7448f0] hover:bg-[#e2d8ff]"
+                        }`}
+                      >
+                        {getPlanLabel(plan)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {addError && <p className="rounded-[12px] bg-[#fdecec] px-3 py-2 text-sm font-bold text-[#c23b3b]">{addError}</p>}
+                <div className="mt-1 flex justify-end gap-3">
+                  <button type="button" onClick={() => setAddOpen(false)} className="rounded-full px-5 py-2 text-sm font-bold text-[#6d6893] shadow-[inset_0_0_0_2px_#e6e1fa]">
+                    キャンセル
+                  </button>
+                  <button type="submit" disabled={adding} className="rounded-full bg-[#7448f0] px-6 py-2 text-sm font-black text-white disabled:opacity-50">
+                    {adding ? "作っています…" : "追加する"}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* 進捗管理の窓 */}
       {progressModalUser && (
