@@ -66,6 +66,9 @@ export function HomeClient() {
   const { user } = useAuth()
   const [state, setState] = useState<NaviState | null>(null)
   const [review, setReview] = useState<{ step: NaviStep; q: NonNullable<NaviStep['review']>; picked: number | null } | null>(null)
+  // おさらいに答えたあとの、いちかのひとこと。「つづきへ」は話しおわってから進む
+  const reviewTalk = useRef<Promise<void> | null>(null)
+  const [leaving, setLeaving] = useState(false)
   const voice = useNaviVoice()
   // 「今日はおわる」からもどってきたとき（?bye=1）は、いちかがねぎらう
   const [bye, setBye] = useState(false)
@@ -365,7 +368,7 @@ export function HomeClient() {
                     disabled={picked}
                     onClick={() => {
                       setReview({ ...review, picked: i })
-                      if (!voice.off) speak(i === review.q.answer ? REVIEW_RIGHT_SPEECH : REVIEW_WRONG_SPEECH)
+                      reviewTalk.current = voice.off ? null : speak(i === review.q.answer ? REVIEW_RIGHT_SPEECH : REVIEW_WRONG_SPEECH)
                     }} className={`rounded-2xl px-4 py-3 text-left text-[16px] font-bold ${cls}`}>
                     {picked && right ? '✔ ' : ''}
                     {c}
@@ -377,15 +380,19 @@ export function HomeClient() {
               <div className="mt-4 flex items-center justify-between">
                 <span className="text-[15px] font-black">{review.picked === review.q.answer ? 'せいかい！ よく覚えていたね' : 'おしい！ 正しいのは ✔ の答えだよ'}</span>
                 <button
-                  onClick={() => {
+                  disabled={leaving}
+                  onClick={async () => {
                     const s = loadNavi()
                     s.reviewAnswered[review.step.step] = true
                     saveNavi(s)
+                    // いちかが話しているあいだは、話しおわってから進む（長くても10秒まで）
+                    setLeaving(true)
+                    if (reviewTalk.current) await Promise.race([reviewTalk.current, new Promise((r) => setTimeout(r, 10000))])
                     router.push(actionHref(step, action))
                   }}
-                  className="h-12 rounded-full bg-[#ff8a1f] px-6 font-black text-white shadow-[0_5px_0_#db6500]"
+                  className="h-12 rounded-full bg-[#ff8a1f] px-6 font-black text-white shadow-[0_5px_0_#db6500] disabled:opacity-70"
                 >
-                  つづきへ ▶
+                  {leaving && voice.speaking ? 'いちかの話をきいてね…' : 'つづきへ ▶'}
                 </button>
               </div>
             )}

@@ -57,6 +57,13 @@ export function useNaviVoice() {
   const flap = useRef<ReturnType<typeof setInterval> | undefined>(undefined)
   const seq = useRef(0)
   const lastText = useRef('')
+  // 話しおわったら（止めた・鳴らせなかったときも）知らせる。speak() が返す Promise をここで解く
+  const finish = useRef<(() => void) | null>(null)
+  const settle = useCallback(() => {
+    const f = finish.current
+    finish.current = null
+    f?.()
+  }, [])
 
   useEffect(() => {
     // 「声オフ」はその PC のブラウザにだけ覚えておく
@@ -83,7 +90,8 @@ export function useNaviVoice() {
     clearInterval(flap.current)
     setSpeaking(false)
     setMouthOpen(false)
-  }, [])
+    settle()
+  }, [settle])
 
   // 口の動き：声の大きさが分かるときはそれで、分からないときは一定の間隔で開け閉めする
   // パクパクしすぎないように、声の大きさをならし、開く・閉じるの境目をずらし、
@@ -118,15 +126,20 @@ export function useNaviVoice() {
     }
   }, [])
 
+  // 話す。返す Promise は、話しおわったとき（止めた・鳴らせなかったときも）に解ける
   const speak = useCallback(
-    async (text: string) => {
+    async (text: string): Promise<void> => {
       lastText.current = text
       stop()
+      const done = new Promise<void>((res) => {
+        finish.current = res
+      })
       const my = ++seq.current
       const blob = await fetchVoice(text)
       if (my !== seq.current) return
       if (!blob) {
         setUnavailable(true)
+        settle()
         return
       }
       if (!audio.current) audio.current = new Audio()
@@ -159,20 +172,23 @@ export function useNaviVoice() {
         clearInterval(flap.current)
         setSpeaking(false)
         setMouthOpen(false)
+        settle()
       }
       try {
         await el.play()
       } catch {
         // 自動で鳴らすのをブラウザが止めた（まだ画面を一度もクリックしていない）
         if (my === seq.current) setBlocked(true)
+        settle()
         return
       }
       if (my !== seq.current) return
       setBlocked(false)
       setSpeaking(true)
       startMouth()
+      return done
     },
-    [stop, startMouth],
+    [stop, startMouth, settle],
   )
 
   // 声オフにしたら止める
