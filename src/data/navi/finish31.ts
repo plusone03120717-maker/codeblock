@@ -1,6 +1,6 @@
 // Python ナビ（新しいコース）の「仕上げ」31-1〜。31-N はステップ N の仕上げ。
 // 動画で習ったことだけを5問で確かめる（今までの 10問のレッスンのかわり。2026-10-25 依頼主と決定）。
-// 形は「結果を予想」「まちがいを直す」「ならべかえ」をまぜる。自分で打つ練習はナビのエディターでやる。
+// 形は「結果を予想」「まちがいを直す」「ならべかえ」をまぜる。選択肢はならびかえされないので、正解の位置は問題ごとに変える。自分で打つ練習はナビのエディターでやる。
 // 今までの生徒のレッスン一覧には出さない（getLesson などで見つかるだけ）。答えは Python で動かして確かめてある。
 import type { Lesson, Mission, WordBlock } from "@/types";
 import type { LessonTutorial } from "@/data/tutorials";
@@ -34,8 +34,8 @@ export const finishMissions: Record<string, Mission[]> = {
       title: "結果を予想しよう",
       description: "このコードを実行すると、何が出る？",
       codeToRead: "print(2 + 3)",
-      choices: ["5", "2 + 3", "エラーになる"],
-      correctAnswer: 0,
+      choices: ["2 + 3", "5", "エラーになる"],
+      correctAnswer: 1,
       expectedOutput: "5",
       hint: "\" \" でかこんであるかな？",
       explanation: "\" \" でかこんでいないので、コンピューターが計算して 5 を出すよ。",
@@ -47,8 +47,8 @@ export const finishMissions: Record<string, Mission[]> = {
       title: "カンマのときは？",
       description: "このコードを実行すると、何が出る？",
       codeToRead: "print(\"おかしは\", 3 * 4)",
-      choices: ["おかしは 12", "おかしは 3 * 4", "おかしは12", "エラーになる"],
-      correctAnswer: 0,
+      choices: ["おかしは 3 * 4", "おかしは12", "おかしは 12", "エラーになる"],
+      correctAnswer: 2,
       expectedOutput: "おかしは 12",
       hint: "3 * 4 は \" \" の外。カンマのところには何が入るかな？",
       explanation: "3 * 4 は計算されて 12。カンマでならべると、あいだにスペースが1つ入るよ。",
@@ -83,6 +83,7 @@ export const finishMissions: Record<string, Mission[]> = {
       expectedOutput: "こたえは 6",
       correctCode: "print(\"こたえは\", 1 + 5)",
       rules: [
+        { forbids: ["\"1 + 5\""], message: "\" \" でかこむと、計算されずに文字のまま出るよ！" },
         { requires: [","], message: "カンマ（,）で、文字と答えをならべよう！" },
         { requires: ["1 + 5"], message: "6 は、1 + 5 の計算で出そう！" },
       ],
@@ -103,7 +104,7 @@ export const finishTutorials: LessonTutorial[] = [
         content: "動画 #2 で習ったことを、5問でたしかめます。結果を予想する問題・エラーを直す問題・ブロックをならべる問題があります。",
         characterMessage: "わからなくなったら、ヒントを見てね。",
         codeExample: {
-          good: "print(\"こたえは\", 1 + 5)  # こたえは 6",
+          good: "print(\"みかんは\", 4 + 4)  # みかんは 8",
         },
       },
     ],

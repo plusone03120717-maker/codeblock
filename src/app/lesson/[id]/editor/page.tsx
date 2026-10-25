@@ -48,7 +48,8 @@ import { CSS } from "@dnd-kit/utilities";
 import { playBlockAddSound, playBlockRemoveSound, playCorrectSound, playIncorrectSound } from "@/utils/sounds";
 import { addToReviewList } from "@/utils/reviewSystem";
 import { generateCode, normalizeCode } from "@/utils/codeGen";
-import { checkAnswer } from "@/utils/answerCheck";
+import { checkAnswer, checkCodeStructure } from "@/utils/answerCheck";
+import { isFinishLesson } from "@/data/navi/finish31";
 import { MissionInfo, GeneratedCode, AnswerExample } from "@/components/MissionInfo";
 
 // ヒント回数管理用の定数と関数
@@ -926,10 +927,14 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       const { output, error } = await executePythonCode(codeToExecute);
       
       if (error) {
-        
+        // ナビの仕上げ（31番台）では、決まりに合わないとき（× を使った など）はやさしい言葉を先に出す
+        const ruleMessage =
+          currentMission && isFinishLesson(lessonId || "")
+            ? checkCodeStructure(lessonId || "", currentMission, code)
+            : null;
         setExecutionResult({
           success: false,
-          error: `エラー: ${error}`,
+          error: ruleMessage ? `${ruleMessage}（エラー: ${error}）` : `エラー: ${error}`,
         });
         playIncorrectSound(); // 不正解音を再生
         

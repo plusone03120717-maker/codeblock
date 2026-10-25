@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getLesson, getNextLesson } from "@/data/lessons";
 import { getTutorial } from "@/data/tutorials";
+import { getLessonMissions } from "@/data/missions";
 import { 
   addXP, 
   calculateLessonCompleteXP, 
@@ -80,6 +81,7 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
   const currentLesson = lessonId ? getLesson(lessonId) : undefined;
   const nextLesson = lessonId ? getNextLesson(lessonId) : undefined;
   const tutorial = lessonId ? getTutorial(lessonId) : undefined;
+  const missionCount = (lessonId ? getLessonMissions(lessonId)?.length : undefined) ?? 10;
   const hasNextLesson = !!nextLesson;
 
   if (!lessonId) {
@@ -279,7 +281,7 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
             <div className="bg-white rounded-xl p-3">
               <div className="text-2xl">✅</div>
               <div className="text-gray-500"><F reading="くりあ">クリア</F></div>
-              <div className="font-bold text-lg text-green-500">10/10</div>
+              <div className="font-bold text-lg text-green-500">{missionCount}/{missionCount}</div>
             </div>
             <div className="bg-white rounded-xl p-3">
               <div className="text-2xl">⭐</div>
