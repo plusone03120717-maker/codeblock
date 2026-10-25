@@ -460,6 +460,24 @@ VIDEO = {2: "#3", 3: "#4", 4: "#5", 5: "#6", 7: "#7", 8: "#8", 9: "#9", 10: "#10
          14: "#14", 15: "#14", 17: "#15", 18: "#16", 19: "#16.1", 21: "#18", 22: "#19", 23: "#20", 24: "#21"}
 # 55ステップへの組みかえ（2026-10-25）：STEPS の番号（25ステップのころ）→ 仕上げをつける新しいステップ。
 # 前の動画を見出しで分けたステップは、後ろの部分（その動画の内容をぜんぶ見おわったところ）につける
+# 55ステップで新しく作った動画の仕上げ（番号は55ステップのまま。動画を作ったら足す）
+FRESH = {
+    2: dict(desc="ひき算・かけ算・わり算と、計算のじゅんばん・かっこ", example="print(9 - 5)  # 4", qs=[
+        Q("どっちが先？", "print(9 - 4 * 2)", "1", ["10", "9 - 4 * 2"],
+          "かけ算と、ひき算。どちらが先に計算されるかな？", "かけ算が先。4 * 2 = 8 を先に計算して、9 - 8 = 1 だよ。"),
+        Q("わり算の答え", "print(8 / 4)", "2.0", ["2", "8 / 4"],
+          "パイソンのわり算の答えには、何がつくかな？", "わり算の答えには .0 がつく。8 / 4 は 2.0 だよ。"),
+        Q("エラーを直そう", "print(3 × 5)", "× を * にする", ["3 と 5 を \" \" でかこむ", "かっこをもう1つ足す"],
+          "× は、パイソンでつかえるかな？", "パイソンのかけ算は * （アスタリスク）。× はつかえないので SyntaxError になるよ。",
+          desc="実行したら「SyntaxError: invalid character '×'」と出た。どう直す？", run=False),
+        B("おつりを出そう", "100円で 30円の あめを買った。おつりを計算して表示しよう！", "print(100 - 30)", "70", extra=["+"],
+          rules=[("req", ["-"], "おつりは、ひき算（-）で出すよ！")]),
+        B("かっこで先に", "4 + 6 を先に計算してから、3 をかけよう！", "print((4 + 6) * 3)", "30", extra=["×"],
+          rules=[("forbids", ["×"], "かけ算は × ではなく、* で書くよ！"),
+                 ("req", ["(4 + 6)"], "先にしたい 4 + 6 を、かっこでかこもう！")]),
+    ]),
+}
+
 NEW_STEP = {2: 5, 3: 8, 4: 9, 5: 10, 6: 11, 7: 14, 8: 16, 9: 18, 10: 23, 11: 25, 12: 28, 13: 33, 14: 35, 15: 37,
             16: 38, 17: 40, 18: 42, 19: 43, 20: 45, 21: 49, 22: 50, 23: 51, 24: 53, 25: 54}
 
@@ -524,13 +542,12 @@ def block(t, i):
 def build():
     lessons, missions, tutorials = [], {}, []
     k = 0
-    for n in sorted(STEPS):
-        s = STEPS[n]
-        new = NEW_STEP[n]
+    # 25ステップのころの仕上げ（NEW_STEP で新しい番号に）と、55ステップで新しく作った仕上げ（FRESH）
+    items = [(NEW_STEP[n], STEPS[n], VIDEO.get(n)) for n in STEPS] + [(n, FRESH[n], True) for n in FRESH]
+    for new, s, vid in sorted(items, key=lambda x: x[0]):
         lid = f"31-{new}"
-        vid = VIDEO.get(n)
         lessons.append(dict(id=lid, unitNumber=31, subNumber=new, title=f"ステップ{new}の仕上げ", description=s["desc"],
-                            difficulty="ふつう" if n >= 8 else "かんたん"))
+                            difficulty="ふつう" if new >= 15 else "かんたん"))
         ms = []
         answers = []
         for j, q in enumerate(s["qs"], 1):
@@ -581,8 +598,8 @@ def run(code):
 
 def check():
     bad = 0
-    for n in sorted(STEPS):
-        for j, q in enumerate(STEPS[n]["qs"], 1):
+    for n, st in [(f"old{k}", STEPS[k]) for k in sorted(STEPS)] + [(k, FRESH[k]) for k in sorted(FRESH)]:
+        for j, q in enumerate(st["qs"], 1):
             tag = f"31-{n}#{j}"
             if q["kind"] == "quiz":
                 if not q["run"]:
