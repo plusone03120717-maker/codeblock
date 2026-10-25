@@ -46,7 +46,8 @@ export function StudyClient({ step: stepNo }: { step: number }) {
   const [hintOpen, setHintOpen] = useState<number | null>(null) // ヒント2段目：動画のコードを見せている見出し
   const [wrong, setWrong] = useState<{ section: number; hint: CodeHint | null } | null>(null) // ヒント3段目
   const [answer, setAnswer] = useState<{ section: number; ok: boolean; error?: string } | null>(null) // チャレンジの「こたえの例」
-  // resume＝このあと動画のつづきを再生する・revealed＝まちがえて「こたえの例」を見て進んだ（「クリア！」とは言わない）
+  // resume＝このあと動画のつづきを再生する・revealed＝まちがえて「こたえの例」をたしかめて進んだ（「クリア！」とは言わない。
+  // 「こたえを見た」は悪いことのように聞こえるので「たしかめた」と言う・2026-10-25 依頼主）
   const [toast, setToast] = useState<{ titles: string[]; optional: boolean; all: boolean; resume: boolean; revealed: boolean } | null>(null)
   const lastPlaying = useRef<number | null>(null) // 再生中に最後に見た秒（飛ばしたかを見る）
   const lastTick = useRef<number | null>(null) // 最後に知らされた秒（止まっていても）
@@ -454,7 +455,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
                     <span className="flex items-center justify-between gap-1 text-xs text-[#6d6893]">
                       {step.video ? fmtTime(sec.start) : `${i + 1}`}
                       {ok && (p.revealed ?? []).includes(i) ? (
-                        <span className="rounded-full bg-[#fff1e3] px-2 text-[11.5px] text-[#a24b00]">こたえを見た</span>
+                        <span className="rounded-full bg-[#fff1e3] px-2 text-[11.5px] text-[#a24b00]">たしかめた</span>
                       ) : ok ? (
                         <span className="rounded-full bg-[#e2f7ec] px-2 text-[11.5px] text-[#11845a]">結果 ✔</span>
                       ) : isNext ? (
@@ -622,7 +623,7 @@ function AnswerCard(props: { section: NaviSection; ok: boolean; revealed: boolea
       <div className="text-[16px] font-black leading-snug text-[#2a2452]">
         {ok
           ? revealed
-            ? `「${section.title}」は、こたえを見て進んだよ`
+            ? `「${section.title}」は、こたえをたしかめて進んだよ`
             : `✔ 正解！「${section.title}」のこたえの例`
           : `おしい！「${section.title}」のこたえの例と、くらべてみよう`}
       </div>
@@ -646,7 +647,7 @@ function AnswerCard(props: { section: NaviSection; ok: boolean; revealed: boolea
         ) : (
           <>
             <button onClick={props.onNext} className={`${btn} bg-[#ff8a1f] text-white shadow-[0_3px_0_#db6500]`}>
-              こたえを見たので次へ ›
+              たしかめたよ！ つぎへ ›
             </button>
             <button onClick={props.onClose} className={`${btn} bg-white text-[#2a2452] shadow-sm`}>
               もう一度やってみる
@@ -766,7 +767,7 @@ function CheckpointPanel(props: {
 // 緑の知らせの文。まちがえて「こたえの例」を見て進んだときは「クリア！」と言わない。つづきを再生するときだけ、そう言う
 function toastText(t: { titles: string[]; all: boolean; resume: boolean; revealed: boolean }): string {
   const names = t.titles.map((x) => `「${x}」`).join('')
-  const head = t.revealed ? `${names}、こたえを見たね。` : `${names}クリア！`
+  const head = t.revealed ? `${names}、こたえをたしかめたね。` : `${names}クリア！`
   if (t.all) return head
   return head + (t.resume ? ' 動画のつづきを再生するよ' : ' つぎへ進もう')
 }
@@ -776,7 +777,7 @@ function ClearToast({ titles, optional, all, revealed }: { titles: string[]; opt
   return (
     <div className="pointer-events-none absolute inset-x-0 top-4 z-10 flex justify-center">
       <div className={`rounded-[20px] px-7 py-4 text-center text-white shadow-[0_12px_30px_rgba(0,0,0,.35)] ${optional ? 'bg-[#e0a100]' : revealed ? 'bg-[#7448f0]' : 'bg-[#22b573]'}`}>
-        <div className="text-[24px] font-black">{all ? '🎉 ぜんぶクリア！' : optional ? '⭐ できたら クリア！' : revealed ? '👀 こたえを見たね' : '✔ 見出しクリア！'}</div>
+        <div className="text-[24px] font-black">{all ? '🎉 ぜんぶクリア！' : optional ? '⭐ できたら クリア！' : revealed ? '📖 たしかめたね！' : '✔ 見出しクリア！'}</div>
         <div className="mt-1 text-[15px] font-bold">{titles.map((t) => `「${t}」`).join('')}</div>
         {all && <div className="mt-1 text-[14px] font-bold">下の「② … に進む」へ</div>}
       </div>
