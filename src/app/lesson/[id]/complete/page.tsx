@@ -18,7 +18,7 @@ import {
 import { F, FW } from "@/components/Furigana";
 import { naviAfterLesson } from "@/lib/navi/progress";
 import { NAVI_STEPS } from "@/data/navi/steps";
-import { naviLessonLabel } from "@/data/navi/finish31";
+import { isFinishLesson, naviLessonLabel } from "@/data/navi/finish31";
 
 type CompletePageProps = {
   params: Promise<{
@@ -139,10 +139,10 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
           <div className="text-center mb-8">
             <div className="text-8xl mb-4">🎉</div>
             <h1 className="text-4xl font-bold text-green-800 mb-4">
-              レッスン<FW word="完了" />！
+              {lessonId && isFinishLesson(lessonId) ? <>仕上げクリア！</> : <>レッスン<FW word="完了" />！</>}
             </h1>
             <h2 className="text-2xl font-semibold text-gray-700 mb-2">
-              レッスン {lessonId}: {currentLesson.title}
+              {lessonId && isFinishLesson(lessonId) ? currentLesson.title : `レッスン ${lessonId}: ${currentLesson.title}`}
             </h2>
             <p className="text-lg text-gray-600">{currentLesson.description}</p>
           </div>
@@ -302,10 +302,12 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
         <div className="bg-white rounded-2xl shadow-lg p-6 border-2 border-purple-200">
           <h3 className="text-xl font-bold text-gray-800 mb-4">レッスン<F reading="じょうほう">情報</F></h3>
           <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-gray-700">レッスンID:</span>
-              <span className="text-gray-600">{lessonId}</span>
-            </div>
+            {!(lessonId && isFinishLesson(lessonId)) && (
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-gray-700">レッスンID:</span>
+                <span className="text-gray-600">{lessonId}</span>
+              </div>
+            )}
             {nextLesson && (
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-gray-700"><F reading="つぎ">次</F>のレッスン:</span>

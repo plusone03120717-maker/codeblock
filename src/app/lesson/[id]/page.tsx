@@ -9,6 +9,7 @@ import { getTutorial } from "@/data/tutorials";
 import { isLessonCompleted } from "@/utils/progress";
 import { F, FW, FuriganaText } from "@/components/Furigana";
 import { useAuth } from "@/contexts/AuthContext";
+import { isFinishLesson } from "@/data/navi/finish31";
 
 type LessonPageProps = {
   params: Promise<{
@@ -182,12 +183,19 @@ export default function LessonPage({ params }: LessonPageProps) {
           </Link>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                レッスン {lessonId}
-              </h1>
-              <h2 className="text-2xl font-semibold text-gray-700">
-                <FuriganaText text={lesson.title} />
-              </h2>
+              {/* ナビの仕上げ（31番台）は番号を出さず「ステップ1の仕上げ」だけ（番号は生徒には意味がないので） */}
+              {isFinishLesson(lesson.id) ? (
+                <h1 className="text-3xl font-bold text-gray-800 mb-2">{lesson.title}</h1>
+              ) : (
+                <>
+                  <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                    レッスン {lessonId}
+                  </h1>
+                  <h2 className="text-2xl font-semibold text-gray-700">
+                    <FuriganaText text={lesson.title} />
+                  </h2>
+                </>
+              )}
             </div>
             {completed && (
               <span className="bg-green-100 text-green-800 px-4 py-2 rounded-full font-semibold">

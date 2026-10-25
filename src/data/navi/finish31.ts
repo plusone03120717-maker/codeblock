@@ -104,7 +104,7 @@ export const finishTutorials: LessonTutorial[] = [
     slides: [
       {
         title: "5問で仕上げよう",
-        content: "動画 #2 で習ったことを、5問でたしかめます。結果を予想する問題・エラーを直す問題・ブロックをならべる問題があります。",
+        content: "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・エラーを直す問題・ブロックをならべる問題があります。",
         characterMessage: "わからなくなったら、ヒントを見てね。",
         codeExample: {
           good: "print(\"みかんは\", 4 + 4)  # みかんは 8",
