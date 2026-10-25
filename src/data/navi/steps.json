@@ -478,46 +478,101 @@
   "fileName": "step05.py",
   "sections": [
    {
-    "title": "台形の面積",
-    "start": 370,
-    "code": "jotei = 5\nkatei = 10\ntakasa = 6\nprint((jotei + katei) * takasa / 2)",
-    "expected": [
-     "45.0"
-    ]
-   },
-   {
-    "title": "変数 menseki で見やすく",
-    "start": 467,
-    "code": "menseki = (jotei + katei) * takasa / 2\nprint(menseki)",
+    "title": "台形の面積を計算",
+    "start": 48,
+    "code": "ue = 5\nshita = 10\ntakasa = 6\nprint((ue + shita) * takasa / 2)",
     "expected": [
      "45.0"
     ],
     "mustUse": [
-     "menseki"
+     "ue",
+     "shita",
+     "takasa"
     ],
-    "note": "前の見出しの print((jotei + katei) * takasa / 2) の行を消して、menseki の行は takasa の下に書く（動画と同じ）"
+    "pauseAt": 117
+   },
+   {
+    "title": "答えを menseki に入れる",
+    "start": 119,
+    "code": "menseki = (ue + shita) * takasa / 2\nprint(menseki)",
+    "expected": [
+     "45.0",
+     "45.0"
+    ],
+    "mustMatch": "menseki\\s*=[\\s\\S]*print\\(\\s*menseki\\s*\\)",
+    "pauseAt": 164
+   },
+   {
+    "title": "上の辺を 8 にかえる",
+    "start": 166,
+    "code": "ue = 8",
+    "expected": [
+     "54.0"
+    ],
+    "mustMatch": "ue\\s*=\\s*8",
+    "pauseAt": 186,
+    "note": "1行目の 5 を 8 に書きかえて実行しよう。54.0 が出ればOK"
+   },
+   {
+    "title": "チャレンジ① 上の辺4・下の辺6・高さ5 の台形",
+    "start": 190,
+    "pauseAt": 261,
+    "code": "ue = 4\nshita = 6\ntakasa = 5\nprint((ue + shita) * takasa / 2)",
+    "expected": [
+     "25.0"
+    ],
+    "mustMatch": "(?=[\\s\\S]*ue\\s*=\\s*4)(?=[\\s\\S]*shita\\s*=\\s*6)(?=[\\s\\S]*takasa\\s*=\\s*5)[\\s\\S]*print\\(\\s*\\(\\s*(ue\\s*\\+\\s*shita|shita\\s*\\+\\s*ue)\\s*\\)\\s*\\*\\s*takasa\\s*/\\s*2\\s*\\)",
+    "challenge": true,
+    "note": "ue・shita・takasa の中身を 4・6・5 にかえて実行しよう。25.0 が出ればOK",
+    "answerNote": "箱の中身をかえるだけで、同じ式で べつの台形の面積が出る。(4 + 6) × 5 ÷ 2 = 25.0"
+   },
+   {
+    "title": "チャレンジ② たて7・よこ9 の長方形",
+    "start": 210,
+    "pauseAt": 261,
+    "code": "tate = 7\nyoko = 9\nmenseki = tate * yoko\nprint(menseki)",
+    "expected": [
+     "63"
+    ],
+    "mustMatch": "(?=[\\s\\S]*tate\\s*=\\s*7)(?=[\\s\\S]*yoko\\s*=\\s*9)[\\s\\S]*menseki\\s*=\\s*(tate\\s*\\*\\s*yoko|yoko\\s*\\*\\s*tate)[\\s\\S]*print\\(\\s*menseki\\s*\\)",
+    "challenge": true,
+    "note": "tate と yoko の箱を作って、面積を menseki に入れて出そう。63 が出ればOK",
+    "answerNote": "menseki = tate * yoko で答えを箱に入れて、print(menseki)。わり算がないので .0 はつかない"
+   },
+   {
+    "title": "チャレンジ③ 底辺8・高さ5 の三角形",
+    "start": 227,
+    "pauseAt": 261,
+    "code": "teihen = 8\ntakasa = 5\nprint(teihen * takasa / 2)",
+    "expected": [
+     "20.0"
+    ],
+    "mustMatch": "(?=[\\s\\S]*teihen\\s*=\\s*8)(?=[\\s\\S]*takasa\\s*=\\s*5)[\\s\\S]*(teihen\\s*\\*\\s*takasa|takasa\\s*\\*\\s*teihen)\\s*/\\s*2",
+    "challenge": true,
+    "note": "teihen と takasa の箱で、底辺 × 高さ ÷ 2 を計算しよう。20.0 が出ればOK",
+    "answerNote": "三角形の面積は 底辺 × 高さ ÷ 2。8 × 5 ÷ 2 = 20.0"
    }
   ],
   "video": {
-   "no": "#3",
-   "id": "R1MUyId2Ftc",
-   "length": 199,
-   "end": 566,
-   "start": 367
+   "no": "⑤",
+   "id": "AbLasB6P6Vc",
+   "length": 297,
+   "end": 291
   },
   "learn": [
-   "かけ算は *、わり算は /。わり算の答えは 45.0 のように .0 がつく",
-   "式を変数に入れると、コードが読みやすくなる"
+   "箱（変数）は、いくつでも作れる。ue・shita・takasa のように名前をつける",
+   "式の答えも、menseki = 式 のように箱に入れられる",
+   "箱の中身をかえるだけで、同じ式でべつの計算がすぐできる"
   ],
   "codeblock": [
    "31-5"
   ],
   "review": {
-   "question": "tate = 10、yoko = 3 のとき、print(tate * yoko) で出るのは？",
+   "question": "ue = 2、shita = 4、takasa = 3 のとき、print((ue + shita) * takasa / 2) で出るのは？",
    "choices": [
-    "13",
-    "30",
-    "tate * yoko"
+    "9",
+    "9.0",
+    "18.0"
    ],
    "answer": 1
   }
