@@ -9,9 +9,12 @@ type Props = {
   unit: number
   name?: string
   onEnd?: () => void
+  active?: 'navi' | 'archive'
 }
 
-export function NaviHeader({ step, unit, name, onEnd }: Props) {
+const tab = (on: boolean) => `whitespace-nowrap rounded-full px-4 py-2 ${on ? 'bg-[#efe9ff] text-[#7448f0]' : 'text-[#6d6893] hover:bg-[#f5f3ff]'}`
+
+export function NaviHeader({ step, unit, name, onEnd, active = 'navi' }: Props) {
   const router = useRouter()
   return (
     <header className="flex h-[68px] items-center gap-7 border-b border-[#e6e1fa] bg-white px-8">
@@ -20,10 +23,13 @@ export function NaviHeader({ step, unit, name, onEnd }: Props) {
         CodeBlock
       </Link>
       <nav className="flex gap-1.5 text-sm font-bold">
-        <Link href="/navi" className="rounded-full bg-[#efe9ff] px-4 py-2 text-[#7448f0]">
+        <Link href="/navi" className={tab(active === 'navi')}>
           Python ナビ
         </Link>
-        <Link href="/review" className="rounded-full px-4 py-2 text-[#6d6893]">
+        <Link href="/navi/archive" className={tab(active === 'archive')}>
+          動画アーカイブ
+        </Link>
+        <Link href="/review" className={tab(false)}>
           ふくしゅう
         </Link>
       </nav>
