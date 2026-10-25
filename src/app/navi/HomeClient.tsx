@@ -19,6 +19,8 @@ import {
   type NextAction,
 } from '@/lib/navi/progress'
 import { useAuth } from '@/contexts/AuthContext'
+import { useNaviVoice } from '@/components/navi/useNaviVoice'
+import { FIRST_TIME_SPEECH, REVIEW_RIGHT_SPEECH, REVIEW_WRONG_SPEECH, returnSpeech } from '@/lib/navi/speech'
 
 // ステップの数（単元ごと）：本編 U1〜U6
 const UNIT_STEPS: Record<number, number[]> = { 1: [1, 2, 3, 4, 5, 6], 2: [7, 8, 9], 3: [10, 11, 12], 4: [13, 14, 15, 16], 5: [17, 18, 19, 20], 6: [21, 22, 23, 24, 25] }
@@ -36,11 +38,25 @@ function actionHref(step: NaviStep, a: NextAction): string {
   return `/navi/step/${step.step}`
 }
 
+// いまのステップ・つぎにやること・はじめてか・おさらいがあるか
+function derive(state: NaviState) {
+  // ステップのデータがまだ無いときは、ある最初のステップへ
+  const step = getNaviStep(state.current) ?? NAVI_STEPS[0]
+  const p = stepProgress(state, step.step)
+  const action = nextAction(step, p)
+  const firstTime = state.sessions.length === 0 && p.videoPos === 0 && p.passed.length === 0
+  const last = state.sessions[state.sessions.length - 1]
+  const lastStep = last ? getNaviStep(last.step) : undefined
+  const needReview = !!lastStep && state.reviewAnswered[last.step] === false
+  return { step, p, action, firstTime, lastStep, needReview }
+}
+
 export function HomeClient() {
   const router = useRouter()
   const { user } = useAuth()
   const [state, setState] = useState<NaviState | null>(null)
   const [review, setReview] = useState<{ step: NaviStep; picked: number | null } | null>(null)
+  const voice = useNaviVoice()
 
   useEffect(() => {
     // ブラウザの保存（localStorage）は表示のあとでしか読めないので、ここで1回だけ入れる
@@ -48,17 +64,20 @@ export function HomeClient() {
     setState(loadNavi())
   }, [])
 
-  if (!state) return null
+  // ナビが声で言う文（吹き出しと同じ中身を、読みまちがえない書き方にしたもの）
+  const d = state ? derive(state) : null
+  const speech = !d ? '' : d.firstTime ? FIRST_TIME_SPEECH : returnSpeech(d.step, d.action, d.p.videoPos, d.needReview)
 
-  // ステップのデータがまだ無いときは、ある最初のステップへ
-  const step = getNaviStep(state.current) ?? NAVI_STEPS[0]
-  const p = stepProgress(state, step.step)
-  const action = nextAction(step, p)
+  // ホームを開いたら、ナビが話す（声オフのときは話さない。オンにもどしたら、もう一度話す）
+  const { ready: voiceReady, off: voiceOff, speak } = voice
+  useEffect(() => {
+    if (speech && voiceReady && !voiceOff) speak(speech)
+  }, [speech, voiceReady, voiceOff, speak])
+
+  if (!state || !d) return null
+
+  const { step, p, action, firstTime, lastStep, needReview } = d
   const name = user?.displayName ?? ''
-  const firstTime = state.sessions.length === 0 && p.videoPos === 0 && p.passed.length === 0
-  const last = state.sessions[state.sessions.length - 1]
-  const lastStep = last ? getNaviStep(last.step) : undefined
-  const needReview = !!lastStep && state.reviewAnswered[last.step] === false
   const completed = codeblockCompleted()
 
   const bubble = firstTime ? (
@@ -75,7 +94,7 @@ export function HomeClient() {
     <>
       おかえり{name && `、${name}さん`}！
       <br />
-      {action.kind === 'video' && step.video ? (
+      {action.kind === 'video' && action.from > 0 && step.video ? (
         <>
           前回は <em className="not-italic text-[#7448f0]">動画 {step.video.no}</em> の{' '}
           <mark className="bg-[linear-gradient(transparent_60%,#ffd23f_60%)]">{fmtTime(p.videoPos)}</mark> でおわりにしたね。
@@ -92,6 +111,7 @@ export function HomeClient() {
   )
 
   const start = () => {
+    voice.stop()
     if (needReview && lastStep) setReview({ step: lastStep, picked: null })
     else router.push(actionHref(step, action))
   }
@@ -108,12 +128,28 @@ export function HomeClient() {
       <NaviHeader step={step.step} unit={step.unit} name={name} />
       <div className="grid min-h-0 flex-1 grid-cols-[440px_1fr] gap-6 px-8 py-6">
         <section className="relative flex flex-col overflow-hidden rounded-[28px] bg-[linear-gradient(180deg,#d6eefb_0%,#eef7fd_70%,#fff_100%)] p-[22px] shadow-sm">
-          <div className="relative z-10 flex items-center justify-between">
+          <div className="relative z-10 flex items-center justify-between gap-2">
             <span className="inline-flex items-center gap-2 rounded-full bg-white py-1 pl-1.5 pr-3.5 text-sm font-black shadow-sm">
               <span className="grid h-6 w-6 place-items-center rounded-full bg-[#ffd23f] text-[15px] font-black text-[#8a6400]">+</span>ナビ
             </span>
+            {!voice.unavailable && <VoiceControls voice={voice} />}
           </div>
-          <Image src="/navi/bob_smile.webp" alt="ナビ" width={520} height={520} unoptimized className="pointer-events-none absolute left-1/2 top-10 w-[520px] max-w-none -translate-x-1/2" priority />
+          {/* 話しているあいだは「ふつう」と「話す」を声の大きさで切りかえる（目の形が同じ2枚）。3枚とも先に読みこんでおく */}
+          {(['smile', 'normal', 'talk'] as const).map((face) => {
+            const show = voice.speaking ? (voice.mouthOpen ? 'talk' : 'normal') : 'smile'
+            return (
+              <Image
+                key={face}
+                src={`/navi/bob_${face}.webp`}
+                alt={face === 'smile' ? 'ナビ' : ''}
+                width={520}
+                height={520}
+                unoptimized
+                priority
+                className={`pointer-events-none absolute left-1/2 top-10 w-[520px] max-w-none -translate-x-1/2 ${show === face ? 'opacity-100' : 'opacity-0'}`}
+              />
+            )
+          })}
           <div className="absolute inset-x-0 bottom-0 z-[1] h-[330px] bg-[linear-gradient(transparent,rgba(255,255,255,.95)_45%)]" />
           <div className="relative z-10 mt-auto rounded-[20px] bg-white px-5 py-4 text-base font-bold leading-[1.75] shadow-sm">{bubble}</div>
         </section>
@@ -237,7 +273,13 @@ export function HomeClient() {
                       ? 'bg-[#fde9e9] text-[#c93c3c]'
                       : 'bg-[#f7f6fc] text-[#9b97b8]'
                 return (
-                  <button key={c} disabled={picked} onClick={() => setReview({ ...review, picked: i })} className={`rounded-2xl px-4 py-3 text-left text-[16px] font-bold ${cls}`}>
+                  <button
+                    key={c}
+                    disabled={picked}
+                    onClick={() => {
+                      setReview({ ...review, picked: i })
+                      if (!voice.off) speak(i === review.step.review.answer ? REVIEW_RIGHT_SPEECH : REVIEW_WRONG_SPEECH)
+                    }} className={`rounded-2xl px-4 py-3 text-left text-[16px] font-bold ${cls}`}>
                     {picked && right ? '✔ ' : ''}
                     {c}
                   </button>
@@ -263,6 +305,37 @@ export function HomeClient() {
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+// 声のボタン：「もう一度きく／とめる」と「声 オン／オフ」。
+// ブラウザが自動で鳴らすのを止めたときは、「ナビの声をきく」を目立たせる
+function VoiceControls({ voice }: { voice: ReturnType<typeof useNaviVoice> }) {
+  const pill = 'inline-flex h-8 items-center gap-1.5 rounded-full px-3.5 text-[13px] font-black shadow-sm'
+  return (
+    <div className="flex items-center gap-2">
+      {!voice.off &&
+        (voice.blocked ? (
+          <button onClick={voice.replay} className={`${pill} animate-pulse bg-[#ff8a1f] text-white`}>
+            🔊 ナビの声をきく
+          </button>
+        ) : voice.speaking ? (
+          <button onClick={voice.stop} className={`${pill} bg-white text-[#2a2452]`}>
+            ■ とめる
+          </button>
+        ) : (
+          <button onClick={voice.replay} className={`${pill} bg-white text-[#2a2452]`}>
+            🔊 もう一度きく
+          </button>
+        ))}
+      <button
+        onClick={voice.toggleOff}
+        aria-pressed={!voice.off}
+        className={`${pill} ${voice.off ? 'bg-white/70 text-[#6d6893]' : 'bg-white text-[#2a2452]'}`}
+      >
+        声 <span className={`rounded-full px-2 py-px text-[12px] ${voice.off ? 'bg-[#ece9f6] text-[#6d6893]' : 'bg-[#22b573] text-white'}`}>{voice.off ? 'オフ' : 'オン'}</span>
+      </button>
     </div>
   )
 }
