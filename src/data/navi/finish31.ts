@@ -1,9 +1,10 @@
-// Python ナビ（新しいコース）の「仕上げ」31-1〜。31-N はステップ N の仕上げ。
+// Python ナビ（新しいコース）の「仕上げ」31-1〜31-25。31-N はステップ N の仕上げ。31-1 はこのファイルに手で書き、31-2〜31-25 は finishSteps.ts（scripts/build-navi-finish.py で作る）。
 // 動画で習ったことだけを5問で確かめる（今までの 10問のレッスンのかわり。2026-10-25 依頼主と決定）。
 // 形は「結果を予想」「まちがいを直す」「ならべかえ」をまぜる。選択肢はならびかえされないので、正解の位置は問題ごとに変える。自分で打つ練習はナビのエディターでやる。
 // 今までの生徒のレッスン一覧には出さない（getLesson などで見つかるだけ）。答えは Python で動かして確かめてある。
 import type { Lesson, Mission, WordBlock } from "@/types";
 import type { LessonTutorial } from "@/data/tutorials";
+import { finishStepLessons, finishStepMissions, finishStepTutorials } from "@/data/navi/finishSteps";
 
 const B = {
   print: { id: "print", text: "print", type: "function", color: "bg-yellow-200" },
@@ -24,6 +25,7 @@ export const finishLessons: Lesson[] = [
     description: "print・計算・\" \"・カンマ・エラーを、5問でたしかめよう",
     difficulty: "かんたん",
   },
+  ...finishStepLessons,
 ];
 
 export const finishMissions: Record<string, Mission[]> = {
@@ -90,6 +92,7 @@ export const finishMissions: Record<string, Mission[]> = {
       availableBlocks: [B.print, B.lp, B.rp, str("こたえは", "kotae"), B.comma, num("1"), op("+", "plus"), num("5"), str("1 + 5", "q15")],
     },
   ],
+  ...finishStepMissions,
 };
 
 export const finishTutorials: LessonTutorial[] = [
@@ -109,6 +112,7 @@ export const finishTutorials: LessonTutorial[] = [
       },
     ],
   },
+  ...finishStepTutorials,
 ];
 
 // ナビの画面での呼び名。仕上げは「仕上げ5問」、ほかは今までどおり「CodeBlock 1-1」
