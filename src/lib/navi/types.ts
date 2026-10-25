@@ -24,6 +24,11 @@ export type NaviSection = {
   mustMatch?: string
   // 出力のどれか1行が合っているべき形（正規表現）。expected のかわりに使う
   outputPattern?: string
+  // チャレンジ：1回実行したら、合っていてもまちがっていても「こたえの例」（code）を見せる。
+  // まちがっていても「こたえを見て次へ」で進める（2026-10-25 依頼主）
+  challenge?: boolean
+  // こたえの例といっしょに出す、ひとことの説明
+  answerNote?: string
 }
 
 export type NaviVideo = {

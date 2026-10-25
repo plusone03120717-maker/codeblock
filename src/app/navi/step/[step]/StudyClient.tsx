@@ -12,6 +12,7 @@ import { getNaviStep } from '@/data/navi/steps'
 import { sectionPassed, studentNote } from '@/lib/navi/judge'
 import { dueAt, isRequired, pauseTimes, requiredIndexes } from '@/lib/navi/checkpoints'
 import { codeHint, type CodeHint } from '@/lib/navi/hint'
+import type { NaviSection } from '@/lib/navi/types'
 import { friendlyError } from '@/lib/navi/friendlyError'
 import { isFinishLesson, naviLessonLabel } from '@/data/navi/finish31'
 import {
@@ -44,6 +45,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
   const [endCard, setEndCard] = useState(false)
   const [hintOpen, setHintOpen] = useState<number | null>(null) // ヒント2段目：動画のコードを見せている見出し
   const [wrong, setWrong] = useState<{ section: number; hint: CodeHint | null } | null>(null) // ヒント3段目
+  const [answer, setAnswer] = useState<{ section: number; ok: boolean; error?: string } | null>(null) // チャレンジの「こたえの例」
   const [toast, setToast] = useState<{ titles: string[]; optional: boolean; all: boolean } | null>(null)
   const lastPlaying = useRef<number | null>(null) // 再生中に最後に見た秒（飛ばしたかを見る）
   const lastTick = useRef<number | null>(null) // 最後に知らされた秒（止まっていても）
@@ -156,9 +158,14 @@ export function StudyClient({ step: stepNo }: { step: number }) {
     step.sections.forEach((sec, i) => {
       if (sec.expectError && i < maxPassed && !p.passed.includes(i) && !newly.includes(i)) newly.push(i)
     })
-    // 合わなかったとき：いま取り組んでいる見出しの、ちがう行を教える（ヒント3段目）
+    // チャレンジ：1回実行したら、合っていてもまちがっていても「こたえの例」を見せる
     const target = focusOf(p.passed)
-    if (target !== null && !newly.includes(target) && reached(target) && !step.sections[target].expectError) {
+    const challengeOk = newly.find((i) => step.sections[i].challenge)
+    if (challengeOk !== undefined) setAnswer({ section: challengeOk, ok: true })
+    else if (target !== null && step.sections[target].challenge && reached(target))
+      setAnswer({ section: target, ok: false, error: r.error ? friendlyError(r.error) : undefined })
+    // 合わなかったとき：いま取り組んでいる見出しの、ちがう行を教える（ヒント3段目。チャレンジはこたえの例を見せるので出さない）
+    if (target !== null && !newly.includes(target) && reached(target) && !step.sections[target].expectError && !step.sections[target].challenge) {
       const sec = step.sections[target]
       const guessed = (sec.note ?? '').includes('推測')
       const main = Object.keys(p.files)[0]
@@ -172,9 +179,15 @@ export function StudyClient({ step: stepNo }: { step: number }) {
             : codeHint(sec, p.files[main] ?? ''),
       })
     }
-    if (newly.length > 0) {
+    if (newly.length > 0) applyPassed(newly, target)
+  }
+
+  // 見出しを合格にする（結果が合ったとき・チャレンジで「こたえを見て次へ」を押したとき）
+  const applyPassed = (newly: number[], target: number | null, patch: Partial<StepProgress> = {}) => {
+    if (!step || !p) return
+    {
       const passed = [...p.passed, ...newly]
-      save({ passed })
+      save({ passed, ...patch })
       setPassedToday((prev) => [...prev, ...newly])
       if (target !== null && newly.includes(target)) {
         setWrong(null)
@@ -342,6 +355,20 @@ export function StudyClient({ step: stepNo }: { step: number }) {
                 </div>
               </div>
             )}
+            {answer && !showEndCard && (
+              <AnswerCard
+                section={step.sections[answer.section]}
+                ok={answer.ok || p.passed.includes(answer.section)}
+                revealed={(p.revealed ?? []).includes(answer.section)}
+                error={answer.error}
+                onNext={() => {
+                  const i = answer.section
+                  setAnswer(null)
+                  if (!p.passed.includes(i)) applyPassed([i], i, { revealed: [...(p.revealed ?? []), i] })
+                }}
+                onClose={() => setAnswer(null)}
+              />
+            )}
             {focus !== null && !showEndCard && (
               <CheckpointPanel
                 title={step.sections[focus].title}
@@ -396,7 +423,9 @@ export function StudyClient({ step: stepNo }: { step: number }) {
                   >
                     <span className="flex items-center justify-between gap-1 text-xs text-[#6d6893]">
                       {step.video ? fmtTime(sec.start) : `${i + 1}`}
-                      {ok ? (
+                      {ok && (p.revealed ?? []).includes(i) ? (
+                        <span className="rounded-full bg-[#fff1e3] px-2 text-[11.5px] text-[#a24b00]">こたえを見た</span>
+                      ) : ok ? (
                         <span className="rounded-full bg-[#e2f7ec] px-2 text-[11.5px] text-[#11845a]">結果 ✔</span>
                       ) : isNext ? (
                         <span className="rounded-full bg-[#ffd23f] px-2 text-[11.5px] text-[#5c4200]">いまここ</span>
@@ -545,6 +574,60 @@ export function StudyClient({ step: stepNo }: { step: number }) {
 }
 
 // 止まったところ・動画のあとの案内（動画の下に出す。動画の画面のコードは見えたまま）
+// チャレンジの「こたえの例」。合っていたら確かめに、まちがっていたら見くらべて「こたえを見て次へ」で進める
+function AnswerCard(props: { section: NaviSection; ok: boolean; revealed: boolean; error?: string; onNext: () => void; onClose: () => void }) {
+  const { section, ok, revealed, error } = props
+  const btn = 'whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13.5px] font-black'
+  const box = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    box.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+  }, [section, ok])
+  return (
+    <div
+      ref={box}
+      className={`mx-1.5 flex flex-none flex-col gap-2.5 rounded-[18px] px-5 py-3.5 ${
+        ok ? 'bg-[#eefaf3] shadow-[0_0_0_2px_#5fd39a]' : 'bg-[#fff6ec] shadow-[0_0_0_2px_#ffb27a]'
+      }`}
+    >
+      <div className="text-[16px] font-black leading-snug text-[#2a2452]">
+        {ok
+          ? revealed
+            ? `「${section.title}」は、こたえを見て進んだよ`
+            : `✔ 正解！「${section.title}」のこたえの例`
+          : `おしい！「${section.title}」のこたえの例と、くらべてみよう`}
+      </div>
+      {!ok && error && (
+        // 前のチャレンジのまちがいが残っていると、ここでエラーになる。どの行かを見せる
+        <div className="rounded-xl bg-white px-3.5 py-2 text-[14px] font-bold leading-relaxed text-[#2a2452] shadow-[inset_0_0_0_2px_#ffb27a]">
+          <b className="text-[#c93c3c]">エラーが出ているよ。</b>
+          {error}
+        </div>
+      )}
+      <div className="rounded-xl bg-[#23203b] px-4 py-3">
+        <div className="mb-1 text-[12px] font-bold text-[#b8b3d8]">こたえの例</div>
+        <pre className="overflow-x-auto font-mono text-[17px] leading-[1.7] text-[#f4f2ff]">{section.code}</pre>
+      </div>
+      {section.answerNote && <div className="text-[14px] font-bold leading-relaxed text-[#2a2452]">💡 {section.answerNote}</div>}
+      <div className="flex flex-wrap items-center gap-2">
+        {ok ? (
+          <button onClick={props.onClose} className={`${btn} bg-white text-[#2a2452] shadow-sm`}>
+            とじる
+          </button>
+        ) : (
+          <>
+            <button onClick={props.onNext} className={`${btn} bg-[#ff8a1f] text-white shadow-[0_3px_0_#db6500]`}>
+              こたえを見たので次へ ›
+            </button>
+            <button onClick={props.onClose} className={`${btn} bg-white text-[#2a2452] shadow-sm`}>
+              もう一度やってみる
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function CheckpointPanel(props: {
   title: string
   mode: 'pause' | 'jump' | 'todo'
