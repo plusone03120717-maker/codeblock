@@ -8,18 +8,17 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   User,
+  getAuth,
 } from "firebase/auth";
-import { doc, setDoc, getDoc, updateDoc, deleteDoc, Timestamp } from "firebase/firestore";
-import { auth, db } from "./firebase";
+import { initializeApp, deleteApp } from "firebase/app";
+import { doc, setDoc, getDoc, updateDoc, deleteDoc, Timestamp, getFirestore } from "firebase/firestore";
+import app, { auth, db } from "./firebase";
 
 const usernameToEmail = (username: string): string => {
   return `${username.toLowerCase()}@codeblock.local`;
 };
 
-export const registerWithUsername = async (
-  userId: string,
-  password: string
-): Promise<User> => {
+const validateUserId = async (userId: string): Promise<void> => {
   if (userId.length < 3) {
     throw new Error("ユーザーIDは3文字以上にしてください");
   }
@@ -31,42 +30,77 @@ export const registerWithUsername = async (
   if (userIdDoc.exists()) {
     throw new Error("このユーザーIDは既に使われています");
   }
+};
+
+// 新規ユーザーの初期データ
+const initialUsernameUserData = (userId: string, displayName = "") => ({
+  userId: userId,
+  displayName,
+  createdAt: new Date(),
+  xp: 0,
+  level: 1,
+  // 実績関連フィールド
+  achievements: [],
+  pendingAchievements: [],
+  lessonsCompleted: [],
+  lessonCompleteCounts: {},
+  totalCorrect: 0,
+  streakDays: 0,
+  lastStudyDate: null,
+  consecutiveCorrect: 0,
+  maxConsecutiveCorrect: 0,
+  noMistakeLessons: [],
+  noHintLessons: [],
+  fastLessons: [],
+  studiedOnWeekend: false,
+  studiedEarly: false,
+});
+
+export const registerWithUsername = async (
+  userId: string,
+  password: string
+): Promise<User> => {
+  await validateUserId(userId);
 
   const email = usernameToEmail(userId);
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
   const user = userCredential.user;
 
-  // 新規ユーザーの初期データ
-  const initialUserData = {
-    userId: userId,
-    displayName: "",
-    createdAt: new Date(),
-    xp: 0,
-    level: 1,
-    // 実績関連フィールド
-    achievements: [],
-    pendingAchievements: [],
-    lessonsCompleted: [],
-    lessonCompleteCounts: {},
-    totalCorrect: 0,
-    streakDays: 0,
-    lastStudyDate: null,
-    consecutiveCorrect: 0,
-    maxConsecutiveCorrect: 0,
-    noMistakeLessons: [],
-    noHintLessons: [],
-    fastLessons: [],
-    studiedOnWeekend: false,
-    studiedEarly: false,
-  };
-  
-  await setDoc(doc(db, "users", user.uid), initialUserData);
+  await setDoc(doc(db, "users", user.uid), initialUsernameUserData(userId));
 
   await setDoc(doc(db, "userIds", userId.toLowerCase()), {
     uid: user.uid,
   });
 
   return user;
+};
+
+// 管理画面から生徒のアカウントを作る。
+// ふつうに作ると作った人（先生）が新しい生徒でログインし直してしまうので、
+// 別の Firebase アプリ（ログインを共有しない）で作り、終わったらそちらだけログアウトする。
+// users・userIds は新しい生徒本人として書くので firestore.rules はそのままでよい。
+export const createUserByAdmin = async (
+  userId: string,
+  password: string,
+  displayName: string
+): Promise<string> => {
+  await validateUserId(userId);
+
+  const secondaryApp = initializeApp(app.options, `admin-create-${Date.now()}`);
+  const secondaryAuth = getAuth(secondaryApp);
+  const secondaryDb = getFirestore(secondaryApp);
+  try {
+    const userCredential = await createUserWithEmailAndPassword(secondaryAuth, usernameToEmail(userId), password);
+    const uid = userCredential.user.uid;
+
+    await setDoc(doc(secondaryDb, "users", uid), initialUsernameUserData(userId, displayName));
+    await setDoc(doc(secondaryDb, "userIds", userId.toLowerCase()), { uid });
+
+    return uid;
+  } finally {
+    await signOut(secondaryAuth).catch(() => {});
+    await deleteApp(secondaryApp).catch(() => {});
+  }
 };
 
 export const loginWithUsername = async (
