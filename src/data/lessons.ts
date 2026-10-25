@@ -1,4 +1,5 @@
 import { naviLessons } from "@/data/navi/lessons21"
+import { finishLessons } from "@/data/navi/finish31"
 export interface Lesson {
   id: string           // "1-1", "1-2" のような形式
   unitNumber: number   // ユニット番号（1, 2, 3...）
@@ -435,9 +436,9 @@ export const lessons: Lesson[] = [
   },
 ]
 
-// レッスンIDでレッスンを取得（Python ナビ専用の 21番台も見つける。一覧の lessons には入れない）
+// レッスンIDでレッスンを取得（Python ナビ専用の 21番台・仕上げの 31番台も見つける。一覧の lessons には入れない）
 export function getLesson(id: string): Lesson | undefined {
-  return lessons.find(l => l.id === id) ?? naviLessons.find(l => l.id === id)
+  return lessons.find(l => l.id === id) ?? naviLessons.find(l => l.id === id) ?? finishLessons.find(l => l.id === id)
 }
 
 // 次のレッスンを取得

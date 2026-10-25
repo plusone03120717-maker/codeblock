@@ -17,6 +17,7 @@ import {
 import { F, FW } from "@/components/Furigana";
 import { naviAfterLesson } from "@/lib/navi/progress";
 import { NAVI_STEPS } from "@/data/navi/steps";
+import { naviLessonLabel } from "@/data/navi/finish31";
 
 type CompletePageProps = {
   params: Promise<{
@@ -234,7 +235,7 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
                   onClick={() => router.push(`/lesson/${navi.next}`)}
                   className="bg-gradient-to-r from-green-300 to-emerald-400 hover:from-green-400 hover:to-emerald-500 text-white px-8 py-3 rounded-full text-lg font-bold shadow-lg hover:shadow-xl transition-all"
                 >
-                  つぎは CodeBlock {navi.next} →
+                  つぎは {naviLessonLabel(navi.next)} →
                 </button>
               ) : (
                 <button

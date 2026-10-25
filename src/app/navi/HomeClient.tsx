@@ -20,6 +20,7 @@ import {
 } from '@/lib/navi/progress'
 import { useAuth } from '@/contexts/AuthContext'
 import { useNaviVoice } from '@/components/navi/useNaviVoice'
+import { naviLessonLabel } from '@/data/navi/finish31'
 import { FIRST_TIME_SPEECH, REVIEW_RIGHT_SPEECH, REVIEW_WRONG_SPEECH, returnSpeech } from '@/lib/navi/speech'
 
 // ステップの数（単元ごと）：本編 U1〜U6
@@ -28,7 +29,7 @@ const UNIT_STEPS: Record<number, number[]> = { 1: [1, 2, 3, 4, 5, 6], 2: [7, 8, 
 function actionTitle(step: NaviStep, a: NextAction): string {
   if (a.kind === 'video') return a.from > 0 ? `動画 ${step.video?.no} を ${fmtTime(resumeFrom(a.from))} から` : `動画 ${step.video?.no} を見ながら打とう`
   if (a.kind === 'section') return `「${step.sections[a.index].title}」の結果を出そう`
-  if (a.kind === 'codeblock') return a.mission > 0 ? `CodeBlock ${a.lessonId} の ${a.mission + 1}問目から` : `CodeBlock ${a.lessonId} をやろう`
+  if (a.kind === 'codeblock') return a.mission > 0 ? `${naviLessonLabel(a.lessonId)} の ${a.mission + 1}問目から` : `${naviLessonLabel(a.lessonId)} をやろう`
   return 'つぎのステップへ'
 }
 
@@ -122,7 +123,7 @@ export function HomeClient() {
   const after: string[] = []
   if (action.kind === 'video' && sectionsLeft.length > 0) after.push(`「${sectionsLeft[sectionsLeft.length - 1].title}」までの結果を出す`)
   const lessonsLeft = step.codeblock.filter((id) => !completed.includes(id))
-  if (action.kind !== 'codeblock' && lessonsLeft.length > 0) after.push(`CodeBlock ${lessonsLeft.join('・')}`)
+  if (action.kind !== 'codeblock' && lessonsLeft.length > 0) after.push(lessonsLeft.map(naviLessonLabel).join('・'))
   after.push(`ステップ${step.step + 1} へ`)
 
   return (
