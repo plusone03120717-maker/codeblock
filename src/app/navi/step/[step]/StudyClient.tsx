@@ -149,12 +149,12 @@ export function StudyClient({ step: stepNo }: { step: number }) {
   const action = nextAction(step, p)
   const nextText =
     action.kind === 'video'
-      ? `おさらい1問 → 動画の ${fmtTime(resumeFrom(p.videoPos))} から（10秒もどして）つづき。ホームでナビが案内するよ`
+      ? `おさらい1問 → 動画の ${fmtTime(resumeFrom(p.videoPos))} から（10秒もどして）つづき。ホームでいちかが案内するよ`
       : action.kind === 'section'
-        ? `おさらい1問 → 「${step.sections[action.index].title}」の結果を出すところから。ホームでナビが案内するよ`
+        ? `おさらい1問 → 「${step.sections[action.index].title}」の結果を出すところから。ホームでいちかが案内するよ`
         : action.kind === 'codeblock'
-          ? `おさらい1問 → CodeBlock ${action.lessonId} から。ホームでナビが案内するよ`
-          : 'つぎのステップから。ホームでナビが案内するよ'
+          ? `おさらい1問 → CodeBlock ${action.lessonId} から。ホームでいちかが案内するよ`
+          : 'つぎのステップから。ホームでいちかが案内するよ'
 
   return (
     <div className="flex h-screen flex-col">

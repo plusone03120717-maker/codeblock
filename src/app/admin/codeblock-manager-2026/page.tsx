@@ -34,7 +34,7 @@ const SOON_TEXT: Record<Exclude<Tab, "students">, { title: string; body: string[
   weak: {
     title: "苦手（Python ナビ）",
     body: [
-      "生徒ごとの苦手（動画の巻き戻し・エディターのエラー・CodeBlock のまちがい・ナビへの質問から）と声かけの例、みんながつまずいているところを見る画面です。",
+      "生徒ごとの苦手（動画の巻き戻し・エディターのエラー・CodeBlock のまちがい・いちか（ナビ）への質問から）と声かけの例、みんながつまずいているところを見る画面です。",
       "生徒の進み具合を Supabase に記録するようになってから使えます。",
     ],
   },
@@ -42,7 +42,7 @@ const SOON_TEXT: Record<Exclude<Tab, "students">, { title: string; body: string[
     title: "コースの切りかえ（Python ナビ）",
     body: [
       "生徒ごとに「新しいコース（Python ナビ）」をオンにする画面です。押しまちがえないように、確かめの画面つきにします。",
-      "今までのコースの生徒には、ナビは出ません。",
+      "今までのコースの生徒には、いちか（ナビ）は出ません。",
       "Supabase に移したあとに使えます。",
     ],
   },
