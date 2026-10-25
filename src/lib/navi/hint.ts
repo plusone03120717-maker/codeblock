@@ -4,6 +4,8 @@ import type { NaviSection } from './types'
 export type CodeHint =
   | { kind: 'missing'; want: string }
   | { kind: 'differs'; line: number; want: string; got: string; tip: string }
+  // エラーが出たときは、まずエラーの行を直す（見くらべより先）
+  | { kind: 'error'; line: number | null; text: string }
 
 const noSpace = (s: string) => s.replace(/\s+/g, '')
 const indentOf = (s: string) => s.match(/^\s*/)?.[0].replace(/\t/g, '    ').length ?? 0
