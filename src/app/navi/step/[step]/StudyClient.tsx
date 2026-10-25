@@ -12,6 +12,7 @@ import { getNaviStep } from '@/data/navi/steps'
 import { sectionPassed, studentNote } from '@/lib/navi/judge'
 import { dueAt, isRequired, pauseTimes, requiredIndexes } from '@/lib/navi/checkpoints'
 import { codeHint, type CodeHint } from '@/lib/navi/hint'
+import { friendlyError } from '@/lib/navi/friendlyError'
 import {
   codeblockCompleted,
   fmtTime,
@@ -148,7 +149,15 @@ export function StudyClient({ step: stepNo }: { step: number }) {
       const sec = step.sections[target]
       const guessed = (sec.note ?? '').includes('推測')
       const main = Object.keys(p.files)[0]
-      setWrong({ section: target, hint: guessed ? null : codeHint(sec, p.files[main] ?? '') })
+      const err = r.error
+      setWrong({
+        section: target,
+        hint: err
+          ? { kind: 'error', line: err.file && !err.file.endsWith(main) ? null : err.line, text: friendlyError(err) }
+          : guessed
+            ? null
+            : codeHint(sec, p.files[main] ?? ''),
+      })
     }
     if (newly.length > 0) {
       const passed = [...p.passed, ...newly]
@@ -309,6 +318,15 @@ export function StudyClient({ step: stepNo }: { step: number }) {
               </div>
             )}
 
+            {focus === null && toast && !toast.optional && !showEndCard && (
+              // 止まっていた見出しをぜんぶクリアしたとき（このあと動画のつづきへ）
+              <div className="flex flex-none items-center gap-3 rounded-[18px] bg-[#22b573] px-5 py-3.5 text-white shadow-sm">
+                <span className="text-[26px]">✔</span>
+                <div className="text-[17px] font-black">
+                  {toast.titles.map((t) => `「${t}」`).join('')}クリア！{cp && !toast.all ? ' 動画のつづきを再生するよ' : ''}
+                </div>
+              </div>
+            )}
             {focus !== null && !showEndCard && (
               <CheckpointPanel
                 title={step.sections[focus].title}
@@ -317,7 +335,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
                 code={hintOpen === focus ? step.sections[focus].code : null}
                 guessed={(step.sections[focus].note ?? '').includes('推測')}
                 wrong={wrong?.section === focus ? wrong : null}
-                passedNow={!!toast && !toast.optional}
+                passedTitles={toast && !toast.optional ? toast.titles : null}
                 onRewind={() => {
                   if (!step.video) return
                   // 止まっているときは10秒もどす（またここで止まる）。動画のあとは、その見出しの場面から
@@ -412,7 +430,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
               banner={banner}
               highlight={focus !== null && cp?.mode !== 'jump'}
               inputsHint={inputsHint}
-              markLine={wrong?.hint?.kind === 'differs' ? wrong.hint.line : null}
+              markLine={wrong?.hint?.kind === 'differs' || wrong?.hint?.kind === 'error' ? wrong.hint.line : null}
               overlay={toast && <ClearToast titles={toast.titles} optional={toast.optional} all={toast.all} />}
               onFocus={() => player.current?.pause()}
               onFilesChange={(files) => {
@@ -519,24 +537,26 @@ function CheckpointPanel(props: {
   code: string | null
   guessed: boolean
   wrong: { hint: CodeHint | null } | null
-  passedNow: boolean
+  passedTitles: string[] | null // いまクリアした見出し（緑で出す）
   onRewind: () => void
   onHint: () => void
   onLater: () => void
   onBack: () => void
 }) {
-  const { title, mode, hasVideo, code, guessed, wrong, passedNow } = props
+  const { title, mode, hasVideo, code, guessed, wrong, passedTitles } = props
   const btn = 'whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13.5px] font-black'
   // 中身が変わったら、案内がまるごと見えるところまで左の列をスクロールする
   const box = useRef<HTMLDivElement>(null)
   useEffect(() => {
     box.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
-  }, [mode, code, wrong, passedNow])
-  if (passedNow) {
+  }, [mode, code, wrong, passedTitles])
+  if (passedTitles) {
     return (
       <div ref={box} className="flex flex-none items-center gap-3 rounded-[18px] bg-[#22b573] px-5 py-3.5 text-white shadow-sm">
         <span className="text-[26px]">✔</span>
-        <div className="text-[17px] font-black">「{title}」クリア！{mode === 'pause' ? ' 動画のつづきを再生するよ' : ''}</div>
+        <div className="text-[17px] font-black">
+          {passedTitles.map((t) => `「${t}」`).join('')}クリア！{mode === 'pause' ? ' 動画のつづきを再生するよ' : ''}
+        </div>
       </div>
     )
   }
@@ -562,7 +582,13 @@ function CheckpointPanel(props: {
       </div>
       {wrong && (
         <div className="rounded-xl bg-white px-3.5 py-2 text-[14px] font-bold leading-relaxed text-[#2a2452] shadow-[inset_0_0_0_2px_#ffb27a]">
-          {wrong.hint === null ? (
+          {wrong.hint?.kind === 'error' ? (
+            <>
+              <b className="text-[#c93c3c]">エラーが出ているよ。</b>
+              {wrong.hint.text}
+              {wrong.hint.line ? <span className="text-[#6d6893]">（色のついた行）</span> : null}
+            </>
+          ) : wrong.hint === null ? (
             <>まだ{hasVideo ? '動画' : '見本'}と同じ結果じゃないみたい。「💡 ヒント」のコードと見くらべてみよう</>
           ) : wrong.hint.kind === 'differs' ? (
             <>
