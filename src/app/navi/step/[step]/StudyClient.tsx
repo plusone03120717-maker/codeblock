@@ -305,7 +305,12 @@ export function StudyClient({ step: stepNo }: { step: number }) {
 
   return (
     <div className="flex h-screen flex-col">
-      <NaviHeader step={step.step} unit={step.unit} onEnd={() => setEnding(true)} />
+      <NaviHeader step={step.step} unit={step.unit} onEnd={() => {
+          // 「今日はおわる」を押したら、再生中の動画も止める
+          player.current?.pause()
+          setEnding(true)
+        }}
+      />
       <div className="flex min-h-0 flex-1 flex-col gap-3.5 px-8 pb-5 pt-[18px]">
         <div className="flex flex-none items-center justify-between">
           <div className="flex items-center gap-2 text-sm font-bold">
@@ -596,7 +601,8 @@ export function StudyClient({ step: stepNo }: { step: number }) {
             state.sessions.push({ at: Date.now(), step: stepNo, learned: learnedToday, xp: learnedToday.length * XP_PER_SECTION })
             state.reviewAnswered[stepNo] = false
             saveNavi(state)
-            router.push('/navi')
+            // ホームで、いちかが「おつかれさま」を言う
+            router.push('/navi?bye=1')
           }}
         />
       )}
