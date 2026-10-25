@@ -18,6 +18,12 @@ export type NaviSection = {
   expectError?: boolean
   // 「できたら⭐」の見出し（わざとエラーを出す・動画にない練習）。動画は止まらず、クリアの条件にも入らない
   optional?: boolean
+  // 動画を止める秒（ふつうは次の見出しの始まり。チャレンジのように、説明を聞きおわってから止めたいとき）
+  pauseAt?: number
+  // コードに合っているべき形（正規表現）。答えが人によってちがう見出し（自分の名前など）で使う
+  mustMatch?: string
+  // 出力のどれか1行が合っているべき形（正規表現）。expected のかわりに使う
+  outputPattern?: string
 }
 
 export type NaviVideo = {

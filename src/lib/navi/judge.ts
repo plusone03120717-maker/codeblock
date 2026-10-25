@@ -24,6 +24,12 @@ function outputMatches(expected: string[], output: string): boolean {
 export function sectionPassed(section: NaviSection, run: { ok: boolean; output: string }, code: string): boolean {
   if (section.expectError) return !run.ok
   if (!usesAll(section, code)) return false
+  // 答えが人によってちがう見出し（チャレンジなど）：書き方の形と、出力の1行の形で見る
+  if (section.mustMatch && !new RegExp(section.mustMatch, 'm').test(code)) return false
+  if (section.outputPattern) {
+    const re = new RegExp(section.outputPattern)
+    return run.ok && norm(run.output).split('\n').some((l) => re.test(l.trim()))
+  }
   if (section.expected.length === 0) return run.ok
   return run.ok && outputMatches(section.expected, run.output)
 }
