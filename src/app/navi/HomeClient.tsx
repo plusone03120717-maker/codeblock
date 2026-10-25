@@ -116,7 +116,9 @@ export function HomeClient() {
     else router.push(actionHref(step, action))
   }
 
-  const sectionsLeft = step.sections.filter((_, i) => !p.passed.includes(i))
+  const required = step.sections.map((_, i) => i).filter((i) => !step.sections[i].optional)
+  const requiredPassed = required.filter((i) => p.passed.includes(i)).length
+  const sectionsLeft = required.filter((i) => !p.passed.includes(i)).map((i) => step.sections[i])
   const after: string[] = []
   if (action.kind === 'video' && sectionsLeft.length > 0) after.push(`「${sectionsLeft[sectionsLeft.length - 1].title}」までの結果を出す`)
   const lessonsLeft = step.codeblock.filter((id) => !completed.includes(id))
@@ -182,7 +184,7 @@ export function HomeClient() {
                 {step.video && (
                   <Bar label="動画" value={p.videoDone ? 1 : p.videoPos / step.video.end} text={p.videoDone ? '最後まで見た' : `${fmtTime(p.videoPos)} / ${fmtTime(step.video.length)}`} color="#ff8a1f" />
                 )}
-                <Bar label="見出しの結果" value={p.passed.length / step.sections.length} text={`${p.passed.length} / ${step.sections.length}`} color="#22b573" />
+                <Bar label="見出しの結果" value={requiredPassed / required.length} text={`${requiredPassed} / ${required.length}`} color="#22b573" />
                 <div className="mt-1 flex items-center justify-between gap-3">
                   <span className="text-[13.5px] font-bold text-[#6d6893]">
                     エディターに打ったコードも、

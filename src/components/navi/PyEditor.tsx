@@ -4,8 +4,8 @@
 // Python はブラウザの中（public/py/worker.js の Pyodide）で動く。
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { EditorView, basicSetup } from 'codemirror'
-import { keymap } from '@codemirror/view'
-import { EditorState } from '@codemirror/state'
+import { Decoration, keymap, type DecorationSet } from '@codemirror/view'
+import { EditorState, StateEffect, StateField } from '@codemirror/state'
 import { HighlightStyle, indentUnit, syntaxHighlighting } from '@codemirror/language'
 import { tags as t } from '@lezer/highlight'
 import { indentWithTab } from '@codemirror/commands'
@@ -33,7 +33,29 @@ type Props = {
   // input() の回に、ターミナルの上に出す「入れる値」
   inputsHint?: string[]
   highlight?: boolean
+  // ヒントで色をつける行（1から）。null で消す
+  markLine?: number | null
+  // コードの上に重ねて出すもの（「見出しクリア！」など）
+  overlay?: ReactNode
 }
+
+// ヒントで「ちがう行」に色をつける
+const setMark = StateEffect.define<number | null>()
+const markField = StateField.define<DecorationSet>({
+  create: () => Decoration.none,
+  update(deco, tr) {
+    deco = deco.map(tr.changes)
+    for (const e of tr.effects) {
+      if (!e.is(setMark)) continue
+      if (e.value === null || e.value < 1 || e.value > tr.state.doc.lines) deco = Decoration.none
+      else deco = Decoration.set([Decoration.line({ class: 'cm-navi-wrong' }).range(tr.state.doc.line(e.value).from)])
+    }
+    // 打ちなおしたら消す
+    if (tr.docChanged) deco = Decoration.none
+    return deco
+  },
+  provide: (f) => EditorView.decorations.from(f),
+})
 
 const editorTheme = EditorView.theme(
   {
@@ -46,6 +68,7 @@ const editorTheme = EditorView.theme(
     '&.cm-focused .cm-cursor': { borderLeftColor: '#ffd23f', borderLeftWidth: '2px' },
     '.cm-selectionBackground, &.cm-focused .cm-selectionBackground': { backgroundColor: 'rgba(116,72,240,.45) !important' },
     '.cm-matchingBracket': { backgroundColor: 'rgba(255,210,63,.25)', outline: 'none' },
+    '.cm-navi-wrong': { backgroundColor: 'rgba(255,138,31,.28)', boxShadow: 'inset 4px 0 0 #ff8a1f' },
   },
   { dark: true },
 )
@@ -62,7 +85,7 @@ const codeColors = HighlightStyle.define([
   { tag: [t.operator, t.punctuation, t.bracket], color: '#dcdcf0' },
 ])
 
-export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, onFilesChange, banner, inputsHint, highlight }: Props) {
+export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, onFilesChange, banner, inputsHint, highlight, markLine, overlay }: Props) {
   const [files, setFiles] = useState<Record<string, string>>(initialFiles)
   const [active, setActive] = useState(Object.keys(initialFiles)[0])
   const [lines, setLines] = useState<Line[]>([])
@@ -205,6 +228,7 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
           keymap.of([indentWithTab, { key: 'Ctrl-Enter', run: () => (runRef.current(), true) }]),
           editorTheme,
           syntaxHighlighting(codeColors),
+          markField,
           EditorView.updateListener.of((u) => {
             if (u.docChanged) {
               const text = u.state.doc.toString()
@@ -217,6 +241,15 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
     viewRef.current = view
     return () => view.destroy()
   }, [active])
+
+  useEffect(() => {
+    const view = viewRef.current
+    if (!view) return
+    view.dispatch({ effects: setMark.of(markLine ?? null) })
+    if (markLine && markLine <= view.state.doc.lines) {
+      view.dispatch({ effects: EditorView.scrollIntoView(view.state.doc.line(markLine).from, { y: 'center' }) })
+    }
+  }, [markLine, active])
 
   useEffect(() => {
     termEnd.current?.scrollIntoView({ block: 'nearest' })
@@ -296,7 +329,10 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
       </div>
 
       {/* コード */}
-      <div ref={editorHost} onMouseDownCapture={() => onFocus?.()} onKeyDownCapture={() => onFocus?.()} className="min-h-0 flex-1 overflow-hidden" />
+      <div className="relative min-h-0 flex-1">
+        <div ref={editorHost} onMouseDownCapture={() => onFocus?.()} onKeyDownCapture={() => onFocus?.()} className="h-full overflow-hidden" />
+        {overlay}
+      </div>
 
       <div className="flex h-[10px] flex-none items-center justify-center bg-[#1b1832]">
         <span className="h-1 w-11 rounded bg-[#3a3462]" />
