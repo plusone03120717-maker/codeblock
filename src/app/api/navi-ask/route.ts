@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic'
  * POST /api/navi-ask → { answer, left }
  *
  * Python ナビの「いちかに質問」（2026-10-26 依頼主：1人1日3回まで・文字だけ）。
- * Python を知らない講師でも、アプリの中で生徒の質問に答えられるように、いちかが今のステップ・見出し・生徒のコードを見て答える。
+ * Python を知らない講師でも、アプリの中で生徒の質問に答えられるように、いちかが今のステップ・見出し・生徒のコードを見て答える（claude-sonnet-5-5）。
  * ・回数と質問の記録は、その生徒の Firestore（users/{uid}/naviAsk/{日付}・users/{uid}/naviQuestions）に、本人のログインで書く
  *   （今の firestore.rules のまま。先生の画面で、管理者が読む）
  * ・答えられなかったとき（エラー・断られた）は、回数にかぞえない
@@ -21,7 +21,7 @@ export const dynamic = 'force-dynamic'
  * 必要な環境変数: ANTHROPIC_API_KEY（ないときは 503。画面は「じゅんび中」と出す）
  */
 
-const MODEL = 'claude-opus-5-5'
+const MODEL = 'claude-sonnet-5-5' // 依頼主の指定（2026-10-26）
 // 手元の開発だけ：NAVI_ASK_MOCK=1 なら AI を呼ばずに決まった答えを返す（回数・記録の動きを、キーなしで確かめるため）
 const MOCK = process.env.NODE_ENV !== 'production' && process.env.NAVI_ASK_MOCK === '1'
 
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
     const res = await client.beta.messages.create({
       model: MODEL,
       max_tokens: 2000,
-      // 子どもとの短いやりとりなので、考える深さは low（Claude Opus 5.5 は考えることを止められない）
+      // 子どもとの短いやりとりなので、考える深さは low
       output_config: { effort: 'low' },
       // 断られたときは、別のモデルが同じ質問に答え直す
       betas: ['server-side-fallback-2026-07-01'],
