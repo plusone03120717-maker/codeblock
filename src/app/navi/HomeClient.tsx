@@ -8,6 +8,7 @@ import { NaviHeader } from '@/components/navi/NaviHeader'
 import { NAVI_STEPS, getNaviStep, nextReadyStep, prevReadyStep, readyStep } from '@/data/navi/steps'
 import { UNIT_NAMES, inStep, videoLabel, type NaviStep } from '@/lib/navi/types'
 import {
+  catchUpSkipped,
   codeblockCompleted,
   fmtTime,
   loadNavi,
@@ -78,8 +79,10 @@ export function HomeClient() {
 
   useEffect(() => {
     // ブラウザの保存（localStorage）は表示のあとでしか読めないので、ここで1回だけ入れる
+    const loaded = loadNavi()
+    if (catchUpSkipped(loaded, NAVI_STEPS)) saveNavi(loaded)
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setState(loadNavi())
+    setState(loaded)
     if (new URLSearchParams(window.location.search).get('bye')) {
       setBye(true)
       // 開き直したときは、ふつうの「おかえり」にもどす

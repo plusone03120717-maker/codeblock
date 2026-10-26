@@ -46,6 +46,14 @@ export const finishStepLessons: Lesson[] = [
     "difficulty": "かんたん"
   },
   {
+    "id": "31-7",
+    "unitNumber": 31,
+    "subNumber": 7,
+    "title": "ステップ7の仕上げ",
+    "description": "input で質問して、入れた答えを使おう",
+    "difficulty": "かんたん"
+  },
+  {
     "id": "31-8",
     "unitNumber": 31,
     "subNumber": 8,
@@ -1191,6 +1199,191 @@ export const finishStepMissions: Record<string, Mission[]> = {
             "*"
           ],
           "message": "くりかえすときは ＊ を使うよ！"
+        }
+      ]
+    }
+  ],
+  "31-7": [
+    {
+      "id": 1,
+      "type": "quiz",
+      "title": "入れた答えは？",
+      "description": "このコードを実行して「はると」と入れると、何が出る？",
+      "codeToRead": "namae = input(\"なまえは？\")\nprint(namae + \"さん\")",
+      "choices": [
+        "namaeさん",
+        "はるとさん",
+        "なまえは？さん"
+      ],
+      "correctAnswer": 1,
+      "expectedOutput": "はるとさん",
+      "hint": "namae の箱には、何が入るかな？",
+      "explanation": "「はると」と入れると、namae の箱に はると が入る。namae + \"さん\" で はるとさん と出るよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 2,
+      "type": "quiz",
+      "title": "\" \" をつけると？",
+      "description": "このコードを実行して「あお」と入れると、何が出る？",
+      "codeToRead": "iro = input(\"すきないろは？\")\nprint(\"iro\")",
+      "choices": [
+        "iro",
+        "あお",
+        "エラーになる"
+      ],
+      "correctAnswer": 0,
+      "expectedOutput": "iro",
+      "hint": "print の中の iro は、\" \" でかこんであるね。",
+      "explanation": "\" \" でかこむと、ただの文字 iro が出る。入れた答えを出すなら print(iro) だよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 3,
+      "type": "quiz",
+      "title": "エラーを直そう",
+      "description": "「いちか」と入れたら「NameError: name 'namae' is not defined」と出た。どう直す？",
+      "codeToRead": "input(\"なまえは？\")\nprint(namae + \"さん\")",
+      "choices": [
+        "namae を \"namae\" にする",
+        "input を print にする",
+        "1行目を namae = input(\"なまえは？\") にする"
+      ],
+      "correctAnswer": 2,
+      "expectedOutput": "1行目を namae = input(\"なまえは？\") にする",
+      "hint": "入れた答えを、箱に入れているかな？",
+      "explanation": "input の答えを箱に入れていないので、namae がなくて NameError。namae = input(…) で箱に入れよう。",
+      "availableBlocks": []
+    },
+    {
+      "id": 4,
+      "title": "答えを使って出す",
+      "description": "namae には、input で入れた「はると」が入っているよ。「はるとさん、ようこそ」と表示しよう！",
+      "expectedOutput": "はるとさん、ようこそ",
+      "correctCode": "print(namae + \"さん、ようこそ\")",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b1",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b2",
+          "text": "namae",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b3",
+          "text": "+",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b4",
+          "text": "\"さん、ようこそ\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b5",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b6",
+          "text": "\"namae\"",
+          "type": "string",
+          "color": "bg-green-200"
+        }
+      ],
+      "prefixCode": "namae = \"はると\"",
+      "rules": [
+        {
+          "forbids": [
+            "\"namae\""
+          ],
+          "message": "\" \" でかこむと、箱の中身ではなく文字のまま出るよ！"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "2つの答えをつなぐ",
+      "description": "namae と doubutsu には、input で入れた答えが入っているよ。「ゆうとはイヌがすき」と表示しよう！",
+      "expectedOutput": "ゆうとはイヌがすき",
+      "correctCode": "print(namae + \"は\" + doubutsu + \"がすき\")",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b1",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b2",
+          "text": "namae",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b3",
+          "text": "+",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b4",
+          "text": "\"は\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b5",
+          "text": "doubutsu",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b6",
+          "text": "\"がすき\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b7",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b8",
+          "text": "\"doubutsu\"",
+          "type": "string",
+          "color": "bg-green-200"
+        }
+      ],
+      "prefixCode": "namae = \"ゆうと\"\ndoubutsu = \"イヌ\"",
+      "rules": [
+        {
+          "forbids": [
+            "\"doubutsu\""
+          ],
+          "message": "\" \" でかこむと、箱の中身ではなく文字のまま出るよ！"
         }
       ]
     }
@@ -5748,6 +5941,22 @@ export const finishStepTutorials: LessonTutorial[] = [
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "print(\"パイ\" + \"ソン\")  # パイソン"
+        }
+      }
+    ]
+  },
+  {
+    "lessonId": "31-7",
+    "characterName": "いちか",
+    "characterEmoji": "🙂",
+    "characterImage": "/navi/bob_smile.webp",
+    "slides": [
+      {
+        "title": "5問で仕上げよう",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "characterMessage": "わからなくなったら、ヒントを見てね。",
+        "codeExample": {
+          "good": "kotae = input(\"すきなきせつは？\")  # 答えが kotae に入る"
         }
       }
     ]

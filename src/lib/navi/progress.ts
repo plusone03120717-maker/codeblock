@@ -24,6 +24,7 @@ export type NaviState = {
   steps: Record<number, StepProgress>
   sessions: SessionLog[]
   reviewAnswered: Record<number, boolean> // おさらい1問に答えたか（次の回のはじめ）
+  skipped?: number[] // 準備中だったのでとばしたステップ（動画ができたら、もどってやる）
   v?: number // 記録の版。2＝55ステップ（2026-10-25 に25ステップから組みかえ）
 }
 
@@ -130,9 +131,28 @@ export function naviAfterLesson(lessonId: string, steps: NaviStep[]): { next: st
   const next = step.codeblock.find((id) => id !== lessonId && !completed.includes(id)) ?? null
   if (!next) {
     state.steps[step.step] = { ...stepProgress(state, step.step), done: true }
-    // 準備中のステップはとばす
+    // 準備中のステップはとばす（とばしたステップは覚えておき、動画ができたらもどる）
     state.current = steps.find((s) => s.step > step.step && !s.planned)?.step ?? step.step + 1
+    const jumped = steps.filter((s) => s.step > step.step && s.step < state.current).map((s) => s.step)
+    if (jumped.length > 0) state.skipped = [...new Set([...(state.skipped ?? []), ...jumped])]
     saveNavi(state)
   }
   return { next }
+}
+
+// 準備中でとばしたステップの動画ができたら、そのステップにもどす（2026-10-26 ステップ7を足したときに、
+// ステップ6を終えた生徒が 8 に進んだままになっていたため）。もどしたら true。
+// とばした記録がない前の生徒は「前のステップは終えたのに、このステップはまだ」の所を、とばしたステップとみなす
+// （ステップ1だけを終えた、25ステップのころからの組みかえの記録は対象にしない）
+export function catchUpSkipped(state: NaviState, steps: NaviStep[]): boolean {
+  const back = steps.find(
+    (s) =>
+      !s.planned &&
+      s.step < state.current &&
+      !stepProgress(state, s.step).done &&
+      ((state.skipped ?? []).includes(s.step) || (s.step >= 3 && stepProgress(state, s.step - 1).done)),
+  )
+  if (!back) return false
+  state.current = back.step
+  return true
 }
