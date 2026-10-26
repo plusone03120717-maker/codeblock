@@ -3,11 +3,10 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { registerWithUsername, loginWithUsername, loginWithGoogle } from "@/lib/auth";
+import { loginWithUsername, loginWithGoogle } from "@/lib/auth";
 import { FW, FuriganaText } from "@/components/Furigana";
 
 function LoginContent() {
-  const [isRegister, setIsRegister] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -27,26 +26,16 @@ function LoginContent() {
     }
   }, []);
 
-  useEffect(() => {
-    const mode = searchParams.get("mode");
-    if (mode === "register") {
-      setIsRegister(true);
-    }
-  }, [searchParams]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      if (isRegister) {
-        await registerWithUsername(username, password);
-      } else {
-        await loginWithUsername(username, password);
-      }
-      
-      if (rememberUserId && !isRegister) {
+      // 新しいアカウントは管理画面からだけ作る（2026-10-26 依頼主）。ここはログインだけ
+      await loginWithUsername(username, password);
+
+      if (rememberUserId) {
         localStorage.setItem("rememberedUserId", username);
       } else {
         localStorage.removeItem("rememberedUserId");
@@ -73,7 +62,7 @@ function LoginContent() {
       await loginWithGoogle();
       router.push(afterLogin);
     } catch (err: any) {
-      setError("Googleログインに失敗しました");
+      setError(err?.code === "codeblock/no-account" ? err.message : "Googleログインに失敗しました");
     } finally {
       setLoading(false);
     }
@@ -89,7 +78,7 @@ function LoginContent() {
       
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
         <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
-          {isRegister ? "アカウントを作ろう！" : "ログイン"}
+          ログイン
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -105,11 +94,6 @@ function LoginContent() {
               placeholder="例: taro123"
               required
             />
-            {isRegister && (
-              <p className="text-xs text-gray-500 mt-1">
-                英数字とアンダースコア（_）が使えます
-              </p>
-            )}
           </div>
 
           <div>
@@ -126,8 +110,7 @@ function LoginContent() {
             />
           </div>
 
-          {!isRegister && (
-            <div className="flex items-center">
+          <div className="flex items-center">
               <input
                 type="checkbox"
                 id="rememberUserId"
@@ -139,7 +122,6 @@ function LoginContent() {
                 ユーザーIDを記憶する
               </label>
             </div>
-          )}
 
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg text-sm">
@@ -152,7 +134,7 @@ function LoginContent() {
             disabled={loading}
             className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition-colors disabled:opacity-50"
           >
-            {loading ? "処理中..." : isRegister ? <><FW word="登録" />する</> : "ログイン"}
+            {loading ? "処理中..." : "ログイン"}
           </button>
         </form>
 
@@ -188,19 +170,9 @@ function LoginContent() {
           Googleでログイン
         </button>
 
-        <div className="mt-6 text-center">
-          <button
-            onClick={() => {
-              setIsRegister(!isRegister);
-              setError("");
-            }}
-            className="text-purple-600 hover:text-purple-800 text-sm"
-          >
-            {isRegister
-              ? "すでにアカウントをお持ちの方はこちら"
-              : <>新しくアカウントを作る</>}
-          </button>
-        </div>
+        <p className="mt-6 text-center text-sm text-gray-500">
+          アカウントは<FW word="先生" />が作ります
+        </p>
       </div>
     </div>
   );

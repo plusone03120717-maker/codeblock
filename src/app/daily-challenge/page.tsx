@@ -1,5 +1,6 @@
 "use client";
 
+import { authHeader } from "@/lib/authHeader";
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -60,6 +61,7 @@ async function executePythonCode(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(await authHeader()),
       },
       body: JSON.stringify({ code }),
     });

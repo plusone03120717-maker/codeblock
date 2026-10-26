@@ -1,5 +1,6 @@
 "use client";
 
+import { authHeader } from "@/lib/authHeader";
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -135,6 +136,7 @@ async function executePythonCode(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(await authHeader()),
       },
       body: JSON.stringify({ code }),
     });
@@ -870,7 +872,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           } else {
             setHintMessage(isPremium 
               ? "今日のヒントは使い切りました。明日また挑戦してね！"
-              : "今日のヒントは使い切りました（無料プラン: 1日3回まで）。有料プランなら1日10回まで使えます！");
+              : "今日のヒントは使い切りました（1日3回まで）。また明日ためしてね！");
             setShowHintModal(true);
           }
         }
@@ -968,7 +970,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
             } else {
               setHintMessage(isPremium 
                 ? "今日のヒントは使い切りました。明日また挑戦してね！"
-                : "今日のヒントは使い切りました（無料プラン: 1日3回まで）。有料プランなら1日10回まで使えます！");
+                : "今日のヒントは使い切りました（1日3回まで）。また明日ためしてね！");
               setShowHintModal(true);
             }
           }
@@ -1180,7 +1182,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     if (!canUseHint(isPremium)) {
       setHintMessage(isPremium 
         ? "今日のヒントは使い切りました。明日また挑戦してね！"
-        : "今日のヒントは使い切りました（無料プラン: 1日3回まで）。有料プランなら1日10回まで使えます！");
+        : "今日のヒントは使い切りました（1日3回まで）。また明日ためしてね！");
       setShowHintModal(true);
       return;
     }
@@ -1227,16 +1229,6 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       : "";
     
     try {
-      // 環境変数の値を確認（ビルド時に埋め込まれる値）
-      const envApiUrl = process.env.NEXT_PUBLIC_API_URL;
-      // 本番環境の判定（codeblock.jpでアクセスしている場合）
-      const isProduction = typeof window !== 'undefined' && (
-        window.location.hostname === 'codeblock.jp' || 
-        window.location.hostname === 'www.codeblock.jp'
-      );
-      // API URLの決定: 環境変数がある場合はそれを使い、なければ本番環境では固定値、ローカルではlocalhost
-      const API_URL = envApiUrl || (isProduction ? "https://codeblock-api.onrender.com" : "http://localhost:8000");
-      
       const requestBody = {
         character_id: characterProfile.id,
         character_name: characterProfile.name,
@@ -1249,15 +1241,20 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         user_answer: userAnswer,
         expected_answer: expectedAnswer
       };
-      const requestUrl = `${API_URL}/api/hint`;
-      
-      const response = await fetch(requestUrl, {
+      // ヒントは Vercel の /api/hint（2026-10-26 に Render から移した。ログインした生徒だけ・1日の回数もサーバーで数える）
+      const response = await fetch("/api/hint", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...(await authHeader()),
         },
         body: JSON.stringify(requestBody),
       });
+      if (response.status === 429) {
+        setHintMessage("今日のヒントは使い切りました。また明日ためしてね！");
+        setShowHintModal(true);
+        return;
+      }
       
       // HTTPエラーのチェックを追加
       if (!response.ok) {
@@ -1898,24 +1895,6 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                 <p className="text-sm text-gray-500 text-center mb-4">
                   今日の残りヒント: {remainingHints}回 / {isPremium ? 10 : 3}回
                 </p>
-              )}
-              
-              {/* 無料ユーザーへのアップグレード促進 */}
-              {!hintLoading && !isPremium && remainingHints === 0 && (
-                <div className="text-center mt-4">
-                  <p className="text-sm text-purple-600 mb-2">
-                    有料プランなら1日10回までヒントが使えます！
-                  </p>
-                  <button
-                    onClick={() => {
-                      setShowHintModal(false);
-                      // UpgradeModalを表示する処理があれば追加
-                    }}
-                    className="text-sm text-purple-500 underline"
-                  >
-                    プランを見る
-                  </button>
-                </div>
               )}
               
               {/* 閉じるボタン */}

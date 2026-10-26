@@ -11,8 +11,9 @@ import {
   getAuth,
 } from "firebase/auth";
 import { initializeApp, deleteApp } from "firebase/app";
-import { doc, setDoc, getDoc, updateDoc, deleteDoc, Timestamp, getFirestore } from "firebase/firestore";
+import { doc, setDoc, getDoc, updateDoc, deleteDoc, Timestamp } from "firebase/firestore";
 import app, { auth, db } from "./firebase";
+import { isAdminEmail } from "@/utils/admin";
 
 const usernameToEmail = (username: string): string => {
   return `${username.toLowerCase()}@codeblock.local`;
@@ -56,29 +57,11 @@ const initialUsernameUserData = (userId: string, displayName = "") => ({
   studiedEarly: false,
 });
 
-export const registerWithUsername = async (
-  userId: string,
-  password: string
-): Promise<User> => {
-  await validateUserId(userId);
-
-  const email = usernameToEmail(userId);
-  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-  const user = userCredential.user;
-
-  await setDoc(doc(db, "users", user.uid), initialUsernameUserData(userId));
-
-  await setDoc(doc(db, "userIds", userId.toLowerCase()), {
-    uid: user.uid,
-  });
-
-  return user;
-};
-
 // 管理画面から生徒のアカウントを作る。
 // ふつうに作ると作った人（先生）が新しい生徒でログインし直してしまうので、
-// 別の Firebase アプリ（ログインを共有しない）で作り、終わったらそちらだけログアウトする。
-// users・userIds は新しい生徒本人として書くので firestore.rules はそのままでよい。
+// ログインの登録だけ別の Firebase アプリ（ログインを共有しない）で行い、終わったらそちらだけログアウトする。
+// users・userIds は管理者のログインのまま書く（2026-10-26：アカウントは管理画面からだけ作る。
+// firestore.rules で users・userIds を作れるのは管理者だけにした）
 export const createUserByAdmin = async (
   userId: string,
   password: string,
@@ -88,13 +71,12 @@ export const createUserByAdmin = async (
 
   const secondaryApp = initializeApp(app.options, `admin-create-${Date.now()}`);
   const secondaryAuth = getAuth(secondaryApp);
-  const secondaryDb = getFirestore(secondaryApp);
   try {
     const userCredential = await createUserWithEmailAndPassword(secondaryAuth, usernameToEmail(userId), password);
     const uid = userCredential.user.uid;
 
-    await setDoc(doc(secondaryDb, "users", uid), initialUsernameUserData(userId, displayName));
-    await setDoc(doc(secondaryDb, "userIds", userId.toLowerCase()), { uid });
+    await setDoc(doc(db, "users", uid), initialUsernameUserData(userId, displayName));
+    await setDoc(doc(db, "userIds", userId.toLowerCase()), { uid });
 
     return uid;
   } finally {
@@ -122,38 +104,14 @@ export const loginWithGoogle = async (): Promise<User> => {
   const userCredential = await signInWithPopup(auth, provider);
   const user = userCredential.user;
 
-  const userDoc = await getDoc(doc(db, "users", user.uid));
-  if (!userDoc.exists()) {
-    // 新規ユーザーの初期データ
-    const initialUserData = {
-      userId: user.email || "user",
-      displayName: user.displayName || "",
-      email: user.email,
-      contactEmail: user.email || "",
-      createdAt: new Date(),
-      xp: 0,
-      level: 1,
-      // 実績関連フィールド
-      achievements: [],
-      pendingAchievements: [],
-      lessonsCompleted: [],
-      lessonCompleteCounts: {},
-      totalCorrect: 0,
-      streakDays: 0,
-      lastStudyDate: null,
-      consecutiveCorrect: 0,
-      maxConsecutiveCorrect: 0,
-      noMistakeLessons: [],
-      noHintLessons: [],
-      fastLessons: [],
-      studiedOnWeekend: false,
-      studiedEarly: false,
-    };
-    
-    await setDoc(doc(db, "users", user.uid), initialUserData);
-  } else {
+  const userDoc = await getDoc(doc(db, "users", user.uid)).catch(() => null);
+  if (userDoc?.exists()) {
     // 既存ユーザーの実績関連フィールドをチェック
     await ensureAchievementFields(user.uid);
+  } else if (!isAdminEmail(user.email)) {
+    // アカウントは管理画面からだけ作る（2026-10-26 依頼主）。Google でも新しく作らない
+    await signOut(auth);
+    throw Object.assign(new Error("このアカウントはまだ登録されていません。先生に聞いてね。"), { code: "codeblock/no-account" });
   }
 
   return user;
