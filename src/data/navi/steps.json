@@ -697,11 +697,128 @@
   "unit": 1,
   "title": "input で質問する",
   "fileName": "step07.py",
-  "video": null,
-  "planned": true,
-  "sections": [],
-  "learn": [],
-  "codeblock": []
+  "sections": [
+   {
+    "title": "質問を出す",
+    "start": 58,
+    "code": "namae = input(\"なまえは？\")",
+    "expected": [],
+    "mustMatch": "namae\\s*=\\s*input\\(",
+    "inputs": [
+     "いちか"
+    ],
+    "pauseAt": 155,
+    "note": "なまえは？ と聞くコードを書いて実行しよう。ターミナルに答えを入れて Enter。何も出ずに おわれば OK"
+   },
+   {
+    "title": "答えを使う",
+    "start": 102,
+    "code": "namae = input(\"なまえは？\")\nprint(namae + \"さん、こんにちは\")",
+    "expected": [],
+    "mustMatch": "namae\\s*=\\s*input\\([\\s\\S]*print\\(\\s*namae\\s*\\+",
+    "outputPattern": "さん、?こんにちは$",
+    "inputs": [
+     "いちか"
+    ],
+    "pauseAt": 155,
+    "note": "入れた名前に「さん、こんにちは」をつけて出そう。自分の名前を入れても OK"
+   },
+   {
+    "title": "質問をふやす",
+    "start": 157,
+    "code": "namae = input(\"なまえは？\")\nprint(namae + \"さん、こんにちは\")\ntabemono = input(\"すきなたべものは？\")\nprint(tabemono + \"がすきなんだね\")",
+    "expected": [],
+    "mustMatch": "tabemono\\s*=\\s*input\\([\\s\\S]*print\\(\\s*tabemono\\s*\\+",
+    "outputPattern": "がすきなんだね$",
+    "inputs": [
+     "いちか",
+     "カレー"
+    ],
+    "pauseAt": 207,
+    "note": "すきなたべものも聞いて、「〇〇がすきなんだね」と出そう"
+   },
+   {
+    "title": "箱がないと？",
+    "start": 209,
+    "code": "input(\"なまえは？\")\nprint(namae + \"さん、こんにちは\")",
+    "expected": [],
+    "expectError": true,
+    "inputs": [
+     "いちか"
+    ],
+    "pauseAt": 249,
+    "note": "1行目の namae = を消して実行しよう。答えを入れたあと、NameError が出れば OK（たしかめたら、もとにもどそう）"
+   },
+   {
+    "title": "チャレンジ① すきないろ",
+    "start": 251,
+    "pauseAt": 316,
+    "code": "iro = input(\"すきないろは？\")\nprint(iro + \"がすき！\")",
+    "expected": [],
+    "mustMatch": "iro\\s*=\\s*input\\([\\s\\S]*print\\(\\s*iro\\s*\\+",
+    "outputPattern": "がすき！$",
+    "inputs": [
+     "あか"
+    ],
+    "challenge": true,
+    "note": "すきないろは？ と聞いて、答えを iro の箱に入れよう。あか と入れたら あかがすき！ が出れば OK",
+    "answerNote": "iro = input(…) で答えを箱に入れて、iro + \"がすき！\" でつなぐ"
+   },
+   {
+    "title": "チャレンジ② なんねんせい",
+    "start": 274,
+    "pauseAt": 316,
+    "code": "gakunen = input(\"なんねんせい？\")\nprint(gakunen + \"年生なんだね\")",
+    "expected": [],
+    "mustMatch": "gakunen\\s*=\\s*input\\([\\s\\S]*print\\(\\s*gakunen\\s*\\+",
+    "outputPattern": "年生なんだね$",
+    "inputs": [
+     "4"
+    ],
+    "challenge": true,
+    "note": "なんねんせい？ と聞いて、答えを gakunen の箱に入れよう。4 と入れたら 4年生なんだね が出れば OK",
+    "answerNote": "入れた 4 は文字なので、そのまま + \"年生なんだね\" でつなげる"
+   },
+   {
+    "title": "チャレンジ③ 2つ聞く",
+    "start": 289,
+    "pauseAt": 316,
+    "code": "namae = input(\"なまえは？\")\ndoubutsu = input(\"すきなどうぶつは？\")\nprint(namae + \"は\" + doubutsu + \"がすき\")",
+    "expected": [],
+    "mustMatch": "input\\([\\s\\S]*input\\(",
+    "outputPattern": "^.+は.+がすき$",
+    "inputs": [
+     "いちか",
+     "ネコ"
+    ],
+    "challenge": true,
+    "note": "名前と すきな動物を 2つ聞いて、1行で出そう。いちか と ネコ を入れたら いちかはネコがすき が出れば OK",
+    "answerNote": "質問を2つ書いて、namae + \"は\" + doubutsu + \"がすき\" でつなぐ"
+   }
+  ],
+  "video": {
+   "no": "⑦",
+   "id": "pslnCS_3e3E",
+   "length": 353,
+   "end": 347
+  },
+  "learn": [
+   "input( ) で、使う人に質問できる（input(\"なまえは？\")）",
+   "入れた答えは、＝ で箱に入れて使う（namae = input(…)）",
+   "箱に入れた答えは、＋ で ほかの文字と つなげられる"
+  ],
+  "codeblock": [
+   "31-7"
+  ],
+  "review": {
+   "question": "namae = input(\"なまえは？\") の namae には、何が入る？",
+   "choices": [
+    "なまえは？ という文字",
+    "使う人が入れた答え",
+    "何も入らない"
+   ],
+   "answer": 1
+  }
  },
  {
   "step": 8,

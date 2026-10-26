@@ -18,7 +18,12 @@ type Line =
   | { kind: 'explain'; text: string; trace: string }
   | { kind: 'answer'; prompt: string; text: string }
 
-export type RunResult = { ok: boolean; output: string; error?: PyError }
+// file：動かしたファイル（チャレンジのファイルを動かしたときは、その名前）
+export type RunResult = { ok: boolean; output: string; error?: PyError; file?: string }
+
+// チャレンジは、それぞれ新しいファイル（challenge1.py など）に書いて、そのファイルだけを動かす
+// （上のコードの input の質問に、毎回答えなくてすむように・2026-10-26 依頼主）
+export const isChallengeFile = (name: string) => /^challenge\d*\.py$/.test(name)
 
 type Props = {
   initialFiles: Record<string, string>
@@ -37,6 +42,8 @@ type Props = {
   markLine?: number | null
   // コードの上に重ねて出すもの（「見出しクリア！」など）
   overlay?: ReactNode
+  // このファイルを開く（なければ starter の中身で作る）。チャレンジの見出しに来たときに使う
+  openFile?: { name: string; starter: string } | null
 }
 
 // ヒントで「ちがう行」に色をつける
@@ -85,7 +92,7 @@ const codeColors = HighlightStyle.define([
   { tag: [t.operator, t.punctuation, t.bracket], color: '#dcdcf0' },
 ])
 
-export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, onFilesChange, banner, inputsHint, highlight, markLine, overlay }: Props) {
+export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, onFilesChange, banner, inputsHint, highlight, markLine, overlay, openFile }: Props) {
   const [files, setFiles] = useState<Record<string, string>>(initialFiles)
   const [active, setActive] = useState(Object.keys(initialFiles)[0])
   const [lines, setLines] = useState<Line[]>([])
@@ -101,6 +108,7 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
   const filesRef = useRef(files)
   const activeRef = useRef(active)
   const outputRef = useRef('')
+  const ranFileRef = useRef('')
   const termEnd = useRef<HTMLDivElement>(null)
   const inputBox = useRef<HTMLInputElement>(null)
   useEffect(() => {
@@ -170,13 +178,13 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
           if (m.ok) {
             push({ kind: 'ok', text: m.appOpen ? 'アプリの窓をひらきました →' : 'おわりました' })
             setStatus(m.appOpen ? 'app' : 'ready')
-            onRunFinishedRef.current?.({ ok: true, output: outputRef.current })
+            onRunFinishedRef.current?.({ ok: true, output: outputRef.current, file: ranFileRef.current })
           } else {
             const err = m.error as PyError
             push({ kind: 'err', text: `${err.type}: ${err.message}` })
             push({ kind: 'explain', text: friendlyError(err), trace: err.trace })
             setStatus('ready')
-            onRunFinishedRef.current?.({ ok: false, output: outputRef.current, error: err })
+            onRunFinishedRef.current?.({ ok: false, output: outputRef.current, error: err, file: ranFileRef.current })
           }
           break
         }
@@ -195,7 +203,9 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
     outputRef.current = ''
     setTk(null)
     setTkMessage(null)
-    const main = Object.keys(filesRef.current)[0]
+    // ふだんは最初のファイル（step07.py など）を動かす。チャレンジのファイルを開いているときは、そのファイルだけ
+    const main = isChallengeFile(activeRef.current) ? activeRef.current : Object.keys(filesRef.current)[0]
+    ranFileRef.current = main
     push({ kind: 'cmd', text: `python ${main}` })
     setStatus('running')
     workerRef.current.postMessage({ type: 'run', files: filesRef.current, main })
@@ -213,6 +223,16 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
     setStatus('booting')
     startWorker()
   }, [push, startWorker])
+
+  // チャレンジの見出しに来たら、そのチャレンジのファイルを開く（なければ作る）
+  const openName = openFile?.name
+  useEffect(() => {
+    if (!openFile) return
+    const { name, starter } = openFile
+    setFiles((prev) => (name in prev ? prev : { ...prev, [name]: starter }))
+    setActive(name)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openName])
 
   // CodeMirror：ファイルを切りかえるたびに作り直す
   useEffect(() => {
@@ -294,11 +314,14 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
       {banner}
       {/* 上の帯：ファイルと実行 */}
       <div className="flex h-[52px] flex-none items-center gap-2 bg-[#1b1832] px-3">
+        {/* ファイルがふえたら（チャレンジのファイルなど）、ここだけ横にスクロールして、▶ 実行はいつも見えるように */}
+        <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto [scrollbar-width:none]">
         {Object.keys(files).map((name) => (
           <button
             key={name}
+            ref={name === active ? (el) => el?.scrollIntoView({ block: 'nearest', inline: 'nearest' }) : undefined}
             onClick={() => setActive(name)}
-            className={`flex h-[34px] items-center gap-2 rounded-[10px] px-3 font-mono text-sm font-bold ${
+            className={`flex h-[34px] flex-none items-center gap-2 whitespace-nowrap rounded-[10px] px-3 font-mono text-sm font-bold ${
               name === active ? 'bg-[#23203b] text-white' : 'text-[#8a85ad] hover:text-white'
             }`}
           >
@@ -306,22 +329,22 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
             {name}
           </button>
         ))}
-        <button onClick={addFile} className="h-[34px] rounded-[10px] px-3 text-sm font-bold text-[#8a85ad] hover:text-white" title="ファイルを足す">
+        <button onClick={addFile} className="h-[34px] flex-none rounded-[10px] px-3 text-sm font-bold text-[#8a85ad] hover:text-white" title="ファイルを足す">
           ＋
         </button>
-        <span className="flex-1" />
-        <span className="text-xs font-bold text-[#8a85ad]">
+        </div>
+        <span className="max-w-[150px] flex-none truncate text-xs font-bold text-[#8a85ad]">
           {status === 'booting' ? 'Python を準備中…' : busy ? (inputPrompt !== null ? '入力を待っています' : '実行中…') : 'Ctrl + Enter でも実行'}
         </span>
         {busy || status === 'app' ? (
-          <button onClick={stop} className="flex h-[38px] items-center gap-2 rounded-full bg-[#ef5a5a] px-5 font-black text-white shadow-[0_4px_0_#c13f3f]">
+          <button onClick={stop} className="flex h-[38px] flex-none items-center gap-2 whitespace-nowrap rounded-full bg-[#ef5a5a] px-5 font-black text-white shadow-[0_4px_0_#c13f3f]">
             ■ とめる
           </button>
         ) : (
           <button
             onClick={run}
             disabled={status === 'booting'}
-            className="flex h-[38px] items-center gap-2 rounded-full bg-[#22b573] px-5 font-black text-white shadow-[0_4px_0_#16905a] disabled:opacity-50"
+            className="flex h-[38px] flex-none items-center gap-2 whitespace-nowrap rounded-full bg-[#22b573] px-5 font-black text-white shadow-[0_4px_0_#16905a] disabled:opacity-50"
           >
             ▶ 実行
           </button>
@@ -354,6 +377,10 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
                 <span key={i} className="mx-1 rounded bg-[rgba(255,210,63,.2)] px-1.5 font-mono text-white">{v}</span>
               ))}
               <span className="ml-1 text-[#9d98c2]">（この順に入れると、動画と同じ結果になるよ）</span>
+              {/* 1つのファイルに書き足していくので、上の行の input の質問も出る（2026-10-26 ステップ7） */}
+              {((files[isChallengeFile(active) ? active : Object.keys(files)[0]] ?? '').match(/\binput\s*\(/g)?.length ?? 0) > inputsHint.length && (
+                <span className="ml-1 text-[#ffe6a8]">上の行の質問にも、答えてね（答えは何でもOK）</span>
+              )}
             </div>
           )}
           <div className="min-h-0 flex-1 overflow-y-auto px-4 py-2 font-mono text-[15px] leading-[1.75] text-[#cfcbe8]">

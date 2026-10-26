@@ -4,7 +4,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import { PyEditor, type RunResult } from '@/components/navi/PyEditor'
+import { PyEditor, isChallengeFile, type RunResult } from '@/components/navi/PyEditor'
 import { YouTubePlayer, type PlayerHandle } from '@/components/navi/YouTubePlayer'
 import { NaviHeader } from '@/components/navi/NaviHeader'
 import { EndPopup } from '@/components/navi/EndPopup'
@@ -147,7 +147,8 @@ export function StudyClient({ step: stepNo }: { step: number }) {
 
   const onRunFinished = (r: RunResult) => {
     if (!step || !p) return
-    const code = Object.values(p.files).join('\n')
+    // チャレンジのファイルを動かしたときは、そのファイルのコードだけで見る（上のファイルの書き方で合格にしない）
+    const code = r.file && isChallengeFile(r.file) ? (p.files[r.file] ?? '') : Object.values(p.files).join('\n')
     const newly: number[] = []
     step.sections.forEach((sec, i) => {
       if (p.passed.includes(i) || !reached(i)) return
@@ -261,6 +262,13 @@ export function StudyClient({ step: stepNo }: { step: number }) {
             ? `# ${step.title}：前のステップのコードのつづきから打とう\n${step.starter}\n`
             : `# ${step.title} を見ながら、同じコードを打ってみよう\n`,
         }
+  // チャレンジの見出しでは、チャレンジごとの新しいファイル（challenge1.py など）を開く
+  const challengeNo =
+    focus !== null && step.sections[focus].challenge && reached(focus) ? step.sections.slice(0, focus + 1).filter((s) => s.challenge).length : 0
+  const openFile =
+    challengeNo > 0 && focus !== null
+      ? { name: `challenge${challengeNo}.py`, starter: `# ${step.sections[focus].title}：このファイルに書いて ▶ 実行しよう\n` }
+      : null
   const inputsHint = focus !== null ? step.sections[focus].inputs : nextSection >= 0 ? step.sections[nextSection].inputs : undefined
   const nextNote = focus !== null && reached(focus) ? studentNote(step.sections[focus]) : undefined
 
@@ -521,6 +529,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
                 setWrong(null)
               }}
               onRunFinished={onRunFinished}
+              openFile={openFile}
             />
           </div>
         </div>
