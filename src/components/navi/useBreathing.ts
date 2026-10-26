@@ -5,10 +5,12 @@
 //   - ゆらぎ：ゆっくり左右にかたむく（±0.5度）
 //   - 話しているあいだ：小さくうなずく（話す強さは、上がるのに約0.25秒・下がるのに約0.9秒かけて、カクカクしない）
 // 時間（dt）基準なので、画面の速さに左右されない。「動きを減らす」の設定のときは動かさない。
+// mode 'chest'：全身の絵の上半身だけに使う（腰を軸に胸がふくらむ。上下には動かさない。軸は呼ぶ側の transform-origin）。
+//   全身ごと上下すると浮いて見えるため（2026-10-26 依頼主）
 import { useEffect, useRef, type RefObject } from 'react'
 
 // ready：絵が画面に出てから動かしはじめる（読みこみ中は絵がないので）
-export function useBreathing(ref: RefObject<HTMLElement | null>, speaking: boolean, ready = true) {
+export function useBreathing(ref: RefObject<HTMLElement | null>, speaking: boolean, ready = true, mode: 'whole' | 'chest' = 'whole') {
   const speakingRef = useRef(speaking)
   useEffect(() => {
     speakingRef.current = speaking
@@ -44,6 +46,13 @@ export function useBreathing(ref: RefObject<HTMLElement | null>, speaking: boole
       const breath = (Math.sin((t * (Math.PI * 2)) / 3.6) + 1) / 2
       const bob = step(springs.bob, env * (0.35 + 0.25 * Math.sin(nod)), dt, 7.5, 0.85)
       const tilt = step(springs.tilt, Math.sin(t * 0.55) * 0.5 + env * 0.55 * Math.sin(nod * 0.5 + 0.8), dt, 5.5, 0.8)
+      if (mode === 'chest') {
+        el.style.transform =
+          `rotate(${(tilt * 0.6).toFixed(4)}deg) ` +
+          `scale(${(1 + breath * 0.006).toFixed(5)}, ${(1 + breath * 0.014 + bob * 0.006).toFixed(5)})`
+        raf = requestAnimationFrame(loop)
+        return
+      }
       el.style.transform =
         `translateY(${(-breath * 0.35 - bob * 0.55).toFixed(4)}%) ` +
         `rotate(${tilt.toFixed(4)}deg) ` +
@@ -52,5 +61,5 @@ export function useBreathing(ref: RefObject<HTMLElement | null>, speaking: boole
     }
     raf = requestAnimationFrame(loop)
     return () => cancelAnimationFrame(raf)
-  }, [ref, ready])
+  }, [ref, ready, mode])
 }
