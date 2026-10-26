@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { logout } from '@/lib/auth'
+import { useAuth } from '@/contexts/AuthContext'
+import { isAdminEmail } from '@/utils/admin'
 
 type Props = {
   step: number
@@ -16,6 +18,9 @@ const tab = (on: boolean) => `whitespace-nowrap rounded-full px-4 py-2 ${on ? 'b
 
 export function NaviHeader({ step, unit, name, onEnd, active = 'navi' }: Props) {
   const router = useRouter()
+  // 先生用（こまったときカード・質問の記録）は、教室の管理者のアカウントのときだけ出す（答えがのっているので）
+  const { user } = useAuth()
+  const teacher = isAdminEmail(user?.email)
   return (
     <header className="flex h-[68px] items-center gap-7 border-b border-[#e6e1fa] bg-white px-8">
       <Link href="/navi" className="flex items-center gap-2.5 text-xl font-bold">
@@ -32,6 +37,11 @@ export function NaviHeader({ step, unit, name, onEnd, active = 'navi' }: Props) 
         <Link href="/review" className={tab(false)}>
           ふくしゅう
         </Link>
+        {teacher && (
+          <Link href="/navi/teacher" className="whitespace-nowrap rounded-full bg-[#2a2452] px-4 py-2 text-white">
+            先生用
+          </Link>
+        )}
       </nav>
       <span className="flex-1" />
       <div className="flex items-center gap-2.5 rounded-full bg-[#f5f3ff] py-1.5 pl-1.5 pr-4 text-sm font-bold">

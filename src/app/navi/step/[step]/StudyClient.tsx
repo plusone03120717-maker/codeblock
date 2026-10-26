@@ -7,6 +7,9 @@ import { useEffect, useRef, useState } from 'react'
 import { PyEditor, isChallengeFile, type RunResult } from '@/components/navi/PyEditor'
 import { YouTubePlayer, type PlayerHandle } from '@/components/navi/YouTubePlayer'
 import { NaviHeader } from '@/components/navi/NaviHeader'
+import { DiffCode } from '@/components/navi/DiffCode'
+import { NaviAsk } from '@/components/navi/NaviAsk'
+import { ASK_PER_DAY } from '@/lib/navi/askRules'
 import { EndPopup } from '@/components/navi/EndPopup'
 import { getNaviStep, nextReadyStep } from '@/data/navi/steps'
 import { sectionPassed, studentNote } from '@/lib/navi/judge'
@@ -37,6 +40,9 @@ export function StudyClient({ step: stepNo }: { step: number }) {
   const [time, setTime] = useState(0)
   const [startAt, setStartAt] = useState(0)
   const [ending, setEnding] = useState(false)
+  // いちかに質問（1日3回まで）。さいごの実行のエラーと出力も、いっしょに送る
+  const [askOpen, setAskOpen] = useState(false)
+  const [lastRun, setLastRun] = useState<{ error?: string; output?: string }>({})
   const [passedToday, setPassedToday] = useState<number[]>([])
   const ticks = useRef(0) // 再生位置は、0.5秒ごとの知らせ10回（5秒）に1回保存する
   // 見出しの終わりで止めるしくみ
@@ -147,6 +153,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
 
   const onRunFinished = (r: RunResult) => {
     if (!step || !p) return
+    setLastRun({ error: r.error ? friendlyError(r.error) : undefined, output: r.output })
     // チャレンジのファイルを動かしたときは、そのファイルのコードだけで見る（上のファイルの書き方で合格にしない）
     const code = r.file && isChallengeFile(r.file) ? (p.files[r.file] ?? '') : Object.values(p.files).join('\n')
     const newly: number[] = []
@@ -563,6 +570,12 @@ export function StudyClient({ step: stepNo }: { step: number }) {
             </span>
           )}
           <span className="flex-1" />
+          <button
+            onClick={() => setAskOpen(true)}
+            className="flex h-[52px] items-center gap-2 whitespace-nowrap rounded-full bg-white px-5 text-[15px] font-black text-[#7448f0] shadow-[inset_0_0_0_2px_#e6e1fa,0_4px_0_#e6e1fa] hover:bg-[#f8f6ff]"
+          >
+            💬 いちかに質問<span className="text-[12px] font-bold text-[#8a85ad]">（1日{ASK_PER_DAY}回）</span>
+          </button>
           {canGo ? (
             step.codeblock.length > 0 ? (
               <Link
@@ -593,6 +606,17 @@ export function StudyClient({ step: stepNo }: { step: number }) {
           )}
         </div>
       </div>
+
+      {askOpen && (
+        <NaviAsk
+          step={step.step}
+          section={focus ?? (nextSection >= 0 ? nextSection : null)}
+          code={p.files[openFile?.name ?? Object.keys(p.files)[0]] ?? ''}
+          lastError={lastRun.error}
+          lastOutput={lastRun.output}
+          onClose={() => setAskOpen(false)}
+        />
+      )}
 
       {ending && (
         <EndPopup
@@ -737,12 +761,8 @@ function CheckpointPanel(props: {
           ) : wrong.hint.kind === 'differs' ? (
             <>
               <b className="text-[#db6500]">{wrong.hint.line}行目</b>がちがうよ：{wrong.hint.tip}
-              <div className="mt-1 grid grid-cols-[auto_1fr] gap-x-2 font-mono text-[13.5px]">
-                <span className="text-[#6d6893]">{hasVideo ? '動画' : '見本'}</span>
-                <code className="whitespace-pre text-[#11845a]">{wrong.hint.want}</code>
-                <span className="text-[#6d6893]">きみ</span>
-                <code className="whitespace-pre text-[#c93c3c]">{wrong.hint.got}</code>
-              </div>
+              {/* 1文字くらべ：最初にちがう字に色をつける */}
+              <DiffCode want={wrong.hint.want} got={wrong.hint.got} wantLabel={hasVideo ? '動画' : '見本'} />
             </>
           ) : (
             <>

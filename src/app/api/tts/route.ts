@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createRemoteJWKSet, jwtVerify } from 'jose'
+import { verifyFirebaseUser } from '@/lib/server/firebaseAuth'
 
 // 日本から使うので、東京で動かす
 export const preferredRegion = 'hnd1'
@@ -19,30 +19,9 @@ export const dynamic = 'force-dynamic'
 const DEFAULT_VOICE_ID = 'KgETZ36CCLD1Cob4xpkv' // Romaco
 const MAX_TEXT_LENGTH = 300
 
-// Firebase のログインの証明書（ID トークン）を、Google の公開鍵で確かめる。
-// Supabase に移したら、ここを Supabase のログインの確かめ方に入れかえる
-const firebaseKeys = createRemoteJWKSet(
-  new URL('https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'),
-)
-
-async function isLoggedIn(request: NextRequest): Promise<boolean> {
-  const auth = request.headers.get('authorization')
-  const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
-  if (!auth?.startsWith('Bearer ') || !projectId) return false
-  try {
-    const { payload } = await jwtVerify(auth.substring(7), firebaseKeys, {
-      issuer: `https://securetoken.google.com/${projectId}`,
-      audience: projectId,
-    })
-    return typeof payload.sub === 'string' && payload.sub.length > 0
-  } catch {
-    return false
-  }
-}
-
 export async function POST(request: NextRequest) {
   // ログイン中の人からのリクエストだけ受け付ける（声はお金がかかるので）
-  if (!(await isLoggedIn(request))) {
+  if (!(await verifyFirebaseUser(request))) {
     return NextResponse.json({ error: 'ログインが必要です' }, { status: 401 })
   }
 

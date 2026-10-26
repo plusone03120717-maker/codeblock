@@ -12,6 +12,7 @@ import { indentWithTab } from '@codemirror/commands'
 import { python } from '@codemirror/lang-python'
 import { friendlyError, type PyError } from '@/lib/navi/friendlyError'
 import { AppWindow, type TkNode } from './AppWindow'
+import { findFullWidth, fullWidthMessage } from '@/lib/navi/fullwidth'
 
 type Line =
   | { kind: 'cmd' | 'out' | 'err' | 'info' | 'ok'; text: string }
@@ -207,6 +208,13 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
     const main = isChallengeFile(activeRef.current) ? activeRef.current : Object.keys(filesRef.current)[0]
     ranFileRef.current = main
     push({ kind: 'cmd', text: `python ${main}` })
+    // 全角チェック：全角の記号・数字・空白があれば、動かす前に知らせて、その行に色をつける
+    const full = findFullWidth(filesRef.current[main] ?? '')
+    if (full) {
+      push({ kind: 'explain', text: fullWidthMessage(full), trace: '' })
+      if (main === activeRef.current) viewRef.current?.dispatch({ effects: setMark.of(full.line) })
+      return
+    }
     setStatus('running')
     workerRef.current.postMessage({ type: 'run', files: filesRef.current, main })
   }, [push, status])
