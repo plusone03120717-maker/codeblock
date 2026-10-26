@@ -10,6 +10,8 @@ import { isLessonCompleted } from "@/utils/progress";
 import { F, FW, FuriganaText } from "@/components/Furigana";
 import { useAuth } from "@/contexts/AuthContext";
 import { isFinishLesson } from "@/data/navi/finish31";
+import { getLessonMissions } from "@/data/missions";
+import { FinishIntro } from "@/components/navi/FinishIntro";
 
 type LessonPageProps = {
   params: Promise<{
@@ -135,6 +137,11 @@ export default function LessonPage({ params }: LessonPageProps) {
         </div>
       </div>
     );
+  }
+
+  // Python ナビの仕上げ5問は、ナビと同じ見た目の入口（今までの CodeBlock のレッスンは、下のまま）
+  if (isFinishLesson(lesson.id)) {
+    return <FinishIntro lesson={lesson} tutorial={tutorial} missions={getLessonMissions(lesson.id) ?? []} completed={completed} />;
   }
 
   const currentSlide = slides[currentSlideIndex];

@@ -51,6 +51,9 @@ import { generateCode, normalizeCode } from "@/utils/codeGen";
 import { checkAnswer, checkCodeStructure } from "@/utils/answerCheck";
 import { isFinishLesson } from "@/data/navi/finish31";
 import { MissionInfo, GeneratedCode, AnswerExample } from "@/components/MissionInfo";
+import { CB_SKIN, NAVI_SKIN } from "@/components/navi/lessonSkin";
+import { LessonRoot } from "@/components/navi/NaviLessonFrame";
+import { NaviCode } from "@/components/navi/NaviCode";
 
 // ヒント回数管理用の定数と関数
 const DAILY_HINT_KEY = "codeblock_daily_hints";
@@ -1369,8 +1372,11 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     );
   }
 
+  // 仕上げ5問（31-N）は Python ナビと同じ見た目。今までのレッスンは CB_SKIN（前のまま）
+  const S = isFinishLesson(lessonId || "") ? NAVI_SKIN : CB_SKIN;
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 via-purple-50 to-blue-50 p-2 md:p-4">
+    <LessonRoot skin={S} lessonId={lessonId || ""}>
       {showXPAnimation && earnedXP !== null && (
         <div className="fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 animate-bounce">
           <div className="bg-yellow-400 text-white px-6 py-3 rounded-full text-2xl font-bold shadow-lg">
@@ -1381,8 +1387,9 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           </div>
         </div>
       )}
-      <div className="max-w-5xl mx-auto">
-        {/* ホームボタン（仕上げ5問は Python ナビへ） */}
+      <div className={S.container}>
+        {/* ホームボタン（仕上げ5問は、上のナビのヘッダーから） */}
+        {!S.navi && (<>
         <div className="mb-2">
           <Link
             href={isFinishLesson(lessonId || "") ? "/navi" : "/"}
@@ -1419,23 +1426,25 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
             )}
           </div>
         </div>
+        </>)}
 
         {/* 進捗バー（コンパクト版） */}
         <div className="mb-3">
           <div className="flex items-center justify-between mb-1">
             {isRetryMode ? (
               <>
-                <span className="text-sm font-bold text-orange-600">
+                <span className={S.retryLabel}>
                   🔄 <FW word="復習" /> {retryIndex + 1}/{wrongMissionIds.length}
                 </span>
-                <span className="text-xs text-orange-500">間違えた問題をもう一度！</span>
+                <span className={S.retryRest}>間違えた問題をもう一度！</span>
               </>
             ) : (
               <>
-                <span className="text-sm font-bold text-gray-700">
+                <span className={S.progressLabel}>
                   ミッション {currentMissionId}/{missions?.length || 0}
                 </span>
-                <span className="text-xs text-gray-500">
+                <span className={S.progressRest}>
+                  {S.navi && <span className="mr-3 rounded-full bg-[#fff3d6] px-2.5 py-0.5 text-[#b66a00]">⭐ {totalXP} XP</span>}
                   残り {(missions?.length || 0) - currentMissionId} 問
                 </span>
               </>
@@ -1447,12 +1456,12 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
               wrongMissionIds.map((_, index) => (
                 <div
                   key={index}
-                  className={`flex-1 h-2 rounded-full ${
+                  className={`${S.seg.base} ${
                     index < retryIndex
-                      ? "bg-green-400"
+                      ? S.seg.done
                       : index === retryIndex
-                      ? "bg-orange-400"
-                      : "bg-gray-300"
+                      ? S.seg.wrong
+                      : S.seg.rest
                   }`}
                 />
               ))
@@ -1461,14 +1470,14 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
               missions?.map((mission, index) => (
                 <div
                   key={index}
-                  className={`flex-1 h-2 rounded-full ${
+                  className={`${S.seg.base} ${
                     index < currentMissionId - 1
                       ? wrongMissionIds.includes(mission.id)
-                        ? "bg-orange-400"
-                        : "bg-green-400"
+                        ? S.seg.wrong
+                        : S.seg.done
                       : index === currentMissionId - 1
-                      ? "bg-purple-400"
-                      : "bg-gray-300"
+                      ? S.seg.current
+                      : S.seg.rest
                   }`}
                 />
               ))
@@ -1477,11 +1486,11 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
         </div>
 
         {/* ミッション内容（コンパクト版） */}
-        <div className="bg-white rounded-2xl shadow-lg p-4 md:p-5 mb-3 border-2 border-blue-300">
-          <div className="flex items-start gap-4">
+        <div className={S.missionCard}>
+          <div className={S.navi ? "flex items-center gap-5" : "flex items-start gap-4"}>
             {/* キャラクター */}
             {tutorial && (
-              <div className="w-28 h-28 md:w-32 md:h-32 bg-gradient-to-br from-purple-200 to-purple-300 rounded-full flex items-center justify-center flex-shrink-0 border-4 border-purple-400 shadow-lg overflow-hidden">
+              <div className={S.avatar}>
                 {tutorial.characterImage && !imageError ? (
                   <Image
                     src={tutorial.characterImage}
@@ -1502,7 +1511,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
             )}
             
             {/* 説明・前提コード・期待される出力 */}
-            <MissionInfo mission={currentMission} />
+            <MissionInfo mission={currentMission} navi={S.navi} />
           </div>
         </div>
 
@@ -1512,28 +1521,28 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           <div className="mb-4">
             {/* コード表示 */}
             {currentMission.codeToRead && (
-              <div className="bg-gray-900 rounded-xl p-4 mb-4">
-                <pre className="text-green-400 font-mono text-sm whitespace-pre-wrap">{currentMission.codeToRead}</pre>
+              <div className={S.quizCodeBox}>
+                <pre className={S.quizCode}>{S.navi ? <NaviCode code={currentMission.codeToRead} /> : currentMission.codeToRead}</pre>
               </div>
             )}
 
             {/* 選択肢 */}
-            <h3 className="text-sm font-bold mb-2 text-gray-700"><F reading="せんたくし">選択肢</F>から<F reading="えら">選</F>んでね</h3>
-            <div className="grid grid-cols-2 gap-2">
+            <h3 className={S.heading}><F reading="せんたくし">選択肢</F>から<F reading="えら">選</F>んでね</h3>
+            <div className={S.choiceGrid}>
               {currentMission.choices?.map((choice, index) => (
                 <button
                   key={index}
                   onClick={() => handleQuizAnswer(index)}
                   disabled={executionResult !== null}
-                  className={`p-3 rounded-xl font-bold text-left transition-all border-2 ${
+                  className={`${S.choice.base} ${
                     selectedChoice === index
                       ? executionResult?.success
-                        ? "bg-green-100 border-green-500 text-green-700"
-                        : "bg-red-100 border-red-500 text-red-700"
-                      : "bg-white border-gray-200 hover:border-purple-400 hover:bg-purple-50"
+                        ? S.choice.right
+                        : S.choice.wrong
+                      : S.choice.idle
                   } ${executionResult !== null ? "cursor-not-allowed" : "cursor-pointer"}`}
                 >
-                  <span className="text-purple-500 mr-2">{String.fromCharCode(65 + index)}.</span>
+                  <span className={S.choice.letter}>{String.fromCharCode(65 + index)}{S.navi ? "" : "."}</span>
                   {choice}
                 </button>
               ))}
@@ -1541,15 +1550,15 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
 
             {/* 誤答時のフィードバック（一番学べる瞬間に何も出ないのを防ぐ） */}
             {quizFeedback && executionResult?.success === false && (
-              <div className="mt-4 p-4 bg-amber-50 border-2 border-amber-300 rounded-xl">
-                <p className="text-amber-900 font-bold text-sm mb-1">
+              <div className={S.feedback.box} ref={S.navi ? (el) => el?.scrollIntoView({ behavior: "smooth", block: "center" }) : undefined}>
+                <p className={S.feedback.title}>
                   🤔 おしい！ここを<F reading="かんが">考</F>えてみよう
                 </p>
-                <p className="text-amber-800 text-sm leading-relaxed">{quizFeedback}</p>
+                <p className={S.feedback.body}>{quizFeedback}</p>
                 <button
                   type="button"
                   onClick={retryQuiz}
-                  className="mt-3 bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-5 rounded-full text-sm transition-all"
+                  className={S.feedback.retry}
                 >
                   もう<F reading="いちど">一度</F><F reading="こた">答</F>える
                 </button>
@@ -1558,8 +1567,8 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
 
             {/* 正解時の解説 */}
             {executionResult?.success && currentMission?.explanation && (
-              <div className="mt-4 p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
-                <p className="text-blue-800 text-sm leading-relaxed">💡 {currentMission.explanation}</p>
+              <div className={S.explanation.box}>
+                <p className={S.explanation.text}>💡 {currentMission.explanation}</p>
               </div>
             )}
           </div>
@@ -1568,10 +1577,10 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           <>
             {/* 回答エリア */}
             <div className="mb-4">
-              <h3 className="text-sm font-bold mb-2 text-gray-700">あなたの<F reading="こた">答</F>え</h3>
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-300 rounded-2xl p-4 min-h-[60px]">
+              <h3 className={S.heading}>あなたの<F reading="こた">答</F>え</h3>
+              <div className={S.answerArea}>
                 {selectedBlocks.length === 0 ? (
-                  <p className="text-gray-400 text-center py-2 text-sm"><F reading="たんご">単語</F>を<F reading="えら">選</F>んでください</p>
+                  <p className={S.answerEmpty}><F reading="たんご">単語</F>を<F reading="えら">選</F>んでください</p>
                 ) : (
                   <DndContext
                     sensors={sensors}
@@ -1604,15 +1613,15 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
 
             {/* 単語選択 */}
             <div className="mb-4">
-              <h3 className="text-sm font-bold mb-2 text-gray-700"><F reading="たんご">単語</F>を<F reading="えら">選</F>んでね</h3>
-              <div className="bg-gray-50 border-2 border-gray-200 rounded-2xl p-4">
+              <h3 className={S.heading}><F reading="たんご">単語</F>を<F reading="えら">選</F>んでね</h3>
+              <div className={S.palette}>
                 <div className="flex flex-wrap gap-2">
                   {availableBlocks.map((block) => (
                     <button
                       key={block.id}
                       type="button"
                       onClick={() => selectBlock(block)}
-                      className={`${block.color} text-gray-700 px-3 py-2 rounded-xl text-sm font-mono shadow hover:shadow-md hover:scale-105 transition-all border border-white`}
+                      className={`${block.color} ${S.paletteBlock}`}
                       style={block.text === "==" ? { letterSpacing: "0.15em" } : undefined}
                     >
                       {block.text}
@@ -1623,15 +1632,16 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
             </div>
 
             {/* 組み立てたPythonコード（ブロックと本物のコードを結びつける） */}
-            <GeneratedCode code={livePythonCode} />
+            <GeneratedCode code={livePythonCode} navi={S.navi} />
 
             {/* 3回間違えたら正解例を見せる */}
             {showAnswerExample && currentMission?.correctCode && (
-              <AnswerExample code={currentMission.correctCode} />
+              <AnswerExample code={currentMission.correctCode} navi={S.navi} />
             )}
           </>
         )}
 
+        {S.navi && currentMission?.type === "quiz" && <div className="h-36"></div>}
         {/* 固定ボタン分の余白 - 選択式でない場合のみ */}
         {currentMission?.type !== "quiz" && (
           <div className="h-40"></div>
@@ -1640,46 +1650,35 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
 
       {/* ボタンと結果表示（画面下部に固定）- 選択式でない場合のみ表示 */}
       {currentMission?.type !== "quiz" && (
-        <div 
-          style={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: 9999,
-            backgroundColor: 'white',
-            borderTop: '2px solid #e5e7eb',
-            boxShadow: '0 -4px 6px -1px rgba(0, 0, 0, 0.1)',
-          }}
-        >
+        <div style={S.bottomBar}>
           {/* 実行結果 */}
           {executionResult && (
-            <div className="p-3 border-b">
+            <div className={S.result.box}>
               {executionResult.success ? (
                 <div>
-                  <div className="bg-green-100 border-2 border-green-500 rounded-2xl p-3 flex items-center gap-3">
+                  <div className={S.result.ok}>
                     <span className="text-xl">🎉</span>
                     <div className="flex-1">
-                      <p className="text-green-800 font-bold text-sm"><FW word="正解" />！</p>
-                      <p className="text-green-700 text-xs">出力: {executionResult.output}</p>
+                      <p className={S.result.okTitle}><FW word="正解" />！</p>
+                      <p className={S.result.okText}>出力: {executionResult.output}</p>
                     </div>
                   </div>
                   {currentMission?.explanation && (
-                    <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-xl">
-                      <p className="text-blue-800 text-sm">💡 {currentMission.explanation}</p>
+                    <div className={S.navi ? "mt-3 rounded-[16px] bg-[#eaf4fd] p-3" : "mt-3 p-3 bg-blue-50 border border-blue-200 rounded-xl"}>
+                      <p className={S.navi ? "text-[14px] font-bold text-[#1f4f7a]" : "text-blue-800 text-sm"}>💡 {currentMission.explanation}</p>
                     </div>
                   )}
                 </div>
               ) : (
-                <div className="bg-red-100 border-2 border-red-500 rounded-2xl p-3 flex items-center gap-3">
+                <div className={S.result.ng}>
                   <span className="text-xl">🤔</span>
                   <div className="flex-1">
-                    <p className="text-red-800 font-bold text-sm">もう一度！</p>
+                    <p className={S.result.ngTitle}>もう一度！</p>
                     {executionResult.error && (
-                      <p className="text-red-700 text-xs font-bold">{executionResult.error}</p>
+                      <p className={S.result.ngBold}>{executionResult.error}</p>
                     )}
                     {executionResult.output && (
-                      <p className="text-red-700 text-xs">出力: {executionResult.output}</p>
+                      <p className={S.result.ngText}>出力: {executionResult.output}</p>
                     )}
                     {/* ヒント取得中の表示 */}
                     {wrongCount >= 3 && hintLoading && canUseHint(isPremium) && (
@@ -1702,25 +1701,14 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           )}
           
           {/* ボタン */}
-          <div className="p-3">
+          <div className={S.bottomInner}>
             {showNextButton ? (
               // 正解時：「次へ」ボタンを表示
               <div className="flex justify-center">
                 <button
                   type="button"
                   onClick={goToNextMission}
-                  style={{
-                    background: 'linear-gradient(to right, #10b981, #059669)',
-                    color: 'white',
-                    padding: '14px 32px',
-                    borderRadius: '9999px',
-                    fontWeight: 'bold',
-                    fontSize: '16px',
-                    border: '2px solid white',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                    width: '100%',
-                    maxWidth: '300px',
-                  }}
+                  style={S.nextBtn}
                 >
                   {(() => {
                     if (isRetryMode) {
@@ -1742,16 +1730,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                 <button
                   type="button"
                   onClick={reset}
-                  style={{
-                    background: 'linear-gradient(to right, #e5e7eb, #d1d5db)',
-                    color: '#374151',
-                    padding: '12px 20px',
-                    borderRadius: '9999px',
-                    fontWeight: 'bold',
-                    fontSize: '14px',
-                    border: '2px solid white',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                  }}
+                  style={S.resetBtn}
                 >
                   やり直す
                 </button>
@@ -1759,17 +1738,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
                   type="button"
                   onClick={handleCheck}
                   disabled={isExecuting}
-                  style={{
-                    background: isExecuting ? '#9ca3af' : 'linear-gradient(to right, #a855f7, #6366f1)',
-                    color: 'white',
-                    padding: '12px 24px',
-                    borderRadius: '9999px',
-                    fontWeight: 'bold',
-                    fontSize: '14px',
-                    border: '2px solid white',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                    opacity: isExecuting ? 0.5 : 1,
-                  }}
+                  style={S.checkBtn(isExecuting)}
                 >
                   {isExecuting ? <><F reading="じっこう">実行</F><F reading="ちゅう">中</F>...</> : <><FW word="確認" />する</>}
                 </button>
@@ -1794,49 +1763,50 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       )}
 
       {/* 選択式問題の結果表示 */}
-      {currentMission?.type === "quiz" && executionResult && (
-        <div 
-          style={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: 9999,
-            backgroundColor: 'white',
-            borderTop: '2px solid #e5e7eb',
-            boxShadow: '0 -4px 6px -1px rgba(0, 0, 0, 0.1)',
-          }}
-        >
-          <div className="p-3">
-            {executionResult.success ? (
+      {currentMission?.type === "quiz" && executionResult && !(S.navi && quizFeedback && !executionResult.success) && (
+        <div style={S.bottomBar}>
+          <div className={S.bottomInner}>
+            {executionResult.success && S.navi ? (
+              <div className="flex items-center gap-4">
+                <div className="flex min-w-0 flex-1 flex-col gap-2">
+                  <div className="flex items-center gap-3 rounded-[16px] bg-[#e3f7ee] px-4 py-2.5 shadow-[inset_0_0_0_2px_#22b573]">
+                    <span className="text-2xl">🎉</span>
+                    <p className="text-[17px] font-black text-[#16905a]"><FW word="正解" />！</p>
+                    <p className="text-[14px] font-bold text-[#1f7a52]">答えは「{executionResult.output}」</p>
+                  </div>
+                  {currentMission?.explanation && (
+                    <p className="rounded-[14px] bg-[#eaf4fd] px-4 py-2 text-[14px] font-bold leading-relaxed text-[#1f4f7a]">💡 {currentMission.explanation}</p>
+                  )}
+                </div>
+                {showNextButton && (
+                  <button type="button" onClick={goToNextMission} style={{ ...S.quizNextBtn, width: 220, flex: "none" }}>
+                    {(() => {
+                      if (isRetryMode) return retryIndex + 1 < wrongMissionIds.length ? "次へ →" : "🎊 完了！";
+                      if (currentMissionId < (missions?.length || 0)) return "次へ →";
+                      return wrongMissionIds.length > 0 ? "次へ →" : "🎊 完了！";
+                    })()}
+                  </button>
+                )}
+              </div>
+            ) : executionResult.success ? (
               <>
-                <div className="bg-green-100 border-2 border-green-500 rounded-2xl p-4 flex items-center gap-3 mb-3">
+                <div className={S.quizResult.ok}>
                   <span className="text-2xl">🎉</span>
                   <div>
-                    <p className="text-green-800 font-bold"><FW word="正解" />！</p>
-                    <p className="text-green-700 text-sm">答えは「{executionResult.output}」</p>
+                    <p className={S.quizResult.okTitle}><FW word="正解" />！</p>
+                    <p className={S.quizResult.okText}>答えは「{executionResult.output}」</p>
                   </div>
                 </div>
                 {currentMission?.explanation && (
-                  <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-xl">
-                    <p className="text-blue-800 text-sm">💡 {currentMission.explanation}</p>
+                  <div className={S.navi ? "mb-3 rounded-[16px] bg-[#eaf4fd] p-3" : "mb-3 p-3 bg-blue-50 border border-blue-200 rounded-xl"}>
+                    <p className={S.navi ? "text-[14px] font-bold text-[#1f4f7a]" : "text-blue-800 text-sm"}>💡 {currentMission.explanation}</p>
                   </div>
                 )}
                 {showNextButton && (
                   <button
                     type="button"
                     onClick={goToNextMission}
-                    style={{
-                      background: 'linear-gradient(to right, #10b981, #059669)',
-                      color: 'white',
-                      padding: '14px 32px',
-                      borderRadius: '9999px',
-                      fontWeight: 'bold',
-                      fontSize: '16px',
-                      border: '2px solid white',
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                      width: '100%',
-                    }}
+                    style={S.quizNextBtn}
                   >
                     {(() => {
                       if (isRetryMode) {
@@ -1855,11 +1825,11 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
               </>
             ) : (
               <>
-                <div className="bg-red-100 border-2 border-red-500 rounded-2xl p-4 flex items-center gap-3 mb-3">
+                <div className={S.quizResult.ng}>
                   <span className="text-2xl">🤔</span>
                   <div className="flex-1">
-                    <p className="text-red-800 font-bold">もう一度！</p>
-                    <p className="text-red-700 text-sm">{executionResult.error}</p>
+                    <p className={S.quizResult.ngTitle}>もう一度！</p>
+                    <p className={S.quizResult.ngText}>{executionResult.error}</p>
                     {/* ヒント取得中の表示 */}
                     {wrongCount >= 3 && hintLoading && canUseHint(isPremium) && (
                       <div className="flex items-center gap-2 text-purple-600 mt-2">
@@ -1949,6 +1919,6 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
           </div>
         );
       })()}
-    </div>
+    </LessonRoot>
   );
 }
