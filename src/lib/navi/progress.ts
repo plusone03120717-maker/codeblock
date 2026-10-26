@@ -140,6 +140,15 @@ export function naviAfterLesson(lessonId: string, steps: NaviStep[]): { next: st
   return { next }
 }
 
+// Python ナビで進めている生徒が、ナビのレッスンを開いているときは、そのステップの番号（ちがえば null）。
+// 先生の画面へ送るかを決める。ナビを使っていない生徒（今までのコース）には null
+export function naviLessonStep(lessonId: string, steps: NaviStep[]): number | null {
+  if (typeof window === 'undefined' || !localStorage.getItem(KEY)) return null
+  const current = loadNavi().current
+  const step = steps.find((s) => s.step === current && s.codeblock.includes(lessonId)) ?? steps.find((s) => s.codeblock.includes(lessonId))
+  return step ? step.step : null
+}
+
 // 準備中でとばしたステップの動画ができたら、そのステップにもどす（2026-10-26 ステップ7を足したときに、
 // ステップ6を終えた生徒が 8 に進んだままになっていたため）。もどしたら true。
 // とばした記録がない前の生徒は「前のステップは終えたのに、このステップはまだ」の所を、とばしたステップとみなす

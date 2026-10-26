@@ -27,6 +27,7 @@ export const getUserProfile = async (uid: string): Promise<UserProfile | null> =
         uid,
         email: data.email || data.contactEmail || "",
         displayName: data.displayName || "",
+        naviCourse: typeof data.naviCourse === "boolean" ? data.naviCourse : undefined,
         subscription: {
           ...subscription,
           startDate: subscription.startDate instanceof Timestamp 
@@ -149,6 +150,7 @@ export const getAllUsers = async (): Promise<UserProfile[]> => {
         userId: data.userId || "",
         email: data.email || data.contactEmail || "",
         displayName: data.displayName || data.userId || "",
+        naviCourse: typeof data.naviCourse === "boolean" ? data.naviCourse : undefined,
         subscription: {
           plan: data.subscription?.plan || "free",
           status: data.subscription?.status || "active",

@@ -56,3 +56,45 @@ export function friendlyError(err: PyError): string {
   }
   return `${where}でエラーが出たよ（${type}）。動画のコードと見くらべよう`
 }
+
+// 先生の画面の「苦手」で数えるエラーの種類（friendlyError と同じ分け方）
+export function errorKind(err: PyError): string {
+  const { type, message } = err
+  if (message.includes('NAVI_NO_INPUT')) return 'other'
+  if (type === 'SyntaxError' || type === 'IndentationError' || type === 'TabError') {
+    if (/invalid character '[×÷]'/.test(message)) return 'mathSign'
+    if (message.includes('invalid character')) return 'fullwidth'
+    if (message.includes('was never closed') || message.includes('unmatched')) return 'paren'
+    if (message.includes('unterminated string literal') || message.includes('EOL while scanning')) return 'quote'
+    if (message.includes('indent')) return 'indent'
+    if (message.includes("expected ':'")) return 'colon'
+    return 'syntax'
+  }
+  if (type === 'NameError') return 'name'
+  if (type === 'TypeError') {
+    if (message.includes('can only concatenate str') || message.includes("unsupported operand type(s) for +: 'int' and 'str'")) return 'concat'
+    if (message.includes("can't multiply sequence") || (message.includes('unsupported operand') && message.includes("'str'"))) return 'strCalc'
+    return 'type'
+  }
+  if (type === 'ValueError') return 'value'
+  if (type === 'IndexError' || type === 'KeyError') return 'index'
+  return 'other'
+}
+
+// エラーの種類ごとの名前と、先生の声かけの例
+export const ERROR_TALK: Record<string, { label: string; talk: string }> = {
+  fullwidth: { label: '全角で打った', talk: '「キーボードの『半角/全角』を押して、A にしてから打ってみよう」' },
+  mathSign: { label: '× ÷ を使った', talk: '「Python のかけ算は * 、わり算は / だよ。キーボードのどこにあるかな？」' },
+  paren: { label: 'カッコの閉じわすれ', talk: '「( と ) の数を、指でかぞえてみよう」' },
+  quote: { label: '" の閉じわすれ', talk: '「文字のはじめと おわりに " があるか、見てみよう」' },
+  indent: { label: '字下げ（行のはじめの空白）', talk: '「if や for の次の行は、Tab キーで字下げしよう」' },
+  colon: { label: ': のつけわすれ', talk: '「if や for の行のおわりに : はある？」' },
+  syntax: { label: '書き方のまちがい', talk: '「💡 ヒントのコードと、1文字ずつくらべてみよう」' },
+  name: { label: '名前のつづり・作りわすれ', talk: '「その名前、上の行で = で作ってある？ つづりは同じ？」' },
+  concat: { label: '文字と数を + でつないだ', talk: '「数も \" \" でかこむと、文字としてつなげられるよ」' },
+  strCalc: { label: 'input の答えのまま計算', talk: '「input の答えは文字だよ。float( ) で数にしてから計算しよう」' },
+  type: { label: '型のまちがい', talk: '「黄色い説明を、いっしょに読もう。何行目って書いてある？」' },
+  value: { label: '数にできない値', talk: '「答えは半角の数字で入れてみよう」' },
+  index: { label: 'リストの番号・辞書の名前', talk: '「番号は 0 から始まるよ。いくつ入っているか数えてみよう」' },
+  other: { label: 'そのほかのエラー', talk: '「黄色い説明を、いっしょに読もう。何行目って書いてある？」' },
+}

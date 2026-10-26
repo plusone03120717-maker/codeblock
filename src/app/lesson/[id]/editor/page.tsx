@@ -56,6 +56,9 @@ import { CB_SKIN, NAVI_SKIN } from "@/components/navi/lessonSkin";
 import { LessonRoot } from "@/components/navi/NaviLessonFrame";
 import { NaviCode } from "@/components/navi/NaviCode";
 import { runPythonInBrowser, warmPython } from "@/lib/navi/browserPython";
+import { naviLessonStep } from "@/lib/navi/progress";
+import { NAVI_STEPS } from "@/data/navi/steps";
+import { liveRun, liveSet, weakMission } from "@/lib/navi/teacherLog";
 
 // ヒント回数管理用の定数と関数
 const DAILY_HINT_KEY = "codeblock_daily_hints";
@@ -373,6 +376,18 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       saveLastOpenedMission(lessonId, currentMissionId);
     }
   }, [lessonId, currentMissionId]);
+
+  // Python ナビから来たレッスンだけ、先生の画面（いまの教室・苦手）に送る。今までのコースの生徒には何もしない
+  const naviStepNo = lessonId ? naviLessonStep(lessonId, NAVI_STEPS) : null;
+  useEffect(() => {
+    if (naviStepNo === null || !lessonId) return;
+    liveSet({ step: naviStepNo, where: "codeblock", lessonId, mission: currentMissionId });
+  }, [naviStepNo, lessonId, currentMissionId]);
+  const naviAnswered = (ok: boolean, error?: string) => {
+    if (naviStepNo === null || !lessonId || !currentMission) return;
+    liveRun(ok, error);
+    if (!ok) weakMission(lessonId, currentMission.id);
+  };
 
   useEffect(() => {
     const progress = getProgress();
@@ -760,6 +775,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
     
     const isCorrect = choiceIndex === currentMission.correctAnswer;
     
+    naviAnswered(isCorrect, "選んだ答えがちがう");
     if (isCorrect) {
       setExecutionResult({
         success: true,
@@ -997,6 +1013,7 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       const codeIsValid = result.correct;
       const codeErrorMessage = result.message || "";
 
+      naviAnswered(outputMatches && codeIsValid, codeErrorMessage || "出力がちがう");
       // 両方の条件を満たした場合のみ正解
       if (outputMatches && codeIsValid) {
         

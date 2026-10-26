@@ -2,7 +2,7 @@
 
 // CodeBlock の管理画面（先生の画面）。
 // 「生徒とプラン」は今までの管理画面の機能（人数・検索・プラン変更・進捗管理）をそのまま入れたものに、ユーザーの追加を足した。
-// Python ナビ（新しいコース）の「いまの教室」「苦手」「コースの切りかえ」は、Supabase に移したあとに中身を入れる。
+// Python ナビ（新しいコース）の「いまの教室」「苦手」「コース切りかえ」は、Firestore の記録（teacherLog.ts が書く）から作る。
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,41 +13,19 @@ import { ProgressData } from "@/lib/progressSync";
 import { isAdminEmail } from "@/utils/admin";
 import { createUserByAdmin } from "@/lib/auth";
 import Link from "next/link";
+import { isNaviUser } from "@/lib/navi/access";
+import { ClassroomTab } from "./ClassroomTab";
+import { WeakTab } from "./WeakTab";
+import { CourseTab } from "./CourseTab";
 
 type Tab = "students" | "classroom" | "weak" | "course";
 
-const NAV: { key: Tab; icon: string; label: string; soon?: boolean }[] = [
+const NAV: { key: Tab; icon: string; label: string }[] = [
   { key: "students", icon: "👥", label: "生徒とプラン" },
-  { key: "classroom", icon: "🏫", label: "いまの教室", soon: true },
-  { key: "weak", icon: "📊", label: "苦手", soon: true },
-  { key: "course", icon: "⚙️", label: "コース切りかえ", soon: true },
+  { key: "classroom", icon: "🏫", label: "いまの教室" },
+  { key: "weak", icon: "📊", label: "苦手" },
+  { key: "course", icon: "⚙️", label: "コース切りかえ" },
 ];
-
-const SOON_TEXT: Record<Exclude<Tab, "students">, { title: string; body: string[] }> = {
-  classroom: {
-    title: "いまの教室（Python ナビ）",
-    body: [
-      "授業中の生徒が、いま何をしているか（動画の何分・エディターのエラー・CodeBlock の何問目）を並べて見る画面です。",
-      "並び：進めない → 止まっている → 順調。ヒントを3つ使っても進めない子には「進めてOK」。",
-      "生徒の進み具合を Supabase に記録するようになってから使えます。",
-    ],
-  },
-  weak: {
-    title: "苦手（Python ナビ）",
-    body: [
-      "生徒ごとの苦手（動画の巻き戻し・エディターのエラー・CodeBlock のまちがい・いちか（ナビ）への質問から）と声かけの例、みんながつまずいているところを見る画面です。",
-      "生徒の進み具合を Supabase に記録するようになってから使えます。",
-    ],
-  },
-  course: {
-    title: "コースの切りかえ（Python ナビ）",
-    body: [
-      "生徒ごとに「新しいコース（Python ナビ）」をオンにする画面です。押しまちがえないように、確かめの画面つきにします。",
-      "今までのコースの生徒には、いちか（ナビ）は出ません。",
-      "Supabase に移したあとに使えます。",
-    ],
-  },
-};
 
 const PLAN_STYLE: Record<string, string> = {
   free: "bg-[#f0eef7] text-[#6d6893]",
@@ -234,6 +212,7 @@ export default function AdminPage() {
   const filteredUsers = users.filter(
     (u) => u.email.toLowerCase().includes(q) || u.displayName.toLowerCase().includes(q) || (u.userId ?? "").toLowerCase().includes(q),
   );
+  const naviUsers = users.filter((u) => isNaviUser(u.uid, u));
   const counts = [
     { label: "総ユーザー数", value: users.length, color: "text-[#2a2452]" },
     { label: "無料", value: users.filter((u) => u.subscription.plan === "free").length, color: "text-[#6d6893]" },
@@ -257,7 +236,6 @@ export default function AdminPage() {
             }`}
           >
             {n.icon} {n.label}
-            {n.soon && <span className="ml-auto whitespace-nowrap rounded-full bg-[#f0eef7] px-2 text-[11px] text-[#8a85ad]">準備中</span>}
           </button>
         ))}
         <div className="mt-auto px-2.5 text-xs font-bold text-[#6d6893]">
@@ -359,18 +337,14 @@ export default function AdminPage() {
               {!loading && filteredUsers.length === 0 && <div className="py-8 text-center text-sm font-bold text-[#6d6893]">ユーザーが見つかりません</div>}
             </section>
           </>
+        ) : tab === "course" ? (
+          <CourseTab users={users} onChanged={loadUsers} />
+        ) : loading ? (
+          <div className="py-16 text-center text-sm font-bold text-[#6d6893]">読みこみ中…</div>
+        ) : tab === "classroom" ? (
+          <ClassroomTab users={naviUsers} />
         ) : (
-          <section className="max-w-[720px] rounded-[22px] bg-white px-8 py-7 shadow-sm">
-            <div className="flex items-center gap-3">
-              <h1 className="text-[23px] font-black">{SOON_TEXT[tab].title}</h1>
-              <span className="rounded-full bg-[#f0eef7] px-3 py-0.5 text-[13px] font-bold text-[#8a85ad]">準備中</span>
-            </div>
-            <div className="mt-4 flex flex-col gap-2 text-[15px] font-bold leading-relaxed text-[#4a4470]">
-              {SOON_TEXT[tab].body.map((t) => (
-                <p key={t}>{t}</p>
-              ))}
-            </div>
-          </section>
+          <WeakTab users={naviUsers} />
         )}
       </main>
 

@@ -17,6 +17,7 @@ import { dueAt, isRequired, pauseTimes, requiredIndexes } from '@/lib/navi/check
 import { codeHint, type CodeHint } from '@/lib/navi/hint'
 import { inStep, videoLabel, type NaviSection } from '@/lib/navi/types'
 import { friendlyError } from '@/lib/navi/friendlyError'
+import { fullWidthMessage } from '@/lib/navi/fullwidth'
 import { isFinishLesson, naviLessonLabel } from '@/data/navi/finish31'
 import {
   codeblockCompleted,
@@ -29,6 +30,7 @@ import {
   updateStep,
   type StepProgress,
 } from '@/lib/navi/progress'
+import { liveActive, liveEnd, liveHint, liveRun, liveSet, weakError, weakSection } from '@/lib/navi/teacherLog'
 
 const XP_PER_SECTION = 20
 
@@ -116,9 +118,12 @@ export function StudyClient({ step: stepNo }: { step: number }) {
       setEndCard(true)
 
     if (!playing) return
+    liveActive(sec)
     const prev = lastPlaying.current
     lastPlaying.current = sec
     if (prev === null) return
+    // 自分で動画をもどした（見なおした）ところは、先生の画面の「苦手」に数える
+    if (sec < prev - 3) countRewind(sec)
     // 止まっているのに YouTube の再生ボタンで進めた → その見出しは「あとでやる」
     if (cp) {
       if (sec > cp.at + 1.5) {
@@ -133,6 +138,12 @@ export function StudyClient({ step: stepNo }: { step: number }) {
     player.current?.pause()
     setHintOpen(null)
     setCp({ mode: sec - prev > 3 ? 'jump' : 'pause', at: Math.max(...crossed) })
+  }
+
+  const countRewind = (sec: number) => {
+    if (!step) return
+    const i = step.sections.reduce((at, s, j) => (s.start <= sec ? j : at), -1)
+    if (i >= 0) weakSection(stepNo, i, 'rewinds')
   }
 
   const onEnded = () => {
@@ -153,6 +164,13 @@ export function StudyClient({ step: stepNo }: { step: number }) {
 
   const onRunFinished = (r: RunResult) => {
     if (!step || !p) return
+    // 全角で止めたとき：説明はエディターが出しているので、先生の画面に送るだけ
+    if (r.blocked && r.error) {
+      const target = focusOf(p.passed)
+      liveRun(false, fullWidthMessage({ line: r.error.line ?? 1, col: 1, ch: r.error.message.slice(-2, -1) }))
+      weakError(stepNo, target !== null && reached(target) ? target : null, r.error)
+      return
+    }
     setLastRun({ error: r.error ? friendlyError(r.error) : undefined, output: r.output })
     // チャレンジのファイルを動かしたときは、そのファイルのコードだけで見る（上のファイルの書き方で合格にしない）
     const code = r.file && isChallengeFile(r.file) ? (p.files[r.file] ?? '') : Object.values(p.files).join('\n')
@@ -180,6 +198,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
       const guessed = (sec.note ?? '').includes('推測')
       const main = Object.keys(p.files)[0]
       const err = r.error
+      if (err || !guessed) liveHint('diff')
       setWrong({
         section: target,
         hint: err
@@ -189,6 +208,15 @@ export function StudyClient({ step: stepNo }: { step: number }) {
             : codeHint(sec, p.files[main] ?? ''),
       })
     }
+    // 先生の画面へ：合った・合わなかった（いま取り組んでいる見出しのまちがいは「苦手」に数える）
+    if (newly.length > 0 && (target === null || newly.includes(target))) liveRun(true)
+    else if (r.error || target !== null) {
+      liveRun(false, r.error ? friendlyError(r.error) : '結果が動画とちがう')
+      if (target !== null && reached(target) && !step.sections[target].expectError) {
+        if (r.error) weakError(stepNo, target, r.error)
+        else weakSection(stepNo, target, 'fails')
+      }
+    } else liveRun(true)
     if (newly.length > 0) applyPassed(newly, target)
   }
 
@@ -224,6 +252,16 @@ export function StudyClient({ step: stepNo }: { step: number }) {
       if (left.length === 0) setEndCard(false)
     }
   }
+
+  // 先生の画面（いまの教室）に、いま何をしているかを送る。
+  // 動画を見なおしているあいだも、まだ合っていない見出しのまちがい・ヒントの数は残す（10秒もどすと、止まった所をはなれるので）
+  const liveFocus = p ? focusOf(p.passed) : null
+  const liveWhere = !p || !step ? null : liveFocus !== null || !step.video || p.videoDone ? 'section' : 'video'
+  const liveSection = liveFocus ?? (p && step ? (requiredIndexes(step).find((i) => !p.passed.includes(i)) ?? null) : null)
+  useEffect(() => {
+    if (!liveWhere) return
+    liveSet({ step: stepNo, where: liveWhere, section: liveSection, videoSec: Math.floor(lastTick.current ?? 0) })
+  }, [stepNo, liveWhere, liveSection])
 
   if (!step || step.planned) {
     const next = nextReadyStep(stepNo)
@@ -415,7 +453,10 @@ export function StudyClient({ step: stepNo }: { step: number }) {
                 onNext={() => {
                   const i = answer.section
                   setAnswer(null)
-                  if (!p.passed.includes(i)) applyPassed([i], i, { revealed: [...(p.revealed ?? []), i] })
+                  if (!p.passed.includes(i)) {
+                    weakSection(stepNo, i, 'revealed')
+                    applyPassed([i], i, { revealed: [...(p.revealed ?? []), i] })
+                  }
                 }}
                 onClose={() => setAnswer(null)}
               />
@@ -433,11 +474,19 @@ export function StudyClient({ step: stepNo }: { step: number }) {
                   if (!step.video) return
                   // 止まっているときは10秒もどす（またここで止まる）。動画のあとは、その見出しの場面から
                   const to = cp ? Math.max(0, cp.at - 10) : step.sections[focus].start
+                  liveHint('rewind')
+                  weakSection(stepNo, focus, 'rewinds')
                   setCp(null)
                   setDeferred((d) => d.filter((x) => x !== focus))
                   seekTo(to)
                 }}
-                onHint={() => setHintOpen(hintOpen === focus ? null : focus)}
+                onHint={() => {
+                  if (hintOpen !== focus) {
+                    liveHint('code')
+                    weakSection(stepNo, focus, 'hints')
+                  }
+                  setHintOpen(hintOpen === focus ? null : focus)
+                }}
                 onLater={() => {
                   if (!cp) return
                   // 飛ばしたときは、飛ばした先からそのまま。止まったときは止まった所から
@@ -532,6 +581,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
                 const state = loadNavi()
                 state.steps[stepNo] = { ...stepProgress(state, stepNo), files }
                 saveNavi(state)
+                liveActive()
                 setP((prev) => (prev ? { ...prev, files } : prev))
                 setWrong(null)
               }}
@@ -634,6 +684,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
             state.sessions.push({ at: Date.now(), step: stepNo, learned: learnedToday, xp: learnedToday.length * XP_PER_SECTION })
             state.reviewAnswered[stepNo] = false
             saveNavi(state)
+            liveEnd()
             // ホームで、いちかが「おつかれさま」を言う
             router.push('/navi?bye=1')
           }}

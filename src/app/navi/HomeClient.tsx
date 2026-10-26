@@ -24,6 +24,7 @@ import { useNaviVoice } from '@/components/navi/useNaviVoice'
 import { useBreathing } from '@/components/navi/useBreathing'
 import { naviLessonLabel } from '@/data/navi/finish31'
 import { FIRST_TIME_SPEECH, REVIEW_RIGHT_SPEECH, REVIEW_WRONG_SPEECH, byeSpeech, newStepSpeech, returnSpeech } from '@/lib/navi/speech'
+import { liveSet } from '@/lib/navi/teacherLog'
 
 // ステップの数（単元ごと）：本編 U1〜U6（steps.json から）
 const UNIT_STEPS: Record<number, NaviStep[]> = NAVI_STEPS.reduce<Record<number, NaviStep[]>>((m, s) => ({ ...m, [s.unit]: [...(m[s.unit] ?? []), s] }), {})
@@ -87,6 +88,9 @@ export function HomeClient() {
       setBye(true)
       // 開き直したときは、ふつうの「おかえり」にもどす
       window.history.replaceState(null, '', '/navi')
+    } else {
+      // 先生の画面（いまの教室）に「ホームにいる」と送る（「今日はおわる」のあとは送らない）
+      liveSet({ step: loaded.current, where: 'home' })
     }
   }, [])
 
