@@ -827,72 +827,131 @@
   "fileName": "step08.py",
   "sections": [
    {
-    "title": "input で上底をきく",
-    "start": 73,
-    "code": "jotei = float(input(\"上底はいくつ？\"))",
+    "title": "質問を3つ書く",
+    "start": 58,
+    "code": "ue = input(\"上の辺は？\")\nshita = input(\"下の辺は？\")\ntakasa = input(\"高さは？\")",
     "expected": [],
+    "mustMatch": "ue\\s*=[^\\n]*input\\([\\s\\S]*shita\\s*=[^\\n]*input\\([\\s\\S]*takasa\\s*=[^\\n]*input\\(",
     "inputs": [
+     "5",
+     "10",
+     "6"
+    ],
+    "pauseAt": 194,
+    "note": "上の辺・下の辺・高さを聞く3行を書いて実行しよう。5・10・6 を入れて、エラーが出ずに おわれば OK"
+   },
+   {
+    "title": "計算すると…？",
+    "start": 103,
+    "code": "ue = input(\"上の辺は？\")\nshita = input(\"下の辺は？\")\ntakasa = input(\"高さは？\")\nmenseki = (ue + shita) * takasa / 2\nprint(menseki)",
+    "expected": [],
+    "expectError": true,
+    "inputs": [
+     "5",
+     "10",
+     "6"
+    ],
+    "pauseAt": 194,
+    "note": "面積の式と print(menseki) を足して実行しよう。5・10・6 を入れたあと、TypeError が出れば OK"
+   },
+   {
+    "title": "float で数にする",
+    "start": 143,
+    "code": "ue = float(input(\"上の辺は？\"))\nshita = float(input(\"下の辺は？\"))\ntakasa = float(input(\"高さは？\"))\nmenseki = (ue + shita) * takasa / 2\nprint(menseki)",
+    "expected": [],
+    "mustMatch": "float\\(\\s*input\\(",
+    "outputPattern": "45\\.0$",
+    "inputs": [
+     "5",
+     "10",
+     "6"
+    ],
+    "pauseAt": 194,
+    "note": "input を float( ) でかこもう。5・10・6 を入れて 45.0 が出れば OK"
+   },
+   {
+    "title": "文といっしょに出す",
+    "start": 196,
+    "code": "ue = float(input(\"上の辺は？\"))\nshita = float(input(\"下の辺は？\"))\ntakasa = float(input(\"高さは？\"))\nmenseki = (ue + shita) * takasa / 2\nprint(\"台形の面積は\", menseki, \"です\")",
+    "expected": [],
+    "mustMatch": "float\\(\\s*input\\(",
+    "outputPattern": "台形の面積は 45\\.0 です$",
+    "inputs": [
+     "5",
+     "10",
+     "6"
+    ],
+    "pauseAt": 257,
+    "note": "print を「台形の面積は」・menseki・「です」をカンマでならべた形にかえよう。5・10・6 を入れて 台形の面積は 45.0 です が出れば OK"
+   },
+   {
+    "title": "チャレンジ① 正方形の面積",
+    "start": 259,
+    "pauseAt": 329,
+    "code": "hen = float(input(\"1辺は？\"))\nprint(\"正方形の面積は\", hen * hen)",
+    "expected": [],
+    "mustMatch": "float\\(\\s*input\\(",
+    "outputPattern": "正方形の面積は 36\\.0$",
+    "inputs": [
+     "6"
+    ],
+    "challenge": true,
+    "note": "1辺は？ と聞いて、正方形の面積を出そう。6 と入れたら 正方形の面積は 36.0 が出れば OK",
+    "answerNote": "float(input(…)) で数にして、1辺 × 1辺。カンマで「正方形の面積は」とならべる"
+   },
+   {
+    "title": "チャレンジ② おこづかい",
+    "start": 276,
+    "pauseAt": 329,
+    "code": "okozukai = float(input(\"1週間のおこづかいは？\"))\nprint(\"4週間で\", okozukai * 4, \"円\")",
+    "expected": [],
+    "mustMatch": "float\\(\\s*input\\(",
+    "outputPattern": "4週間で 2000\\.0 円$",
+    "inputs": [
+     "500"
+    ],
+    "challenge": true,
+    "note": "1週間のおこづかいは？ と聞いて、4週間分を計算しよう。500 と入れたら 4週間で 2000.0 円 が出れば OK",
+    "answerNote": "4週間分は 4ばい。「4週間で」・計算・「円」をカンマでならべる"
+   },
+   {
+    "title": "チャレンジ③ 三角形の面積",
+    "start": 293,
+    "pauseAt": 329,
+    "code": "teihen = float(input(\"底辺は？\"))\ntakasa = float(input(\"高さは？\"))\nprint(\"三角形の面積は\", teihen * takasa / 2)",
+    "expected": [],
+    "mustMatch": "float\\(\\s*input\\([\\s\\S]*float\\(\\s*input\\(",
+    "outputPattern": "三角形の面積は 20\\.0$",
+    "inputs": [
+     "8",
      "5"
     ],
-    "mustUse": [
-     "input(",
-     "float("
-    ],
-    "note": "「上底はいくつ？」と聞かれて、数を入れてエラーが出なければ合格。質問の文は字幕から（「？」は推測）"
-   },
-   {
-    "title": "下底と高さもきく",
-    "start": 180,
-    "code": "katei = float(input(\"下底はいくつ？\"))\ntakasa = float(input(\"高さはいくつ？\"))",
-    "expected": [],
-    "inputs": [
-     "5",
-     "10",
-     "6"
-    ],
-    "mustUse": [
-     "input("
-    ],
-    "note": "3つの質問に答えて、エラーが出なければ合格"
-   },
-   {
-    "title": "面積を計算して表示",
-    "start": 225,
-    "code": "menseki = (jotei + katei) * takasa / 2\nprint(\"台形の面積は\", menseki, \"です\")",
-    "expected": [
-     "台形の面積は 45.0 です"
-    ],
-    "inputs": [
-     "5",
-     "10",
-     "6"
-    ],
-    "mustUse": [
-     "menseki"
-    ]
+    "challenge": true,
+    "note": "底辺は？ と 高さは？ の2つを聞いて、三角形の面積を出そう。8 と 5 を入れたら 三角形の面積は 20.0 が出れば OK",
+    "answerNote": "質問を2つ書いて、底辺 × 高さ ÷ 2（* と /）"
    }
   ],
   "video": {
-   "no": "#4",
-   "id": "FmQSDPM1cNA",
-   "length": 359,
-   "end": 318
+   "no": "⑧",
+   "id": "BCCNZZnfwi0",
+   "length": 364,
+   "end": 358
   },
   "learn": [
-   "input( ) で、使う人に質問して答えを入れてもらえる",
-   "入れてもらった答えは、変数に入れて計算に使える",
-   "float( ) は今は「おまじない」。次の回で意味がわかる",
-   "カンマで「台形の面積は 45.0 です」のように並べて出せる"
+   "input( ) で、上の辺・下の辺・高さを聞ける",
+   "input の答えは、数に見えても文字。そのままだと計算でエラーになる",
+   "float( ) でかこむと、計算できる数になる（くわしくは つぎのステップ）",
+   "カンマで「台形の面積は 45.0 です」のように、文字と数をならべて出せる"
   ],
   "codeblock": [
    "31-8"
   ],
   "review": {
-   "question": "input(\"上底はいくつ？\") は、何をするコード？",
+   "question": "ue = float(input(\"上の辺は？\")) の float( ) は、何をする？",
    "choices": [
-    "使う人に質問して、答えを入れてもらう",
-    "答えを画面に出すだけ",
-    "計算をする"
+    "答えを、計算できる数にかえる",
+    "答えを、画面に出す",
+    "質問を、2回する"
    ],
    "answer": 0
   }
