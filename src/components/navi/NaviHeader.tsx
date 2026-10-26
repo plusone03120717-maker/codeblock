@@ -20,11 +20,11 @@ export function NaviHeader({ step, unit, name, onEnd, active = 'navi' }: Props) 
     <header className="flex h-[68px] items-center gap-7 border-b border-[#e6e1fa] bg-white px-8">
       <Link href="/navi" className="flex items-center gap-2.5 text-xl font-bold">
         <i className="grid h-8 w-8 place-items-center rounded-full bg-[linear-gradient(135deg,#a259ff,#4f7cff)] text-[15px] not-italic text-white">▶</i>
-        CodeBlock
+        Python ナビ
       </Link>
       <nav className="flex gap-1.5 text-sm font-bold">
         <Link href="/navi" className={tab(active === 'navi')}>
-          Python ナビ
+          ホーム
         </Link>
         <Link href="/navi/archive" className={tab(active === 'archive')}>
           動画アーカイブ
