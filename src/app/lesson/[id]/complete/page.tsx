@@ -19,6 +19,7 @@ import { F, FW } from "@/components/Furigana";
 import { naviAfterLesson } from "@/lib/navi/progress";
 import { NAVI_STEPS } from "@/data/navi/steps";
 import { isFinishLesson, naviLessonLabel } from "@/data/navi/finish31";
+import { FinishCelebration } from "@/components/navi/FinishCelebration";
 
 type CompletePageProps = {
   params: Promise<{
@@ -120,6 +121,26 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
           </div>
         </div>
       </div>
+    );
+  }
+
+  // 仕上げ5問（Python ナビの生徒）は、いちかのコマ送りと動きのクリア画面（2026-10-26 依頼主）
+  if (finishStep) {
+    return (
+      <FinishCelebration
+        step={finishStep}
+        missionCount={missionCount}
+        xp={earnedXP}
+        isReview={isReview}
+        totalXP={totalXP}
+        level={levelInfo}
+        levelProgress={levelProgress}
+        leveledUp={leveledUp}
+        cheer={cheer}
+        nextTitle={navi?.next ? naviLessonLabel(navi.next) : afterStep ? `ステップ${afterStep.step}「${afterStep.title}」` : null}
+        nextLabel={navi?.next ? `つぎは ${naviLessonLabel(navi.next)} →` : "ステップクリア！ Python ナビへ →"}
+        onNext={() => router.push(navi?.next ? `/lesson/${navi.next}` : "/navi")}
+      />
     );
   }
 
