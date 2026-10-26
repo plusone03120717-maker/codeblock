@@ -16,8 +16,14 @@ async function cacheRequest(text: string): Promise<Request> {
   return new Request(`${location.origin}/__navi-voice/${hex}`)
 }
 
+// 読み方をととのえる（画面の文字はそのまま）。「Python ナビ」はあいだのスペースで2語に分かれて読まれるので、1語にする（2026-10-26 依頼主）
+function spoken(text: string): string {
+  return text.replace(/Python\s*ナビ/g, 'パイソンナビ')
+}
+
 // 声（mp3）を取ってくる。鳴らせないときは null
-async function fetchVoice(text: string): Promise<Blob | null> {
+async function fetchVoice(shown: string): Promise<Blob | null> {
+  const text = spoken(shown)
   let cache: Cache | null = null
   let req: Request | null = null
   try {

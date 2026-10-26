@@ -250,7 +250,7 @@ export function FinishCelebration(p: Props) {
   const fit = useFit()
   const voice = useNaviVoice()
   const rig = useRef<HTMLDivElement>(null)
-  useBreathing(rig, voice.speaking, t > T.hold)
+  useBreathing(rig, voice.speaking, t > T.hold, 'chest')
 
   // いちかがひとこと（声オンのとき）。着地したあとに話す
   const spoke = useRef(false)
@@ -274,7 +274,6 @@ export function FinishCelebration(p: Props) {
   const landS = tt >= T.land ? 1 - 0.07 * Math.exp(-7 * (tt - T.land)) * Math.cos(15 * (tt - T.land)) : 1
   const sy = (tt < T.jump ? 1 - 0.07 * eIO3(crouch) : 1) * landS
   const sx = 2 - sy
-  const float = t > T.hold ? -8 * Math.sin((2 * Math.PI * (t - T.hold)) / 2.4) : 0 // #096
 
   // ---- 見出し #005 ----
   const line = eIO3(P(tt, T.line, T.line + 0.4))
@@ -492,13 +491,13 @@ export function FinishCelebration(p: Props) {
           <div
             className="absolute bottom-[24px] left-1/2 w-[720px]"
             style={{
-              transform: `translateX(-50%) translateY(${enter.y - air + float}px) rotate(${enter.r}rad) scale(${enter.s * sx}, ${enter.s * sy})`,
+              transform: `translateX(-50%) translateY(${enter.y - air}px) rotate(${enter.r}rad) scale(${enter.s * sx}, ${enter.s * sy})`,
               transformOrigin: '50% 98%',
               opacity: enter.o,
             }}
           >
-            <div ref={rig} className="origin-[50%_95%]">
-              {(['c1_ready', 'c2_jump', 'c3_peace', 'c4_medal'] as const).map((f) => (
+            <div className="relative">
+              {(['c1_ready', 'c2_jump', 'c3_peace'] as const).map((f) => (
                 <Image
                   key={f}
                   src={`/navi/clear/${f}.webp`}
@@ -510,6 +509,22 @@ export function FinishCelebration(p: Props) {
                   className={`absolute inset-x-0 bottom-0 w-full ${f === frame ? 'opacity-100' : 'opacity-0'}`}
                 />
               ))}
+              {/* メダルを見せるコマは、パーカーのすそ（絵の高さの約54%）で上下に分ける。
+                  下（足）は止めたまま、上半身だけが腰を軸に呼吸する。分け目は 52〜55% でぼかしてつなぐ */}
+              <div className={`absolute inset-0 ${frame === 'c4_medal' ? 'opacity-100' : 'opacity-0'}`}>
+                <Image src="/navi/clear/c4_medal.webp" alt="" width={760} height={760} priority unoptimized className="absolute inset-0 w-full [clip-path:inset(52%_0_0_0)]" />
+                <div ref={rig} className="absolute inset-0 origin-[50%_54%]">
+                  <Image
+                    src="/navi/clear/c4_medal.webp"
+                    alt={frame === 'c4_medal' ? 'いちか' : ''}
+                    width={760}
+                    height={760}
+                    priority
+                    unoptimized
+                    className="absolute inset-0 w-full [mask-image:linear-gradient(to_bottom,#000_52%,transparent_55%)]"
+                  />
+                </div>
+              </div>
               <div className="aspect-square w-full" />
             </div>
           </div>
