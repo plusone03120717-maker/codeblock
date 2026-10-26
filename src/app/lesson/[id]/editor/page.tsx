@@ -54,6 +54,7 @@ import { MissionInfo, GeneratedCode, AnswerExample } from "@/components/MissionI
 import { CB_SKIN, NAVI_SKIN } from "@/components/navi/lessonSkin";
 import { LessonRoot } from "@/components/navi/NaviLessonFrame";
 import { NaviCode } from "@/components/navi/NaviCode";
+import { runPythonInBrowser, warmPython } from "@/lib/navi/browserPython";
 
 // ヒント回数管理用の定数と関数
 const DAILY_HINT_KEY = "codeblock_daily_hints";
@@ -298,6 +299,11 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       router.push("/");
     }
   }, [lessonId, canAccessLesson, loading, router]);
+
+  // 仕上げ5問は、ブラウザの Python を先に読みこんでおく（1問目の答え合わせを待たせない）
+  useEffect(() => {
+    if (lessonId && isFinishLesson(lessonId)) warmPython();
+  }, [lessonId]);
 
   useEffect(() => {
     params.then((p) => {
@@ -927,7 +933,11 @@ export default function LessonEditorPage({ params }: EditorPageProps) {
       if (currentMission?.prefixCode) {
         codeToExecute = currentMission.prefixCode + "\n" + normalizedCode;
       }
-      const { output, error } = await executePythonCode(codeToExecute);
+      // 仕上げ5問（31-N）は、ブラウザの中の Python で答え合わせ（サーバーが眠っていると1回目に30秒ほど待っていたため）。
+      // 読みこめないときと、今までの CodeBlock のレッスンは、前のままサーバーで
+      const { output, error } =
+        (isFinishLesson(lessonId || "") ? await runPythonInBrowser(codeToExecute) : null) ??
+        (await executePythonCode(codeToExecute));
       
       if (error) {
         // ナビの仕上げ（31番台）では、決まりに合わないとき（× を使った など）はやさしい言葉を先に出す
