@@ -411,18 +411,27 @@ CodeBlockというPython学習アプリで、小学生（10-12歳）にヒント
             print("ERROR: ANTHROPIC_API_KEYが設定されていません")
             raise ValueError("APIキーが設定されていません")
         
-        print(f"DEBUG: APIキーの最初の10文字: {api_key[:10]}...")  # デバッグ用（最初の10文字だけ）
-        
-        response = anthropic_client.messages.create(
-            model="claude-3-5-haiku-20241022",
-            max_tokens=200,
+        # 2026-10-26：モデルを Claude Sonnet 5.5 に（前の claude-3-5-haiku-20241022 が使えなくなり、いつも「ヒントを出せない」になっていた・依頼主）。
+        # Sonnet 5.5 は答える前に考えるので max_tokens は余裕をもたせ、短いヒントなので考える深さは low。
+        # 断られたときは、別のモデルが答え直す（fallbacks）
+        response = anthropic_client.beta.messages.create(
+            model="claude-sonnet-5-5",
+            max_tokens=1500,
+            output_config={"effort": "low"},
+            betas=["server-side-fallback-2026-07-01"],
+            fallbacks="default",
             system=system_prompt,
             messages=[
                 {"role": "user", "content": user_prompt}
             ]
         )
-        
-        hint_text = response.content[0].text
+        if response.stop_reason == "refusal":
+            raise ValueError("ヒントを断られました")
+
+        # 考えた中身のかたまりが先に来ることがあるので、文字のかたまりだけをつなぐ
+        hint_text = "".join(b.text for b in response.content if b.type == "text").strip()
+        if not hint_text:
+            raise ValueError("ヒントが空でした")
         
         return HintResponse(
             hint=hint_text,
