@@ -25,6 +25,8 @@ type Props = {
   nextTitle: string | null // 「ステップ8「台形の面積アプリ」」など
   nextLabel: string
   onNext: () => void
+  // 「Python ナビにもどる」も出すか（左のボタンがつぎの仕上げへ行くときだけ。ナビへもどるときは同じボタンが2つになるので出さない・2026-10-26 依頼主）
+  showBack: boolean
 }
 
 // ---- Motion Prompt kit と同じ式 ----
@@ -448,12 +450,14 @@ export function FinishCelebration(p: Props) {
             >
               {p.nextLabel}
             </button>
-            <Link
-              href="/navi"
-              className="h-[62px] whitespace-nowrap rounded-full bg-white px-7 text-[16px] font-black leading-[62px] text-[#7448f0] shadow-[inset_0_0_0_2px_#efe9ff,0_5px_0_#e6e1fa]"
-            >
-              Python ナビにもどる
-            </Link>
+            {p.showBack && (
+              <Link
+                href="/navi"
+                className="h-[62px] whitespace-nowrap rounded-full bg-white px-7 text-[16px] font-black leading-[62px] text-[#7448f0] shadow-[inset_0_0_0_2px_#efe9ff,0_5px_0_#e6e1fa]"
+              >
+                Python ナビにもどる
+              </Link>
+            )}
           </div>
         </div>
 

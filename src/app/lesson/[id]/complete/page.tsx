@@ -140,6 +140,7 @@ export default function LessonCompletePage({ params }: CompletePageProps) {
         nextTitle={navi?.next ? naviLessonLabel(navi.next) : afterStep ? `ステップ${afterStep.step}「${afterStep.title}」` : null}
         nextLabel={navi?.next ? `つぎは ${naviLessonLabel(navi.next)} →` : "ステップクリア！ Python ナビへ →"}
         onNext={() => router.push(navi?.next ? `/lesson/${navi.next}` : "/navi")}
+        showBack={!!navi?.next}
       />
     );
   }
