@@ -58,7 +58,7 @@ export const finishStepLessons: Lesson[] = [
     "unitNumber": 31,
     "subNumber": 8,
     "title": "ステップ8の仕上げ",
-    "description": "input で聞いて、答えを計算に使おう",
+    "description": "input で数を聞いて、float で計算できる数にしよう",
     "difficulty": "かんたん"
   },
   {
@@ -1392,60 +1392,60 @@ export const finishStepMissions: Record<string, Mission[]> = {
     {
       "id": 1,
       "type": "quiz",
-      "title": "入れた答えを出す",
-      "description": "このコードで「いちか」と入れると、何が出る？",
-      "codeToRead": "name = input(\"名前は？\")\nprint(name, \"さん\")",
+      "title": "入れた数で計算",
+      "description": "このコードを実行して「3」と入れると、何が出る？",
+      "codeToRead": "kazu = float(input(\"数は？\"))\nprint(kazu * 2)",
       "choices": [
-        "name さん",
-        "いちか さん",
-        "名前は？ さん"
+        "6",
+        "6.0",
+        "33"
       ],
       "correctAnswer": 1,
-      "expectedOutput": "いちか さん",
-      "hint": "name には、入れた答えが入るよ。",
-      "explanation": "input で入れた「いちか」が name に入る。カンマでならべるので「いちか さん」になるよ。",
+      "expectedOutput": "6.0",
+      "hint": "float で数になった 3 を、2ばいすると…？",
+      "explanation": "float で 3 が数の 3.0 になる。3.0 * 2 で 6.0。float の数には .0 がつくよ。",
       "availableBlocks": []
     },
     {
       "id": 2,
       "type": "quiz",
-      "title": "カンマでならべる",
-      "description": "このコードを実行すると、何が出る？",
-      "codeToRead": "menseki = 45.0\nprint(\"台形の面積は\", menseki, \"です\")",
+      "title": "float がないと？",
+      "description": "このコードを実行して「2」と「3」を入れると、何が出る？",
+      "codeToRead": "a = input(\"数は？\")\nb = input(\"数は？\")\nprint(a + b)",
       "choices": [
-        "台形の面積は 45.0 です",
-        "台形の面積は menseki です",
-        "台形の面積は45.0です"
+        "23",
+        "5",
+        "5.0"
       ],
       "correctAnswer": 0,
-      "expectedOutput": "台形の面積は 45.0 です",
-      "hint": "menseki は \" \" の外。カンマのところには何が入るかな？",
-      "explanation": "menseki の中身 45.0 が出て、カンマのところにスペースが1つずつ入るよ。",
+      "expectedOutput": "23",
+      "hint": "input の答えは、数に見えても文字だったね。",
+      "explanation": "文字の 2 と 3 を + でつなぐので 23。足し算にするなら、float でかこんで数にしよう。",
       "availableBlocks": []
     },
     {
       "id": 3,
       "type": "quiz",
       "title": "エラーを直そう",
-      "description": "実行したら「SyntaxError: '(' was never closed」と出た。どう直す？",
-      "codeToRead": "katei = float(input(\"下底はいくつ？\")",
+      "description": "「4」と入れたら「TypeError」と出た。どう直す？",
+      "codeToRead": "nagasa = input(\"長さは？\")\nprint(nagasa * 3 / 2)",
       "choices": [
-        "( を1つ消す",
-        "\" をもう1つ足す",
-        "さいごに ) をもう1つ足す"
+        "nagasa を \"nagasa\" にする",
+        "3 を \"3\" にする",
+        "1行目を nagasa = float(input(\"長さは？\")) にする"
       ],
       "correctAnswer": 2,
-      "expectedOutput": "さいごに ) をもう1つ足す",
-      "hint": "( が2つあるね。) はいくつある？",
-      "explanation": "float( と input( で ( が2つ。) も2つにしないと「とじていない」エラーになるよ。",
+      "expectedOutput": "1行目を nagasa = float(input(\"長さは？\")) にする",
+      "hint": "input の答えは、まだ文字のままだよ。",
+      "explanation": "文字のままでは計算できないので TypeError。float(input(…)) で数にしてから計算しよう。",
       "availableBlocks": []
     },
     {
       "id": 4,
-      "title": "文と答えをならべる",
-      "description": "「台形の面積は 45.0 です」と表示しよう！（menseki には 45.0 が入っているよ）",
-      "expectedOutput": "台形の面積は 45.0 です",
-      "correctCode": "print(\"台形の面積は\", menseki, \"です\")",
+      "title": "カンマでならべて出す",
+      "description": "menseki には 45.0 が入っているよ。「面積は 45.0 です」と表示しよう！",
+      "expectedOutput": "面積は 45.0 です",
+      "correctCode": "print(\"面積は\", menseki, \"です\")",
       "availableBlocks": [
         {
           "id": "b0",
@@ -1461,7 +1461,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
         },
         {
           "id": "b2",
-          "text": "\"台形の面積は\"",
+          "text": "\"面積は\"",
           "type": "string",
           "color": "bg-green-200"
         },
@@ -1508,109 +1508,73 @@ export const finishStepMissions: Record<string, Mission[]> = {
     },
     {
       "id": 5,
-      "title": "台形の面積を計算",
-      "description": "（上底 + 下底）× 高さ ÷ 2 を menseki に入れて、表示しよう！",
-      "expectedOutput": "45.0",
-      "correctCode": "menseki = (jotei + katei) * takasa / 2\nprint(menseki)",
+      "title": "長方形の面積",
+      "description": "tate と yoko には、float で数にした 4.0 と 6.0 が入っているよ。「面積は 24.0」と表示しよう！",
+      "expectedOutput": "面積は 24.0",
+      "correctCode": "print(\"面積は\", tate * yoko)",
       "availableBlocks": [
         {
           "id": "b0",
-          "text": "menseki",
-          "type": "variable",
-          "color": "bg-sky-200"
-        },
-        {
-          "id": "b1",
-          "text": "=",
-          "type": "operator",
-          "color": "bg-orange-200"
-        },
-        {
-          "id": "b2",
-          "text": "(",
-          "type": "bracket",
-          "color": "bg-gray-200"
-        },
-        {
-          "id": "b3",
-          "text": "jotei",
-          "type": "variable",
-          "color": "bg-sky-200"
-        },
-        {
-          "id": "b4",
-          "text": "+",
-          "type": "operator",
-          "color": "bg-orange-200"
-        },
-        {
-          "id": "b5",
-          "text": "katei",
-          "type": "variable",
-          "color": "bg-sky-200"
-        },
-        {
-          "id": "b6",
-          "text": ")",
-          "type": "bracket",
-          "color": "bg-gray-200"
-        },
-        {
-          "id": "b7",
-          "text": "*",
-          "type": "operator",
-          "color": "bg-orange-200"
-        },
-        {
-          "id": "b8",
-          "text": "takasa",
-          "type": "variable",
-          "color": "bg-sky-200"
-        },
-        {
-          "id": "b9",
-          "text": "/",
-          "type": "operator",
-          "color": "bg-orange-200"
-        },
-        {
-          "id": "b10",
-          "text": "2",
-          "type": "number",
-          "color": "bg-yellow-100"
-        },
-        {
-          "id": "nl11",
-          "text": "↵",
-          "type": "newline",
-          "color": "bg-pink-200"
-        },
-        {
-          "id": "b12",
           "text": "print",
           "type": "function",
           "color": "bg-yellow-200"
         },
         {
-          "id": "b13",
-          "text": "×",
+          "id": "b1",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b2",
+          "text": "\"面積は\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b3",
+          "text": ",",
+          "type": "separator",
+          "color": "bg-purple-200"
+        },
+        {
+          "id": "b4",
+          "text": "tate",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b5",
+          "text": "*",
           "type": "operator",
           "color": "bg-orange-200"
+        },
+        {
+          "id": "b6",
+          "text": "yoko",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b7",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b8",
+          "text": "tate + yoko",
+          "type": "variable",
+          "color": "bg-sky-200"
         }
       ],
-      "prefixCode": "jotei = 5.0\nkatei = 10.0\ntakasa = 6.0",
+      "prefixCode": "tate = 4.0\nyoko = 6.0",
       "rules": [
         {
           "forbids": [
-            "×"
+            "tate + yoko"
           ],
-          "message": "かけ算は × ではなく、* で書くよ！"
-        },
-        {
-          "requires": [
-            "("
-          ],
-          "message": "上底と下底を先に足すので、( ) でかこもう！"
+          "message": "長方形の面積は、たて × よこ（*）だよ！"
         }
       ]
     }
@@ -5972,7 +5936,7 @@ export const finishStepTutorials: LessonTutorial[] = [
         "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
-          "good": "name = input(\"名前は？\")\nprint(name)"
+          "good": "ue = float(input(\"上の辺は？\"))  # 数にして箱に入れる"
         }
       }
     ]

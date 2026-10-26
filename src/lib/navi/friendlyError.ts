@@ -37,6 +37,9 @@ export function friendlyError(err: PyError): string {
   if (type === 'TypeError') {
     if (message.includes('can only concatenate str') || message.includes("unsupported operand type(s) for +: 'int' and 'str'"))
       return `${where}：文字と数は + でつなげないよ。数も " " でかこもう`
+    // input の答え（文字）のまま計算したとき（ステップ8：(ue + shita) * takasa など・動画と同じ説明）
+    if (message.includes("can't multiply sequence") || (message.includes('unsupported operand') && message.includes("'str'")))
+      return `${where}：文字のままでは計算できないよ。float( ) で数にしよう`
     if (message.includes('takes') && message.includes('positional argument'))
       return `${where}：関数に渡すもの（引数）の数が合っていないよ`
     if (message.includes('not callable')) return `${where}：( ) をつけて呼べないものに ( ) がついているよ`
