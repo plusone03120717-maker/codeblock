@@ -2,30 +2,52 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // 管理者判定
+    // 管理者（教室の Google アカウント）。src/utils/admin.ts の ADMIN_EMAIL と同じメール。
+    // メールが確かめ済み（Google でログイン）のときだけ
     function isAdmin() {
-      return request.auth != null && request.auth.token.email == "plus.one.0312.0717@gmail.com";
+      return request.auth != null
+        && request.auth.token.email == "plus.one.0312.0717@gmail.com"
+        && request.auth.token.email_verified == true;
     }
 
-    // ユーザードキュメント: 認証済みユーザーが自分のドキュメントのみアクセス可能
-    // 管理者は全ユーザーの読み取り・書き込みが可能
-    match /users/{uid} {
-      allow read, write: if request.auth != null && (request.auth.uid == uid || isAdmin());
+    function isSelf(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
 
-      // サブコレクション（progress等）も本人のみアクセス可能（管理者も可）
-      match /{subcollection}/{docId} {
-        allow read, write: if request.auth != null && (request.auth.uid == uid || isAdmin());
+    // 管理画面で作られた生徒（users の文書がある）。アカウントは管理画面からだけ作る（2026-10-26 依頼主）
+    function isMember(uid) {
+      return isSelf(uid) && exists(/databases/$(database)/documents/users/$(uid));
+    }
+
+    // 1日の回数（いちかに質問・ヒント）。サーバーが本人のログインで書く
+    function isCounter(sub) {
+      return sub in ['naviAsk', 'hintUse'];
+    }
+
+    // ユーザードキュメント
+    // 作る・消すのは管理者だけ。本人は自分の記録を直せるが、プラン（subscription）とユーザーIDは変えられない
+    match /users/{uid} {
+      allow read: if isSelf(uid) || isAdmin();
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin()
+        || (isSelf(uid)
+            && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['subscription', 'userId']));
+
+      // サブコレクション（進み具合・質問の記録など）は本人と管理者だけ。
+      // 1日の回数は「1ずつ増やすだけ・消せない」
+      match /{sub}/{docId} {
+        allow read: if isMember(uid) || isAdmin();
+        allow create: if isAdmin()
+          || (isMember(uid) && (!isCounter(sub) || request.resource.data.count == 1));
+        allow update: if isAdmin()
+          || (isMember(uid) && (!isCounter(sub) || request.resource.data.count == resource.data.count + 1));
+        allow delete: if isAdmin() || (isMember(uid) && !isCounter(sub));
       }
     }
 
-    // ユーザーID→UIDマッピング
-    // 読み取り: ログイン時のユーザーID存在確認に必要（認証前に呼ばれる）
-    // 書き込み: 新規作成のみ許可、自分のUIDのみ設定可能
+    // ユーザーID→UIDマッピング。使うのは管理画面だけ（ユーザーIDが空いているかの確認と、作るとき）
     match /userIds/{userId} {
-      allow read: if true;
-      allow create: if request.auth != null
-                    && request.resource.data.uid == request.auth.uid;
-      allow update, delete: if false;
+      allow read, write: if isAdmin();
     }
 
     // パスワードリセット: 本人のみアクセス可能

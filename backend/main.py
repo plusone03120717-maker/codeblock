@@ -1,216 +1,42 @@
-from fastapi import FastAPI, HTTPException
+"""CodeBlock のレッスンのコードを動かすサーバー（Render の codeblock-api）。
+
+2026-10-26 セキュリティの直し（依頼主）：
+- 使えるのは、ログインした CodeBlock の生徒だけ（Firebase の ID トークンを確かめ、users の文書があるかを本人のログインで読む）
+- 生徒のコードは、このサーバーの中ではなく、別の小さなプロセスで、時間・メモリ・CPU の上限をつけて動かす。
+  そのプロセスには環境変数を渡さない
+- 課金（Stripe）は止めた。AI のヒントは Vercel の /api/hint に移した。なので、このサーバーに秘密の鍵は要らない
+"""
+import os
+import subprocess
+import sys
+import tempfile
+import threading
+import time
+import urllib.error
+import urllib.request
+from typing import Optional
+
+import jwt
+from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import sys
-import io
-import signal
-import threading
-from contextlib import redirect_stdout
-from typing import Optional
-import os
-from dotenv import load_dotenv
-from anthropic import Anthropic
-import stripe
 
-# .envを読み込み
-load_dotenv()
+# Firebase のプロジェクト（公開されている名前。鍵ではない）
+FIREBASE_PROJECT_ID = os.getenv("FIREBASE_PROJECT_ID", "codeblock-app-863d0")
+JWKS_URL = "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com"
+FIRESTORE_BASE = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents"
 
-# Anthropicクライアントを初期化
-anthropic_client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-
-# Stripe設定
-stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
-
-STRIPE_PRICES = {
-    "monthly": os.getenv("STRIPE_PRICE_MONTHLY", ""),
-    "yearly": os.getenv("STRIPE_PRICE_YEARLY", ""),
-}
-
-# 起動時の確認ログ
-print("=== Stripe Configuration ===")
-print(f"API Key: {'SET' if stripe.api_key else 'NOT SET'}")
-print(f"Monthly Price ID: {STRIPE_PRICES['monthly']}")
-print(f"Yearly Price ID: {STRIPE_PRICES['yearly']}")
+TIMEOUT_SECONDS = 5
+MAX_CODE_CHARS = 20_000
+MAX_OUTPUT_CHARS = 100_000
+RUNS_PER_MINUTE = 60  # 1人あたり
 
 app = FastAPI()
-
-# キャラクター設定
-CHARACTER_PROMPTS = {
-    "pixel": {
-        "name": "ピクセル",
-        "emoji": "🐱",
-        "prompt": """あなたは「ピクセル」という名前の猫のキャラクターです。
-小学生にPythonプログラミングを教えるアシスタントです。
-
-【性格】
-- 好奇心旺盛で、新しいことを学ぶのが大好き
-- 優しくて、間違いを責めない
-- 「〜だよ！」「〜なんだ！」という元気な口調
-
-【ルール】
-- 小学生にもわかる言葉で説明する
-- 答えを直接教えず、ヒントを出して考えさせる
-- 励ましの言葉を忘れない
-- 短く簡潔に説明する（3文以内）"""
-    },
-    "cody": {
-        "name": "コーディ",
-        "emoji": "🐱",
-        "prompt": """あなたは「コーディ」という名前の猫のキャラクターです。
-小学生にPythonプログラミングを教えるアシスタントです。
-
-【性格】
-- 好奇心旺盛で、新しいことを学ぶのが大好き
-- 優しくて、間違いを責めない
-- 「〜だよ！」「〜なんだ！」という元気な口調
-
-【ルール】
-- 小学生にもわかる言葉で説明する
-- 答えを直接教えず、ヒントを出して考えさせる
-- 励ましの言葉を忘れない
-- 短く簡潔に説明する（3文以内）"""
-    },
-    "dizzy": {
-        "name": "ディジー",
-        "emoji": "🐱",
-        "prompt": """あなたは「ディジー」という名前の猫のキャラクターです。
-小学生にPythonプログラミングを教えるアシスタントです。
-
-【性格】
-- 好奇心旺盛で、新しいことを学ぶのが大好き
-- 優しくて、間違いを責めない
-- 「〜だよ！」「〜なんだ！」という元気な口調
-
-【ルール】
-- 小学生にもわかる言葉で説明する
-- 答えを直接教えず、ヒントを出して考えさせる
-- 励ましの言葉を忘れない
-- 短く簡潔に説明する（3文以内）"""
-    },
-    "dex": {
-        "name": "デックス",
-        "emoji": "🤖",
-        "prompt": """あなたは「デックス」という名前のロボットのキャラクターです。
-小学生にPythonプログラミングを教えるアシスタントです。
-
-【性格】
-- 論理的で正確
-- データ分析が得意
-- 「〜です」「〜ます」という丁寧な口調
-
-【ルール】
-- 小学生にもわかる言葉で説明する
-- 答えを直接教えず、ヒントを出して考えさせる
-- 励ましの言葉を忘れない
-- 短く簡潔に説明する（3文以内）"""
-    },
-    "judge": {
-        "name": "ジャッジ",
-        "emoji": "🦉",
-        "prompt": """あなたは「ジャッジ」という名前のフクロウのキャラクターです。
-小学生にPythonプログラミングを教えるアシスタントです。
-
-【性格】
-- 賢くて経験豊富
-- 少し古風な話し方
-- 「〜じゃ」「〜のう」という口調
-
-【ルール】
-- 小学生にもわかる言葉で説明する
-- 答えを直接教えず、ヒントを出して考えさせる
-- 励ましの言葉を忘れない
-- 短く簡潔に説明する（3文以内）"""
-    },
-    "loopy": {
-        "name": "ルーピー",
-        "emoji": "🐹",
-        "prompt": """あなたは「ルーピー」という名前のハムスターのキャラクターです。
-小学生にPythonプログラミングを教えるアシスタントです。
-
-【性格】
-- 元気いっぱいで活発
-- ぐるぐる回るのが大好き
-- 「〜だよ！」「ぐるぐる〜！」という元気な口調
-
-【ルール】
-- 小学生にもわかる言葉で説明する
-- 答えを直接教えず、ヒントを出して考えさせる
-- 励ましの言葉を忘れない
-- 短く簡潔に説明する（3文以内）"""
-    },
-    "ally": {
-        "name": "アリー",
-        "emoji": "🐜",
-        "prompt": """あなたは「アリー」という名前のアリのキャラクターです。
-小学生にPythonプログラミングを教えるアシスタントです。
-
-【性格】
-- 協力的で整理上手
-- チームワークを大切にする
-- 「〜よ」「〜わ」という丁寧な口調
-
-【ルール】
-- 小学生にもわかる言葉で説明する
-- 答えを直接教えず、ヒントを出して考えさせる
-- 励ましの言葉を忘れない
-- 短く簡潔に説明する（3文以内）"""
-    },
-    "nico": {
-        "name": "ニコ",
-        "emoji": "🐱",
-        "prompt": """あなたは「ニコ」という名前の猫のシェフキャラクターです。
-小学生にPythonプログラミングを教えるアシスタントです。
-
-【性格】
-- カジュアルで親しみやすい
-- 料理に例えるのが得意
-- 「〜さ！」「〜だね！」というカジュアルな口調
-
-【ルール】
-- 小学生にもわかる言葉で説明する
-- 答えを直接教えず、ヒントを出して考えさせる
-- 励ましの言葉を忘れない
-- 短く簡潔に説明する（3文以内）"""
-    },
-    "rico": {
-        "name": "リコ",
-        "emoji": "🐭",
-        "prompt": """あなたは「リコ」という名前のネズミのキャラクターです。
-小学生にPythonプログラミングを教えるアシスタントです。
-
-【性格】
-- 上品で丁寧
-- エレガントな話し方
-- 「〜ですわ」「〜ますの」という上品な口調
-
-【ルール】
-- 小学生にもわかる言葉で説明する
-- 答えを直接教えず、ヒントを出して考えさせる
-- 励ましの言葉を忘れない
-- 短く簡潔に説明する（3文以内）"""
-    },
-    "dicto": {
-        "name": "ディクト",
-        "emoji": "🐧",
-        "prompt": """あなたは「ディクト」という名前のペンギンの司書キャラクターです。
-小学生にPythonプログラミングを教えるアシスタントです。
-
-【性格】
-- 穏やかで知的
-- 図書館や本に例えるのが得意
-- 「〜ですよ」「〜ましょう」という穏やかな口調
-
-【ルール】
-- 小学生にもわかる言葉で説明する
-- 答えを直接教えず、ヒントを出して考えさせる
-- 励ましの言葉を忘れない
-- 短く簡潔に説明する（3文以内）"""
-    }
-}
 
 # CORS設定（フロントエンドからのリクエストを許可）
 origins = [
     "http://localhost:3000",
+    "http://localhost:3023",
     "https://codeblock-omega.vercel.app",
     "https://codeblock.jp",
     "https://www.codeblock.jp",
@@ -225,6 +51,73 @@ app.add_middleware(
 )
 
 
+# ========================================
+# ログインの確かめ
+# ========================================
+_jwks = jwt.PyJWKClient(JWKS_URL, cache_keys=True, lifespan=3600)
+_member_cache: dict[str, float] = {}  # uid → 確かめた時刻
+_MEMBER_CACHE_SECONDS = 600
+_runs: dict[str, list[float]] = {}
+_lock = threading.Lock()
+
+
+def _is_member(uid: str, token: str) -> bool:
+    """管理画面で作られた生徒か（users/{uid} の文書があるか）を、本人のログインで確かめる"""
+    now = time.time()
+    with _lock:
+        if now - _member_cache.get(uid, 0) < _MEMBER_CACHE_SECONDS:
+            return True
+    req = urllib.request.Request(
+        f"{FIRESTORE_BASE}/users/{uid}?mask.fieldPaths=userId",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as res:
+            ok = res.status == 200
+    except urllib.error.HTTPError:
+        ok = False
+    except urllib.error.URLError:
+        raise HTTPException(status_code=503, detail="ログインを確かめられませんでした")
+    if ok:
+        with _lock:
+            _member_cache[uid] = now
+    return ok
+
+
+def require_member(authorization: Optional[str]) -> str:
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="ログインが必要です")
+    token = authorization[7:]
+    try:
+        key = _jwks.get_signing_key_from_jwt(token).key
+        claims = jwt.decode(
+            token,
+            key,
+            algorithms=["RS256"],
+            audience=FIREBASE_PROJECT_ID,
+            issuer=f"https://securetoken.google.com/{FIREBASE_PROJECT_ID}",
+        )
+    except Exception:
+        raise HTTPException(status_code=401, detail="ログインが必要です")
+    uid = claims.get("sub")
+    if not isinstance(uid, str) or not uid:
+        raise HTTPException(status_code=401, detail="ログインが必要です")
+    if not _is_member(uid, token):
+        raise HTTPException(status_code=403, detail="このアカウントでは使えません")
+    # 1人あたりの回数の上限（短い時間に送りすぎない）
+    now = time.time()
+    with _lock:
+        recent = [t for t in _runs.get(uid, []) if now - t < 60]
+        if len(recent) >= RUNS_PER_MINUTE:
+            raise HTTPException(status_code=429, detail="少し待ってからもう一度ためしてね")
+        recent.append(now)
+        _runs[uid] = recent
+    return uid
+
+
+# ========================================
+# コードの実行
+# ========================================
 class CodeRequest(BaseModel):
     code: str
 
@@ -234,7 +127,7 @@ class CodeResponse(BaseModel):
     error: Optional[str] = None
 
 
-# 危険な関数やモジュールを制限
+# 前からある、わかりやすい止め方（生徒への案内のため。守りの本体は下の別プロセス）
 FORBIDDEN_KEYWORDS = [
     "import os",
     "import sys",
@@ -261,58 +154,73 @@ def check_code_safety(code: str) -> Optional[str]:
     return None
 
 
-def execute_python_code(code: str, timeout: int = 5) -> tuple[Optional[str], Optional[str]]:
-    """Pythonコードを安全に実行"""
-    # 安全性チェック
+# 別プロセスの中で生徒のコードを動かす係。エラーは「実行エラー: …」の形（前と同じ）で、目印をつけて stderr に返す
+_RUNNER = r"""
+import sys
+code = sys.stdin.read()
+try:
+    exec(compile(code, "<code>", "exec"), {"__name__": "__main__"})
+except BaseException as e:
+    if isinstance(e, SystemExit) and e.code in (None, 0):
+        sys.exit(0)
+    sys.stdout.flush()
+    sys.stderr.write("\x00CODEBLOCK_ERROR\x00" + str(e))
+    sys.exit(1)
+"""
+_ERROR_MARK = "\x00CODEBLOCK_ERROR\x00"
+
+
+def _limit_resources():  # Linux（Render）だけ。子プロセスが始まる直前に呼ばれる
+    import resource
+
+    resource.setrlimit(resource.RLIMIT_CPU, (TIMEOUT_SECONDS, TIMEOUT_SECONDS))
+    resource.setrlimit(resource.RLIMIT_AS, (256 * 1024 * 1024, 256 * 1024 * 1024))
+    resource.setrlimit(resource.RLIMIT_FSIZE, (1024 * 1024, 1024 * 1024))
+    resource.setrlimit(resource.RLIMIT_NOFILE, (32, 32))
+    os.setsid()
+
+
+def execute_python_code(code: str, timeout: int = TIMEOUT_SECONDS) -> tuple[Optional[str], Optional[str]]:
+    """Pythonコードを別プロセスで実行"""
     safety_error = check_code_safety(code)
     if safety_error:
         return None, safety_error
 
-    # stdoutをキャプチャ
-    old_stdout = sys.stdout
-    sys.stdout = captured_output = io.StringIO()
-
-    # 実行結果とエラーを格納
-    execution_result = {"output": None, "error": None, "completed": False}
-
-    def run_code():
-        """コードを実行する関数"""
+    with tempfile.TemporaryDirectory() as workdir:
         try:
-            exec(code, {"__builtins__": __builtins__})
-            execution_result["output"] = captured_output.getvalue()
-            execution_result["completed"] = True
-        except Exception as e:
-            execution_result["error"] = f"実行エラー: {str(e)}"
-            execution_result["completed"] = True
+            proc = subprocess.run(
+                [sys.executable, "-I", "-c", _RUNNER],
+                input=code.encode("utf-8"),
+                capture_output=True,
+                timeout=timeout,
+                cwd=workdir,
+                # 環境変数は渡さない（文字コードだけ）
+                env={"PYTHONIOENCODING": "utf-8", "LANG": "C.UTF-8"},
+                preexec_fn=_limit_resources if sys.platform.startswith("linux") else None,
+            )
+        except subprocess.TimeoutExpired:
+            return None, f"コードの実行がタイムアウトしました（{timeout}秒）"
 
-    # スレッドでコードを実行
-    thread = threading.Thread(target=run_code)
-    thread.daemon = True
-    thread.start()
-    thread.join(timeout=timeout)
-
-    # タイムアウトチェック
-    if thread.is_alive():
-        sys.stdout = old_stdout
-        return None, f"コードの実行がタイムアウトしました（{timeout}秒）"
-
-    sys.stdout = old_stdout
-
-    if execution_result["error"]:
-        return None, execution_result["error"]
-
-    output = execution_result["output"]
-    return output.strip() if output else None, None
+    stdout = proc.stdout.decode("utf-8", "replace")[:MAX_OUTPUT_CHARS]
+    stderr = proc.stderr.decode("utf-8", "replace")
+    if _ERROR_MARK in stderr:
+        return None, "実行エラー: " + stderr.split(_ERROR_MARK, 1)[1][:2000]
+    if proc.returncode != 0:
+        # 上限にかかって止められたときなど
+        return None, "実行エラー: プログラムが止められました（時間かメモリを使いすぎたかもしれません）"
+    return (stdout.strip() or None), None
 
 
 @app.post("/api/execute", response_model=CodeResponse)
-async def execute_code(request: CodeRequest):
-    """Pythonコードを実行するエンドポイント"""
+def execute_code(request: CodeRequest, authorization: Optional[str] = Header(default=None)):
+    """Pythonコードを実行するエンドポイント（ログインした生徒だけ）"""
+    require_member(authorization)
     if not request.code or not request.code.strip():
         raise HTTPException(status_code=400, detail="コードが空です")
+    if len(request.code) > MAX_CODE_CHARS:
+        raise HTTPException(status_code=400, detail="コードが長すぎます")
 
     output, error = execute_python_code(request.code)
-
     return CodeResponse(output=output, error=error)
 
 
@@ -324,169 +232,3 @@ async def root():
 @app.get("/health")
 async def health():
     return {"status": "ok"}
-
-
-class HintRequest(BaseModel):
-    character_id: str  # キャラクターID（cody, dizzy, dex など）
-    character_name: str  # キャラクター名
-    personality: str  # 性格
-    speech_style: str  # 口調
-    hint_style: str  # ヒントの出し方
-    catchphrases: list[str]  # 口癖リスト
-    question: str  # 問題文
-    code: str  # 正解コード
-    user_answer: str  # ユーザーの回答
-    expected_answer: str  # 期待される回答
-
-
-class CheckoutRequest(BaseModel):
-    plan: str
-    user_id: str
-    user_email: str
-    success_url: str
-    cancel_url: str
-
-
-class HintResponse(BaseModel):
-    hint: str
-    character_id: str
-    character_name: str
-    character_emoji: str
-
-
-@app.post("/api/hint", response_model=HintResponse)
-async def get_hint(request: HintRequest):
-    # キャラクターの絵文字を取得（フォールバック用）
-    character = CHARACTER_PROMPTS.get(request.character_id, CHARACTER_PROMPTS.get("pixel", {"name": request.character_name, "emoji": "🐱"}))
-    
-    system_prompt = f"""あなたは「{request.character_name}」というキャラクターです。
-CodeBlockというPython学習アプリで、小学生（10-12歳）にヒントを出す役割です。
-
-【キャラクターの性格】
-{request.personality}
-
-【話し方・口調】
-{request.speech_style}
-
-【ヒントの出し方】
-{request.hint_style}
-
-【口癖（参考にしてください）】
-{', '.join(request.catchphrases)}
-
-【重要なルール】
-- 答えを直接教えないでください
-- ヒントは1〜2文で簡潔に
-- 小学生にわかりやすい言葉を使う
-- キャラクターの口調を必ず守る
-- 励ましの言葉を含める
-
-【説明時の注意】
-- 改行が必要な場合、「\\n」や「スラッシュN」とは言わないでください
-- 代わりに「改行ブロック」や「↵（改行）ブロック」と説明してください
-- 例：「次の行に書くには、改行ブロックを使ってみて！」
-"""
-    
-    user_prompt = f"""以下の問題でユーザーが間違えました。ヒントを出してください。
-
-【問題】
-{request.question}
-
-【正解コード】
-{request.code}
-
-【ユーザーの回答】
-{request.user_answer}
-
-【期待される回答】
-{request.expected_answer}
-
-キャラクターの口調でヒントを1〜2文で出してください。答えは直接教えないでください。
-"""
-
-    try:
-        # APIキーのチェック
-        api_key = os.getenv("ANTHROPIC_API_KEY")
-        if not api_key or api_key == "your-api-key-here":
-            print("ERROR: ANTHROPIC_API_KEYが設定されていません")
-            raise ValueError("APIキーが設定されていません")
-        
-        # 2026-10-26：モデルを Claude Sonnet 5.5 に（前の claude-3-5-haiku-20241022 が使えなくなり、いつも「ヒントを出せない」になっていた・依頼主）。
-        # Sonnet 5.5 は答える前に考えるので max_tokens は余裕をもたせ、短いヒントなので考える深さは low。
-        # 断られたときは、別のモデルが答え直す（fallbacks）
-        response = anthropic_client.beta.messages.create(
-            model="claude-sonnet-5-5",
-            max_tokens=1500,
-            output_config={"effort": "low"},
-            betas=["server-side-fallback-2026-07-01"],
-            fallbacks="default",
-            system=system_prompt,
-            messages=[
-                {"role": "user", "content": user_prompt}
-            ]
-        )
-        if response.stop_reason == "refusal":
-            raise ValueError("ヒントを断られました")
-
-        # 考えた中身のかたまりが先に来ることがあるので、文字のかたまりだけをつなぐ
-        hint_text = "".join(b.text for b in response.content if b.type == "text").strip()
-        if not hint_text:
-            raise ValueError("ヒントが空でした")
-        
-        return HintResponse(
-            hint=hint_text,
-            character_id=request.character_id,
-            character_name=request.character_name,
-            character_emoji=character["emoji"]
-        )
-    except Exception as e:
-        print(f"ERROR: ヒント取得エラー: {type(e).__name__}: {str(e)}")
-        import traceback
-        traceback.print_exc()  # スタックトレースを出力
-        return HintResponse(
-            hint="ごめんね、今ヒントを出せないみたい。もう一度試してみてね！",
-            character_id=request.character_id,
-            character_name=request.character_name,
-            character_emoji=character["emoji"]
-        )
-
-
-@app.post("/api/create-checkout-session")
-async def create_checkout_session(request: CheckoutRequest):
-    print(f"=== Checkout Request: plan={request.plan}, email={request.user_email} ===")
-    
-    try:
-        if request.plan not in STRIPE_PRICES:
-            raise HTTPException(status_code=400, detail=f"Invalid plan: {request.plan}")
-        
-        price_id = STRIPE_PRICES[request.plan]
-        
-        if not price_id:
-            raise HTTPException(status_code=400, detail=f"Price not configured for {request.plan}")
-        
-        session = stripe.checkout.Session.create(
-            payment_method_types=["card"],
-            mode="subscription",
-            customer_email=request.user_email,
-            metadata={
-                "user_id": request.user_id,
-                "plan": request.plan,
-            },
-            line_items=[{
-                "price": price_id,
-                "quantity": 1,
-            }],
-            success_url=request.success_url,
-            cancel_url=request.cancel_url,
-        )
-        
-        print(f"Checkout session created: {session.id}")
-        return {"session_id": session.id, "url": session.url}
-    
-    except stripe.error.StripeError as e:
-        print(f"Stripe Error: {str(e)}")
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-

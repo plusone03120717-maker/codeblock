@@ -1,12 +1,13 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { User, onAuthStateChanged } from "firebase/auth";
+import { User, onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { getUserInfo } from "@/lib/auth";
 import { syncProgressOnLogin, clearLocalUserData } from "@/lib/progressSync";
 import { UserProfile } from "@/types/user";
 import { getUserProfile, createUserProfile, isPremiumPlan, canAccessLesson as checkLessonAccess } from "@/utils/subscription";
+import { isAdminEmail } from "@/utils/admin";
 
 interface AuthContextType {
   user: User | null;
@@ -85,13 +86,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // Firestoreからプロファイルを取得
         let profile = await getUserProfile(user.uid);
         
-        // プロファイルがなければ作成
-        if (!profile) {
+        // プロファイルがないとき：アカウントは管理画面からだけ作る（2026-10-26 依頼主）。
+        // 管理者だけは自分のプロファイルを作る。それ以外で users の文書がない（管理画面を通らずにできたログイン）ならログアウトさせる。
+        // （getUserInfo は読めなかったときは例外になるので、ここで userId が空なら「文書がない」）
+        if (!profile && isAdminEmail(user.email)) {
           profile = await createUserProfile(
             user.uid,
             user.email || info.contactEmail || "",
             info.displayName || ""
           );
+        } else if (!profile && info.userId === null) {
+          await signOut(auth);
+          return;
         }
         
         setUserProfile(profile);
