@@ -174,9 +174,13 @@ export function StudyClient({ step: stepNo }: { step: number }) {
     setLastRun({ error: r.error ? friendlyError(r.error) : undefined, output: r.output })
     // チャレンジのファイルを動かしたときは、そのファイルのコードだけで見る（上のファイルの書き方で合格にしない）
     const code = r.file && isChallengeFile(r.file) ? (p.files[r.file] ?? '') : Object.values(p.files).join('\n')
+    // challengeN.py を動かしたときは、N番目のチャレンジだけを見る（チャレンジ①のコードで、自由なチャレンジ③まで合格にしない・2026-10-27）
+    const fileNo = Number(r.file?.match(/^challenge(\d+)\.py$/)?.[1] ?? 0)
+    const ownChallenge = fileNo > 0 ? step.sections.map((s, i) => (s.challenge ? i : -1)).filter((i) => i >= 0)[fileNo - 1] : undefined
     const newly: number[] = []
     step.sections.forEach((sec, i) => {
       if (p.passed.includes(i) || !reached(i)) return
+      if (ownChallenge !== undefined && sec.challenge && i !== ownChallenge) return
       // わざとエラーを出す見出しは、その前の見出しがぜんぶできてから（打ちまちがいのエラーで合格にしない）
       if (sec.expectError && requiredIndexes(step).some((j) => j < i && !p.passed.includes(j))) return
       if (sectionPassed(sec, r, code)) newly.push(i)

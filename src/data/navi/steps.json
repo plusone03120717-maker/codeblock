@@ -1212,66 +1212,111 @@
   "fileName": "step11.py",
   "sections": [
    {
-    "title": "見本を動かす：長方形の面積",
-    "start": 0,
-    "code": "tate = float(input(\"たてはいくつ？\"))\nyoko = float(input(\"よこはいくつ？\"))\nmenseki = tate * yoko\nprint(\"長方形の面積は\", menseki, \"です\")",
-    "expected": [
-     "長方形の面積は 20.0 です"
+    "title": "数を聞く",
+    "start": 50,
+    "code": "nedan = int(input(\"1こいくら？\"))\nkosu = int(input(\"いくつ買う？\"))",
+    "expected": [],
+    "mustMatch": "int\\(\\s*input\\([\\s\\S]*int\\(\\s*input\\(",
+    "inputs": [
+     "120",
+     "3"
     ],
+    "pauseAt": 107,
+    "note": "1こいくら？ と いくつ買う？ を int(input(…)) で聞こう。120 と 3 を入れて、エラーが出ずに おわれば OK"
+   },
+   {
+    "title": "計算して出す",
+    "start": 76,
+    "code": "nedan = int(input(\"1こいくら？\"))\nkosu = int(input(\"いくつ買う？\"))\ngoukei = nedan * kosu\nprint(\"ごうけいは\", goukei, \"円です\")",
+    "expected": [],
+    "mustMatch": "int\\(\\s*input\\(",
+    "outputPattern": "ごうけいは 360 円です$",
+    "inputs": [
+     "120",
+     "3"
+    ],
+    "pauseAt": 107,
+    "note": "goukei = nedan * kosu で計算して、カンマでならべて出そう。ごうけいは 360 円です が出れば OK"
+   },
+   {
+    "title": "おつりを足す",
+    "start": 109,
+    "code": "nedan = int(input(\"1こいくら？\"))\nkosu = int(input(\"いくつ買う？\"))\ngoukei = nedan * kosu\nprint(\"ごうけいは\", goukei, \"円です\")\nprint(\"おつりは\", 1000 - goukei, \"円\")",
+    "expected": [],
+    "mustMatch": "1000\\s*-\\s*goukei",
+    "outputPattern": "おつりは 640 円$",
+    "inputs": [
+     "120",
+     "3"
+    ],
+    "pauseAt": 143,
+    "note": "1000円を出したときのおつりを足そう。120 と 3 を入れて おつりは 640 円 が出れば OK"
+   },
+   {
+    "title": "チャレンジ① 150 と 4",
+    "start": 171,
+    "pauseAt": 228,
+    "code": "nedan = int(input(\"1こいくら？\"))\nkosu = int(input(\"いくつ買う？\"))\ngoukei = nedan * kosu\nprint(\"ごうけいは\", goukei, \"円です\")",
+    "expected": [],
+    "mustMatch": "int\\(\\s*input\\(",
+    "outputPattern": "ごうけいは 600 円です$",
+    "inputs": [
+     "150",
+     "4"
+    ],
+    "challenge": true,
+    "note": "お買い物アプリに 150 と 4 を入れよう。ごうけいは 600 円です が出れば OK",
+    "answerNote": "お買い物アプリをそのまま実行して、150 と 4 を入れる"
+   },
+   {
+    "title": "チャレンジ② 500円を出したら",
+    "start": 185,
+    "pauseAt": 228,
+    "code": "nedan = int(input(\"1こいくら？\"))\nkosu = int(input(\"いくつ買う？\"))\ngoukei = nedan * kosu\nprint(\"ごうけいは\", goukei, \"円です\")\nprint(\"おつりは\", 500 - goukei, \"円\")",
+    "expected": [],
+    "mustMatch": "500\\s*-\\s*goukei",
+    "outputPattern": "おつりは 140 円$",
+    "inputs": [
+     "120",
+     "3"
+    ],
+    "challenge": true,
+    "note": "おつりを、500円を出したときにかえよう。120 と 3 を入れて おつりは 140 円 が出れば OK",
+    "answerNote": "1000 - goukei を 500 - goukei にかえる"
+   },
+   {
+    "title": "チャレンジ③ 自分の計算アプリ",
+    "start": 200,
+    "pauseAt": 228,
+    "code": "tate = int(input(\"たては？\"))\nyoko = int(input(\"よこは？\"))\nprint(\"長方形の面積は\", tate * yoko)",
+    "expected": [],
+    "mustMatch": "input\\(",
     "inputs": [
      "4",
      "5"
     ],
-    "mustUse": [
-     "input(",
-     "float("
-    ]
-   },
-   {
-    "title": "見本を動かす：お買い物の合計",
-    "start": 0,
-    "code": "kosu = int(input(\"お菓子はいくつ買う？\"))\ngoukei = 120 * kosu\nprint(\"合計は\" + str(goukei) + \"円です\")\ngoukei *= 2\nprint(\"2回買うと\" + str(goukei) + \"円です\")",
-    "expected": [
-     "合計は360円です",
-     "2回買うと720円です"
-    ],
-    "inputs": [
-     "4",
-     "5",
-     "3"
-    ],
-    "mustUse": [
-     "int(",
-     "str("
-    ]
-   },
-   {
-    "title": "自分の計算を1つ足す",
-    "start": 0,
-    "code": "heikin = (tate + yoko) / 2\nprint(\"たてとよこの平均は\", heikin)",
-    "expected": [
-     "たてとよこの平均は 4.5"
-    ],
-    "inputs": [
-     "4",
-     "5",
-     "3"
-    ],
-    "note": "見本の式の例。数・質問・式を自分で決めたものに変えてよい（変えたら結果も変わる）。エラーが出ずに最後まで動けば合格にしてよい"
+    "challenge": true,
+    "note": "自分の計算アプリを作ろう。質問と計算は自由。input で聞いて、エラーが出ずに最後まで動けば OK",
+    "answerNote": "これは長方形の面積の例。おやつを分ける・勉強の時間など、自分で考えた計算にかえてみよう"
    }
   ],
-  "video": null,
+  "video": {
+   "no": "⑪",
+   "id": "D7fY5Iw_4EA",
+   "length": 262,
+   "end": 256
+  },
   "learn": [
-   "input・float・int を使って、自分の計算アプリが作れる",
-   "str( ) で数を文字にすると、+ でつなげられる",
-   "*= で、中身を何倍にもできる",
-   "数や質問を変えると、自分だけのアプリになる"
+   "input と int で、使う人に数を聞ける",
+   "計算した答えは、カンマで文字とならべて出せる",
+   "数や質問をかえると、自分だけのアプリになる",
+   "ステップ10までに習ったことだけで作れる"
   ],
   "codeblock": [
    "31-11"
   ],
   "review": {
-   "question": "int(input(\"いくつ？\")) の int( ) は何のため？",
+   "question": "kosu = int(input(\"いくつ買う？\")) の int( ) は何のため？",
    "choices": [
     "入れた答えを整数にして、計算できるようにする",
     "答えを文字のままにする",
@@ -1285,11 +1330,122 @@
   "unit": 1,
   "title": "アレンジ：計算アプリに機能を足す",
   "fileName": "step12.py",
-  "video": null,
-  "planned": true,
-  "sections": [],
-  "learn": [],
-  "codeblock": []
+  "sections": [
+   {
+    "title": "かざりの線",
+    "start": 47,
+    "code": "print(\"☆\" * 12)\nnedan = int(input(\"1こいくら？\"))\nkosu = int(input(\"いくつ買う？\"))\ngoukei = nedan * kosu\nprint(\"ごうけいは\", goukei, \"円です\")\nprint(\"☆\" * 12)",
+    "expected": [],
+    "mustMatch": "\"☆\"\\s*\\*\\s*12[\\s\\S]*\"☆\"\\s*\\*\\s*12",
+    "outputPattern": "^☆{12}$",
+    "inputs": [
+     "120",
+     "3"
+    ],
+    "pauseAt": 110,
+    "note": "ステップ11のアプリの上と下に print(\"☆\" * 12) を足そう。☆の線ではさまれれば OK"
+   },
+   {
+    "title": "ジュースを足す",
+    "start": 77,
+    "code": "print(\"☆\" * 12)\nnedan = int(input(\"1こいくら？\"))\nkosu = int(input(\"いくつ買う？\"))\ngoukei = nedan * kosu\ngoukei += 150\nprint(\"ごうけいは\", goukei, \"円です\")\nprint(\"☆\" * 12)",
+    "expected": [],
+    "mustMatch": "goukei\\s*\\+=\\s*150",
+    "outputPattern": "ごうけいは 510 円です$",
+    "inputs": [
+     "120",
+     "3"
+    ],
+    "pauseAt": 110,
+    "note": "goukei += 150 で、150円のジュースを足そう。120 と 3 を入れて ごうけいは 510 円です が出れば OK"
+   },
+   {
+    "title": "ポイント",
+    "start": 112,
+    "code": "print(\"☆\" * 12)\nnedan = int(input(\"1こいくら？\"))\nkosu = int(input(\"いくつ買う？\"))\ngoukei = nedan * kosu\ngoukei += 150\npoint = goukei // 100\nprint(\"ポイントは\", point)\nprint(\"ごうけいは\", goukei, \"円です\")\nprint(\"☆\" * 12)",
+    "expected": [],
+    "mustMatch": "//\\s*100",
+    "outputPattern": "ポイントは 5$",
+    "inputs": [
+     "120",
+     "3"
+    ],
+    "pauseAt": 186,
+    "note": "point = goukei // 100 で、100円ごとに1ポイント。120 と 3 を入れて ポイントは 5 が出れば OK"
+   },
+   {
+    "title": "チャレンジ① ★ 20こ",
+    "start": 212,
+    "pauseAt": 266,
+    "code": "print(\"★\" * 20)\nnedan = int(input(\"1こいくら？\"))\nkosu = int(input(\"いくつ買う？\"))\ngoukei = nedan * kosu\ngoukei += 150\npoint = goukei // 100\nprint(\"ポイントは\", point)\nprint(\"ごうけいは\", goukei, \"円です\")\nprint(\"★\" * 20)",
+    "expected": [],
+    "mustMatch": "\"★\"\\s*\\*\\s*20",
+    "outputPattern": "^★{20}$",
+    "inputs": [
+     "120",
+     "3"
+    ],
+    "challenge": true,
+    "note": "かざりの線を ★ 20こ にかえよう。★が20こ ならべば OK",
+    "answerNote": "\"☆\" * 12 を \"★\" * 20 にかえる（上と下の両方）"
+   },
+   {
+    "title": "チャレンジ② ジュース 200円",
+    "start": 226,
+    "pauseAt": 266,
+    "code": "print(\"☆\" * 12)\nnedan = int(input(\"1こいくら？\"))\nkosu = int(input(\"いくつ買う？\"))\ngoukei = nedan * kosu\ngoukei += 200\npoint = goukei // 100\nprint(\"ポイントは\", point)\nprint(\"ごうけいは\", goukei, \"円です\")\nprint(\"☆\" * 12)",
+    "expected": [],
+    "mustMatch": "goukei\\s*\\+=\\s*200",
+    "outputPattern": "ごうけいは 560 円です$",
+    "inputs": [
+     "120",
+     "3"
+    ],
+    "challenge": true,
+    "note": "ジュースを 200円にかえよう。120 と 3 を入れて ごうけいは 560 円です が出れば OK",
+    "answerNote": "goukei += 150 を goukei += 200 にかえる"
+   },
+   {
+    "title": "チャレンジ③ 50円ごとに1ポイント",
+    "start": 240,
+    "pauseAt": 266,
+    "code": "print(\"☆\" * 12)\nnedan = int(input(\"1こいくら？\"))\nkosu = int(input(\"いくつ買う？\"))\ngoukei = nedan * kosu\ngoukei += 150\npoint = goukei // 50\nprint(\"ポイントは\", point)\nprint(\"ごうけいは\", goukei, \"円です\")\nprint(\"☆\" * 12)",
+    "expected": [],
+    "mustMatch": "//\\s*50",
+    "outputPattern": "ポイントは 10$",
+    "inputs": [
+     "120",
+     "3"
+    ],
+    "challenge": true,
+    "note": "ポイントを 50円ごとに1ポイントにかえよう。120 と 3 を入れて ポイントは 10 が出れば OK",
+    "answerNote": "goukei // 100 を goukei // 50 にかえる"
+   }
+  ],
+  "video": {
+   "no": "⑫",
+   "id": "cQrKuCGJTpY",
+   "length": 300,
+   "end": 294
+  },
+  "learn": [
+   "文字 × 数で、かざりの線が作れる",
+   "+= で、ごうけいに足せる（買い足し）",
+   "スラッシュ2つ（//）で、100円ごとのポイントが計算できる（のこりの円はポイントにならない）",
+   "アレンジは、今あるアプリに自分で機能を足すこと"
+  ],
+  "codeblock": [
+   "31-12"
+  ],
+  "review": {
+   "question": "point = 510 // 100 の point はいくつ？",
+   "choices": [
+    "5",
+    "5.1",
+    "10"
+   ],
+   "answer": 0
+  }
  },
  {
   "step": 13,

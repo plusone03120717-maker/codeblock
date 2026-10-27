@@ -82,7 +82,15 @@ export const finishStepLessons: Lesson[] = [
     "unitNumber": 31,
     "subNumber": 11,
     "title": "ステップ11の仕上げ",
-    "description": "input・int・str・*= で、自分の計算アプリ",
+    "description": "input・int・計算・カンマで、自分の計算アプリを作ろう",
+    "difficulty": "かんたん"
+  },
+  {
+    "id": "31-12",
+    "unitNumber": 31,
+    "subNumber": 12,
+    "title": "ステップ12の仕上げ",
+    "description": "今あるアプリに、かざり・買い足し・ポイントを足してアレンジしよう",
     "difficulty": "かんたん"
   },
   {
@@ -1952,60 +1960,263 @@ export const finishStepMissions: Record<string, Mission[]> = {
     {
       "id": 1,
       "type": "quiz",
-      "title": "お買い物の合計",
-      "description": "このコードを実行すると、何が出る？",
-      "codeToRead": "kosu = 3\ngoukei = 120 * kosu\nprint(\"合計は\" + str(goukei) + \"円です\")",
+      "title": "ごうけいの計算",
+      "description": "このコードを実行して「50」と「4」を入れると、何が出る？",
+      "codeToRead": "nedan = int(input(\"1こいくら？\"))\nkosu = int(input(\"いくつ買う？\"))\nprint(nedan * kosu)",
       "choices": [
-        "合計は 360 円です",
-        "合計は360円です",
-        "エラーになる"
+        "504",
+        "200",
+        "54"
       ],
       "correctAnswer": 1,
-      "expectedOutput": "合計は360円です",
-      "hint": "+ でつなぐと、スペースは入るかな？",
-      "explanation": "120 × 3 で 360。str( ) で文字にして + でつなぐので、スペースなしだよ。",
+      "expectedOutput": "200",
+      "hint": "int で数にしてから、かけ算するよ。",
+      "explanation": "50 と 4 は int で数になるので、50 × 4 で 200。int がないと文字のままになるよ。",
       "availableBlocks": []
     },
     {
       "id": 2,
       "type": "quiz",
-      "title": "長方形の面積",
+      "title": "おつり",
       "description": "このコードを実行すると、何が出る？",
-      "codeToRead": "tate = 4.0\nyoko = 5.0\nprint(\"長方形の面積は\", tate * yoko, \"です\")",
+      "codeToRead": "goukei = 360\nprint(\"おつりは\", 1000 - goukei, \"円\")",
       "choices": [
-        "長方形の面積は 20.0 です",
-        "長方形の面積は 20 です",
-        "長方形の面積は tate * yoko です"
+        "おつりは 640 円",
+        "おつりは 1360 円",
+        "おつりは1000-goukei円"
       ],
       "correctAnswer": 0,
-      "expectedOutput": "長方形の面積は 20.0 です",
-      "hint": "4.0 のように .0 がついた数どうしを計算すると…？",
-      "explanation": "小数どうしのかけ算なので 20.0。カンマでスペースが入るよ。",
+      "expectedOutput": "おつりは 640 円",
+      "hint": "1000 から goukei の 360 をひくと…？",
+      "explanation": "1000 − 360 で 640。カンマでならべると、間に空白が入って「おつりは 640 円」。",
       "availableBlocks": []
     },
     {
       "id": 3,
       "type": "quiz",
       "title": "エラーを直そう",
-      "description": "実行したら TypeError が出た。どう直す？",
-      "codeToRead": "goukei = 360\nprint(\"合計は\" + goukei + \"円です\")",
+      "description": "「3」と入れたら「TypeError」と出た。どう直す？",
+      "codeToRead": "kosu = input(\"いくつ？\")\nprint(kosu + 1)",
       "choices": [
-        "360 を \"360\" にしても直らない",
-        "int( ) でかこむ",
-        "goukei を str(goukei) にする"
+        "kosu + 1 を kosu + \"1\" にする",
+        "print を input にする",
+        "1行目を kosu = int(input(\"いくつ？\")) にする"
       ],
       "correctAnswer": 2,
-      "expectedOutput": "goukei を str(goukei) にする",
-      "hint": "文字と数は、そのままでは + できないよ。",
-      "explanation": "goukei は数。str(goukei) で文字にすると + でつなげられるよ。",
+      "expectedOutput": "1行目を kosu = int(input(\"いくつ？\")) にする",
+      "hint": "input の答えは、まだ文字のままだよ。",
+      "explanation": "文字と数は + で計算できないので TypeError。int(input(…)) で数にしよう。",
       "availableBlocks": []
     },
     {
       "id": 4,
-      "title": "2倍にする",
-      "description": "*= を使って goukei を 2 倍にして、表示しよう！",
-      "expectedOutput": "720",
-      "correctCode": "goukei *= 2\nprint(goukei)",
+      "title": "長方形の面積アプリ",
+      "description": "tate と yoko には、使う人が入れた 4 と 5 が入っているよ。「面積は 20」と表示しよう！",
+      "expectedOutput": "面積は 20",
+      "correctCode": "print(\"面積は\", tate * yoko)",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b1",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b2",
+          "text": "\"面積は\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b3",
+          "text": ",",
+          "type": "separator",
+          "color": "bg-purple-200"
+        },
+        {
+          "id": "b4",
+          "text": "tate",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b5",
+          "text": "*",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b6",
+          "text": "yoko",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b7",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b8",
+          "text": "tate + yoko",
+          "type": "variable",
+          "color": "bg-sky-200"
+        }
+      ],
+      "prefixCode": "tate = 4\nyoko = 5",
+      "rules": [
+        {
+          "forbids": [
+            "tate + yoko"
+          ],
+          "message": "長方形の面積は、たて × よこ（*）だよ！"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "おやつを分けるアプリ",
+      "description": "12このおやつを、3人で同じ数ずつ分けるよ。「1人 4 こ」と表示しよう！",
+      "expectedOutput": "1人 4 こ",
+      "correctCode": "print(\"1人\", oyatsu // ninzu, \"こ\")",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b1",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b2",
+          "text": "\"1人\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b3",
+          "text": ",",
+          "type": "separator",
+          "color": "bg-purple-200"
+        },
+        {
+          "id": "b4",
+          "text": "oyatsu",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b5",
+          "text": "//",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b6",
+          "text": "ninzu",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b7",
+          "text": "\"こ\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b8",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b9",
+          "text": "oyatsu * ninzu",
+          "type": "variable",
+          "color": "bg-sky-200"
+        }
+      ],
+      "prefixCode": "oyatsu = 12\nninzu = 3",
+      "rules": [
+        {
+          "forbids": [
+            "oyatsu * ninzu"
+          ],
+          "message": "分けるときは、わり算（//）だよ！"
+        }
+      ]
+    }
+  ],
+  "31-12": [
+    {
+      "id": 1,
+      "type": "quiz",
+      "title": "かざりの線",
+      "description": "このコードを実行すると、何が出る？",
+      "codeToRead": "print(\"=\" * 5)",
+      "choices": [
+        "=5",
+        "=====",
+        "= * 5"
+      ],
+      "correctAnswer": 1,
+      "expectedOutput": "=====",
+      "hint": "文字に かける数をすると…？",
+      "explanation": "文字 × 数 はくりかえし。「=」が5こならぶよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 2,
+      "type": "quiz",
+      "title": "ポイント",
+      "description": "このコードを実行すると、何が出る？",
+      "codeToRead": "goukei = 730\nprint(goukei // 100)",
+      "choices": [
+        "7",
+        "7.3",
+        "30"
+      ],
+      "correctAnswer": 0,
+      "expectedOutput": "7",
+      "hint": "スラッシュ2つは、わり算の整数の答えだったね。",
+      "explanation": "730 // 100 は 7（のこりの 30 は切りすて）。730円なら 7ポイント。",
+      "availableBlocks": []
+    },
+    {
+      "id": 3,
+      "type": "quiz",
+      "title": "買い足し",
+      "description": "このコードを実行すると、何が出る？",
+      "codeToRead": "goukei = 300\ngoukei += 150\ngoukei += 50\nprint(goukei)",
+      "choices": [
+        "450",
+        "150",
+        "500"
+      ],
+      "correctAnswer": 2,
+      "expectedOutput": "500",
+      "hint": "上から じゅんばんに たしていこう。",
+      "explanation": "300 + 150 = 450、450 + 50 = 500。+= は今の中身にたすよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 4,
+      "title": "わりびき",
+      "description": "goukei には 400 が入っているよ。50円のわりびきで、goukei から 50 をひいて「350」と表示しよう！",
+      "expectedOutput": "350",
+      "correctCode": "goukei -= 50\nprint(goukei)",
       "availableBlocks": [
         {
           "id": "b0",
@@ -2015,13 +2226,13 @@ export const finishStepMissions: Record<string, Mission[]> = {
         },
         {
           "id": "b1",
-          "text": "*=",
+          "text": "-=",
           "type": "operator",
           "color": "bg-orange-200"
         },
         {
           "id": "b2",
-          "text": "2",
+          "text": "50",
           "type": "number",
           "color": "bg-yellow-100"
         },
@@ -2056,103 +2267,85 @@ export const finishStepMissions: Record<string, Mission[]> = {
           "color": "bg-orange-200"
         }
       ],
-      "prefixCode": "goukei = 360",
+      "prefixCode": "goukei = 400",
       "rules": [
         {
-          "requires": [
-            "*="
+          "forbids": [
+            "+="
           ],
-          "message": "*= を使って、何倍にもできるよ！"
+          "message": "ひくのは -= だよ！"
         }
       ]
     },
     {
       "id": 5,
-      "title": "平均を出す",
-      "description": "たてとよこの平均（足して 2 でわる）を heikin に入れて、表示しよう！",
-      "expectedOutput": "4.5",
-      "correctCode": "heikin = (tate + yoko) / 2\nprint(heikin)",
+      "title": "ポイントを出す",
+      "description": "goukei には 860 が入っているよ。100円ごとに1ポイントで、「ポイントは 8」と表示しよう！",
+      "expectedOutput": "ポイントは 8",
+      "correctCode": "print(\"ポイントは\", goukei // 100)",
       "availableBlocks": [
         {
           "id": "b0",
-          "text": "heikin",
-          "type": "variable",
-          "color": "bg-sky-200"
-        },
-        {
-          "id": "b1",
-          "text": "=",
-          "type": "operator",
-          "color": "bg-orange-200"
-        },
-        {
-          "id": "b2",
-          "text": "(",
-          "type": "bracket",
-          "color": "bg-gray-200"
-        },
-        {
-          "id": "b3",
-          "text": "tate",
-          "type": "variable",
-          "color": "bg-sky-200"
-        },
-        {
-          "id": "b4",
-          "text": "+",
-          "type": "operator",
-          "color": "bg-orange-200"
-        },
-        {
-          "id": "b5",
-          "text": "yoko",
-          "type": "variable",
-          "color": "bg-sky-200"
-        },
-        {
-          "id": "b6",
-          "text": ")",
-          "type": "bracket",
-          "color": "bg-gray-200"
-        },
-        {
-          "id": "b7",
-          "text": "/",
-          "type": "operator",
-          "color": "bg-orange-200"
-        },
-        {
-          "id": "b8",
-          "text": "2",
-          "type": "number",
-          "color": "bg-yellow-100"
-        },
-        {
-          "id": "nl9",
-          "text": "↵",
-          "type": "newline",
-          "color": "bg-pink-200"
-        },
-        {
-          "id": "b10",
           "text": "print",
           "type": "function",
           "color": "bg-yellow-200"
         },
         {
-          "id": "b11",
-          "text": "*",
+          "id": "b1",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b2",
+          "text": "\"ポイントは\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b3",
+          "text": ",",
+          "type": "separator",
+          "color": "bg-purple-200"
+        },
+        {
+          "id": "b4",
+          "text": "goukei",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b5",
+          "text": "//",
           "type": "operator",
           "color": "bg-orange-200"
+        },
+        {
+          "id": "b6",
+          "text": "100",
+          "type": "number",
+          "color": "bg-yellow-100"
+        },
+        {
+          "id": "b7",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b8",
+          "text": "goukei % 100",
+          "type": "variable",
+          "color": "bg-sky-200"
         }
       ],
-      "prefixCode": "tate = 4.0\nyoko = 5.0",
+      "prefixCode": "goukei = 860",
       "rules": [
         {
-          "requires": [
-            "("
+          "forbids": [
+            "%"
           ],
-          "message": "先に足すので、( ) でかこもう！"
+          "message": "ポイントは スラッシュ2つ（//）で計算しよう！"
         }
       ]
     }
@@ -5964,10 +6157,26 @@ export const finishStepTutorials: LessonTutorial[] = [
     "slides": [
       {
         "title": "5問で仕上げよう",
-        "content": "作品の回で使った書き方を、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
-          "good": "kosu = 2\nprint(\"合計は\" + str(100 * kosu) + \"円です\")"
+          "good": "nedan = int(input(\"ねだんは？\"))  # 数を聞く"
+        }
+      }
+    ]
+  },
+  {
+    "lessonId": "31-12",
+    "characterName": "いちか",
+    "characterEmoji": "🙂",
+    "characterImage": "/navi/bob_smile.webp",
+    "slides": [
+      {
+        "title": "5問で仕上げよう",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "characterMessage": "わからなくなったら、ヒントを見てね。",
+        "codeExample": {
+          "good": "print(\"-\" * 10)  # かざりの線"
         }
       }
     ]
