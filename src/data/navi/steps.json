@@ -1086,76 +1086,123 @@
   "fileName": "step10.py",
   "sections": [
    {
-    "title": "x に 50 を足す（長い書き方）",
-    "start": 73,
-    "code": "x = 100\nprint(x)\nx = x + 50\nprint(x)",
+    "title": "長い書き方",
+    "start": 56,
+    "code": "point = 0\nprint(point)\npoint = point + 10\nprint(point)",
     "expected": [
-     "100",
-     "150"
-    ]
+     "0",
+     "10"
+    ],
+    "mustMatch": "point\\s*=\\s*point\\s*\\+",
+    "pauseAt": 138,
+    "note": "point = 0 から、point = point + 10 で 10 ふやそう。0 と 10 が出れば OK"
    },
    {
-    "title": "+= で短く書く",
-    "start": 117,
-    "code": "x += 50",
+    "title": "+= で短く",
+    "start": 88,
+    "code": "point = 0\npoint += 10\npoint += 10\npoint += 10\nprint(point)",
     "expected": [
-     "100",
-     "150"
+     "30"
     ],
     "mustUse": [
      "+="
     ],
-    "note": "3行目の x = x + 50 を、この1行に書きかえる。結果は前と同じ 100 と 150 になれば合格"
+    "pauseAt": 138,
+    "note": "point += 10 を3行ならべて、3回とったら 30 になるのをたしかめよう。30 が出れば OK"
    },
    {
-    "title": "ひき算・かけ算・わり算も",
-    "start": 133,
-    "code": "x -= 50\nx *= 2\nx /= 4\nprint(x)",
+    "title": "ほかの計算も",
+    "start": 140,
+    "code": "okane = 1000\nokane -= 300\nprint(okane)",
+    "expected": [],
+    "mustMatch": "okane\\s*(-=|\\*=|/=)",
+    "outputPattern": "^(700|2000|250\\.0)$",
+    "pauseAt": 223,
+    "note": "okane = 1000 から -= 300 で 700。*= 2 で 2000、/= 4 で 250.0 も ためそう。どれかが出れば OK"
+   },
+   {
+    "title": "文字にも使える",
+    "start": 185,
+    "code": "koe = \"ワン\"\nkoe *= 3\nkoe += \"！\"\nprint(koe)",
     "expected": [
-     "50.0"
+     "ワンワンワン！"
     ],
     "mustUse": [
-     "-=",
      "*=",
+     "+="
+    ],
+    "pauseAt": 223,
+    "note": "文字に *= でくりかえし、+= でうしろにつなごう。ワンワンワン！ が出れば OK"
+   },
+   {
+    "title": "チャレンジ① 50 に 30 をたす",
+    "start": 225,
+    "pauseAt": 284,
+    "code": "point = 50\npoint += 30\nprint(point)",
+    "expected": [
+     "80"
+    ],
+    "mustUse": [
+     "+="
+    ],
+    "challenge": true,
+    "note": "point = 50 から始めて、+= で 30 をたそう。80 が出れば OK",
+    "answerNote": "point += 30 で、point の中身に 30 をたす"
+   },
+   {
+    "title": "チャレンジ② ケーキを4人で",
+    "start": 240,
+    "pauseAt": 284,
+    "code": "cake = 1200\ncake /= 4\nprint(\"1人\", cake, \"円\")",
+    "expected": [
+     "1人 300.0 円"
+    ],
+    "mustUse": [
      "/="
     ],
-    "note": "推測：動画はスライドで -= *= /= を見せるだけなので、数は推測。150 → 100 → 200 → 50.0 になる"
+    "challenge": true,
+    "note": "cake = 1200 にして、/= で 4人に分けよう。1人 300.0 円 が出れば OK",
+    "answerNote": "cake /= 4 で 4 でわる（わり算なので .0 がつく）。カンマで「1人」「円」とならべる"
    },
    {
-    "title": "文字にも *= が使える",
-    "start": 146,
-    "code": "hello = \"こんにちは\"\nhello *= 3\nprint(hello)",
+    "title": "チャレンジ③ さんをつける",
+    "start": 259,
+    "pauseAt": 284,
+    "code": "namae = \"いちか\"\nnamae += \"さん\"\nprint(namae)",
     "expected": [
-     "こんにちはこんにちはこんにちは"
+     "いちかさん"
     ],
     "mustUse": [
-     "*="
-    ]
+     "+="
+    ],
+    "challenge": true,
+    "note": "namae = \"いちか\" にして、+= で「さん」をつけよう。いちかさん が出れば OK",
+    "answerNote": "文字の += は、うしろにつなぐ"
    }
   ],
   "video": {
-   "no": "#6",
-   "id": "1wxGHBxIGkg",
-   "length": 237,
-   "end": 197
+   "no": "⑩",
+   "id": "HXfYgOznE1E",
+   "length": 328,
+   "end": 322
   },
   "learn": [
-   "x = x + 50 は、x の中身に 50 を足して入れなおすこと",
-   "x += 50 と短く書いても同じ意味",
-   "-=・*=・/= も使える。文字にも *= でくりかえせる",
-   "見たことのないコードは、調べるくせをつけよう"
+   "point = point + 10 は、右を計算して、左の箱に入れなおすこと",
+   "point += 10 と短く書いても同じ意味",
+   "-=・*=・/= も使える（わり算の /= は .0 がつく）",
+   "文字にも *= と += が使える。見たことのない書き方は、いちかに質問しよう"
   ],
   "codeblock": [
    "31-10"
   ],
   "review": {
-   "question": "x = 100 のあと x += 50 をすると、x はいくつ？",
+   "question": "point = 0 のあと point += 10 を2回すると、point はいくつ？",
    "choices": [
-    "50",
-    "100",
-    "150"
+    "10",
+    "20",
+    "100"
    ],
-   "answer": 2
+   "answer": 1
   }
  },
  {

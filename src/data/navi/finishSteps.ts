@@ -74,7 +74,7 @@ export const finishStepLessons: Lesson[] = [
     "unitNumber": 31,
     "subNumber": 10,
     "title": "ステップ10の仕上げ",
-    "description": "+= などで、コードを短く書こう",
+    "description": "+=・-=・*=・/= で、箱の中身を短い書き方でかえよう",
     "difficulty": "かんたん"
   },
   {
@@ -1767,78 +1767,78 @@ export const finishStepMissions: Record<string, Mission[]> = {
     {
       "id": 1,
       "type": "quiz",
-      "title": "+= で足す",
+      "title": "+= の意味",
       "description": "このコードを実行すると、何が出る？",
-      "codeToRead": "x = 20\nx += 5\nprint(x)",
+      "codeToRead": "point = 5\npoint += 3\nprint(point)",
       "choices": [
-        "205",
-        "25",
-        "5"
+        "3",
+        "8",
+        "53"
       ],
       "correctAnswer": 1,
-      "expectedOutput": "25",
-      "hint": "x += 5 は x = x + 5 と同じだよ。",
-      "explanation": "20 に 5 を足して、x は 25 になるよ。",
+      "expectedOutput": "8",
+      "hint": "point の中身の 5 に、3 をたすと…？",
+      "explanation": "point += 3 は point = point + 3 と同じ。5 + 3 で 8 だよ。",
       "availableBlocks": []
     },
     {
       "id": 2,
       "type": "quiz",
-      "title": "文字にも *=",
+      "title": "じゅんばんに計算",
       "description": "このコードを実行すると、何が出る？",
-      "codeToRead": "hello = \"やあ\"\nhello *= 3\nprint(hello)",
+      "codeToRead": "okane = 100\nokane -= 40\nokane *= 2\nprint(okane)",
       "choices": [
-        "やあやあやあ",
-        "やあ3",
-        "やあ やあ やあ"
+        "120",
+        "60",
+        "160"
       ],
       "correctAnswer": 0,
-      "expectedOutput": "やあやあやあ",
-      "hint": "hello *= 3 は hello = hello * 3 と同じ。",
-      "explanation": "文字に * 3 をすると3回くりかえす。スペースは入らないよ。",
+      "expectedOutput": "120",
+      "hint": "上から じゅんばんに。100 から 40 をひいて、そのあと 2ばい。",
+      "explanation": "100 − 40 = 60、60 × 2 = 120。上の行から じゅんばんに計算するよ。",
       "availableBlocks": []
     },
     {
       "id": 3,
       "type": "quiz",
-      "title": "まちがいを直そう",
-      "description": "15 を出したいのに、5 が出た。どう直す？",
-      "codeToRead": "x = 10\nx =+ 5\nprint(x)",
+      "title": "エラーを直そう",
+      "description": "「NameError: name 'point' is not defined」と出た。どう直す？",
+      "codeToRead": "point += 10\nprint(point)",
       "choices": [
-        "5 を 15 にする",
-        "print(x) を2回書く",
-        "=+ を += にする"
+        "point += 10 を point = 10 + にする",
+        "print(point) を print(\"point\") にする",
+        "1行目の前に point = 0 を書く"
       ],
       "correctAnswer": 2,
-      "expectedOutput": "=+ を += にする",
-      "hint": "記号の順番をよく見てみよう。",
-      "explanation": "=+ だと「x に +5 を入れる」になって 5 が出る。足すときは += の順番だよ。",
+      "expectedOutput": "1行目の前に point = 0 を書く",
+      "hint": "たす前に、point の箱はあるかな？",
+      "explanation": "+= は「今の中身」にたすので、先に point = 0 のように箱を作っておこう。",
       "availableBlocks": []
     },
     {
       "id": 4,
-      "title": "-= でひく",
-      "description": "-= を使って、x から 50 をひいて表示しよう！",
-      "expectedOutput": "100",
-      "correctCode": "x -= 50\nprint(x)",
+      "title": "+= で うしろにつなぐ",
+      "description": "namae には「はると」が入っているよ。+= で「くん」をつけて、「はるとくん」と表示しよう！",
+      "expectedOutput": "はるとくん",
+      "correctCode": "namae += \"くん\"\nprint(namae)",
       "availableBlocks": [
         {
           "id": "b0",
-          "text": "x",
+          "text": "namae",
           "type": "variable",
           "color": "bg-sky-200"
         },
         {
           "id": "b1",
-          "text": "-=",
+          "text": "+=",
           "type": "operator",
           "color": "bg-orange-200"
         },
         {
           "id": "b2",
-          "text": "50",
-          "type": "number",
-          "color": "bg-yellow-100"
+          "text": "\"くん\"",
+          "type": "string",
+          "color": "bg-green-200"
         },
         {
           "id": "nl3",
@@ -1866,37 +1866,37 @@ export const finishStepMissions: Record<string, Mission[]> = {
         },
         {
           "id": "b7",
-          "text": "+=",
+          "text": "-=",
           "type": "operator",
           "color": "bg-orange-200"
         }
       ],
-      "prefixCode": "x = 150",
+      "prefixCode": "namae = \"はると\"",
       "rules": [
         {
-          "requires": [
+          "forbids": [
             "-="
           ],
-          "message": "-= を使って、短く書こう！"
+          "message": "文字をうしろにつなぐのは += だよ！"
         }
       ]
     },
     {
       "id": 5,
-      "title": "*= でかける",
-      "description": "x に 3 を入れて、*= で 4 倍にして表示しよう！",
-      "expectedOutput": "12",
-      "correctCode": "x = 3\nx *= 4\nprint(x)",
+      "title": "/= で分ける",
+      "description": "ame には 12 が入っているよ。/= で 3人に分けて、「4.0」と表示しよう！",
+      "expectedOutput": "4.0",
+      "correctCode": "ame /= 3\nprint(ame)",
       "availableBlocks": [
         {
           "id": "b0",
-          "text": "x",
+          "text": "ame",
           "type": "variable",
           "color": "bg-sky-200"
         },
         {
           "id": "b1",
-          "text": "=",
+          "text": "/=",
           "type": "operator",
           "color": "bg-orange-200"
         },
@@ -1914,53 +1914,36 @@ export const finishStepMissions: Record<string, Mission[]> = {
         },
         {
           "id": "b4",
-          "text": "*=",
-          "type": "operator",
-          "color": "bg-orange-200"
-        },
-        {
-          "id": "b5",
-          "text": "4",
-          "type": "number",
-          "color": "bg-yellow-100"
-        },
-        {
-          "id": "b6",
           "text": "print",
           "type": "function",
           "color": "bg-yellow-200"
         },
         {
-          "id": "b7",
+          "id": "b5",
           "text": "(",
           "type": "bracket",
           "color": "bg-gray-200"
         },
         {
-          "id": "b8",
+          "id": "b6",
           "text": ")",
           "type": "bracket",
           "color": "bg-gray-200"
         },
         {
-          "id": "b9",
-          "text": "×",
+          "id": "b7",
+          "text": "*=",
           "type": "operator",
           "color": "bg-orange-200"
         }
       ],
+      "prefixCode": "ame = 12",
       "rules": [
         {
           "forbids": [
-            "×"
-          ],
-          "message": "かけ算は × ではなく、* で書くよ！"
-        },
-        {
-          "requires": [
             "*="
           ],
-          "message": "*= を使って、短く書こう！"
+          "message": "分けるのは わり算の /= だよ！"
         }
       ]
     }
@@ -5968,7 +5951,7 @@ export const finishStepTutorials: LessonTutorial[] = [
         "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
-          "good": "y = 1\ny += 1\nprint(y)  # 2"
+          "good": "point += 5  # point = point + 5 と同じ"
         }
       }
     ]
