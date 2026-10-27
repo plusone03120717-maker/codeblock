@@ -963,106 +963,120 @@
   "fileName": "step09.py",
   "sections": [
    {
-    "title": "float を消すとエラー",
-    "start": 197,
-    "code": "jotei = input(\"上底はいくつ？\")\nkatei = input(\"下底はいくつ？\")\ntakasa = input(\"高さはいくつ？\")",
+    "title": "type で調べる",
+    "start": 70,
+    "code": "print(type(\"ハロー\"))\nprint(type(10))\nprint(type(4.5))",
+    "expected": [
+     "<class 'str'>",
+     "<class 'int'>",
+     "<class 'float'>"
+    ],
+    "mustUse": [
+     "type("
+    ],
+    "pauseAt": 216,
+    "note": "「ハロー」・10・4.5 の型を type( ) で調べよう。str・int・float が出れば OK"
+   },
+   {
+    "title": "input の答えの型",
+    "start": 103,
+    "code": "print(type(\"ハロー\"))\nprint(type(10))\nprint(type(4.5))\nkotae = int(input(\"数は？\"))\nprint(type(kotae))",
     "expected": [],
+    "mustMatch": "int\\(\\s*input\\(",
+    "outputPattern": "<class 'int'>$",
     "inputs": [
-     "5",
-     "10",
-     "6"
+     "10"
     ],
-    "note": "エラーを見る場面。前の回の台形アプリ（5行）を書き、1〜3行目の float( ) を消して実行する。エラーが出ればOK",
-    "expectError": true,
-    "optional": true
+    "pauseAt": 216,
+    "note": "input の答えの型を調べよう（はじめは str）。input を int( ) でかこんで、10 を入れて <class 'int'> が出れば OK"
    },
    {
-    "title": "float でなおす",
-    "start": 244,
-    "code": "jotei = float(input(\"上底はいくつ？\"))\nkatei = float(input(\"下底はいくつ？\"))\ntakasa = float(input(\"高さはいくつ？\"))",
-    "expected": [
-     "台形の面積は 45.0 です"
-    ],
-    "inputs": [
-     "5",
-     "10",
-     "6"
-    ],
-    "mustUse": [
-     "float("
-    ],
-    "note": "1〜3行目に float( ) をもどす。台形アプリ全体が動けば合格"
-   },
-   {
-    "title": "\"ハロー\" + 10 はエラー",
-    "start": 265,
-    "code": "print(\"ハロー\" + 10)",
+    "title": "文字と数をつなぐ",
+    "start": 155,
+    "code": "nensei = 4\nprint(\"ぼくは\" + str(nensei) + \"年生\")",
     "expected": [],
-    "inputs": [
-     "5",
-     "10",
-     "6"
-    ],
-    "note": "エラーを見る場面（文字と数は + できない）。エラーを見たら、この行は消してから次へ",
-    "expectError": true,
-    "optional": true
+    "mustMatch": "str\\(\\s*nensei\\s*\\)",
+    "outputPattern": "ぼくは4年生$",
+    "pauseAt": 216,
+    "note": "nensei を str( ) でかこんで、ぼくは4年生 が出れば OK（はじめはエラーになるのをたしかめよう）"
    },
    {
-    "title": "str( ) で数を文字に",
-    "start": 302,
-    "code": "print(\"ハロー\" + str(10))",
+    "title": "かけ算はくりかえし",
+    "start": 218,
+    "code": "nensei = 4\nprint(\"ぼくは\" + str(nensei) + \"年生\")\nprint(\"ハロー\" * 3)\nprint(\"5\" * 3)\nprint(5 * 3)",
     "expected": [
-     "ハロー10"
+     "ハローハローハロー",
+     "555",
+     "15"
     ],
-    "inputs": [
-     "5",
-     "10",
-     "6"
-    ],
-    "mustUse": [
-     "str("
-    ]
+    "pauseAt": 265,
+    "note": "「ハロー」 * 3・\"5\" * 3・5 * 3 を出そう。ハローハローハロー・555・15 が出れば OK"
    },
    {
-    "title": "文字 × 数 はくりかえし",
-    "start": 327,
-    "code": "print(\"ハロー\" * 10)",
+    "title": "チャレンジ① 3.14 の型",
+    "start": 267,
+    "pauseAt": 325,
+    "code": "print(type(3.14))",
     "expected": [
-     "ハローハローハローハローハローハローハローハローハローハロー"
+     "<class 'float'>"
     ],
+    "mustMatch": "type\\(\\s*3\\.14\\s*\\)",
+    "challenge": true,
+    "note": "3.14 の型を type で調べよう。<class 'float'> が出れば OK",
+    "answerNote": "print の中に type、その中に 3.14"
+   },
+   {
+    "title": "チャレンジ② 来年の年",
+    "start": 279,
+    "pauseAt": 325,
+    "code": "toshi = int(input(\"なんさい？\"))\nprint(\"来年は\" + str(toshi + 1) + \"さい\")",
+    "expected": [],
+    "mustMatch": "int\\(\\s*input\\([\\s\\S]*str\\(",
+    "outputPattern": "来年は10さい$",
     "inputs": [
-     "5",
-     "10",
-     "6"
+     "9"
     ],
-    "mustUse": [
-     "* 10"
-    ]
+    "challenge": true,
+    "note": "なんさい？ と聞いて、来年の年を出そう。9 と入れたら 来年は10さい が出れば OK",
+    "answerNote": "int(input(…)) で数にして 1 をたし、str( ) で文字にもどして + でつなぐ"
+   },
+   {
+    "title": "チャレンジ③ ☆を5こ",
+    "start": 300,
+    "pauseAt": 325,
+    "code": "print(\"☆\" * 5)",
+    "expected": [
+     "☆☆☆☆☆"
+    ],
+    "mustMatch": "\\*\\s*5",
+    "challenge": true,
+    "note": "☆を5こならべて出そう。かけ算を使うよ。☆☆☆☆☆ が出れば OK",
+    "answerNote": "\"☆\" * 5 で、☆を5回くりかえす"
    }
   ],
   "video": {
-   "no": "#5",
-   "id": "YQ916-GV0gQ",
-   "length": 420,
-   "end": 381
+   "no": "⑨",
+   "id": "ey__2udfHRk",
+   "length": 364,
+   "end": 357
   },
   "learn": [
-   "データ型は4つ：str（文字列）・int（整数）・float（小数）・bool（合っているか）",
-   "input( ) で入れたものは文字列。float( ) で数にかえると計算できる",
-   "型がちがうものを + するとエラー。str(10) で文字にそろえる",
-   "\"ハロー\" * 10 は、ハローを10回くりかえす"
+   "データ型は4つ：str（文字）・int（整数）・float（小数）・bool（True / False）",
+   "type( ) で型を調べられる（print(type(\"ハロー\")) → <class 'str'>）",
+   "input の答えは str。int( ) で整数に、float( ) で小数にかえる",
+   "str( ) で数を文字にすると + でつなげる。文字 × 数 はくりかえし"
   ],
   "codeblock": [
    "31-9"
   ],
   "review": {
-   "question": "print(\"ハロー\" + str(10)) で出るのは？",
+   "question": "print(\"5\" * 3) で出るのは？",
    "choices": [
-    "ハロー10",
-    "ハロー + 10",
+    "15",
+    "555",
     "エラーになる"
    ],
-   "answer": 0
+   "answer": 1
   }
  },
  {

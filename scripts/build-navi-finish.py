@@ -580,6 +580,23 @@ FRESH = {
           'print("面積は", tate * yoko)', "面積は 24.0", extra=["tate + yoko"], prefix="tate = 4.0\nyoko = 6.0",
           rules=[("forbids", ["tate + yoko"], "長方形の面積は、たて × よこ（*）だよ！")]),
     ]),
+    9: dict(desc="データの型（str・int・float・bool）を知って、かえたり調べたりしよう", example='print(type("ハロー"))  # <class \'str\'>', qs=[
+        Q("型を調べる", "print(type(10))", "<class 'int'>", ["<class 'str'>", "<class 'float'>"],
+          "10 は、点のない数だね。", "10 は整数なので int。4.5 のように点があると float、\" \" でかこむと str だよ。"),
+        Q("input の答えの型", 'kotae = input("数は？")\nprint(type(kotae))', "<class 'str'>", ["<class 'int'>", "7"],
+          "input の答えは、数に見えても…？", "input の答えはいつも文字（str）。数にするなら int( ) か float( ) でかこもう。",
+          desc="このコードを実行して「7」と入れると、何が出る？", run=False),
+        Q("エラーを直そう", 'nensei = 3\nprint("ぼくは" + nensei + "年生")', "2行目の nensei を str(nensei) にする",
+          ['nensei を "nensei" にする', "3 を 3.0 にする"],
+          "文字と数は、+ でつなげないね。", "数の 3 を str( ) で文字にすると、+ でつなげる。\" \" でかこむと、ただの文字 nensei になってしまうよ。",
+          desc="「TypeError」と出た。どう直す？", run=False),
+        B("くりかえして出す", "「ワンワンワン」と表示しよう！", 'print("ワン" * 3)', "ワンワンワン", extra=["+"],
+          rules=[("forbids", ["+"], "文字 × 数（*）で、くりかえしてみよう！")]),
+        B("数を文字にしてつなぐ", "toshi には 10 が入っているよ。「10さいです」と表示しよう！", 'print(str(toshi) + "さいです")', "10さいです",
+          extra=['"toshi"'], prefix="toshi = 10",
+          rules=[("forbids", ['"toshi"'], "\" \" でかこむと、箱の中身ではなく文字のまま出るよ！"),
+                 ("req", ["str("], "数と文字を + でつなぐときは、str( ) で文字にしよう！")]),
+    ]),
 }
 
 NEW_STEP = {2: 5, 3: 8, 4: 9, 5: 10, 6: 11, 7: 14, 8: 16, 9: 18, 10: 23, 11: 25, 12: 28, 13: 33, 14: 35, 15: 37,
