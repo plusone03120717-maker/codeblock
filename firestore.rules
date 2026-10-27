@@ -25,13 +25,13 @@ service cloud.firestore {
     }
 
     // ユーザードキュメント
-    // 作る・消すのは管理者だけ。本人は自分の記録を直せるが、プラン（subscription）とユーザーIDは変えられない
+    // 作る・消すのは管理者だけ。本人は自分の記録を直せるが、プラン（subscription）・ユーザーID・コース（naviCourse）は変えられない
     match /users/{uid} {
       allow read: if isSelf(uid) || isAdmin();
       allow create, delete: if isAdmin();
       allow update: if isAdmin()
         || (isSelf(uid)
-            && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['subscription', 'userId']));
+            && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['subscription', 'userId', 'naviCourse']));
 
       // サブコレクション（進み具合・質問の記録など）は本人と管理者だけ。
       // 1日の回数は「1ずつ増やすだけ・消せない」

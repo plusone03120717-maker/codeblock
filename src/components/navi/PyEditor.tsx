@@ -20,7 +20,8 @@ type Line =
   | { kind: 'answer'; prompt: string; text: string }
 
 // file：動かしたファイル（チャレンジのファイルを動かしたときは、その名前）
-export type RunResult = { ok: boolean; output: string; error?: PyError; file?: string }
+// blocked：全角が見つかって、動かす前に止めた（先生の画面の「苦手」に数えるだけで、判定はしない）
+export type RunResult = { ok: boolean; output: string; error?: PyError; file?: string; blocked?: boolean }
 
 // チャレンジは、それぞれ新しいファイル（challenge1.py など）に書いて、そのファイルだけを動かす
 // （上のコードの input の質問に、毎回答えなくてすむように・2026-10-26 依頼主）
@@ -213,6 +214,13 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
     if (full) {
       push({ kind: 'explain', text: fullWidthMessage(full), trace: '' })
       if (main === activeRef.current) viewRef.current?.dispatch({ effects: setMark.of(full.line) })
+      onRunFinishedRef.current?.({
+        ok: false,
+        output: '',
+        error: { type: 'SyntaxError', message: `invalid character '${full.ch}'`, file: main, line: full.line, trace: '' },
+        file: main,
+        blocked: true,
+      })
       return
     }
     setStatus('running')

@@ -76,7 +76,7 @@ export default function Home() {
   const { language } = useLanguage();
 
   // Python ナビ（新しいコース）を使うアカウントは、ナビのホームへ移る
-  const naviUser = isNaviUser(user?.uid);
+  const naviUser = isNaviUser(user?.uid, userProfile);
   useEffect(() => {
     if (naviUser) router.replace("/navi");
   }, [naviUser, router]);

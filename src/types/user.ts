@@ -15,6 +15,8 @@ export interface UserProfile {
   email: string;
   displayName: string;
   subscription: UserSubscription;
+  // 新しいコース（Python ナビ）を使うか。管理画面の「コース切りかえ」で先生だけが変える（本人は変えられない）
+  naviCourse?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
