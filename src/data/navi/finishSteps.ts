@@ -66,7 +66,7 @@ export const finishStepLessons: Lesson[] = [
     "unitNumber": 31,
     "subNumber": 9,
     "title": "ステップ9の仕上げ",
-    "description": "データ型（文字・数）のちがいと、型をそろえる方法",
+    "description": "データの型（str・int・float・bool）を知って、かえたり調べたりしよう",
     "difficulty": "かんたん"
   },
   {
@@ -1583,60 +1583,60 @@ export const finishStepMissions: Record<string, Mission[]> = {
     {
       "id": 1,
       "type": "quiz",
-      "title": "文字にそろえる",
+      "title": "型を調べる",
       "description": "このコードを実行すると、何が出る？",
-      "codeToRead": "print(\"ハロー\" + str(5))",
+      "codeToRead": "print(type(10))",
       "choices": [
-        "ハロー 5",
-        "ハロー5",
-        "エラーになる"
+        "<class 'str'>",
+        "<class 'int'>",
+        "<class 'float'>"
       ],
       "correctAnswer": 1,
-      "expectedOutput": "ハロー5",
-      "hint": "str(5) は、5 を文字の \"5\" にするよ。",
-      "explanation": "str(5) で文字にそろえたので、+ でつながって「ハロー5」。スペースは入らないよ。",
+      "expectedOutput": "<class 'int'>",
+      "hint": "10 は、点のない数だね。",
+      "explanation": "10 は整数なので int。4.5 のように点があると float、\" \" でかこむと str だよ。",
       "availableBlocks": []
     },
     {
       "id": 2,
       "type": "quiz",
-      "title": "文字 × 数",
-      "description": "このコードを実行すると、何が出る？",
-      "codeToRead": "print(\"ワン\" * 2)",
+      "title": "input の答えの型",
+      "description": "このコードを実行して「7」と入れると、何が出る？",
+      "codeToRead": "kotae = input(\"数は？\")\nprint(type(kotae))",
       "choices": [
-        "ワンワン",
-        "ワン2",
-        "エラーになる"
+        "<class 'str'>",
+        "<class 'int'>",
+        "7"
       ],
       "correctAnswer": 0,
-      "expectedOutput": "ワンワン",
-      "hint": "文字に * で数をかけると…？",
-      "explanation": "文字 * 数 は、その回数だけくりかえすよ。",
+      "expectedOutput": "<class 'str'>",
+      "hint": "input の答えは、数に見えても…？",
+      "explanation": "input の答えはいつも文字（str）。数にするなら int( ) か float( ) でかこもう。",
       "availableBlocks": []
     },
     {
       "id": 3,
       "type": "quiz",
       "title": "エラーを直そう",
-      "description": "実行したら「TypeError: can only concatenate str (not \"int\") to str」と出た。どう直す？",
-      "codeToRead": "print(\"ハロー\" + 10)",
+      "description": "「TypeError」と出た。どう直す？",
+      "codeToRead": "nensei = 3\nprint(\"ぼくは\" + nensei + \"年生\")",
       "choices": [
-        "print を Print にする",
-        "\"ハロー\" を str(\"ハロー\") にする",
-        "10 を str(10) にする"
+        "nensei を \"nensei\" にする",
+        "3 を 3.0 にする",
+        "2行目の nensei を str(nensei) にする"
       ],
       "correctAnswer": 2,
-      "expectedOutput": "10 を str(10) にする",
-      "hint": "文字と数は、そのままでは + できないよ。",
-      "explanation": "10 を str(10) にして、文字どうしにそろえると + でつなげられるよ。",
+      "expectedOutput": "2行目の nensei を str(nensei) にする",
+      "hint": "文字と数は、+ でつなげないね。",
+      "explanation": "数の 3 を str( ) で文字にすると、+ でつなげる。\" \" でかこむと、ただの文字 nensei になってしまうよ。",
       "availableBlocks": []
     },
     {
       "id": 4,
-      "title": "数を文字にしてつなぐ",
-      "description": "str( ) を使って「ハロー10」と表示しよう！",
-      "expectedOutput": "ハロー10",
-      "correctCode": "print(\"ハロー\" + str(10))",
+      "title": "くりかえして出す",
+      "description": "「ワンワンワン」と表示しよう！",
+      "expectedOutput": "ワンワンワン",
+      "correctCode": "print(\"ワン\" * 3)",
       "availableBlocks": [
         {
           "id": "b0",
@@ -1652,56 +1652,50 @@ export const finishStepMissions: Record<string, Mission[]> = {
         },
         {
           "id": "b2",
-          "text": "\"ハロー\"",
+          "text": "\"ワン\"",
           "type": "string",
           "color": "bg-green-200"
         },
         {
           "id": "b3",
-          "text": "+",
+          "text": "*",
           "type": "operator",
           "color": "bg-orange-200"
         },
         {
           "id": "b4",
-          "text": "str",
-          "type": "function",
-          "color": "bg-yellow-200"
-        },
-        {
-          "id": "b5",
-          "text": "10",
+          "text": "3",
           "type": "number",
           "color": "bg-yellow-100"
         },
         {
-          "id": "b6",
+          "id": "b5",
           "text": ")",
           "type": "bracket",
           "color": "bg-gray-200"
         },
         {
-          "id": "b7",
-          "text": "int",
-          "type": "function",
-          "color": "bg-yellow-200"
+          "id": "b6",
+          "text": "+",
+          "type": "operator",
+          "color": "bg-orange-200"
         }
       ],
       "rules": [
         {
-          "requires": [
-            "str("
+          "forbids": [
+            "+"
           ],
-          "message": "数を文字にそろえるには str( ) を使うよ！"
+          "message": "文字 × 数（*）で、くりかえしてみよう！"
         }
       ]
     },
     {
       "id": 5,
-      "title": "文字を数にして計算",
-      "description": "kazu には input で入れた文字の \"8\" が入っているよ。数にして 2 を足して表示しよう！",
-      "expectedOutput": "10.0",
-      "correctCode": "print(float(kazu) + 2)",
+      "title": "数を文字にしてつなぐ",
+      "description": "toshi には 10 が入っているよ。「10さいです」と表示しよう！",
+      "expectedOutput": "10さいです",
+      "correctCode": "print(str(toshi) + \"さいです\")",
       "availableBlocks": [
         {
           "id": "b0",
@@ -1717,13 +1711,13 @@ export const finishStepMissions: Record<string, Mission[]> = {
         },
         {
           "id": "b2",
-          "text": "float",
+          "text": "str",
           "type": "function",
           "color": "bg-yellow-200"
         },
         {
           "id": "b3",
-          "text": "kazu",
+          "text": "toshi",
           "type": "variable",
           "color": "bg-sky-200"
         },
@@ -1741,24 +1735,30 @@ export const finishStepMissions: Record<string, Mission[]> = {
         },
         {
           "id": "b6",
-          "text": "2",
-          "type": "number",
-          "color": "bg-yellow-100"
+          "text": "\"さいです\"",
+          "type": "string",
+          "color": "bg-green-200"
         },
         {
           "id": "b7",
-          "text": "str",
-          "type": "function",
-          "color": "bg-yellow-200"
+          "text": "\"toshi\"",
+          "type": "string",
+          "color": "bg-green-200"
         }
       ],
-      "prefixCode": "kazu = \"8\"",
+      "prefixCode": "toshi = 10",
       "rules": [
         {
-          "requires": [
-            "float("
+          "forbids": [
+            "\"toshi\""
           ],
-          "message": "文字のままでは計算できないよ。float( ) で数にしよう！"
+          "message": "\" \" でかこむと、箱の中身ではなく文字のまま出るよ！"
+        },
+        {
+          "requires": [
+            "str("
+          ],
+          "message": "数と文字を + でつなぐときは、str( ) で文字にしよう！"
         }
       ]
     }
@@ -5952,7 +5952,7 @@ export const finishStepTutorials: LessonTutorial[] = [
         "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
-          "good": "print(type(10))  # int"
+          "good": "print(type(\"ハロー\"))  # <class 'str'>"
         }
       }
     ]
