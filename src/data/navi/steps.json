@@ -1454,45 +1454,104 @@
   "fileName": "step13.py",
   "sections": [
    {
-    "title": "「今どうしてる？」を作る",
-    "start": 68,
-    "code": "tweet = input(\"今どうしてる？\")\nprint(tweet)",
-    "expected": [
-     "ゲームしてる"
-    ],
-    "inputs": [
-     "ゲームしてる"
-    ],
-    "mustUse": [
-     "input("
-    ]
+    "title": "len で数える",
+    "start": 55,
+    "code": "hello = \"こんにちは\"\nprint(len(hello))",
+    "expected": [],
+    "mustMatch": "len\\(",
+    "outputPattern": "^5$",
+    "pauseAt": 133,
+    "note": "hello に「こんにちは」を入れて、print(len(hello)) で文字数を出そう。5 が出れば OK"
    },
    {
-    "title": "len( ) で文字数を数える",
-    "start": 166,
-    "code": "hello = \"こんにちは\"\nprint(len(hello))",
-    "expected": [
-     "5"
-    ],
+    "title": "記号も1文字",
+    "start": 99,
+    "code": "hello = \"こんにちは\"\nprint(len(hello))\nprint(len(\"やった！\"))",
+    "expected": [],
+    "mustMatch": "len\\(\\s*\"",
+    "outputPattern": "^4$",
+    "pauseAt": 133,
+    "note": "print(len(\"やった！\")) を足そう。小さい「っ」も「！」も1文字。4 が出れば OK"
+   },
+   {
+    "title": "つぶやきの文字数",
+    "start": 135,
+    "code": "tweet = input(\"今どうしてる？\")\nprint(tweet)\nprint(\"文字数は\", len(tweet))",
+    "expected": [],
+    "mustMatch": "len\\(\\s*tweet\\s*\\)",
+    "outputPattern": "文字数は 6$",
     "inputs": [
      "ゲームしてる"
     ],
-    "mustUse": [
-     "len("
-    ]
+    "pauseAt": 191,
+    "note": "コードを消して、つぶやきアプリを書こう。ゲームしてる と入れて 文字数は 6 が出れば OK"
+   },
+   {
+    "title": "チャレンジ① おはようございます",
+    "start": 211,
+    "pauseAt": 260,
+    "code": "print(len(\"おはようございます\"))",
+    "expected": [],
+    "mustMatch": "len\\(",
+    "outputPattern": "^9$",
+    "challenge": true,
+    "note": "「おはようございます」の文字数を len で出そう。9 が出れば OK",
+    "answerNote": "print(len(\"おはようございます\")) と書く"
+   },
+   {
+    "title": "チャレンジ② サッカーしてる",
+    "start": 223,
+    "pauseAt": 260,
+    "code": "tweet = input(\"今どうしてる？\")\nprint(tweet)\nprint(\"文字数は\", len(tweet))",
+    "expected": [],
+    "mustMatch": "len\\(\\s*tweet\\s*\\)",
+    "outputPattern": "文字数は 7$",
+    "inputs": [
+     "サッカーしてる"
+    ],
+    "challenge": true,
+    "note": "つぶやきアプリに サッカーしてる と入れよう。文字数は 7 が出れば OK",
+    "answerNote": "つぶやきアプリをそのまま実行して、サッカーしてる と入れる"
+   },
+   {
+    "title": "チャレンジ③ 好きな食べ物は？",
+    "start": 235,
+    "pauseAt": 260,
+    "code": "tweet = input(\"好きな食べ物は？\")\nprint(tweet)\nprint(\"文字数は\", len(tweet))",
+    "expected": [],
+    "mustMatch": "好きな食べ物は",
+    "outputPattern": "文字数は 6$",
+    "inputs": [
+     "カレーライス"
+    ],
+    "challenge": true,
+    "note": "質問を「好きな食べ物は？」にかえよう。カレーライス と入れて 文字数は 6 が出れば OK",
+    "answerNote": "input の中の「今どうしてる？」を「好きな食べ物は？」にかえて、カレーライス と入れる"
    }
   ],
   "video": {
-   "no": "#7",
-   "id": "XOWMcR0f8n0",
-   "length": 256,
-   "end": 256
+   "no": "⑬",
+   "id": "QNcPSPvWM-4",
+   "length": 297,
+   "end": 290
   },
   "learn": [
    "len( ) で、文字の数を数えられる",
-   "文字には、左から 0・1・2…と番号がついている"
+   "小さい字・記号・のばす棒も、1文字に数える",
+   "input と組み合わせると、入れた答えの文字数がわかる"
   ],
-  "codeblock": []
+  "codeblock": [
+   "31-13"
+  ],
+  "review": {
+   "question": "print(len(\"ケーキ\")) で出るのは？",
+   "choices": [
+    "3",
+    "2",
+    "ケーキ"
+   ],
+   "answer": 0
+  }
  },
  {
   "step": 14,
