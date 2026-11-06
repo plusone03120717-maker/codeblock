@@ -12,6 +12,7 @@ import {
   codeblockCompleted,
   fmtTime,
   loadNavi,
+  needTypeQuiz,
   nextAction,
   resumeFrom,
   saveNavi,
@@ -25,6 +26,7 @@ import { useBreathing } from '@/components/navi/useBreathing'
 import { naviLessonLabel } from '@/data/navi/finish31'
 import { FIRST_TIME_SPEECH, REVIEW_RIGHT_SPEECH, REVIEW_WRONG_SPEECH, byeSpeech, newStepSpeech, returnSpeech } from '@/lib/navi/speech'
 import { liveSet } from '@/lib/navi/teacherLog'
+import { TypeQuiz } from '@/components/navi/TypeQuiz'
 
 // ステップの数（単元ごと）：本編 U1〜U6（steps.json から）
 const UNIT_STEPS: Record<number, NaviStep[]> = NAVI_STEPS.reduce<Record<number, NaviStep[]>>((m, s) => ({ ...m, [s.unit]: [...(m[s.unit] ?? []), s] }), {})
@@ -60,7 +62,14 @@ function derive(state: NaviState) {
   const last = state.sessions[state.sessions.length - 1]
   const lastStep = last ? getNaviStep(last.step) : undefined
   const needReview = !!lastStep?.review && state.reviewAnswered[last.step] === false
-  return { step, p, action, firstTime, newStep, prev, prevDone, returning, lastStep, needReview }
+  // ステップ9のあとは、データ型のミニテストも（卒業するまで・1日1回）
+  const needQuiz = !firstTime && needTypeQuiz(state)
+  return { step, p, action, firstTime, newStep, prev, prevDone, returning, lastStep, needReview, needQuiz }
+}
+
+// 動画の前にやること（吹き出しと「つぎにやること」に出す）
+function beforeLabel(needReview: boolean, needQuiz: boolean): string {
+  return [needReview && 'おさらい1問', needQuiz && 'データ型ミニテスト'].filter(Boolean).join('と')
 }
 
 export function HomeClient() {
@@ -71,6 +80,7 @@ export function HomeClient() {
   // おさらいに答えたあとの、いちかのひとこと。「つづきへ」は話しおわってから進む
   const reviewTalk = useRef<Promise<void> | null>(null)
   const [leaving, setLeaving] = useState(false)
+  const [quiz, setQuiz] = useState(false)
   const voice = useNaviVoice()
   // 「今日はおわる」からもどってきたとき（?bye=1）は、いちかがねぎらう
   const [bye, setBye] = useState(false)
@@ -104,8 +114,8 @@ export function HomeClient() {
       : d.firstTime
       ? FIRST_TIME_SPEECH
       : d.newStep
-        ? newStepSpeech(d.step, d.action, { returning: d.returning, prev: d.prevDone ? d.prev : null, needReview: d.needReview })
-        : returnSpeech(d.step, d.action, d.p.videoPos, d.needReview)
+        ? newStepSpeech(d.step, d.action, { returning: d.returning, prev: d.prevDone ? d.prev : null, needReview: d.needReview, needQuiz: d.needQuiz })
+        : returnSpeech(d.step, d.action, d.p.videoPos, d.needReview, d.needQuiz)
 
   // ホームを開いたら、ナビが話す（声オフのときは話さない。オンにもどしたら、もう一度話す）
   const { ready: voiceReady, off: voiceOff, speak } = voice
@@ -115,7 +125,8 @@ export function HomeClient() {
 
   if (!state || !d) return null
 
-  const { step, p, action, firstTime, newStep, prev, prevDone, returning, lastStep, needReview } = d
+  const { step, p, action, firstTime, newStep, prev, prevDone, returning, lastStep, needReview, needQuiz } = d
+  const before = beforeLabel(needReview, needQuiz)
   // 新しいステップのはじめは、いまクリアしてきたステップでわかったことを見せる（前回のおわりの記録より新しいので）
   const learnedFrom = (newStep && prevDone && prev !== null ? getNaviStep(prev) : undefined) ?? lastStep
   const name = user?.displayName ?? ''
@@ -153,8 +164,11 @@ export function HomeClient() {
       {(returning || prevDone) && <br />}
       つぎは <em className="not-italic text-[#7448f0]">ステップ{step.step}「{step.title}」</em>だよ。
       <br />
-      {needReview && <b>おさらい1問</b>}
-      {needReview ? 'のあと、' : ''}
+      {before && (
+        <>
+          <b>{before}</b>のあと、
+        </>
+      )}
       <b>{actionTitle(step, action)}</b>！<br />
       「はじめる」を押してね。
     </>
@@ -171,8 +185,11 @@ export function HomeClient() {
         <>前回のつづきから始めよう。</>
       )}
       <br />
-      {needReview && <b>おさらい1問</b>}
-      {needReview ? 'のあと、' : ''}
+      {before && (
+        <>
+          <b>{before}</b>のあと、
+        </>
+      )}
       <b>{actionTitle(step, action)}</b>！<br />
       「はじめる」を押してね。
     </>
@@ -181,6 +198,7 @@ export function HomeClient() {
   const start = () => {
     voice.stop()
     if (needReview && lastStep?.review) setReview({ step: lastStep, q: lastStep.review, picked: null })
+    else if (needQuiz) setQuiz(true)
     else router.push(actionHref(step, action))
   }
 
@@ -251,7 +269,7 @@ export function HomeClient() {
                   <span className="mr-2 inline-grid h-6 w-6 place-items-center rounded-full bg-[#ffd23f] text-[13px] text-[#5c4200]">1</span>つぎにやること
                 </div>
                 <div className="text-[21px] font-black leading-snug">
-                  {needReview ? 'おさらい1問 → ' : ''}
+                  {before && `${before.replace('と', ' → ')} → `}
                   {actionTitle(step, action)}
                 </div>
                 {step.video && (
@@ -395,7 +413,11 @@ export function HomeClient() {
                     // いちかが話しているあいだは、話しおわってから進む（長くても10秒まで）
                     setLeaving(true)
                     if (reviewTalk.current) await Promise.race([reviewTalk.current, new Promise((r) => setTimeout(r, 10000))])
-                    router.push(actionHref(step, action))
+                    if (needQuiz) {
+                      setLeaving(false)
+                      setReview(null)
+                      setQuiz(true)
+                    } else router.push(actionHref(step, action))
                   }}
                   className="h-12 rounded-full bg-[#ff8a1f] px-6 font-black text-white shadow-[0_5px_0_#db6500] disabled:opacity-70"
                 >
@@ -405,6 +427,16 @@ export function HomeClient() {
             )}
           </div>
         </div>
+      )}
+
+      {quiz && (
+        <TypeQuiz
+          count={state.typeQuiz?.count ?? 0}
+          streak={state.typeQuiz?.streak ?? 0}
+          speak={voice.off ? null : speak}
+          speaking={voice.speaking}
+          onDone={() => router.push(actionHref(step, action))}
+        />
       )}
     </div>
   )

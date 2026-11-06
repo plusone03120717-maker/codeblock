@@ -36,22 +36,33 @@ function actionSpeech(step: NaviStep, a: NextAction): string {
   return 'つぎのステップへ進もう'
 }
 
-export function returnSpeech(step: NaviStep, a: NextAction, videoPos: number, needReview: boolean): string {
+// 動画の前にやること（おさらい1問・データ型のミニテスト）
+function firstSpeech(needReview: boolean, needQuiz: boolean): string {
+  if (needReview && needQuiz) return 'まずは、おさらいを1問と、データ型のミニテストを3問。そのあと、'
+  if (needReview) return 'まずは、おさらいを1問。そのあと、'
+  if (needQuiz) return 'まずは、データ型のミニテストを3問。そのあと、'
+  return ''
+}
+
+export function returnSpeech(step: NaviStep, a: NextAction, videoPos: number, needReview: boolean, needQuiz = false): string {
   const last = a.kind === 'video' && a.from > 0 && step.video ? `前回は、ステップ${step.step}の動画の、${minSec(inStep(step, videoPos))}のところで、おわりにしたね。` : '前回のつづきから始めよう。'
-  const review = needReview ? 'まずは、おさらいを1問。そのあと、' : '今日は、'
+  const review = firstSpeech(needReview, needQuiz) || '今日は、'
   return `おかえり！ ${last}${review}${actionSpeech(step, a)}。「はじめる」を押してね。`
 }
 
 // 新しいステップのはじめ（前のステップをクリアしてきたとき）。「はじめまして」にはもどらない
-export function newStepSpeech(step: NaviStep, a: NextAction, o: { returning: boolean; prev: number | null; needReview: boolean }): string {
+export function newStepSpeech(step: NaviStep, a: NextAction, o: { returning: boolean; prev: number | null; needReview: boolean; needQuiz?: boolean }): string {
   const hello = o.returning ? 'おかえり！ ' : ''
   const clear = o.prev !== null ? `ステップ${o.prev}、クリアおめでとう！ ` : ''
-  const review = o.needReview ? 'まずは、おさらいを1問。そのあと、' : ''
+  const review = firstSpeech(o.needReview, !!o.needQuiz)
   return `${hello}${clear}つぎは、ステップ${step.step}だよ。${review}${actionSpeech(step, a)}。「はじめる」を押してね。`
 }
 
 export const REVIEW_RIGHT_SPEECH = 'せいかい！ よく覚えていたね。'
 export const REVIEW_WRONG_SPEECH = 'おしい！ 正しいのは、チェックのついた答えだよ。'
+export const TYPE_QUIZ_ALL_RIGHT_SPEECH = '3問とも、せいかい！ データ型、しっかり覚えているね。'
+export const TYPE_QUIZ_MASTERED_SPEECH = '3回つづけて、全問せいかい！ データ型は、卒業だよ。おめでとう！'
+export const TYPE_QUIZ_RETRY_SPEECH = 'まちがえた問題は、説明を読んでおこうね。また、つぎの回にやってみよう。'
 
 // 「今日はおわる」を押してホームにもどったときの、ねぎらいのひとこと（2026-10-25 依頼主）
 const KAZU = ['', 'ひとつ', 'ふたつ', 'みっつ', 'よっつ', 'いつつ', 'むっつ', 'ななつ', 'やっつ', 'ここのつ', 'とお']
