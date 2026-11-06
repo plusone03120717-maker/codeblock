@@ -25,7 +25,40 @@ export type NaviState = {
   sessions: SessionLog[]
   reviewAnswered: Record<number, boolean> // おさらい1問に答えたか（次の回のはじめ）
   skipped?: number[] // 準備中だったのでとばしたステップ（動画ができたら、もどってやる）
+  typeQuiz?: TypeQuizProgress // データ型のミニテスト（ステップ9のあと）
   v?: number // 記録の版。2＝55ステップ（2026-10-25 に25ステップから組みかえ）
+}
+
+// データ型のミニテスト：ステップ9をクリアしたあと、来るたびにホームで3問。
+// ちがう日に3回つづけて全問正解したら卒業して出さない。まちがえたら数え直し（2026-11-06 依頼主）
+export type TypeQuizProgress = {
+  streak: number // つづけて全問正解した回数
+  lastDay: string // さいごに答えた日（1日1回まで）
+  count: number // 答えた回数（問題を入れかえるのに使う）
+  mastered: boolean // 卒業した
+}
+
+export const TYPE_QUIZ_AFTER_STEP = 9
+export const TYPE_QUIZ_STREAK = 3
+
+export const today = () => {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+export function needTypeQuiz(state: NaviState): boolean {
+  const q = state.typeQuiz
+  return !!state.steps[TYPE_QUIZ_AFTER_STEP]?.done && !q?.mastered && q?.lastDay !== today()
+}
+
+// 1回分（3問）を答えおわったときに記録する。卒業したら true
+export function recordTypeQuiz(allRight: boolean): boolean {
+  const state = loadNavi()
+  const q = state.typeQuiz ?? { streak: 0, lastDay: '', count: 0, mastered: false }
+  const streak = allRight ? q.streak + 1 : 0
+  state.typeQuiz = { streak, lastDay: today(), count: q.count + 1, mastered: streak >= TYPE_QUIZ_STREAK }
+  saveNavi(state)
+  return state.typeQuiz.mastered
 }
 
 // 25ステップのころの記録を、55ステップの番号に直す（分けたステップは前の部分へ）。
