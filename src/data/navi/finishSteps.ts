@@ -94,6 +94,14 @@ export const finishStepLessons: Lesson[] = [
     "difficulty": "かんたん"
   },
   {
+    "id": "31-13",
+    "unitNumber": 31,
+    "subNumber": 13,
+    "title": "ステップ13の仕上げ",
+    "description": "len( ) で、文字の数を数えよう",
+    "difficulty": "かんたん"
+  },
+  {
     "id": "31-14",
     "unitNumber": 31,
     "subNumber": 14,
@@ -2346,6 +2354,185 @@ export const finishStepMissions: Record<string, Mission[]> = {
             "%"
           ],
           "message": "ポイントは スラッシュ2つ（//）で計算しよう！"
+        }
+      ]
+    }
+  ],
+  "31-13": [
+    {
+      "id": 1,
+      "type": "quiz",
+      "title": "文字数を数える",
+      "description": "このコードを実行すると、何が出る？",
+      "codeToRead": "print(len(\"ありがとう\"))",
+      "choices": [
+        "4",
+        "5",
+        "6"
+      ],
+      "correctAnswer": 1,
+      "expectedOutput": "5",
+      "hint": "1文字ずつ数えてみよう。",
+      "explanation": "あ・り・が・と・う で 5文字だよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 2,
+      "type": "quiz",
+      "title": "小さい字と記号",
+      "description": "このコードを実行すると、何が出る？",
+      "codeToRead": "print(len(\"きっぷ！\"))",
+      "choices": [
+        "4",
+        "3",
+        "2"
+      ],
+      "correctAnswer": 0,
+      "expectedOutput": "4",
+      "hint": "小さい「っ」や「！」も数えるよ。",
+      "explanation": "き・っ・ぷ・！ で 4文字。小さい字も記号も1文字だよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 3,
+      "type": "quiz",
+      "title": "のばす棒",
+      "description": "このコードを実行すると、何が出る？",
+      "codeToRead": "tweet = \"ケーキたべた\"\nprint(\"文字数は\", len(tweet))",
+      "choices": [
+        "文字数は 5",
+        "文字数は ケーキたべた",
+        "文字数は 6"
+      ],
+      "correctAnswer": 2,
+      "expectedOutput": "文字数は 6",
+      "hint": "のばす棒「ー」も1文字だよ。",
+      "explanation": "ケ・ー・キ・た・べ・た で 6文字。カンマでならべると「文字数は 6」。",
+      "availableBlocks": []
+    },
+    {
+      "id": 4,
+      "title": "文字数を表示",
+      "description": "len( ) を使って、hello の文字数を表示しよう！",
+      "expectedOutput": "4",
+      "correctCode": "print(len(hello))",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b1",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b2",
+          "text": "len",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b3",
+          "text": "hello",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b4",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b5",
+          "text": "\"hello\"",
+          "type": "string",
+          "color": "bg-green-200"
+        }
+      ],
+      "prefixCode": "hello = \"おはよう\"",
+      "rules": [
+        {
+          "forbids": [
+            "\"hello\""
+          ],
+          "message": "\" \" でかこむと、箱の中身ではなく hello という文字の数になるよ！"
+        },
+        {
+          "requires": [
+            "len("
+          ],
+          "message": "文字の数は len( ) で数えるよ！"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "つぶやきの文字数",
+      "description": "tweet には「サッカーしてる」が入っているよ。「文字数は 7」と表示しよう！",
+      "expectedOutput": "文字数は 7",
+      "correctCode": "print(\"文字数は\", len(tweet))",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b1",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b2",
+          "text": "\"文字数は\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b3",
+          "text": ",",
+          "type": "separator",
+          "color": "bg-purple-200"
+        },
+        {
+          "id": "b4",
+          "text": "len",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b5",
+          "text": "tweet",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b6",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b7",
+          "text": "\"tweet\"",
+          "type": "string",
+          "color": "bg-green-200"
+        }
+      ],
+      "prefixCode": "tweet = \"サッカーしてる\"",
+      "rules": [
+        {
+          "forbids": [
+            "\"tweet\""
+          ],
+          "message": "\" \" でかこむと、tweet という文字の数になるよ！"
         }
       ]
     }
@@ -6177,6 +6364,22 @@ export const finishStepTutorials: LessonTutorial[] = [
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "print(\"-\" * 10)  # かざりの線"
+        }
+      }
+    ]
+  },
+  {
+    "lessonId": "31-13",
+    "characterName": "いちか",
+    "characterEmoji": "🙂",
+    "characterImage": "/navi/bob_smile.webp",
+    "slides": [
+      {
+        "title": "5問で仕上げよう",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "characterMessage": "わからなくなったら、ヒントを見てね。",
+        "codeExample": {
+          "good": "print(len(\"ねこ\"))  # 2"
         }
       }
     ]
