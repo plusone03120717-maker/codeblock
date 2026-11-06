@@ -23,6 +23,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext'
 import { useNaviVoice } from '@/components/navi/useNaviVoice'
 import { useBreathing } from '@/components/navi/useBreathing'
+import { IchikaLive } from '@/components/navi/IchikaLive'
 import { naviLessonLabel } from '@/data/navi/finish31'
 import { FIRST_TIME_SPEECH, REVIEW_RIGHT_SPEECH, REVIEW_WRONG_SPEECH, byeSpeech, newStepSpeech, returnSpeech } from '@/lib/navi/speech'
 import { liveSet } from '@/lib/navi/teacherLog'
@@ -211,6 +212,9 @@ export function HomeClient() {
   if (action.kind !== 'codeblock' && lessonsLeft.length > 0) after.push(lessonsLeft.map(naviLessonLabel).join('・'))
   after.push(`ステップ${nextReadyStep(step.step) ?? step.step + 1} へ`)
 
+  // いちかの表情：ねぎらい・おさらいの正解は笑顔、まちがえたときは「困る」
+  const ichikaMood = bye ? 'smile' : review && review.picked !== null ? (review.picked === review.q.answer ? 'smile' : 'x_troubled') : null
+
   return (
     <div className="flex h-screen flex-col">
       <NaviHeader step={step.step} unit={step.unit} name={name} />
@@ -222,25 +226,34 @@ export function HomeClient() {
             </span>
             {!voice.unavailable && <VoiceControls voice={voice} />}
           </div>
-          {/* 話しているあいだは「ふつう」と「話す」を声の大きさで切りかえる（目の形が同じ2枚）。3枚とも先に読みこんでおく */}
-          {/* 呼吸とゆらぎは、3枚まとめて動かす（足もとを中心に） */}
-          <div ref={rig} className="pointer-events-none absolute inset-0 origin-[50%_85%] will-change-transform">
-            {(['smile', 'normal', 'talk'] as const).map((face) => {
-              const show = voice.speaking ? (voice.mouthOpen ? 'talk' : 'normal') : 'smile'
-              return (
-                <Image
-                  key={face}
-                  src={`/navi/bob_${face}.webp`}
-                  alt={face === 'smile' ? 'いちか' : ''}
-                  width={520}
-                  height={520}
-                  unoptimized
-                  priority
-                  className={`pointer-events-none absolute left-1/2 top-10 w-[520px] max-w-none -translate-x-1/2 ${show === face ? 'opacity-100' : 'opacity-0'}`}
-                />
-              )
-            })}
-          </div>
+          {/* いちかは LivLiv Player で動かす（首・目・まばたき・口・表情）。使えないときは今までの絵（下の fallback） */}
+          <IchikaLive
+            stream={voice.stream}
+            mood={ichikaMood}
+            fallback={
+              <>
+                {/* 話しているあいだは「ふつう」と「話す」を声の大きさで切りかえる（目の形が同じ2枚）。3枚とも先に読みこんでおく */}
+                {/* 呼吸とゆらぎは、3枚まとめて動かす（足もとを中心に） */}
+                <div ref={rig} className="pointer-events-none absolute inset-0 origin-[50%_85%] will-change-transform">
+                  {(['smile', 'normal', 'talk'] as const).map((face) => {
+                    const show = voice.speaking ? (voice.mouthOpen ? 'talk' : 'normal') : 'smile'
+                    return (
+                      <Image
+                        key={face}
+                        src={`/navi/bob_${face}.webp`}
+                        alt={face === 'smile' ? 'いちか' : ''}
+                        width={520}
+                        height={520}
+                        unoptimized
+                        priority
+                        className={`pointer-events-none absolute left-1/2 top-10 w-[520px] max-w-none -translate-x-1/2 ${show === face ? 'opacity-100' : 'opacity-0'}`}
+                      />
+                    )
+                  })}
+                </div>
+              </>
+            }
+          />
           <div className="absolute inset-x-0 bottom-0 z-[1] h-[330px] bg-[linear-gradient(transparent,rgba(255,255,255,.95)_45%)]" />
           <div className="relative z-10 mt-auto rounded-[20px] bg-white px-5 py-4 text-base font-bold leading-[1.75] shadow-sm">{bubble}</div>
         </section>

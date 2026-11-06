@@ -58,6 +58,8 @@ export function useNaviVoice() {
   const audio = useRef<HTMLAudioElement | null>(null)
   const ctx = useRef<AudioContext | null>(null)
   const analyser = useRef<AnalyserNode | null>(null)
+  // 声の音を LivLiv のいちか（IchikaLive）にも渡す。口の形（あ・い・お）と話すときの頭の動きはそちらで決める
+  const [stream, setStream] = useState<MediaStream | null>(null)
   const url = useRef<string | null>(null)
   const raf = useRef(0)
   const flap = useRef<ReturnType<typeof setInterval> | undefined>(undefined)
@@ -166,6 +168,9 @@ export function useNaviVoice() {
             an.fftSize = 512
             c.createMediaElementSource(el).connect(an)
             an.connect(c.destination)
+            const out = c.createMediaStreamDestination()
+            an.connect(out)
+            setStream(out.stream)
             analyser.current = an
           }
         } catch {}
@@ -211,5 +216,5 @@ export function useNaviVoice() {
     if (lastText.current) speak(lastText.current)
   }, [speak])
 
-  return { ready, off, speaking, mouthOpen, blocked, unavailable, speak, stop, replay, toggleOff }
+  return { ready, off, speaking, mouthOpen, blocked, unavailable, stream, speak, stop, replay, toggleOff }
 }

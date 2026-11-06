@@ -21,6 +21,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@lezer/highlight": "^1.2.5",
+    "@livliv/player": "file:vendor/livliv-player",
     "axios": "^1.13.2",
     "clsx": "^2.1.1",
     "codemirror": "^6.0.2",
