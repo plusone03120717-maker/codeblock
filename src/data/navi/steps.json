@@ -1673,45 +1673,104 @@
   "fileName": "step15.py",
   "sections": [
    {
-    "title": "前の回のつづき：今どうしてる？",
-    "start": 24,
-    "code": "tweet = input(\"今どうしてる？\")",
+    "title": "if の書き方",
+    "start": 48,
+    "code": "if 5 > 3:\n    print(\"5のほうが大きい\")",
     "expected": [],
-    "inputs": [
-     "きょうは公園でサッカーをしました"
-    ],
-    "mustUse": [
-     "input("
-    ],
-    "note": "前の回と同じ1行。print はまだ書かない。答えを入れてエラーが出なければ合格"
+    "mustMatch": "if\\s+\\d+\\s*>\\s*\\d+\\s*:\\s*\\n[ \\t]+print",
+    "outputPattern": "^5のほうが大きい$",
+    "pauseAt": 127,
+    "note": "if 5 > 3: のあと Enter で字下げ（半角スペース4つ）が入る。字下げしたまま print(\"5のほうが大きい\")"
    },
    {
-    "title": "if で10文字をこえたら注意",
-    "start": 105,
-    "code": "if len(tweet) > 10:\n    print(\"文字数が多すぎるよ\")",
-    "expected": [
-     "文字数が多すぎるよ"
-    ],
+    "title": "条件が合わないとき・if の外",
+    "start": 170,
+    "code": "if 2 > 3:\n    print(\"5のほうが大きい\")\nprint(\"おわり\")",
+    "expected": [],
+    "mustMatch": "\\nprint\\(",
+    "outputPattern": "^おわり$",
+    "pauseAt": 282,
+    "note": "5 を 2 にかえると何も出ない。字下げしない print(\"おわり\") は if の外なので、いつでも動く"
+   },
+   {
+    "title": "つぶやきが長いとき",
+    "start": 231,
+    "code": "tweet = input(\"今どうしてる？\")\nif len(tweet) > 10:\n    print(\"文字数が多すぎるよ\")",
+    "expected": [],
+    "mustMatch": "if\\s+len\\(tweet\\)\\s*>\\s*10\\s*:",
+    "outputPattern": "文字数が多すぎるよ$",
     "inputs": [
-     "きょうは公園でサッカーをしました"
+     "きょうは公園でサッカーしてる"
     ],
-    "mustUse": [
-     "if len(tweet) > 10:"
-    ]
+    "pauseAt": 282,
+    "note": "コードを消して、つぶやきアプリを書こう。「きょうは公園でサッカーしてる」と入れて「文字数が多すぎるよ」が出れば OK"
+   },
+   {
+    "title": "チャレンジ① 8が5より大きいとき",
+    "start": 315,
+    "pauseAt": 380,
+    "challenge": true,
+    "code": "if 8 > 5:\n    print(\"8のほうが大きい\")",
+    "expected": [],
+    "mustMatch": "if\\s+(8\\s*>\\s*5|5\\s*<\\s*8)\\s*:",
+    "outputPattern": "^8のほうが大きい$",
+    "note": "8が5より大きいときだけ、「8のほうが大きい」を出そう",
+    "answerNote": "if 8 > 5: と書いて、Enter で字下げしたまま print(\"8のほうが大きい\")"
+   },
+   {
+    "title": "チャレンジ② 10 を 5 にかえる",
+    "start": 329,
+    "pauseAt": 380,
+    "challenge": true,
+    "code": "tweet = input(\"今どうしてる？\")\nif len(tweet) > 5:\n    print(\"文字数が多すぎるよ\")",
+    "expected": [],
+    "mustMatch": ">\\s*5\\s*:",
+    "outputPattern": "文字数が多すぎるよ$",
+    "inputs": [
+     "ゲームしてる"
+    ],
+    "note": "tweet の行も書こう。10 を 5 にかえて「ゲームしてる」と入れ、「文字数が多すぎるよ」が出れば OK",
+    "answerNote": "「ゲームしてる」は6文字。10 のままだと何も出ないので、条件を len(tweet) > 5 にする"
+   },
+   {
+    "title": "チャレンジ③ 長いときだけ短く",
+    "start": 349,
+    "pauseAt": 380,
+    "challenge": true,
+    "code": "tweet = input(\"今どうしてる？\")\nif len(tweet) > 10:\n    print(tweet[:6] + \"...\")",
+    "expected": [],
+    "mustMatch": "if\\s+len\\(tweet\\)\\s*>\\s*\\d+\\s*:\\s*\\n[ \\t]+print\\(\\s*tweet\\[\\s*:\\s*6\\s*\\]",
+    "outputPattern": "きょうは公園\\.\\.\\.$",
+    "inputs": [
+     "きょうは公園でサッカーしてる"
+    ],
+    "note": "長いときだけ、はじめの6文字と ... を出そう。「きょうは公園でサッカーしてる」と入れて「きょうは公園...」が出れば OK",
+    "answerNote": "if の中（字下げした行）に print(tweet[:6] + \"...\") を書く。ステップ14のつぶやきを短くする形と同じ"
    }
   ],
   "video": {
-   "no": "#8",
-   "id": "QrzSFUJE40g",
-   "length": 230,
-   "end": 230
+   "no": "⑮",
+   "id": "_o5oDx8WI2c",
+   "length": 428,
+   "end": 422
   },
   "learn": [
-   "if は「もしも」。条件のあとに : を書く",
-   "if の中の行は、半角4文字の字下げ（インデント）をつける",
-   "else は「でなければ」。if に合わないときに動く"
+   "if は「もしも」。条件のあとに : をつける",
+   "字下げした行が if の中。条件が合うときだけ動く",
+   "字下げしていない行は if の外。いつでも動く"
   ],
-  "codeblock": []
+  "codeblock": [
+   "31-15"
+  ],
+  "review": {
+   "question": "if 9 > 4: のすぐ下の行に、字下げがないとどうなる？",
+   "choices": [
+    "エラーになる",
+    "そのまま動く",
+    "何も出ない"
+   ],
+   "answer": 0
+  }
  },
  {
   "step": 16,

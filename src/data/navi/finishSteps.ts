@@ -110,6 +110,14 @@ export const finishStepLessons: Lesson[] = [
     "difficulty": "かんたん"
   },
   {
+    "id": "31-15",
+    "unitNumber": 31,
+    "subNumber": 15,
+    "title": "ステップ15の仕上げ",
+    "description": "if（もしも）で、条件が合うときだけ動かそう",
+    "difficulty": "かんたん"
+  },
+  {
     "id": "31-16",
     "unitNumber": 31,
     "subNumber": 16,
@@ -2748,6 +2756,305 @@ export const finishStepMissions: Record<string, Mission[]> = {
             "+"
           ],
           "message": "\"...\" は + でつなごう！"
+        }
+      ]
+    }
+  ],
+  "31-15": [
+    {
+      "id": 1,
+      "type": "quiz",
+      "title": "if が合うとき",
+      "description": "このコードを実行すると、何が出る？",
+      "codeToRead": "if 7 > 4:\n    print(\"あたり\")",
+      "choices": [
+        "あたり",
+        "何も出ない",
+        "エラーになる"
+      ],
+      "correctAnswer": 0,
+      "expectedOutput": "あたり",
+      "hint": "7 は 4 より大きいかな？",
+      "explanation": "7 は 4 より大きいので、条件が合う。字下げした行が動いて「あたり」が出るよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 2,
+      "type": "quiz",
+      "title": "if の中と外",
+      "description": "このコードを実行すると、何が出る？",
+      "codeToRead": "if 2 > 3:\n    print(\"A\")\nprint(\"B\")",
+      "choices": [
+        "A と B",
+        "B だけ",
+        "何も出ない"
+      ],
+      "correctAnswer": 1,
+      "expectedOutput": "B だけ",
+      "hint": "条件が合わないと、字下げした行はとばされるよ。字下げしていない行は？",
+      "explanation": "2 は 3 より大きくないので、if の中の print(\"A\") はとばされる。字下げしていない print(\"B\") は if の外なので、いつでも動くよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 3,
+      "type": "quiz",
+      "title": "エラーを直そう",
+      "description": "実行したら「IndentationError」と出た。どう直す？",
+      "codeToRead": "if 5 > 3:\nprint(\"5のほうが大きい\")",
+      "choices": [
+        "print の行のはじめに、半角スペース4つ（字下げ）を入れる",
+        "行のおわりに : をつける",
+        "if を IF にする"
+      ],
+      "correctAnswer": 0,
+      "expectedOutput": "print の行のはじめに、半角スペース4つ（字下げ）を入れる",
+      "hint": "インデントは、字下げのことだよ。",
+      "explanation": "if のすぐ下には、字下げした行が1行は必要。print の行のはじめに半角スペース4つを入れよう（Tab キーでも入るよ）。",
+      "availableBlocks": []
+    },
+    {
+      "id": 4,
+      "title": "もしも 10 より大きかったら",
+      "description": "point が 10 より大きいときだけ、「ごうかく」と表示しよう！",
+      "expectedOutput": "ごうかく",
+      "correctCode": "if point > 10:\n    print(\"ごうかく\")",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "if",
+          "type": "keyword",
+          "color": "bg-pink-200"
+        },
+        {
+          "id": "b1",
+          "text": "point",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b2",
+          "text": ">",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b3",
+          "text": "10",
+          "type": "number",
+          "color": "bg-blue-200"
+        },
+        {
+          "id": "b4",
+          "text": ":",
+          "type": "colon",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "nl5",
+          "text": "↵",
+          "type": "newline",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "ind6",
+          "text": "    ",
+          "type": "indent",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b7",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b8",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b9",
+          "text": "\"ごうかく\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b10",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b11",
+          "text": "=",
+          "type": "operator",
+          "color": "bg-orange-200"
+        }
+      ],
+      "prefixCode": "point = 12",
+      "rules": [
+        {
+          "requires": [
+            "\n    "
+          ],
+          "message": "if の中の行は、半角4つの字下げ（インデント）をつけよう！"
+        },
+        {
+          "requires": [
+            ":"
+          ],
+          "message": "条件のあとに : （コロン）をつけよう！"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "長いときだけ短く",
+      "description": "tweet が 10 文字より長いときだけ、はじめの6文字と \"...\" を表示しよう！",
+      "expectedOutput": "きょうは公園...",
+      "correctCode": "if len(tweet) > 10:\n    print(tweet[:6] + \"...\")",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "if",
+          "type": "keyword",
+          "color": "bg-pink-200"
+        },
+        {
+          "id": "b1",
+          "text": "len",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b2",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b3",
+          "text": "tweet",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b4",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b5",
+          "text": ">",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b6",
+          "text": "10",
+          "type": "number",
+          "color": "bg-blue-200"
+        },
+        {
+          "id": "b7",
+          "text": ":",
+          "type": "colon",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "nl8",
+          "text": "↵",
+          "type": "newline",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "ind9",
+          "text": "    ",
+          "type": "indent",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b10",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b11",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b12",
+          "text": "tweet",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b13",
+          "text": "[",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b14",
+          "text": ":",
+          "type": "colon",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b15",
+          "text": "6",
+          "type": "number",
+          "color": "bg-blue-200"
+        },
+        {
+          "id": "b16",
+          "text": "]",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b17",
+          "text": "+",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b18",
+          "text": "\"...\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b19",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b20",
+          "text": "-6",
+          "type": "number",
+          "color": "bg-blue-200"
+        }
+      ],
+      "prefixCode": "tweet = \"きょうは公園でサッカーしてる\"",
+      "rules": [
+        {
+          "requires": [
+            "\n    "
+          ],
+          "message": "if の中の行は、半角4つの字下げ（インデント）をつけよう！"
+        },
+        {
+          "requires": [
+            ":6]"
+          ],
+          "message": "はじめの6文字は [:6] だよ！"
         }
       ]
     }
@@ -6432,6 +6739,22 @@ export const finishStepTutorials: LessonTutorial[] = [
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "hello = \"こんにちは、いちかです\"\nprint(hello[:5])  # こんにちは"
+        }
+      }
+    ]
+  },
+  {
+    "lessonId": "31-15",
+    "characterName": "いちか",
+    "characterEmoji": "🙂",
+    "characterImage": "/navi/bob_smile.webp",
+    "slides": [
+      {
+        "title": "5問で仕上げよう",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "characterMessage": "わからなくなったら、ヒントを見てね。",
+        "codeExample": {
+          "good": "if 5 > 3:\n    print(\"5のほうが大きい\")  # 字下げした行が if の中"
         }
       }
     ]
