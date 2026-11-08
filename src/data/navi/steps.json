@@ -1560,59 +1560,110 @@
   "fileName": "step14.py",
   "sections": [
    {
-    "title": "[6:12] で一部を取り出す",
-    "start": 256,
-    "code": "hello = \"こんにちは、私は瞳です。\"\nprint(hello[6:12])",
-    "expected": [
-     "私は瞳です。"
-    ],
-    "inputs": [
-     "ゲームしてる"
-    ],
-    "mustUse": [
-     "[6:12]"
-    ],
-    "note": "推測：字幕は「こんにちは私は瞳です」だが、動画の [6:12]・[:6]・[-6:] がちょうど合うように「、」と「。」を入れた"
+    "title": "番号で取り出す",
+    "start": 37,
+    "code": "hello = \"こんにちは\"\n\nprint(hello[0])",
+    "expected": [],
+    "mustMatch": "hello\\[\\s*\\d+\\s*\\]",
+    "outputPattern": "^(こ|は)$",
+    "pauseAt": 124,
+    "note": "hello[0] で「こ」、0 を 4 にかえると「は」。番号は 0 から。かくかっこは半角で打つ"
    },
    {
-    "title": "[:6] と [-6:] でも取り出す",
-    "start": 400,
-    "code": "print(hello[:6])\nprint(hello[-6:])",
-    "expected": [
-     "こんにちは、",
-     "私は瞳です。"
-    ],
+    "title": "はじめの5文字",
+    "start": 157,
+    "code": "hello = \"こんにちは、いちかです\"\n\nprint(hello[:5])",
+    "expected": [],
+    "mustMatch": "\\[\\s*:\\s*5\\s*\\]",
+    "outputPattern": "^こんにちは$",
+    "pauseAt": 258,
+    "note": "hello を「こんにちは、いちかです」にして、print(hello[:5])。「こんにちは」が出れば OK"
+   },
+   {
+    "title": "うしろの5文字",
+    "start": 206,
+    "code": "hello = \"こんにちは、いちかです\"\n\nprint(hello[-5:])",
+    "expected": [],
+    "mustMatch": "\\[\\s*-\\s*5\\s*:\\s*\\]",
+    "outputPattern": "^いちかです$",
+    "pauseAt": 258,
+    "note": "print(hello[-5:])。「いちかです」が出れば OK"
+   },
+   {
+    "title": "つぶやきを短く",
+    "start": 260,
+    "code": "tweet = input(\"今どうしてる？\")\nprint(tweet[:6] + \"...\")",
+    "expected": [],
+    "mustMatch": "tweet\\[\\s*:\\s*6\\s*\\]",
+    "outputPattern": "きょうは公園\\.\\.\\.$",
     "inputs": [
-     "ゲームしてる"
+     "きょうは公園でサッカーしてる"
     ],
-    "mustUse": [
-     "[:6]",
-     "[-6:]"
-    ]
+    "pauseAt": 331,
+    "note": "コードを消して、つぶやきアプリを書こう。「きょうは公園でサッカーしてる」と入れて「きょうは公園...」が出れば OK"
+   },
+   {
+    "title": "チャレンジ① 「い」を取り出す",
+    "start": 343,
+    "pauseAt": 398,
+    "challenge": true,
+    "code": "hello = \"こんにちは、いちかです\"\nprint(hello[6])",
+    "expected": [],
+    "mustMatch": "hello\\[",
+    "outputPattern": "^い$",
+    "note": "hello を「こんにちは、いちかです」にして、「い」の1文字だけを出そう。「い」が出れば OK",
+    "answerNote": "「、」も1文字なので「い」は6番。print(hello[6]) と書く（hello[-5] でもOK）"
+   },
+   {
+    "title": "チャレンジ② うしろの2文字",
+    "start": 357,
+    "pauseAt": 398,
+    "challenge": true,
+    "code": "hello = \"こんにちは、いちかです\"\nprint(hello[-2:])",
+    "expected": [],
+    "mustMatch": "\\[\\s*-\\s*2\\s*:\\s*\\]",
+    "outputPattern": "^です$",
+    "note": "hello を「こんにちは、いちかです」にして、うしろの2文字を出そう。「です」が出れば OK",
+    "answerNote": "うしろの2文字は [-2:]。print(hello[-2:]) と書く"
+   },
+   {
+    "title": "チャレンジ③ はじめの4文字 + ...",
+    "start": 370,
+    "pauseAt": 398,
+    "challenge": true,
+    "code": "tweet = input(\"今どうしてる？\")\nprint(tweet[:4] + \"...\")",
+    "expected": [],
+    "mustMatch": "tweet\\[\\s*:\\s*4\\s*\\]",
+    "outputPattern": "サッカー\\.\\.\\.$",
+    "inputs": [
+     "サッカーしてる"
+    ],
+    "note": "つぶやきアプリを、はじめの4文字と ... にかえよう。「サッカーしてる」と入れて「サッカー...」が出れば OK",
+    "answerNote": "[:6] を [:4] にかえる。print(tweet[:4] + \"...\")"
    }
   ],
   "video": {
-   "no": "#7",
-   "id": "XOWMcR0f8n0",
-   "length": 267,
-   "end": 520,
-   "start": 253
+   "no": "⑭",
+   "id": "O3mQNUaDdN4",
+   "length": 437,
+   "end": 430
   },
   "learn": [
-   "[6:12] のように番号で、文字の一部を取り出せる",
-   "[-6:] のように、うしろから数えることもできる"
+   "文字には 0 から番号がついていて、[ ] で取り出せる",
+   "[:5] ではじめの5文字、[-5:] でうしろの5文字",
+   "つぶやきを、はじめだけ短く見せられる"
   ],
   "codeblock": [
    "31-14"
   ],
   "review": {
-   "question": "hello = \"こんにちは\" のとき、print(len(hello)) で出るのは？",
+   "question": "hello = \"ねこです\" のとき、print(hello[0]) で出るのは？",
    "choices": [
-    "4",
-    "5",
-    "こんにちは"
+    "ね",
+    "こ",
+    "す"
    ],
-   "answer": 1
+   "answer": 0
   }
  },
  {

@@ -106,7 +106,7 @@ export const finishStepLessons: Lesson[] = [
     "unitNumber": 31,
     "subNumber": 14,
     "title": "ステップ14の仕上げ",
-    "description": "len で文字数、[ ] で文字の一部を取り出そう",
+    "description": "[ ] で、文字の一部を取り出そう",
     "difficulty": "かんたん"
   },
   {
@@ -2541,60 +2541,60 @@ export const finishStepMissions: Record<string, Mission[]> = {
     {
       "id": 1,
       "type": "quiz",
-      "title": "文字数を数える",
+      "title": "番号で取り出す",
       "description": "このコードを実行すると、何が出る？",
-      "codeToRead": "word = \"プログラミング\"\nprint(len(word))",
+      "codeToRead": "hello = \"こんにちは\"\nprint(hello[1])",
       "choices": [
-        "6",
-        "7",
-        "8"
+        "こ",
+        "ん",
+        "に"
       ],
       "correctAnswer": 1,
-      "expectedOutput": "7",
-      "hint": "1文字ずつ数えてみよう。",
-      "explanation": "プ・ロ・グ・ラ・ミ・ン・グ で 7文字だよ。",
+      "expectedOutput": "ん",
+      "hint": "番号は 0 から数えるよ。",
+      "explanation": "「こ」が 0番、「ん」が 1番。だから「ん」が出るよ。",
       "availableBlocks": []
     },
     {
       "id": 2,
       "type": "quiz",
-      "title": "一部を取り出す",
+      "title": "はじめから取り出す",
       "description": "このコードを実行すると、何が出る？",
-      "codeToRead": "word = \"いちかです\"\nprint(word[0:3])",
+      "codeToRead": "word = \"プログラミング\"\nprint(word[:3])",
       "choices": [
-        "いちか",
-        "いちかで",
-        "ちかで"
+        "プロ",
+        "プログ",
+        "ミング"
       ],
-      "correctAnswer": 0,
-      "expectedOutput": "いちか",
-      "hint": "番号は 0 から。[0:3] は 3番の手前まで。",
-      "explanation": "0番・1番・2番の3文字「いちか」が出るよ。",
+      "correctAnswer": 1,
+      "expectedOutput": "プログ",
+      "hint": "[:3] は、はじめの3文字だよ。",
+      "explanation": "プ・ロ・グ の3文字が出るよ。[-3:] なら、うしろの3文字「ミング」だね。",
       "availableBlocks": []
     },
     {
       "id": 3,
       "type": "quiz",
-      "title": "まちがいを直そう",
-      "description": "後ろの3文字「います」を出したいのに「おはよ」が出た。どう直す？",
-      "codeToRead": "word = \"おはようございます\"\nprint(word[:3])",
+      "title": "エラーのわけ",
+      "description": "実行したら「IndexError: string index out of range」と出た。なぜ？",
+      "codeToRead": "hello = \"ねこ\"\nprint(hello[2])",
       "choices": [
-        "[:3] を [3:] にする",
-        "len( ) でかこむ",
-        "[:3] を [-3:] にする"
+        "「ねこ」は2文字なので、番号は1まで。2番はない",
+        "かくかっこを使ったから",
+        "print の書き方がまちがっているから"
       ],
-      "correctAnswer": 2,
-      "expectedOutput": "[:3] を [-3:] にする",
-      "hint": "後ろから数えるときは、マイナスの番号を使ったね。",
-      "explanation": "[:3] は前から3文字「おはよ」。[-3:] にすると後ろから3文字「います」が出るよ。",
+      "correctAnswer": 0,
+      "expectedOutput": "「ねこ」は2文字なので、番号は1まで。2番はない",
+      "hint": "len で数えると何文字？ 番号は 0 から数えるよ。",
+      "explanation": "「ね」が 0番、「こ」が 1番。2番はないので、番号がはみ出してエラーになるよ。",
       "availableBlocks": []
     },
     {
       "id": 4,
-      "title": "文字数を表示",
-      "description": "len( ) を使って、hello の文字数を表示しよう！",
-      "expectedOutput": "12",
-      "correctCode": "print(len(hello))",
+      "title": "うしろから取り出す",
+      "description": "マイナスの番号を使って、word のうしろの3文字を表示しよう！",
+      "expectedOutput": "ゲーム",
+      "correctCode": "print(word[-3:])",
       "availableBlocks": [
         {
           "id": "b0",
@@ -2610,61 +2610,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
         },
         {
           "id": "b2",
-          "text": "len",
-          "type": "function",
-          "color": "bg-yellow-200"
-        },
-        {
-          "id": "b3",
-          "text": "hello",
-          "type": "variable",
-          "color": "bg-sky-200"
-        },
-        {
-          "id": "b4",
-          "text": ")",
-          "type": "bracket",
-          "color": "bg-gray-200"
-        },
-        {
-          "id": "b5",
-          "text": "str",
-          "type": "function",
-          "color": "bg-yellow-200"
-        }
-      ],
-      "prefixCode": "hello = \"こんにちは、私は瞳です。\"",
-      "rules": [
-        {
-          "requires": [
-            "len("
-          ],
-          "message": "文字の数は len( ) で数えるよ！"
-        }
-      ]
-    },
-    {
-      "id": 5,
-      "title": "後ろから取り出す",
-      "description": "マイナスの番号を使って、hello の後ろから6文字を表示しよう！",
-      "expectedOutput": "私は瞳です。",
-      "correctCode": "print(hello[-6:])",
-      "availableBlocks": [
-        {
-          "id": "b0",
-          "text": "print",
-          "type": "function",
-          "color": "bg-yellow-200"
-        },
-        {
-          "id": "b1",
-          "text": "(",
-          "type": "bracket",
-          "color": "bg-gray-200"
-        },
-        {
-          "id": "b2",
-          "text": "hello",
+          "text": "word",
           "type": "variable",
           "color": "bg-sky-200"
         },
@@ -2676,9 +2622,9 @@ export const finishStepMissions: Record<string, Mission[]> = {
         },
         {
           "id": "b4",
-          "text": "-6",
+          "text": "-3",
           "type": "number",
-          "color": "bg-yellow-100"
+          "color": "bg-blue-200"
         },
         {
           "id": "b5",
@@ -2700,18 +2646,108 @@ export const finishStepMissions: Record<string, Mission[]> = {
         },
         {
           "id": "b8",
-          "text": "6",
+          "text": "3",
           "type": "number",
-          "color": "bg-yellow-100"
+          "color": "bg-blue-200"
         }
       ],
-      "prefixCode": "hello = \"こんにちは、私は瞳です。\"",
+      "prefixCode": "word = \"たのしいゲーム\"",
       "rules": [
         {
           "requires": [
-            "-6"
+            "-3"
           ],
-          "message": "後ろから数えるときは、マイナスをつけるよ！"
+          "message": "うしろから数えるときは、マイナスをつけるよ！"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "つぶやきを短く",
+      "description": "tweet のはじめの4文字に \"...\" をつけて、「きょうは...」と表示しよう！",
+      "expectedOutput": "きょうは...",
+      "correctCode": "print(tweet[:4] + \"...\")",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b1",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b2",
+          "text": "tweet",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b3",
+          "text": "[",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b4",
+          "text": ":",
+          "type": "colon",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b5",
+          "text": "4",
+          "type": "number",
+          "color": "bg-blue-200"
+        },
+        {
+          "id": "b6",
+          "text": "]",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b7",
+          "text": "+",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b8",
+          "text": "\"...\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b9",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b10",
+          "text": "-4",
+          "type": "number",
+          "color": "bg-blue-200"
+        }
+      ],
+      "prefixCode": "tweet = \"きょうはプールにいった\"",
+      "rules": [
+        {
+          "requires": [
+            ":4"
+          ],
+          "message": "はじめの4文字は [:4] だよ！"
+        },
+        {
+          "requires": [
+            "+"
+          ],
+          "message": "\"...\" は + でつなごう！"
         }
       ]
     }
@@ -6395,7 +6431,7 @@ export const finishStepTutorials: LessonTutorial[] = [
         "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
-          "good": "word = \"Python\"\nprint(word[0])  # P"
+          "good": "hello = \"こんにちは、いちかです\"\nprint(hello[:5])   # こんにちは\nprint(hello[-5:])  # いちかです"
         }
       }
     ]
