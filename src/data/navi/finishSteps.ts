@@ -6431,7 +6431,7 @@ export const finishStepTutorials: LessonTutorial[] = [
         "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
-          "good": "hello = \"こんにちは、いちかです\"\nprint(hello[:5])   # こんにちは\nprint(hello[-5:])  # いちかです"
+          "good": "hello = \"こんにちは、いちかです\"\nprint(hello[:5])  # こんにちは"
         }
       }
     ]
