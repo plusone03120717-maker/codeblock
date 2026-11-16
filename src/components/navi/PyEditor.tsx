@@ -5,7 +5,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { EditorView, basicSetup } from 'codemirror'
 import { Decoration, keymap, type DecorationSet } from '@codemirror/view'
-import { EditorState, StateEffect, StateField } from '@codemirror/state'
+import { EditorState, Prec, StateEffect, StateField } from '@codemirror/state'
 import { HighlightStyle, indentUnit, syntaxHighlighting } from '@codemirror/language'
 import { tags as t } from '@lezer/highlight'
 import { indentWithTab } from '@codemirror/commands'
@@ -46,6 +46,30 @@ type Props = {
   overlay?: ReactNode
   // このファイルを開く（なければ starter の中身で作る）。チャレンジの見出しに来たときに使う
   openFile?: { name: string; starter: string } | null
+  // 上の帯の右に足すボタン（画面の広さの切りかえなど）
+  tools?: ReactNode
+  // エディターが広いとき（広く・全画面）。せまいときは「Ctrl+Enter でも実行」の文字をかくして、ファイルのタブの場所をあける
+  roomy?: boolean
+}
+
+// 文字の大きさとターミナルの高さは、生徒のブラウザに覚えておく（次に開いたときも同じに）
+const FONT_KEY = 'codeblock_navi_editor_font'
+const TERM_KEY = 'codeblock_navi_term_ratio'
+const FONT_SIZES = [14, 16, 18, 20, 22, 24]
+const TERM_MIN = 0.15
+const TERM_MAX = 0.75
+const readNum = (key: string, fallback: number) => {
+  try {
+    const v = Number(localStorage.getItem(key))
+    return Number.isFinite(v) && v > 0 ? v : fallback
+  } catch {
+    return fallback
+  }
+}
+const writeNum = (key: string, v: number) => {
+  try {
+    localStorage.setItem(key, String(v))
+  } catch {}
 }
 
 // ヒントで「ちがう行」に色をつける
@@ -68,8 +92,8 @@ const markField = StateField.define<DecorationSet>({
 
 const editorTheme = EditorView.theme(
   {
-    '&': { height: '100%', backgroundColor: '#23203b', color: '#dcdcf0', fontSize: '16px' },
-    '.cm-scroller': { fontFamily: "'JetBrains Mono', 'BIZ UDGothic', monospace", lineHeight: '1.8' },
+    '&': { height: '100%', backgroundColor: '#23203b', color: '#dcdcf0', fontSize: 'var(--navi-code-size, 16px)' },
+    '.cm-scroller': { fontFamily: "'JetBrains Mono', 'BIZ UDGothic', monospace", lineHeight: '1.6' },
     '.cm-content': { caretColor: '#ffd23f', padding: '10px 0' },
     '.cm-gutters': { backgroundColor: '#23203b', color: '#5d5880', border: 'none' },
     '.cm-activeLine': { backgroundColor: 'rgba(255,255,255,.05)' },
@@ -94,12 +118,14 @@ const codeColors = HighlightStyle.define([
   { tag: [t.operator, t.punctuation, t.bracket], color: '#dcdcf0' },
 ])
 
-export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, onFilesChange, banner, inputsHint, highlight, markLine, overlay, openFile }: Props) {
+export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, onFilesChange, banner, inputsHint, highlight, markLine, overlay, openFile, tools, roomy = true }: Props) {
   const [files, setFiles] = useState<Record<string, string>>(initialFiles)
   const [active, setActive] = useState(Object.keys(initialFiles)[0])
   const [lines, setLines] = useState<Line[]>([])
   const [status, setStatus] = useState<'booting' | 'ready' | 'running' | 'app' | 'error'>('booting')
   const [inputPrompt, setInputPrompt] = useState<string | null>(null)
+  // input() の答えを待ったら、ターミナルを広げたままにする（結果を動画と見くらべやすく）。コードを打ちはじめたらもどす
+  const [termOpen, setTermOpen] = useState(false)
   const [inputValue, setInputValue] = useState('')
   const [tk, setTk] = useState<TkNode | null>(null)
   const [tkMessage, setTkMessage] = useState<{ title: string; text: string } | null>(null)
@@ -113,6 +139,62 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
   const ranFileRef = useRef('')
   const termEnd = useRef<HTMLDivElement>(null)
   const inputBox = useRef<HTMLInputElement>(null)
+  // 文字の大きさ・ターミナルの高さ（コードとターミナルの間の帯をドラッグして変える）
+  const [fontSize, setFontSize] = useState(16)
+  const [termRatio, setTermRatio] = useState(0.36)
+  const [bodyH, setBodyH] = useState(0)
+  const body = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    // ブラウザの保存は表示のあとでしか読めないので、ここで1回だけ入れる
+    /* eslint-disable react-hooks/set-state-in-effect */
+    const f = readNum(FONT_KEY, 16)
+    setFontSize(FONT_SIZES.includes(f) ? f : 16)
+    setTermRatio(Math.min(TERM_MAX, Math.max(TERM_MIN, readNum(TERM_KEY, 0.36))))
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [])
+  useEffect(() => {
+    const el = body.current
+    if (!el) return
+    const ro = new ResizeObserver(() => setBodyH(el.clientHeight))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+  // 文字の大きさを変えたら、CodeMirror に測りなおしてもらう
+  useEffect(() => {
+    viewRef.current?.requestMeasure()
+  }, [fontSize, termRatio, bodyH])
+  const changeFont = (d: 1 | -1) => {
+    const i = Math.min(FONT_SIZES.length - 1, Math.max(0, FONT_SIZES.indexOf(fontSize) + d))
+    setFontSize(FONT_SIZES[i])
+    writeNum(FONT_KEY, FONT_SIZES[i])
+  }
+  const dragTerm = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = body.current
+    if (!el) return
+    e.preventDefault()
+    const handle = e.currentTarget
+    handle.setPointerCapture(e.pointerId)
+    const rect = el.getBoundingClientRect()
+    let last = termRatio
+    const move = (ev: PointerEvent) => {
+      last = Math.min(TERM_MAX, Math.max(TERM_MIN, (rect.bottom - ev.clientY) / rect.height))
+      setTermRatio(last)
+    }
+    const up = () => {
+      handle.removeEventListener('pointermove', move)
+      handle.removeEventListener('pointerup', up)
+      handle.removeEventListener('pointercancel', up)
+      writeNum(TERM_KEY, last)
+    }
+    handle.addEventListener('pointermove', move)
+    handle.addEventListener('pointerup', up)
+    handle.addEventListener('pointercancel', up)
+  }
+  const nudgeTerm = (d: number) => {
+    const r = Math.min(TERM_MAX, Math.max(TERM_MIN, termRatio + d))
+    setTermRatio(r)
+    writeNum(TERM_KEY, r)
+  }
   useEffect(() => {
     filesRef.current = files
     activeRef.current = active
@@ -167,6 +249,7 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
         case 'input-request':
           setInputPrompt(m.prompt)
           setInputValue('')
+          setTermOpen(true)
           break
         case 'tk-render':
           if (m.tree?.closed) setTk(null)
@@ -261,12 +344,15 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
           basicSetup,
           python(),
           indentUnit.of('    '),
-          keymap.of([indentWithTab, { key: 'Ctrl-Enter', run: () => (runRef.current(), true) }]),
+          // Ctrl + Enter は basicSetup の「下に空の行を足す」より先に効かせる（でないと実行されずに改行が入る）
+          Prec.highest(keymap.of([{ key: 'Mod-Enter', run: () => (runRef.current(), true) }])),
+          keymap.of([indentWithTab]),
           editorTheme,
           syntaxHighlighting(codeColors),
           markField,
           EditorView.updateListener.of((u) => {
             if (u.docChanged) {
+              setTermOpen(false)
               const text = u.state.doc.toString()
               setFiles((prev) => ({ ...prev, [activeRef.current]: text }))
             }
@@ -320,12 +406,17 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
   const busy = status === 'running'
   const showApp = tk !== null
 
-  const termHeight = height === 'fill' ? 270 : Math.round(height * 0.42)
+  // ターミナルの高さ：コードとターミナルの部分の高さ × 割合（測る前は 270px）。
+  // 出力が2〜3行は見えるように 150px より小さくしない。input() の答えを待つあいだと、そのあとコードを打ちはじめるまでは、小さければ広げる
+  const TERM_MIN_PX = 150
+  const ratio = inputPrompt !== null || termOpen ? Math.max(termRatio, 0.32) : termRatio
+  const termHeight =
+    bodyH > 0 ? Math.min(bodyH - 120, Math.max(TERM_MIN_PX, Math.round(bodyH * ratio))) : height === 'fill' ? 270 : Math.round(height * 0.42)
 
   return (
     <div
       className={`flex flex-col overflow-hidden rounded-[22px] bg-[#23203b] shadow-lg ${highlight ? 'ring-[3px] ring-[#ffc21a] ring-offset-0 shadow-[0_0_0_9px_rgba(255,210,63,.25)]' : ''}`}
-      style={{ height: height === 'fill' ? '100%' : height }}
+      style={{ height: height === 'fill' ? '100%' : height, ['--navi-code-size' as string]: `${fontSize}px` }}
     >
       {banner}
       {/* 上の帯：ファイルと実行 */}
@@ -349,9 +440,34 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
           ＋
         </button>
         </div>
-        <span className="max-w-[150px] flex-none truncate text-xs font-bold text-[#8a85ad]">
-          {status === 'booting' ? 'Python を準備中…' : busy ? (inputPrompt !== null ? '入力を待っています' : '実行中…') : 'Ctrl + Enter でも実行'}
-        </span>
+        {/* 文字の大きさ */}
+        <div className="flex flex-none items-center rounded-full bg-[#2b2650] p-0.5 text-[#cfcbe8]">
+          <button
+            onClick={() => changeFont(-1)}
+            disabled={fontSize === FONT_SIZES[0]}
+            className="grid h-[30px] w-[30px] place-items-center rounded-full text-[13px] font-black hover:bg-[#3a3462] hover:text-white disabled:opacity-35"
+            title="コードの文字を小さく"
+            aria-label="コードの文字を小さく"
+          >
+            A−
+          </button>
+          <span className="w-[26px] text-center font-mono text-[11px] text-[#8a85ad]">{fontSize}</span>
+          <button
+            onClick={() => changeFont(1)}
+            disabled={fontSize === FONT_SIZES[FONT_SIZES.length - 1]}
+            className="grid h-[30px] w-[30px] place-items-center rounded-full text-[15px] font-black hover:bg-[#3a3462] hover:text-white disabled:opacity-35"
+            title="コードの文字を大きく"
+            aria-label="コードの文字を大きく"
+          >
+            A＋
+          </button>
+        </div>
+        {tools}
+        {(roomy || status === 'booting' || busy) && (
+          <span className="max-w-[130px] flex-none truncate text-xs font-bold text-[#8a85ad]" title="Ctrl + Enter でも実行できます">
+            {status === 'booting' ? 'Python を準備中…' : busy ? (inputPrompt !== null ? '入力を待っています' : '実行中…') : 'Ctrl+Enter でも実行'}
+          </span>
+        )}
         {busy || status === 'app' ? (
           <button onClick={stop} className="flex h-[38px] flex-none items-center gap-2 whitespace-nowrap rounded-full bg-[#ef5a5a] px-5 font-black text-white shadow-[0_4px_0_#c13f3f]">
             ■ とめる
@@ -360,6 +476,7 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
           <button
             onClick={run}
             disabled={status === 'booting'}
+            title="実行（Ctrl + Enter）"
             className="flex h-[38px] flex-none items-center gap-2 whitespace-nowrap rounded-full bg-[#22b573] px-5 font-black text-white shadow-[0_4px_0_#16905a] disabled:opacity-50"
           >
             ▶ 実行
@@ -367,14 +484,30 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
         )}
       </div>
 
+      <div ref={body} className="flex min-h-0 flex-1 flex-col">
       {/* コード */}
       <div className="relative min-h-0 flex-1">
         <div ref={editorHost} onMouseDownCapture={() => onFocus?.()} onKeyDownCapture={() => onFocus?.()} className="h-full overflow-hidden" />
         {overlay}
       </div>
 
-      <div className="flex h-[10px] flex-none items-center justify-center bg-[#1b1832]">
-        <span className="h-1 w-11 rounded bg-[#3a3462]" />
+      {/* コードとターミナルの境目：上下にドラッグして高さを変える（ダブルクリックでもとに） */}
+      <div
+        role="separator"
+        aria-orientation="horizontal"
+        aria-label="ターミナルの高さ（上下にドラッグ・矢印キーでも変えられる）"
+        tabIndex={0}
+        onPointerDown={dragTerm}
+        onDoubleClick={() => nudgeTerm(0.36 - termRatio)}
+        onKeyDown={(e) => {
+          if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return
+          e.preventDefault()
+          nudgeTerm(e.key === 'ArrowUp' ? 0.05 : -0.05)
+        }}
+        title="上下にドラッグして、コードとターミナルの広さを変えられるよ（ダブルクリックでもとに）"
+        className="group flex h-[14px] flex-none cursor-row-resize touch-none items-center justify-center bg-[#1b1832] outline-none hover:bg-[#2b2650] focus-visible:bg-[#2b2650]"
+      >
+        <span className="h-1 w-14 rounded bg-[#4a4378] group-hover:bg-[#ffd23f] group-focus-visible:bg-[#ffd23f]" />
       </div>
 
       {/* ターミナル（とアプリの窓） */}
@@ -399,7 +532,7 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
               )}
             </div>
           )}
-          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-2 font-mono text-[15px] leading-[1.75] text-[#cfcbe8]">
+          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-2 font-mono leading-[1.7] text-[#cfcbe8]" style={{ fontSize: fontSize - 1 }}>
             {lines.map((l, i) => {
               if (l.kind === 'cmd')
                 return (
@@ -467,6 +600,7 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
             onEvent={(ev) => workerRef.current?.postMessage({ type: 'tk-event', ...ev })}
           />
         )}
+      </div>
       </div>
     </div>
   )
