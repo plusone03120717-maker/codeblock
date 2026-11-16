@@ -122,7 +122,7 @@ export const finishStepLessons: Lesson[] = [
     "unitNumber": 31,
     "subNumber": 16,
     "title": "ステップ16の仕上げ",
-    "description": "if と else で、文字数によって出し方を変えよう",
+    "description": "else（でなければ）で、条件が合わないときの動きを書こう",
     "difficulty": "ふつう"
   },
   {
@@ -3063,255 +3063,412 @@ export const finishStepMissions: Record<string, Mission[]> = {
     {
       "id": 1,
       "type": "quiz",
-      "title": "どちらが動く？①",
+      "title": "ちょうど10文字",
       "description": "このコードを実行すると、何が出る？",
-      "codeToRead": "tweet = \"おやつ食べてる\"\nif len(tweet) > 10:\n    print(\"文字数が多すぎるよ\")\nelse:\n    print(tweet)",
+      "codeToRead": "tweet = \"あしたはえんそくだよ\"\nif len(tweet) > 10:\n    print(\"文字数が多すぎるよ\")\nelse:\n    print(tweet)",
       "choices": [
         "文字数が多すぎるよ",
-        "おやつ食べてる",
+        "あしたはえんそくだよ",
         "何も出ない"
       ],
       "correctAnswer": 1,
-      "expectedOutput": "おやつ食べてる",
-      "hint": "tweet は何文字かな？",
-      "explanation": "「おやつ食べてる」は7文字。10 より多くないので else の中が動くよ。",
+      "expectedOutput": "あしたはえんそくだよ",
+      "hint": "「あしたはえんそくだよ」は何文字？ 10 は 10 より大きいかな？",
+      "explanation": "「あしたはえんそくだよ」はちょうど10文字。10 は 10 より大きくないので、条件が合わない。だから else の中が動いて、つぶやきがそのまま出るよ。",
       "availableBlocks": []
     },
     {
       "id": 2,
       "type": "quiz",
-      "title": "どちらが動く？②",
+      "title": "if の外に書くと",
       "description": "このコードを実行すると、何が出る？",
-      "codeToRead": "tweet = \"今日は公園でサッカーをしたよ\"\nif len(tweet) > 10:\n    print(\"文字数が多すぎるよ\")\nelse:\n    print(tweet)",
+      "codeToRead": "tweet = \"きょうは公園でサッカーしてる\"\nif len(tweet) > 10:\n    print(\"文字数が多すぎるよ\")\nprint(tweet)",
       "choices": [
-        "文字数が多すぎるよ",
-        "今日は公園でサッカーをしたよ",
-        "何も出ない"
+        "文字数が多すぎるよ だけ",
+        "文字数が多すぎるよ と きょうは公園でサッカーしてる",
+        "きょうは公園でサッカーしてる だけ"
       ],
-      "correctAnswer": 0,
-      "expectedOutput": "文字数が多すぎるよ",
-      "hint": "tweet は何文字かな？",
-      "explanation": "14文字なので 10 より多い。if の中が動くよ。",
+      "correctAnswer": 1,
+      "expectedOutput": "文字数が多すぎるよ と きょうは公園でサッカーしてる",
+      "hint": "print(tweet) は字下げしていないね。if の中？ それとも外？",
+      "explanation": "14文字なので、if の中の「文字数が多すぎるよ」が出る。print(tweet) は if の外なので、いつでも動いて、つぶやきも出てしまうよ。短いときだけ出したいなら、else の中に書こう。",
       "availableBlocks": []
     },
     {
       "id": 3,
       "type": "quiz",
       "title": "エラーを直そう",
-      "description": "実行したら「SyntaxError: expected ':'」と出た。どう直す？",
-      "codeToRead": "if len(tweet) > 10\n    print(\"文字数が多すぎるよ\")",
+      "description": "実行したら「SyntaxError: invalid syntax」と出た。どう直す？",
+      "codeToRead": "tweet = \"ねてる\"\nif len(tweet) > 10:\n    print(\"文字数が多すぎるよ\")\n    else:\n    print(tweet)",
       "choices": [
-        "print の前の空白を消す",
-        "> を = にする",
-        "10 のあとに : を足す"
+        "else の前の字下げを消して、if と はしをそろえる",
+        "else のうしろに、条件を書く",
+        "else を ELSE にする"
       ],
-      "correctAnswer": 2,
-      "expectedOutput": "10 のあとに : を足す",
-      "hint": "expected ':' は「: がほしい」という意味。",
-      "explanation": "if の条件のあとには : を書くよ。",
+      "correctAnswer": 0,
+      "expectedOutput": "else の前の字下げを消して、if と はしをそろえる",
+      "hint": "else は if の中ではないよ。どこから書くんだったかな？",
+      "explanation": "else は、if と はしをそろえて書くよ。else の前の字下げを消そう。else のうしろには、条件は書かずに、コロンだけ。",
       "availableBlocks": []
     },
     {
       "id": 4,
-      "title": "if を書く",
-      "description": "tweet が10文字より多ければ「文字数が多すぎるよ」と出す if を書こう！",
-      "expectedOutput": "文字数が多すぎるよ",
-      "correctCode": "if len(tweet) > 10:\n    print(\"文字数が多すぎるよ\")",
+      "title": "ごうかく？ ざんねん？",
+      "description": "point が 10 より大きければ「ごうかく」、でなければ「ざんねん」と表示しよう！",
+      "expectedOutput": "ざんねん",
+      "correctCode": "if point > 10:\n    print(\"ごうかく\")\nelse:\n    print(\"ざんねん\")",
       "availableBlocks": [
         {
           "id": "b0",
           "text": "if",
           "type": "keyword",
-          "color": "bg-blue-200"
+          "color": "bg-pink-200"
         },
         {
           "id": "b1",
-          "text": "len",
-          "type": "function",
-          "color": "bg-yellow-200"
-        },
-        {
-          "id": "b2",
-          "text": "(",
-          "type": "bracket",
-          "color": "bg-gray-200"
-        },
-        {
-          "id": "b3",
-          "text": "tweet",
+          "text": "point",
           "type": "variable",
           "color": "bg-sky-200"
         },
         {
-          "id": "b4",
-          "text": ")",
-          "type": "bracket",
-          "color": "bg-gray-200"
-        },
-        {
-          "id": "b5",
+          "id": "b2",
           "text": ">",
           "type": "operator",
           "color": "bg-orange-200"
         },
         {
-          "id": "b6",
+          "id": "b3",
           "text": "10",
           "type": "number",
-          "color": "bg-yellow-100"
+          "color": "bg-blue-200"
         },
         {
-          "id": "b7",
+          "id": "b4",
           "text": ":",
           "type": "colon",
           "color": "bg-gray-200"
         },
         {
-          "id": "nl8",
+          "id": "nl5",
           "text": "↵",
           "type": "newline",
-          "color": "bg-pink-200"
+          "color": "bg-gray-200"
         },
         {
-          "id": "ind9",
+          "id": "ind6",
           "text": "    ",
           "type": "indent",
           "color": "bg-gray-200"
         },
         {
-          "id": "b10",
+          "id": "b7",
           "text": "print",
           "type": "function",
           "color": "bg-yellow-200"
         },
         {
-          "id": "b11",
-          "text": "\"文字数が多すぎるよ\"",
-          "type": "string",
-          "color": "bg-green-200"
-        },
-        {
-          "id": "b12",
-          "text": "=",
-          "type": "operator",
-          "color": "bg-orange-200"
-        }
-      ],
-      "prefixCode": "tweet = \"今日は公園でサッカーをしたよ\"",
-      "rules": [
-        {
-          "requires": [
-            "\n    "
-          ],
-          "message": "if の中の行は、半角4文字の字下げ（インデント）をつけよう！"
-        }
-      ]
-    },
-    {
-      "id": 5,
-      "title": "else もつける",
-      "description": "10文字より多ければ「文字数が多すぎるよ」、そうでなければ tweet をそのまま出そう！",
-      "expectedOutput": "おやつ食べてる",
-      "correctCode": "if len(tweet) > 10:\n    print(\"文字数が多すぎるよ\")\nelse:\n    print(tweet)",
-      "availableBlocks": [
-        {
-          "id": "b0",
-          "text": "if",
-          "type": "keyword",
-          "color": "bg-blue-200"
-        },
-        {
-          "id": "b1",
-          "text": "len",
-          "type": "function",
-          "color": "bg-yellow-200"
-        },
-        {
-          "id": "b2",
+          "id": "b8",
           "text": "(",
           "type": "bracket",
           "color": "bg-gray-200"
         },
         {
-          "id": "b3",
-          "text": "tweet",
-          "type": "variable",
-          "color": "bg-sky-200"
+          "id": "b9",
+          "text": "\"ごうかく\"",
+          "type": "string",
+          "color": "bg-green-200"
         },
         {
-          "id": "b4",
+          "id": "b10",
           "text": ")",
           "type": "bracket",
           "color": "bg-gray-200"
         },
         {
-          "id": "b5",
-          "text": ">",
-          "type": "operator",
-          "color": "bg-orange-200"
-        },
-        {
-          "id": "b6",
-          "text": "10",
-          "type": "number",
-          "color": "bg-yellow-100"
-        },
-        {
-          "id": "b7",
-          "text": ":",
-          "type": "colon",
-          "color": "bg-gray-200"
-        },
-        {
-          "id": "nl8",
+          "id": "nl11",
           "text": "↵",
           "type": "newline",
-          "color": "bg-pink-200"
-        },
-        {
-          "id": "ind9",
-          "text": "    ",
-          "type": "indent",
           "color": "bg-gray-200"
-        },
-        {
-          "id": "b10",
-          "text": "print",
-          "type": "function",
-          "color": "bg-yellow-200"
-        },
-        {
-          "id": "b11",
-          "text": "\"文字数が多すぎるよ\"",
-          "type": "string",
-          "color": "bg-green-200"
         },
         {
           "id": "b12",
           "text": "else",
           "type": "keyword",
-          "color": "bg-blue-200"
+          "color": "bg-pink-200"
         },
         {
           "id": "b13",
-          "text": "\"tweet\"",
+          "text": ":",
+          "type": "colon",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "nl14",
+          "text": "↵",
+          "type": "newline",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "ind15",
+          "text": "    ",
+          "type": "indent",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b16",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b17",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b18",
+          "text": "\"ざんねん\"",
           "type": "string",
           "color": "bg-green-200"
+        },
+        {
+          "id": "b19",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b20",
+          "text": "=",
+          "type": "operator",
+          "color": "bg-orange-200"
         }
       ],
-      "prefixCode": "tweet = \"おやつ食べてる\"",
+      "prefixCode": "point = 8",
       "rules": [
-        {
-          "forbids": [
-            "\"tweet\""
-          ],
-          "message": "\" \" でかこむと、箱の中身ではなく文字のまま出るよ！"
-        },
         {
           "requires": [
             "else:"
           ],
-          "message": "「でなければ」は else: で書くよ！"
+          "message": "else のあとに : （コロン）をつけよう！"
+        },
+        {
+          "requires": [
+            "\nelse"
+          ],
+          "message": "else は、if と はしをそろえて書こう（else の前に字下げを入れない）！"
+        },
+        {
+          "requires": [
+            "\n    print"
+          ],
+          "message": "if の中と else の中の行は、半角4つの字下げ（インデント）をつけよう！"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "つぶやきアプリの完成",
+      "description": "tweet が 10 文字より長いときは、はじめの6文字と \"...\"、でなければ tweet をそのまま表示しよう！",
+      "expectedOutput": "ねてる",
+      "correctCode": "if len(tweet) > 10:\n    print(tweet[:6] + \"...\")\nelse:\n    print(tweet)",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "if",
+          "type": "keyword",
+          "color": "bg-pink-200"
+        },
+        {
+          "id": "b1",
+          "text": "len",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b2",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b3",
+          "text": "tweet",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b4",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b5",
+          "text": ">",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b6",
+          "text": "10",
+          "type": "number",
+          "color": "bg-blue-200"
+        },
+        {
+          "id": "b7",
+          "text": ":",
+          "type": "colon",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "nl8",
+          "text": "↵",
+          "type": "newline",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "ind9",
+          "text": "    ",
+          "type": "indent",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b10",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b11",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b12",
+          "text": "tweet",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b13",
+          "text": "[",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b14",
+          "text": ":",
+          "type": "colon",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b15",
+          "text": "6",
+          "type": "number",
+          "color": "bg-blue-200"
+        },
+        {
+          "id": "b16",
+          "text": "]",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b17",
+          "text": "+",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b18",
+          "text": "\"...\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b19",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "nl20",
+          "text": "↵",
+          "type": "newline",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b21",
+          "text": "else",
+          "type": "keyword",
+          "color": "bg-pink-200"
+        },
+        {
+          "id": "b22",
+          "text": ":",
+          "type": "colon",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "nl23",
+          "text": "↵",
+          "type": "newline",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "ind24",
+          "text": "    ",
+          "type": "indent",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b25",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b26",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b27",
+          "text": "tweet",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b28",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        }
+      ],
+      "prefixCode": "tweet = \"ねてる\"",
+      "rules": [
+        {
+          "requires": [
+            "tweet[:6]",
+            "\"...\""
+          ],
+          "message": "長いときは、はじめの6文字 tweet[:6] と \"...\" をつなげよう！"
+        },
+        {
+          "requires": [
+            "\nelse:"
+          ],
+          "message": "else は、if と はしをそろえて、else: と書こう！"
+        },
+        {
+          "requires": [
+            "\n    print(tweet)"
+          ],
+          "message": "else の中で、tweet をそのまま print しよう（字下げを忘れずに）！"
         }
       ]
     }
@@ -6770,7 +6927,7 @@ export const finishStepTutorials: LessonTutorial[] = [
         "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
-          "good": "if 5 > 3:\n    print(\"5 のほうが大きい\")"
+          "good": "if len(tweet) > 10:\n    print(\"文字数が多すぎるよ\")\nelse:  # if と はしをそろえる\n    print(tweet)"
         }
       }
     ]

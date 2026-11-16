@@ -1779,31 +1779,97 @@
   "fileName": "step16.py",
   "sections": [
    {
-    "title": "else で、10文字までならそのまま",
-    "start": 230,
-    "code": "else:\n    print(tweet)",
-    "expected": [
-     "おやつ食べてる"
-    ],
+    "title": "else の書き方",
+    "start": 48,
+    "code": "tweet = input(\"今どうしてる？\")\nif len(tweet) > 10:\n    print(\"文字数が多すぎるよ\")\nelse:\n    print(tweet)",
+    "expected": [],
+    "mustMatch": "\\nelse\\s*:\\s*\\n[ \\t]+print\\(\\s*tweet\\s*\\)",
+    "outputPattern": "^ねてる$",
     "inputs": [
-     "おやつ食べてる"
+     "ねてる"
     ],
-    "mustUse": [
-     "else:"
+    "pauseAt": 131,
+    "note": "print の行のおわりで Enter → Backspace で字下げを消して、if とはしをそろえて else: → Enter で字下げしたまま print(tweet)。「ねてる」と入れて「ねてる」が出れば OK"
+   },
+   {
+    "title": "長いときは？",
+    "start": 134,
+    "code": "tweet = input(\"今どうしてる？\")\nif len(tweet) > 10:\n    print(\"文字数が多すぎるよ\")\nelse:\n    print(tweet)",
+    "expected": [],
+    "mustMatch": "\\nelse\\s*:\\s*\\n[ \\t]+print\\(\\s*tweet\\s*\\)",
+    "outputPattern": "^文字数が多すぎるよ$",
+    "inputs": [
+     "きょうは公園でサッカーしてる"
     ],
-    "note": "10文字までの答え（例：おやつ食べてる）を入れて、そのまま出れば合格"
+    "pauseAt": 152,
+    "note": "「きょうは公園でサッカーしてる」（14文字）と入れると、if の中だけが動いて「文字数が多すぎるよ」だけが出る"
+   },
+   {
+    "title": "ちょうど10文字",
+    "start": 190,
+    "code": "tweet = input(\"今どうしてる？\")\nif len(tweet) > 10:\n    print(\"文字数が多すぎるよ\")\nelse:\n    print(tweet)",
+    "expected": [],
+    "mustMatch": "\\nelse\\s*:\\s*\\n[ \\t]+print\\(\\s*tweet\\s*\\)",
+    "outputPattern": "^あしたはえんそくだよ$",
+    "inputs": [
+     "あしたはえんそくだよ"
+    ],
+    "pauseAt": 228,
+    "note": "「あしたはえんそくだよ」はちょうど10文字。10 は 10 より大きくないので、else の中が動いてそのまま出る"
+   },
+   {
+    "title": "チャレンジ① 3のほうが大きい",
+    "start": 273,
+    "pauseAt": 355,
+    "challenge": true,
+    "code": "if 2 > 3:\n    print(\"2のほうが大きい\")\nelse:\n    print(\"3のほうが大きい\")",
+    "expected": [],
+    "mustMatch": "if\\s+(2\\s*>\\s*3|3\\s*<\\s*2)\\s*:[\\s\\S]*\\nelse\\s*:\\s*\\n[ \\t]+print\\(",
+    "outputPattern": "^3のほうが大きい$",
+    "note": "2が3より大きいときは「2のほうが大きい」、でなければ「3のほうが大きい」を出そう",
+    "answerNote": "if 2 > 3: の中に print(\"2のほうが大きい\")。if とはしをそろえて else: を書き、その中に print(\"3のほうが大きい\")"
+   },
+   {
+    "title": "チャレンジ② ちょうどいい長さだね",
+    "start": 290,
+    "pauseAt": 355,
+    "challenge": true,
+    "code": "tweet = input(\"今どうしてる？\")\nif len(tweet) > 10:\n    print(\"文字数が多すぎるよ\")\nelse:\n    print(\"ちょうどいい長さだね\")",
+    "expected": [],
+    "mustMatch": "if\\s+len\\(\\s*tweet\\s*\\)\\s*>\\s*10\\s*:[\\s\\S]*\\nelse\\s*:\\s*\\n[ \\t]+print\\(\\s*[\\\"']ちょうどいい長さだね",
+    "outputPattern": "^ちょうどいい長さだね$",
+    "inputs": [
+     "ねてる"
+    ],
+    "note": "tweet の行も書こう。短いときは、つぶやきのかわりに「ちょうどいい長さだね」。「ねてる」と入れて「ちょうどいい長さだね」が出れば OK",
+    "answerNote": "else の中の print(tweet) を print(\"ちょうどいい長さだね\") にかえる。長いときは今のまま「文字数が多すぎるよ」"
+   },
+   {
+    "title": "チャレンジ③ つぶやきアプリの完成",
+    "start": 320,
+    "pauseAt": 355,
+    "challenge": true,
+    "code": "tweet = input(\"今どうしてる？\")\nif len(tweet) > 10:\n    print(tweet[:6] + \"...\")\nelse:\n    print(tweet)",
+    "expected": [],
+    "mustMatch": "print\\(\\s*tweet\\[\\s*:\\s*6\\s*\\]\\s*\\+\\s*[\\\"']\\.\\.\\.[\\\"']\\s*\\)[\\s\\S]*\\nelse\\s*:\\s*\\n[ \\t]+print\\(\\s*tweet\\s*\\)",
+    "outputPattern": "^ねてる$",
+    "inputs": [
+     "ねてる"
+    ],
+    "note": "長いときは、はじめの6文字と ...、短いときはそのまま出そう。「ねてる」と入れて「ねてる」が出れば OK",
+    "answerNote": "長いつぶやきを入れると「きょうは公園...」になるよ"
    }
   ],
   "video": {
-   "no": "#8",
-   "id": "QrzSFUJE40g",
-   "length": 99,
-   "end": 326,
-   "start": 227
+   "no": "⑯",
+   "id": "MFjl2MLr1u8",
+   "length": 398,
+   "end": 391
   },
   "learn": [
-   "else は「でなければ」。if に合わないときに動く",
-   "len(tweet) > 10 で「10文字より多い」を調べられる"
+   "else は「でなければ」。if の条件が合わないときに動く",
+   "else は if とはしをそろえて書く。条件は書かずにコロンだけ",
+   "if の中と else の中は、どちらか片方だけが動く"
   ],
   "codeblock": [
    "31-16"
