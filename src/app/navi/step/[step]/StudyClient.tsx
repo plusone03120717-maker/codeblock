@@ -33,6 +33,9 @@ import {
 import { liveActive, liveEnd, liveHint, liveRun, liveSet, weakError, weakSection } from '@/lib/navi/teacherLog'
 
 const XP_PER_SECTION = 20
+// 画面の広さ：normal＝動画とエディターを半分ずつ／wide＝エディターを広く（動画は左に小さく）。生徒のブラウザに覚えておく
+const LAYOUT_KEY = 'codeblock_navi_layout'
+type Layout = 'normal' | 'wide'
 
 export function StudyClient({ step: stepNo }: { step: number }) {
   const router = useRouter()
@@ -61,6 +64,49 @@ export function StudyClient({ step: stepNo }: { step: number }) {
   const lastTick = useRef<number | null>(null) // 最後に知らされた秒（止まっていても）
   const timers = useRef<ReturnType<typeof setTimeout>[]>([])
   useEffect(() => () => timers.current.forEach(clearTimeout), [])
+  // エディターを広く・全画面
+  const [layout, setLayout] = useState<Layout>('normal')
+  const [full, setFull] = useState(false)
+  const root = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    try {
+      // ブラウザの保存は表示のあとでしか読めないので、ここで1回だけ入れる
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (localStorage.getItem(LAYOUT_KEY) === 'wide') setLayout('wide')
+    } catch {}
+    // ブラウザの全画面を Esc でやめたら、画面の中の全画面もやめる
+    const onFs = () => {
+      if (!document.fullscreenElement) setFull(false)
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !e.defaultPrevented && !document.fullscreenElement) setFull(false)
+    }
+    document.addEventListener('fullscreenchange', onFs)
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('fullscreenchange', onFs)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [])
+  const toggleLayout = () => {
+    const next: Layout = layout === 'wide' ? 'normal' : 'wide'
+    setLayout(next)
+    try {
+      localStorage.setItem(LAYOUT_KEY, next)
+    } catch {}
+  }
+  // 全画面：画面の中ではヘッダーなどをかくしてエディターを大きく。ブラウザが許せば、ブラウザの全画面にもする
+  const toggleFull = () => {
+    if (full) {
+      setFull(false)
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {})
+    } else {
+      setFull(true)
+      root.current?.requestFullscreen?.().catch(() => {})
+    }
+  }
+  // 全画面のときは、動画を左に小さく
+  const wide = layout === 'wide' || full
   const later = (ms: number, f: () => void) => timers.current.push(setTimeout(f, ms))
 
   useEffect(() => {
@@ -360,16 +406,107 @@ export function StudyClient({ step: stepNo }: { step: number }) {
           ? `おさらい1問 → ${naviLessonLabel(action.lessonId)} から。ホームでいちかが案内するよ`
           : 'つぎのステップから。ホームでいちかが案内するよ'
 
-  return (
-    <div className="flex h-screen flex-col">
-      <NaviHeader step={step.step} unit={step.unit} onEnd={() => {
-          // 「今日はおわる」を押したら、再生中の動画も止める
-          player.current?.pause()
-          setEnding(true)
+  // クリアのじょうけん：ふつうは下の帯。広く・全画面のときは、左の列の下に2行でつめて出す（エディターを高くするため）
+  const goClass = `flex items-center justify-center rounded-full font-black whitespace-nowrap ${wide ? 'h-[44px] flex-1 px-4 text-[14px]' : 'h-[52px] px-6'}`
+  const pill = (ok: boolean, no: string, label: string, sub?: string) => (
+    <span
+      className={`flex items-center gap-2 whitespace-nowrap rounded-full font-bold ${wide ? 'py-1 pl-1.5 pr-3 text-[12.5px]' : 'gap-2.5 py-2 pl-2.5 pr-4 text-sm'} ${
+        ok ? 'bg-[#e2f7ec] text-[#0f7a51]' : 'bg-[#f6f5fb]'
+      }`}
+    >
+      <i
+        className={`grid place-items-center rounded-full font-black not-italic ${wide ? 'h-[22px] w-[22px] text-[12px]' : 'h-[26px] w-[26px] text-[13px]'} ${
+          ok ? 'bg-[#22b573] text-white' : 'bg-[#e6e2f3] text-[#9893b5]'
+        }`}
+      >
+        {ok ? '✔' : no}
+      </i>
+      {label}
+      {sub && <span className="text-[#6d6893]">{sub}</span>}
+    </span>
+  )
+  const pills = (
+    <>
+      {step.video &&
+        pill(videoOk, '1', videoOk ? (wide ? '動画を見た' : '動画を最後まで見た') : wide ? '動画' : '動画を最後まで見る', videoOk ? undefined : `あと ${fmtTime(Math.max(0, step.video.end - Math.max(time, p.videoPos)))}`)}
+      {pill(allSections, '2', wide ? '見出し' : '見出しの結果', `${passedCount} / ${total}${!allSections && !wide ? `（あと${total - passedCount}つ）` : ''}`)}
+      {optionalTotal > 0 && (
+        <span className="whitespace-nowrap text-[13px] font-bold text-[#8a6400]">
+          できたら⭐ {optionalPassed} / {optionalTotal}
+        </span>
+      )}
+    </>
+  )
+  const askButton = (
+    <button
+      onClick={() => setAskOpen(true)}
+      className={`flex items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-white font-black text-[#7448f0] shadow-[inset_0_0_0_2px_#e6e1fa,0_4px_0_#e6e1fa] hover:bg-[#f8f6ff] ${
+        wide ? 'h-[44px] px-4 text-[14px]' : 'h-[52px] gap-2 px-5 text-[15px]'
+      }`}
+      title={`いちかに質問（1日${ASK_PER_DAY}回）`}
+    >
+      💬 {wide ? '質問' : 'いちかに質問'}
+      {!wide && <span className="text-[12px] font-bold text-[#8a85ad]">（1日{ASK_PER_DAY}回）</span>}
+    </button>
+  )
+  const goButton = canGo ? (
+    step.codeblock.length > 0 ? (
+      <Link href={`/lesson/${firstLesson}`} onClick={() => save({ done: true })} className={`${goClass} bg-[#ff8a1f] text-white shadow-[0_5px_0_#db6500]`}>
+        ② {naviLessonLabel(firstLesson)} に進む ›
+      </Link>
+    ) : (
+      <button
+        onClick={() => {
+          save({ done: true })
+          const state = loadNavi()
+          state.current = nextReadyStep(stepNo) ?? stepNo + 1
+          saveNavi(state)
+          router.push('/navi')
         }}
-      />
-      <div className="flex min-h-0 flex-1 flex-col gap-3.5 px-8 pb-5 pt-[18px]">
-        <div className="flex flex-none items-center justify-between">
+        className={`${goClass} bg-[#ff8a1f] text-white shadow-[0_5px_0_#db6500]`}
+      >
+        ステップ{step.step} クリア！ ホームへ ›
+      </button>
+    )
+  ) : (
+    <span className={`${goClass} bg-[#ebe8f5] text-[#625d8a]`}>
+      🔒 {wide ? '' : !videoOk && !allSections ? '2つそろうと ' : 'あと少しで '}
+      {step.codeblock.some(isFinishLesson) ? '仕上げ' : 'CodeBlock'} に進める
+    </span>
+  )
+  const clearBar = wide ? (
+    <div className="sticky bottom-0 z-10 mt-auto flex flex-none flex-col gap-2 rounded-[18px] bg-white p-3 shadow-[0_-6px_16px_rgba(42,36,82,.08)]">
+      <div className="flex flex-wrap items-center gap-1.5" title="クリアの じょうけん">
+        <span className="mr-0.5 whitespace-nowrap text-[13px] font-black">クリアまで</span>
+        {pills}
+      </div>
+      <div className="flex items-center gap-2">
+        {askButton}
+        {goButton}
+      </div>
+    </div>
+  ) : (
+    <div className="flex h-[74px] flex-none items-center gap-3.5 rounded-[22px] bg-white pl-[22px] pr-3.5 shadow-sm">
+      <span className="mr-1.5 whitespace-nowrap text-[15px] font-black">クリアの じょうけん</span>
+      {pills}
+      <span className="flex-1" />
+      {askButton}
+      {goButton}
+    </div>
+  )
+
+  return (
+    <div ref={root} className="flex h-screen flex-col bg-[#f5f3ff]">
+      {!full && (
+        <NaviHeader step={step.step} unit={step.unit} onEnd={() => {
+            // 「今日はおわる」を押したら、再生中の動画も止める
+            player.current?.pause()
+            setEnding(true)
+          }}
+        />
+      )}
+      <div className={`flex min-h-0 flex-1 flex-col ${full ? 'gap-2.5 px-4 pb-3 pt-3' : wide ? 'gap-3 px-6 pb-4 pt-4' : 'gap-3.5 px-8 pb-5 pt-[18px]'}`}>
+        <div className={`flex-none items-center justify-between ${wide ? 'hidden' : 'flex'}`}>
           <div className="flex items-center gap-2 text-sm font-bold">
             <span className="flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#a259ff,#4f7cff)] py-1.5 pl-2 pr-4 text-white">
               <i className="grid h-6 w-6 place-items-center rounded-full bg-white text-[13px] not-italic text-[#7448f0]">1</i>
@@ -397,8 +534,12 @@ export function StudyClient({ step: stepNo }: { step: number }) {
           </div>
         </div>
 
-        <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] gap-5">
-          <div className="flex min-h-0 flex-col gap-3 overflow-y-auto pb-1">
+        <div
+          className={`grid min-h-0 flex-1 transition-[grid-template-columns] duration-150 ${
+            wide ? 'grid-cols-[minmax(420px,0.5fr)_minmax(0,1fr)] gap-4' : 'grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] gap-5'
+          }`}
+        >
+          <div className={`flex min-h-0 flex-col gap-3 overflow-y-auto ${wide ? '' : 'pb-1'}`}>
             {step.video ? (
               <div className="relative flex-none overflow-hidden rounded-[22px] bg-[#1d1838] shadow-lg">
                 <YouTubePlayer ref={player} videoId={step.video.id} startAt={Math.max(step.video.start ?? 0, startAt)} onTime={onTime} onEnded={onEnded} />
@@ -506,7 +647,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
               />
             )}
 
-            <div className="grid flex-none gap-2" style={{ gridTemplateColumns: `repeat(${Math.min(step.sections.length, 5)}, minmax(0, 1fr))` }}>
+            <div className={`grid flex-none ${wide ? 'gap-1.5' : 'gap-2'}`} style={{ gridTemplateColumns: `repeat(${wide ? 1 : Math.min(step.sections.length, 5)}, minmax(0, 1fr))` }}>
               {step.sections.map((sec, i) => {
                 const ok = p.passed.includes(i)
                 const isNext = i === focus
@@ -521,12 +662,16 @@ export function StudyClient({ step: stepNo }: { step: number }) {
                       setDeferred((d) => d.filter((x) => x !== i))
                       seekTo(sec.start)
                     }}
-                    className={`rounded-[14px] bg-white px-3 py-2 text-left text-[13.5px] font-bold leading-snug shadow-sm ${
+                    className={`bg-white text-left text-[13.5px] font-bold leading-snug shadow-sm ${
+                      wide ? 'flex items-center gap-2 rounded-[12px] px-3 py-1.5' : 'rounded-[14px] px-3 py-2'
+                    } ${
                       isNext ? 'shadow-[0_0_0_2px_#ffc21a,0_0_0_6px_#fff6d1]' : ''
                     } ${ok ? 'text-[#9b97b8]' : ''}`}
                   >
-                    <span className="flex items-center justify-between gap-1 text-xs text-[#6d6893]">
-                      {step.video ? fmtTime(sec.start) : `${i + 1}`}
+                    {wide && <span className="w-9 flex-none text-xs text-[#6d6893]">{step.video ? fmtTime(sec.start) : `${i + 1}`}</span>}
+                    {wide && <span className="min-w-0 flex-1 truncate">{sec.title}</span>}
+                    <span className={`flex items-center gap-1 text-xs text-[#6d6893] ${wide ? 'flex-none whitespace-nowrap' : 'justify-between'}`}>
+                      {!wide && (step.video ? fmtTime(sec.start) : `${i + 1}`)}
                       {ok && (p.revealed ?? []).includes(i) ? (
                         <span className="rounded-full bg-[#fff1e3] px-2 text-[11.5px] text-[#a24b00]">たしかめた</span>
                       ) : ok ? (
@@ -538,10 +683,10 @@ export function StudyClient({ step: stepNo }: { step: number }) {
                       ) : deferred.includes(i) ? (
                         <span className="rounded-full bg-[#ffe3cc] px-2 text-[11.5px] text-[#a24b00]">あとでやる</span>
                       ) : !reached(i) ? (
-                        <span className="rounded-full bg-[#f0eef7] px-2 text-[11.5px] text-[#8a85ad]">動画が来たら判定</span>
+                        <span className="rounded-full bg-[#f0eef7] px-2 text-[11.5px] text-[#8a85ad]">{wide ? 'まだ' : '動画が来たら判定'}</span>
                       ) : null}
                     </span>
-                    {sec.title}
+                    {!wide && sec.title}
                   </button>
                 )
               })}
@@ -549,11 +694,11 @@ export function StudyClient({ step: stepNo }: { step: number }) {
 
             <div className="flex-none rounded-[18px] bg-white px-4 py-3 shadow-sm">
               <div className="text-[13px] font-bold tracking-wider text-[#6d6893]">この動画で わかること（見出しの結果が合うと 自動でチェック）</div>
-              <ul className="mt-2 grid grid-cols-2 gap-x-5 gap-y-1.5">
+              <ul className={`mt-2 grid gap-x-5 gap-y-1.5 ${wide ? 'grid-cols-1' : 'grid-cols-2'}`}>
                 {step.learn.map((l, i) => {
                   const on = passedCount >= Math.ceil(((i + 1) * total) / step.learn.length)
                   return (
-                    <li key={l} className="flex items-center gap-2 text-[13.5px] font-bold">
+                    <li key={l} className={`flex items-center gap-2 font-bold ${wide ? 'text-[12.5px] leading-snug' : 'text-[13.5px]'}`}>
                       <span className={`grid h-5 w-5 flex-none place-items-center rounded-md border-2 text-xs ${on ? 'border-[#22b573] bg-[#22b573] text-white' : 'border-[#e6e1fa]'}`}>
                         {on ? '✔' : ''}
                       </span>
@@ -568,6 +713,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
                 </div>
               )}
             </div>
+            {wide && clearBar}
           </div>
 
           <div className="min-h-0">
@@ -591,74 +737,39 @@ export function StudyClient({ step: stepNo }: { step: number }) {
               }}
               onRunFinished={onRunFinished}
               openFile={openFile}
+              roomy={wide}
+              tools={
+                <>
+                  {!full && <button
+                    onClick={toggleLayout}
+                    className={`flex h-[34px] flex-none items-center gap-1.5 whitespace-nowrap rounded-full px-3 text-[13px] font-black ${
+                      wide ? 'bg-[#ffd23f] text-[#2a2452]' : 'bg-[#2b2650] text-[#e9e6ff] hover:bg-[#3a3462]'
+                    }`}
+                    title={wide ? '動画とエディターを半分ずつにもどす' : 'エディターを広くする（動画は左に小さく）'}
+                    aria-pressed={wide}
+                  >
+                    <WideIcon wide={wide} />
+                    {wide ? 'もとの広さ' : '広く'}
+                  </button>}
+                  <button
+                    onClick={toggleFull}
+                    className={`flex h-[34px] flex-none items-center gap-1.5 whitespace-nowrap rounded-full px-3 text-[13px] font-black ${
+                      full ? 'bg-[#ffd23f] text-[#2a2452]' : 'bg-[#2b2650] text-[#e9e6ff] hover:bg-[#3a3462]'
+                    }`}
+                    title={full ? '全画面をやめる（Esc）' : '全画面にする（Esc でもどる）'}
+                    aria-label={full ? '全画面をやめる' : '全画面にする'}
+                    aria-pressed={full}
+                  >
+                    <FullIcon full={full} />
+                    {full ? 'もどる' : '全画面'}
+                  </button>
+                </>
+              }
             />
           </div>
         </div>
 
-        <div className="flex h-[74px] flex-none items-center gap-3.5 rounded-[22px] bg-white pl-[22px] pr-3.5 shadow-sm">
-          <span className="mr-1.5 text-[15px] font-black">クリアの じょうけん</span>
-          {step.video && (
-            <span className={`flex items-center gap-2.5 rounded-full py-2 pl-2.5 pr-4 text-sm font-bold ${videoOk ? 'bg-[#e2f7ec] text-[#0f7a51]' : 'bg-[#f6f5fb]'}`}>
-              <i className={`grid h-[26px] w-[26px] place-items-center rounded-full text-[13px] font-black not-italic ${videoOk ? 'bg-[#22b573] text-white' : 'bg-[#e6e2f3] text-[#9893b5]'}`}>
-                {videoOk ? '✔' : '1'}
-              </i>
-              {videoOk ? '動画を最後まで見た' : '動画を最後まで見る'}
-              {!videoOk && (
-                <span className="text-[#6d6893]">あと {fmtTime(Math.max(0, step.video.end - Math.max(time, p.videoPos)))}</span>
-              )}
-            </span>
-          )}
-          <span className={`flex items-center gap-2.5 rounded-full py-2 pl-2.5 pr-4 text-sm font-bold ${allSections ? 'bg-[#e2f7ec] text-[#0f7a51]' : 'bg-[#f6f5fb]'}`}>
-            <i className={`grid h-[26px] w-[26px] place-items-center rounded-full text-[13px] font-black not-italic ${allSections ? 'bg-[#22b573] text-white' : 'bg-[#e6e2f3] text-[#9893b5]'}`}>
-              {allSections ? '✔' : '2'}
-            </i>
-            見出しの結果
-            <span className="text-[#6d6893]">
-              {passedCount} / {total}
-              {!allSections && `（あと${total - passedCount}つ）`}
-            </span>
-          </span>
-          {optionalTotal > 0 && (
-            <span className="text-[13px] font-bold text-[#8a6400]">
-              できたら⭐ {optionalPassed} / {optionalTotal}
-            </span>
-          )}
-          <span className="flex-1" />
-          <button
-            onClick={() => setAskOpen(true)}
-            className="flex h-[52px] items-center gap-2 whitespace-nowrap rounded-full bg-white px-5 text-[15px] font-black text-[#7448f0] shadow-[inset_0_0_0_2px_#e6e1fa,0_4px_0_#e6e1fa] hover:bg-[#f8f6ff]"
-          >
-            💬 いちかに質問<span className="text-[12px] font-bold text-[#8a85ad]">（1日{ASK_PER_DAY}回）</span>
-          </button>
-          {canGo ? (
-            step.codeblock.length > 0 ? (
-              <Link
-                href={`/lesson/${firstLesson}`}
-                onClick={() => save({ done: true })}
-                className="flex h-[52px] items-center rounded-full bg-[#ff8a1f] px-6 font-black whitespace-nowrap text-white shadow-[0_5px_0_#db6500]"
-              >
-                ② {naviLessonLabel(firstLesson)} に進む ›
-              </Link>
-            ) : (
-              <button
-                onClick={() => {
-                  save({ done: true })
-                  const state = loadNavi()
-                  state.current = nextReadyStep(stepNo) ?? stepNo + 1
-                  saveNavi(state)
-                  router.push('/navi')
-                }}
-                className="flex h-[52px] items-center rounded-full bg-[#ff8a1f] px-6 font-black whitespace-nowrap text-white shadow-[0_5px_0_#db6500]"
-              >
-                ステップ{step.step} クリア！ ホームへ ›
-              </button>
-            )
-          ) : (
-            <span className="flex h-[52px] items-center whitespace-nowrap rounded-full bg-[#ebe8f5] px-6 font-black text-[#625d8a]">
-              🔒 {!videoOk && !allSections ? '2つそろうと' : 'あと少しで'} {step.codeblock.some(isFinishLesson) ? '仕上げ' : 'CodeBlock'} に進める
-            </span>
-          )}
-        </div>
+        {!wide && clearBar}
       </div>
 
       {askOpen && (
@@ -872,5 +983,27 @@ function ClearToast({ titles, optional, all, revealed }: { titles: string[]; opt
         {all && <div className="mt-1 text-[14px] font-bold">下の「② … に進む」へ</div>}
       </div>
     </div>
+  )
+}
+
+// 「広く」のしるし：左の細い枠（動画）と右の大きい枠（エディター）
+function WideIcon({ wide }: { wide: boolean }) {
+  return (
+    <svg width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden>
+      <rect x="1" y="1" width="16" height="12" rx="2.5" stroke="currentColor" strokeWidth="1.8" />
+      <rect x={wide ? 3 : 3} y="3" width={wide ? 7 : 4} height="8" rx="1" fill="currentColor" opacity=".55" />
+    </svg>
+  )
+}
+
+// 全画面のしるし：四すみのかぎ（全画面のときは内向き）
+function FullIcon({ full }: { full: boolean }) {
+  const d = full
+    ? 'M6 1v5H1M12 1v5h5M6 17v-5H1M12 17v-5h5'
+    : 'M1 6V1h5M17 6V1h-5M1 12v5h5M17 12v5h-5'
+  return (
+    <svg width="16" height="16" viewBox="0 0 18 18" fill="none" aria-hidden>
+      <path d={d} stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   )
 }
