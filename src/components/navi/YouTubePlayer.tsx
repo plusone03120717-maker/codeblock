@@ -93,18 +93,21 @@ export const YouTubePlayer = forwardRef<PlayerHandle, Props>(function YouTubePla
         playerVars: { start: Math.floor(startAt), rel: 0, modestbranding: 1, playsinline: 1, cc_load_policy: 0 },
         events: {
           onReady: (e: { target: YTPlayer }) => hideCaptions(e.target),
-          // 字幕ボタンが押されて字幕の部品が読みこまれたとき
-          onApiChange: (e: { target: YTPlayer }) => hideCaptions(e.target),
           onStateChange: (e: { data: number; target: YTPlayer }) => {
             if (e.data === window.YT?.PlayerState.PLAYING) hideCaptions(e.target)
             if (e.data === window.YT?.PlayerState.ENDED) cb.current.onEnded()
           },
         },
       })
+      let tick = 0
       timer = setInterval(() => {
         const p = player.current
         if (!p?.getCurrentTime) return
-        cb.current.onTime(p.getCurrentTime(), p.getPlayerState?.() === window.YT?.PlayerState.PLAYING)
+        const playing = p.getPlayerState?.() === window.YT?.PlayerState.PLAYING
+        cb.current.onTime(p.getCurrentTime(), playing)
+        // 字幕ボタンを押されても YouTube から知らせが来ないので、再生中は1秒ごとに外す
+        tick += 1
+        if (playing && tick % 2 === 0) hideCaptions(p)
       }, 500)
     })
     return () => {
