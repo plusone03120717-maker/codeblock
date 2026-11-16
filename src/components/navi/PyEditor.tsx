@@ -93,7 +93,8 @@ const markField = StateField.define<DecorationSet>({
 const editorTheme = EditorView.theme(
   {
     '&': { height: '100%', backgroundColor: '#23203b', color: '#dcdcf0', fontSize: 'var(--navi-code-size, 16px)' },
-    '.cm-scroller': { fontFamily: "'JetBrains Mono', 'BIZ UDGothic', monospace", lineHeight: '1.6' },
+    // 半角の英字・記号はまっすぐな形の Geist Mono（BIZ UDGothic だと " が全角の ” に見える）。日本語だけ BIZ UDGothic
+    '.cm-scroller': { fontFamily: "var(--font-geist-mono), 'BIZ UDGothic', monospace", lineHeight: '1.6' },
     '.cm-content': { caretColor: '#ffd23f', padding: '10px 0' },
     '.cm-gutters': { backgroundColor: '#23203b', color: '#5d5880', border: 'none' },
     '.cm-activeLine': { backgroundColor: 'rgba(255,255,255,.05)' },
@@ -586,6 +587,9 @@ export function PyEditor({ initialFiles, onRunFinished, height = 640, onFocus, o
             {status !== 'booting' && !busy && inputPrompt === null && (
               <div>
                 <span className="text-[#7ee2a8]">&gt;</span> <span className="inline-block h-[18px] w-[9px] animate-pulse bg-[#cfcbe8] align-[-3px]" />
+                {lines.length === 0 && (
+                  <span className="ml-3 font-sans text-[13px] font-bold text-[#8a85ad]">▶ 実行 か Ctrl + Enter で、ここに結果が出るよ</span>
+                )}
               </div>
             )}
             <div ref={termEnd} />
