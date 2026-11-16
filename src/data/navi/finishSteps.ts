@@ -6927,7 +6927,7 @@ export const finishStepTutorials: LessonTutorial[] = [
         "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
-          "good": "if len(tweet) > 10:\n    print(\"文字数が多すぎるよ\")\nelse:  # if と はしをそろえる\n    print(tweet)"
+          "good": "if len(tweet) > 10:\n    print(\"文字数が多すぎるよ\")\nelse:\n    print(tweet)  # else は if と はしをそろえる"
         }
       }
     ]
