@@ -3,6 +3,9 @@
 // Python ナビ（新しいコース）の試しの画面：左に授業動画、右にエディター
 import { useState } from 'react'
 import { PyEditor } from '@/components/navi/PyEditor'
+import { YouTubePlayer } from '@/components/navi/YouTubePlayer'
+
+const noop = () => {}
 
 type Sample = { key: string; label: string; video: string; files: Record<string, string> }
 
@@ -71,14 +74,8 @@ export function TryClient() {
       </div>
       <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-start gap-5">
         <div className="overflow-hidden rounded-[22px] bg-[#1d1838] shadow-lg">
-          <iframe
-            key={cur.video}
-            className="aspect-video w-full"
-            src={`https://www.youtube-nocookie.com/embed/${cur.video}?rel=0`}
-            title={cur.label}
-            allow="accelerometer; encrypted-media; picture-in-picture"
-            allowFullScreen
-          />
+          {/* ステップの動画と同じプレイヤー（YouTube の自動字幕を出さない） */}
+          <YouTubePlayer key={cur.video} videoId={cur.video} startAt={0} onTime={noop} onEnded={noop} />
         </div>
         <PyEditor key={cur.key} initialFiles={cur.files} height={640} />
       </div>

@@ -10,6 +10,7 @@ type YTPlayer = {
   playVideo: () => void
   seekTo: (sec: number, allowSeekAhead: boolean) => void
   destroy: () => void
+  unloadModule?: (name: string) => void
 }
 
 declare global {
@@ -34,6 +35,17 @@ function loadApi(): Promise<void> {
     document.head.appendChild(s)
   })
   return apiPromise
+}
+
+// YouTube の自動字幕は、動画の中の字幕に重なるので出さない
+// （見る人の YouTube の設定や、字幕ボタンで読みこまれても、そのたびに外す）
+function hideCaptions(p: YTPlayer | null | undefined) {
+  try {
+    p?.unloadModule?.('captions')
+    p?.unloadModule?.('cc')
+  } catch {
+    // 外せなくても動画は見られるので、何もしない
+  }
 }
 
 export type PlayerHandle = {
@@ -78,9 +90,13 @@ export const YouTubePlayer = forwardRef<PlayerHandle, Props>(function YouTubePla
         width: '100%',
         height: '100%',
         host: 'https://www.youtube-nocookie.com',
-        playerVars: { start: Math.floor(startAt), rel: 0, modestbranding: 1, playsinline: 1, cc_lang_pref: 'ja' },
+        playerVars: { start: Math.floor(startAt), rel: 0, modestbranding: 1, playsinline: 1, cc_load_policy: 0 },
         events: {
-          onStateChange: (e: { data: number }) => {
+          onReady: (e: { target: YTPlayer }) => hideCaptions(e.target),
+          // 字幕ボタンが押されて字幕の部品が読みこまれたとき
+          onApiChange: (e: { target: YTPlayer }) => hideCaptions(e.target),
+          onStateChange: (e: { data: number; target: YTPlayer }) => {
+            if (e.data === window.YT?.PlayerState.PLAYING) hideCaptions(e.target)
             if (e.data === window.YT?.PlayerState.ENDED) cb.current.onEnded()
           },
         },
