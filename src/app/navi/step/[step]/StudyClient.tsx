@@ -33,7 +33,7 @@ import {
 import { liveActive, liveEnd, liveHint, liveRun, liveSet, weakError, weakSection } from '@/lib/navi/teacherLog'
 
 const XP_PER_SECTION = 20
-// 画面の広さ：normal＝動画とエディターを半分ずつ／wide＝エディターを広く（動画は左に小さく）。生徒のブラウザに覚えておく
+// 画面の広さ：normal＝動画とエディターを半分ずつ／wide＝「大きく」。エディターを縦に広く（動画は幅 560px 以上を守る）。生徒のブラウザに覚えておく
 const LAYOUT_KEY = 'codeblock_navi_layout'
 type Layout = 'normal' | 'wide'
 
@@ -68,6 +68,9 @@ export function StudyClient({ step: stepNo }: { step: number }) {
   const [layout, setLayout] = useState<Layout>('normal')
   const [full, setFull] = useState(false)
   const root = useRef<HTMLDivElement>(null)
+  const leftCol = useRef<HTMLDivElement>(null)
+  const videoBox = useRef<HTMLDivElement>(null)
+  const clearBox = useRef<HTMLDivElement>(null)
   useEffect(() => {
     try {
       // ブラウザの保存は表示のあとでしか読めないので、ここで1回だけ入れる
@@ -313,6 +316,19 @@ export function StudyClient({ step: stepNo }: { step: number }) {
     liveSet({ step: stepNo, where: liveWhere, section: liveSection, videoSec: Math.floor(lastTick.current ?? 0) })
   }, [stepNo, liveWhere, liveSection])
 
+  // 大きく・全画面では、見出しの一覧が動画の下でスクロールする。いまの見出しが動画やクリアの帯にかくれないように寄せる
+  useEffect(() => {
+    const col = leftCol.current
+    if (!wide || liveFocus === null || !col) return
+    const btn = col.querySelector<HTMLElement>(`[data-sec="${liveFocus}"]`)
+    if (!btn) return
+    const top = videoBox.current?.offsetHeight ?? 0
+    const bottom = col.clientHeight - (clearBox.current?.offsetHeight ?? 0)
+    const y = btn.offsetTop - col.scrollTop
+    if (y < top) col.scrollTo({ top: btn.offsetTop - top - 8, behavior: 'smooth' })
+    else if (y + btn.offsetHeight > bottom) col.scrollTo({ top: btn.offsetTop + btn.offsetHeight - bottom + 8, behavior: 'smooth' })
+  }, [wide, liveFocus])
+
   if (!step || step.planned) {
     const next = nextReadyStep(stepNo)
     return (
@@ -470,12 +486,11 @@ export function StudyClient({ step: stepNo }: { step: number }) {
     )
   ) : (
     <span className={`${goClass} bg-[#ebe8f5] text-[#625d8a]`}>
-      🔒 {wide ? '' : !videoOk && !allSections ? '2つそろうと ' : 'あと少しで '}
-      {step.codeblock.some(isFinishLesson) ? '仕上げ' : 'CodeBlock'} に進める
+      🔒 {step.codeblock.some(isFinishLesson) ? '仕上げ' : 'CodeBlock'} に進める
     </span>
   )
   const clearBar = wide ? (
-    <div className="sticky bottom-0 z-10 mt-auto flex flex-none flex-col gap-2 rounded-[18px] bg-white p-3 shadow-[0_-6px_16px_rgba(42,36,82,.08)]">
+    <div ref={clearBox} className="sticky bottom-0 z-10 mt-auto flex flex-none flex-col gap-2 rounded-[18px] bg-white p-3 shadow-[0_-6px_16px_rgba(42,36,82,.08)]">
       <div className="flex flex-wrap items-center gap-1.5" title="クリアの じょうけん">
         <span className="mr-0.5 whitespace-nowrap text-[13px] font-black">クリアまで</span>
         {pills}
@@ -536,12 +551,19 @@ export function StudyClient({ step: stepNo }: { step: number }) {
 
         <div
           className={`grid min-h-0 flex-1 transition-[grid-template-columns] duration-150 ${
-            wide ? 'grid-cols-[minmax(420px,0.5fr)_minmax(0,1fr)] gap-4' : 'grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] gap-5'
+            // 動画のコードを写せる大きさ（幅 560px 以上・コードの文字 12px 以上）を守り、エディターは縦に広げる
+            full
+              ? 'grid-cols-[minmax(560px,1.05fr)_minmax(0,1fr)] gap-4'
+              : wide
+                ? 'grid-cols-[minmax(560px,0.95fr)_minmax(0,1fr)] gap-4'
+                : 'grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] gap-5'
           }`}
         >
-          <div className={`flex min-h-0 flex-col gap-3 overflow-y-auto ${wide ? '' : 'pb-1'}`}>
+          <div ref={leftCol} className={`relative flex min-h-0 flex-col gap-3 overflow-y-auto ${wide ? '' : 'pb-1'}`}>
             {step.video ? (
-              <div className="relative flex-none overflow-hidden rounded-[22px] bg-[#1d1838] shadow-lg">
+              // 大きく・全画面では動画を上にとめて、見出しの一覧だけをスクロールする
+              <div ref={videoBox} className={wide ? 'sticky top-0 z-10 -mb-3 flex-none bg-[#f5f3ff] pb-3' : 'flex-none'}>
+              <div className="relative overflow-hidden rounded-[22px] bg-[#1d1838] shadow-lg">
                 <YouTubePlayer ref={player} videoId={step.video.id} startAt={Math.max(step.video.start ?? 0, startAt)} onTime={onTime} onEnded={onEnded} />
                 {showEndCard && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[rgba(21,18,42,.9)] px-6 text-white">
@@ -572,6 +594,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
                     <div className="text-[13.5px] font-bold text-[#cfcbe8]">わかっているなら、そのまま右のエディターで打って ▶ 実行してもOK</div>
                   </div>
                 )}
+              </div>
               </div>
             ) : (
               <div className="flex-none rounded-[22px] bg-white p-5 shadow-sm">
@@ -654,6 +677,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
                 return (
                   <button
                     key={i}
+                    data-sec={i}
                     onClick={() => {
                       if (!step.video) return
                       // 見たい場面へ。その見出しは「あとでやる」をやめて、終わりでまた止まる
@@ -737,7 +761,7 @@ export function StudyClient({ step: stepNo }: { step: number }) {
               }}
               onRunFinished={onRunFinished}
               openFile={openFile}
-              roomy={wide}
+              roomy={full}
               tools={
                 <>
                   {!full && <button
@@ -745,11 +769,11 @@ export function StudyClient({ step: stepNo }: { step: number }) {
                     className={`flex h-[34px] flex-none items-center gap-1.5 whitespace-nowrap rounded-full px-3 text-[13px] font-black ${
                       wide ? 'bg-[#ffd23f] text-[#2a2452]' : 'bg-[#2b2650] text-[#e9e6ff] hover:bg-[#3a3462]'
                     }`}
-                    title={wide ? '動画とエディターを半分ずつにもどす' : 'エディターを広くする（動画は左に小さく）'}
+                    title={wide ? '動画とエディターを半分ずつにもどす' : 'コードを書く場所を縦に大きくする（動画は写せる大きさのまま）'}
                     aria-pressed={wide}
                   >
                     <WideIcon wide={wide} />
-                    {wide ? 'もとの広さ' : '広く'}
+                    {wide ? 'もとの大きさ' : '大きく'}
                   </button>}
                   <button
                     onClick={toggleFull}
