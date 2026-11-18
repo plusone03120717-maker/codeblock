@@ -126,6 +126,14 @@ export const finishStepLessons: Lesson[] = [
     "difficulty": "ふつう"
   },
   {
+    "id": "31-17",
+    "unitNumber": 31,
+    "subNumber": 17,
+    "title": "ステップ17の仕上げ",
+    "description": "以上・同じ・ちがうの、くらべる記号を使おう",
+    "difficulty": "ふつう"
+  },
+  {
     "id": "31-18",
     "unitNumber": 31,
     "subNumber": 18,
@@ -3469,6 +3477,269 @@ export const finishStepMissions: Record<string, Mission[]> = {
             "\n    print(tweet)"
           ],
           "message": "else の中で、tweet をそのまま print しよう（字下げを忘れずに）！"
+        }
+      ]
+    }
+  ],
+  "31-17": [
+    {
+      "id": 1,
+      "type": "quiz",
+      "title": "ちょうど10文字",
+      "description": "このコードを実行すると、何が出る？",
+      "codeToRead": "tweet = \"あしたはえんそくだよ\"\nif len(tweet) >= 10:\n    print(\"文字数が多すぎるよ\")\nelse:\n    print(tweet)",
+      "choices": [
+        "文字数が多すぎるよ",
+        "あしたはえんそくだよ",
+        "何も出ない"
+      ],
+      "correctAnswer": 0,
+      "expectedOutput": "文字数が多すぎるよ",
+      "hint": ">= は「以上」。10 は 10 以上かな？",
+      "explanation": "「あしたはえんそくだよ」はちょうど10文字。>= は「以上」なので、10 もふくむ。条件が合って、if の中が動くよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 2,
+      "type": "quiz",
+      "title": "ちがうとき",
+      "description": "このコードを実行すると、何が出る？",
+      "codeToRead": "word = \"ひらけ\"\nif word != \"ひらけごま\":\n    print(\"ちがうよ\")\nelse:\n    print(\"とびらがひらいた\")",
+      "choices": [
+        "とびらがひらいた",
+        "エラーになる",
+        "ちがうよ"
+      ],
+      "correctAnswer": 2,
+      "expectedOutput": "ちがうよ",
+      "hint": "!= は「ちがう」。ひらけ と ひらけごま は同じ？",
+      "explanation": "「ひらけ」と「ひらけごま」はちがうので、!= の条件が合う。if の中の「ちがうよ」が出るよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 3,
+      "type": "quiz",
+      "title": "エラーを直そう",
+      "description": "実行したら「SyntaxError: invalid syntax」と出た。どう直す？",
+      "codeToRead": "word = \"ひらけごま\"\nif word = \"ひらけごま\":\n    print(\"とびらがひらいた\")",
+      "choices": [
+        "\"ひらけごま\" の \" \" をとる",
+        "= を == にする",
+        "= を >= にする"
+      ],
+      "correctAnswer": 1,
+      "expectedOutput": "= を == にする",
+      "hint": "くらべるときは、= を何個書くんだったかな？",
+      "explanation": "= 1つは、箱に入れるとき。くらべるときは = を2つ（==）書くよ。",
+      "availableBlocks": []
+    },
+    {
+      "id": 4,
+      "title": "80点以上なら",
+      "description": "score が 80 以上なら「ごうかく」、でなければ「もう少し」と表示しよう！",
+      "expectedOutput": "ごうかく",
+      "correctCode": "if score >= 80:\n    print(\"ごうかく\")\nelse:\n    print(\"もう少し\")",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "if",
+          "type": "keyword",
+          "color": "bg-blue-200"
+        },
+        {
+          "id": "b1",
+          "text": "score",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b2",
+          "text": ">=",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b3",
+          "text": "80",
+          "type": "number",
+          "color": "bg-yellow-100"
+        },
+        {
+          "id": "b4",
+          "text": ":",
+          "type": "colon",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "nl5",
+          "text": "↵",
+          "type": "newline",
+          "color": "bg-pink-200"
+        },
+        {
+          "id": "ind6",
+          "text": "    ",
+          "type": "indent",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b7",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b8",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b9",
+          "text": "\"ごうかく\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b10",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b11",
+          "text": "else",
+          "type": "keyword",
+          "color": "bg-blue-200"
+        },
+        {
+          "id": "b12",
+          "text": "\"もう少し\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b13",
+          "text": ">",
+          "type": "operator",
+          "color": "bg-orange-200"
+        }
+      ],
+      "prefixCode": "score = 80",
+      "rules": [
+        {
+          "requires": [
+            ">="
+          ],
+          "message": "80 もふくめるときは >= （以上）だよ！"
+        },
+        {
+          "requires": [
+            "\nelse"
+          ],
+          "message": "else は、if と はしをそろえて書こう！"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "!= であいことば",
+      "description": "word が「ひらけごま」と ちがうときは「ちがうよ」、でなければ「とびらがひらいた」と表示しよう！",
+      "expectedOutput": "ちがうよ",
+      "correctCode": "if word != \"ひらけごま\":\n    print(\"ちがうよ\")\nelse:\n    print(\"とびらがひらいた\")",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "if",
+          "type": "keyword",
+          "color": "bg-blue-200"
+        },
+        {
+          "id": "b1",
+          "text": "word",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b2",
+          "text": "!=",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b3",
+          "text": "\"ひらけごま\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b4",
+          "text": ":",
+          "type": "colon",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "nl5",
+          "text": "↵",
+          "type": "newline",
+          "color": "bg-pink-200"
+        },
+        {
+          "id": "ind6",
+          "text": "    ",
+          "type": "indent",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b7",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b8",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b9",
+          "text": "\"ちがうよ\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b10",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b11",
+          "text": "else",
+          "type": "keyword",
+          "color": "bg-blue-200"
+        },
+        {
+          "id": "b12",
+          "text": "\"とびらがひらいた\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b13",
+          "text": "==",
+          "type": "operator",
+          "color": "bg-orange-200"
+        }
+      ],
+      "prefixCode": "word = \"ひらけ\"",
+      "rules": [
+        {
+          "requires": [
+            "!="
+          ],
+          "message": "「ちがう」は != （びっくりマークとイコール）だよ！"
         }
       ]
     }
@@ -6928,6 +7199,22 @@ export const finishStepTutorials: LessonTutorial[] = [
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
           "good": "if len(tweet) > 10:\n    print(\"文字数が多すぎるよ\")\nelse:\n    print(tweet)  # else は if と はしをそろえる"
+        }
+      }
+    ]
+  },
+  {
+    "lessonId": "31-17",
+    "characterName": "いちか",
+    "characterEmoji": "🙂",
+    "characterImage": "/navi/bob_smile.webp",
+    "slides": [
+      {
+        "title": "5問で仕上げよう",
+        "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
+        "characterMessage": "わからなくなったら、ヒントを見てね。",
+        "codeExample": {
+          "good": "score = 70\nif score >= 70:\n    print(\"ごうかく\")  # >= は「以上」"
         }
       }
     ]

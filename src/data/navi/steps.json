@@ -1892,40 +1892,124 @@
   "fileName": "step17.py",
   "sections": [
    {
-    "title": ">= で70点以上",
-    "start": 98,
-    "code": "score = 70\nif score >= 70:\n    print(\"頑張りましたね\")\nelse:\n    print(\"もう少し頑張りましょう\")",
-    "expected": [
-     "頑張りましたね"
+    "title": ">= で10文字も",
+    "start": 47,
+    "code": "tweet = input(\"今どうしてる？\")\nif len(tweet) >= 10:\n    print(\"文字数が多すぎるよ\")\nelse:\n    print(tweet)",
+    "expected": [],
+    "mustMatch": "len\\(\\s*tweet\\s*\\)\\s*>=\\s*10",
+    "outputPattern": "^文字数が多すぎるよ$",
+    "inputs": [
+     "あしたはえんそくだよ"
     ],
-    "mustUse": [
-     ">="
-    ]
+    "pauseAt": 96,
+    "note": "2行目の > のすぐ右に = を打って >=（以上）。「あしたはえんそくだよ」（ちょうど10文字）と入れて「文字数が多すぎるよ」が出れば OK"
    },
    {
-    "title": "= をとって > にすると？",
-    "start": 116,
-    "code": "if score > 70:",
-    "expected": [
-     "もう少し頑張りましょう"
+    "title": "9文字だと？",
+    "start": 98,
+    "code": "tweet = input(\"今どうしてる？\")\nif len(tweet) >= 10:\n    print(\"文字数が多すぎるよ\")\nelse:\n    print(tweet)",
+    "expected": [],
+    "mustMatch": "len\\(\\s*tweet\\s*\\)\\s*>=\\s*10",
+    "outputPattern": "^あしたはえんそくだ$",
+    "inputs": [
+     "あしたはえんそくだ"
     ],
-    "mustUse": [
-     "score > 70"
+    "pauseAt": 127,
+    "note": "「あしたはえんそくだ」は9文字。10以上ではないので else の中が動いて、そのまま出る"
+   },
+   {
+    "title": "== であいことば",
+    "start": 170,
+    "code": "word = input(\"あいことばは？\")\nif word == \"ひらけごま\":\n    print(\"とびらがひらいた\")",
+    "expected": [],
+    "mustMatch": "word\\s*==\\s*[\\\"']ひらけごま",
+    "outputPattern": "^とびらがひらいた$",
+    "inputs": [
+     "ひらけごま"
     ],
-    "note": "2行目を書きかえる。70 は「70より大きい」に入らないので else に行く"
+    "pauseAt": 213,
+    "note": "コードを消して、あいことばアプリを書く。くらべるときは = を2つ（==）。「ひらけごま」と入れて「とびらがひらいた」が出れば OK"
+   },
+   {
+    "title": "ちがうときは",
+    "start": 215,
+    "code": "word = input(\"あいことばは？\")\nif word == \"ひらけごま\":\n    print(\"とびらがひらいた\")\nelse:\n    print(\"ちがうよ\")",
+    "expected": [],
+    "mustMatch": "\\nelse\\s*:\\s*\\n[ \\t]+print\\(\\s*[\\\"']ちがうよ",
+    "outputPattern": "^ちがうよ$",
+    "inputs": [
+     "ひらけ"
+    ],
+    "pauseAt": 256,
+    "note": "else: を足して、その中に print(\"ちがうよ\")。「ひらけ」と入れて「ちがうよ」が出れば OK"
+   },
+   {
+    "title": "チャレンジ① ごうかく",
+    "start": 322,
+    "pauseAt": 381,
+    "challenge": true,
+    "code": "score = 80\nif score >= 80:\n    print(\"ごうかく\")\nelse:\n    print(\"もう少し\")",
+    "expected": [],
+    "mustMatch": "(score\\s*>=\\s*80|80\\s*<=\\s*score)\\s*:[\\s\\S]*\\nelse\\s*:",
+    "outputPattern": "^ごうかく$",
+    "note": "score = 80 から書きはじめる。80点以上なら「ごうかく」、でなければ「もう少し」を出そう",
+    "answerNote": "if score >= 80: の中に print(\"ごうかく\")。else: の中に print(\"もう少し\")。> だと 80 が入らないので「もう少し」になるよ"
+   },
+   {
+    "title": "チャレンジ② おやすみ",
+    "start": 333,
+    "pauseAt": 381,
+    "challenge": true,
+    "code": "tweet = input(\"今どうしてる？\")\nif tweet == \"ねてる\":\n    print(\"おやすみ\")\nelse:\n    print(tweet)",
+    "expected": [],
+    "mustMatch": "tweet\\s*==\\s*[\\\"']ねてる[\\\"']\\s*:[\\s\\S]*\\nelse\\s*:\\s*\\n[ \\t]+print\\(\\s*tweet\\s*\\)",
+    "outputPattern": "^おやすみ$",
+    "inputs": [
+     "ねてる"
+    ],
+    "note": "tweet の行から書く。「ねてる」と入れたときだけ「おやすみ」、でなければ、つぶやきをそのまま出そう",
+    "answerNote": "if tweet == \"ねてる\": の中に print(\"おやすみ\")。else: の中に print(tweet)"
+   },
+   {
+    "title": "チャレンジ③ ちがうときだけ",
+    "start": 352,
+    "pauseAt": 381,
+    "challenge": true,
+    "code": "word = input(\"あいことばは？\")\nif word != \"ひらけごま\":\n    print(\"ちがうよ\")",
+    "expected": [],
+    "mustMatch": "(word\\s*!=\\s*[\\\"']ひらけごま[\\\"']|[\\\"']ひらけごま[\\\"']\\s*!=\\s*word)\\s*:\\s*\\n[ \\t]+print\\(\\s*[\\\"']ちがうよ",
+    "outputPattern": "^ちがうよ$",
+    "inputs": [
+     "ひらけ"
+    ],
+    "note": "word の行から書く。!= を使って、あいことばが「ひらけごま」とちがうときだけ「ちがうよ」を出そう（! は Shift を押しながら 1）",
+    "answerNote": "if word != \"ひらけごま\": の中に print(\"ちがうよ\")。else: をつけて print(\"とびらがひらいた\") を書くと、== のときと同じ動きのあいことばアプリになるよ"
    }
   ],
   "video": {
-   "no": "#9",
-   "id": "4AHDum6ynhk",
-   "length": 166,
-   "end": 166
+   "no": "⑰",
+   "id": "3K4P7MZiKIE",
+   "length": 422,
+   "end": 416
   },
   "learn": [
-   ">= は「以上」、> は「より大きい」。= があると、その数もふくむ",
-   "== は「同じ」、!= は「ちがう」"
+   ">= は「以上」。= があると、その数もふくむ",
+   "== は「同じ」、!= は「ちがう」",
+   "= 1つは箱に入れる。くらべるときは = を2つ（==）"
   ],
-  "codeblock": []
+  "codeblock": [
+   "31-17"
+  ],
+  "review": {
+   "question": "if len(tweet) >= 10: のとき、ちょうど10文字だとどうなる？",
+   "choices": [
+    "if の中が動く",
+    "else の中が動く",
+    "エラーになる"
+   ],
+   "answer": 0
+  },
+  "starter": "tweet = input(\"今どうしてる？\")\nif len(tweet) > 10:\n    print(\"文字数が多すぎるよ\")\nelse:\n    print(tweet)"
  },
  {
   "step": 18,

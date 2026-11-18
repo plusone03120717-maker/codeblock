@@ -27,6 +27,8 @@ export function friendlyError(err: PyError): string {
     if (message.includes('unexpected indent')) return `${where}の行のはじめに、いらないスペースがあるよ`
     if (message.includes("expected ':'")) return `${where}の行のおわりに : （コロン）をつけよう`
     if (message.includes('unmatched')) return `${where}に、開いていないカッコの ) があるよ`
+    // if word = "ひらけごま": のように、くらべるのに = を1つだけ書いたとき（ステップ17の動画と同じ説明）
+    if (message.includes("Maybe you meant '=='")) return `${where}：くらべるときは = を2つ（==）書こう`
     if (message.includes('invalid syntax')) return `${where}の書き方がPythonのきまりと合っていないよ。動画のコードと1文字ずつ見くらべよう`
     return `${where}の書き方をもう一度見てみよう（${message}）`
   }
