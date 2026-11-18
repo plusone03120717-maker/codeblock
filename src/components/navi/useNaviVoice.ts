@@ -7,6 +7,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { auth } from '@/lib/firebase'
 
+// いちかの声の大きさ（1 がもとの大きさ）。2026-11-18 依頼主「声が大きいので半分に」
+const VOICE_VOLUME = 0.5
+
 const CACHE_NAME = 'navi-voice-v1'
 const OFF_KEY = 'codeblock_navi_voice_off'
 
@@ -167,7 +170,11 @@ export function useNaviVoice() {
             const an = c.createAnalyser()
             an.fftSize = 512
             c.createMediaElementSource(el).connect(an)
-            an.connect(c.destination)
+            // 聞こえる音だけ小さくする（口の動きは、もとの大きさで測る）
+            const gain = c.createGain()
+            gain.gain.value = VOICE_VOLUME
+            an.connect(gain)
+            gain.connect(c.destination)
             const out = c.createMediaStreamDestination()
             an.connect(out)
             setStream(out.stream)
@@ -176,6 +183,8 @@ export function useNaviVoice() {
         } catch {}
       }
       if (my !== seq.current) return
+      // 音を AudioContext につないだときは、上の gain で小さくする。つなげなかったときだけ要素の音量で小さくする（二重にしない）
+      el.volume = analyser.current ? 1 : VOICE_VOLUME
 
       el.onended = () => {
         if (my !== seq.current) return
