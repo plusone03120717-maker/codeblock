@@ -25,6 +25,10 @@ export function friendlyError(err: PyError): string {
       return `${where}の " " が片方だけになっているよ。文字のおわりにも " をつけよう`
     if (message.includes('expected an indented block')) return `${where}の行のはじめに、半角スペース4つ（字下げ）が必要だよ`
     if (message.includes('unexpected indent')) return `${where}の行のはじめに、いらないスペースがあるよ`
+    // elif のまちがい（ステップ18）。else if は expected ':' になり「コロンをつけよう」では直せないので、先に見る
+    if (/\belse\s+if\b/.test(err.trace)) return `${where}：else if ではなく、elif と書こう`
+    if (/\belseif\b/.test(err.trace) || message.includes("Did you mean 'elif'")) return `${where}：elseif ではなく、elif と書こう`
+    if (message.includes("'elif' block follows an 'else' block")) return `${where}：else のあとに elif は書けないよ。elif は else より前に書こう`
     if (message.includes("expected ':'")) return `${where}の行のおわりに : （コロン）をつけよう`
     if (message.includes('unmatched')) return `${where}に、開いていないカッコの ) があるよ`
     // if word = "ひらけごま": のように、くらべるのに = を1つだけ書いたとき（ステップ17の動画と同じ説明）

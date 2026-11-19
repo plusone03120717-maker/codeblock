@@ -2018,69 +2018,102 @@
   "fileName": "step18.py",
   "sections": [
    {
-    "title": "80点で分けるコード",
-    "start": 166,
-    "code": "score = 70\nif score >= 80:\n    print(\"大変よくできました\")\nelse:\n    print(\"もっと頑張りましょう\")\nprint(\"次回のテストをお楽しみに\")",
-    "expected": [
-     "もっと頑張りましょう",
-     "次回のテストをお楽しみに"
-    ],
-    "mustUse": [
-     "score >= 80"
-    ],
-    "note": "前のコードは消して、新しく書く（動画と同じ）"
+    "title": "elif で おしい",
+    "start": 50,
+    "code": "score = 70\nif score >= 80:\n    print(\"ごうかく\")\nelif score >= 60:\n    print(\"おしい\")\nelse:\n    print(\"もう少し\")",
+    "expected": [],
+    "mustMatch": "\\nelif\\s+(score\\s*>=\\s*60|60\\s*<=\\s*score)\\s*:",
+    "outputPattern": "^おしい$",
+    "pauseAt": 130,
+    "note": "score を 70 にかえる。「ごうかく」の print の行のおわりで Enter・Backspace で、elif score >= 60: と print(\"おしい\") を足す。「おしい」が出れば OK"
    },
    {
-    "title": "elif で60点以上をふやす",
-    "start": 208,
-    "code": "elif score >= 60:\n    print(\"よくできましたね\")",
-    "expected": [
-     "よくできましたね",
-     "次回のテストをお楽しみに"
-    ],
-    "mustUse": [
-     "elif score >= 60:"
-    ],
-    "note": "else の上に入れる。elif の行は字下げしない"
+    "title": "90点だと？",
+    "start": 132,
+    "code": "score = 90\nif score >= 80:\n    print(\"ごうかく\")\nelif score >= 60:\n    print(\"おしい\")\nelse:\n    print(\"もう少し\")",
+    "expected": [],
+    "mustMatch": "\\nelif\\s+(score\\s*>=\\s*60|60\\s*<=\\s*score)\\s*:",
+    "outputPattern": "^ごうかく$",
+    "pauseAt": 152,
+    "note": "score を 90 にかえる。上から順に調べて、はじめに合った if の中だけが動くので「ごうかく」だけが出る"
    },
    {
-    "title": "elif をもう1つ（4段階）",
-    "start": 264,
-    "code": "elif score >= 40:\n    print(\"もう少し頑張りましょう\")",
-    "expected": [
-     "よくできましたね",
-     "次回のテストをお楽しみに"
+    "title": "4つに 分ける",
+    "start": 186,
+    "code": "score = 50\nif score >= 80:\n    print(\"ごうかく\")\nelif score >= 60:\n    print(\"おしい\")\nelif score >= 40:\n    print(\"がんばったね\")\nelse:\n    print(\"もう少し\")",
+    "expected": [],
+    "mustMatch": "\\nelif\\s+(score\\s*>=\\s*60|60\\s*<=\\s*score)\\s*:[\\s\\S]*\\nelif\\s+(score\\s*>=\\s*40|40\\s*<=\\s*score)\\s*:[\\s\\S]*\\nelse\\s*:",
+    "outputPattern": "^がんばったね$",
+    "pauseAt": 248,
+    "note": "else より前に elif score >= 40: と print(\"がんばったね\") を足して、score を 50 に。「がんばったね」が出れば OK"
+   },
+   {
+    "title": "チャレンジ① あつい",
+    "start": 313,
+    "pauseAt": 382,
+    "challenge": true,
+    "code": "kion = 30\nif kion >= 25:\n    print(\"あつい\")\nelif kion >= 15:\n    print(\"ちょうどいい\")\nelse:\n    print(\"さむい\")",
+    "expected": [],
+    "mustMatch": "(kion\\s*>=\\s*25|25\\s*<=\\s*kion)\\s*:[\\s\\S]*\\nelif\\s+(kion\\s*>=\\s*15|15\\s*<=\\s*kion)\\s*:[\\s\\S]*\\nelse\\s*:",
+    "outputPattern": "^あつい$",
+    "note": "kion = 30 から書きはじめる。elif を使って、25度以上なら「あつい」、15度以上なら「ちょうどいい」、でなければ「さむい」",
+    "answerNote": "大きい数（25）から順に書くよ。15 を先に書くと、30 でも「ちょうどいい」になってしまう"
+   },
+   {
+    "title": "チャレンジ② もっと書いてね",
+    "start": 327,
+    "pauseAt": 382,
+    "challenge": true,
+    "code": "tweet = input(\"今どうしてる？\")\nif len(tweet) >= 10:\n    print(\"長すぎるよ\")\nelif len(tweet) >= 5:\n    print(tweet)\nelse:\n    print(\"もっと書いてね\")",
+    "expected": [],
+    "mustMatch": "(len\\(\\s*tweet\\s*\\)\\s*>=\\s*10|10\\s*<=\\s*len\\(\\s*tweet\\s*\\))\\s*:[\\s\\S]*\\nelif\\s+(len\\(\\s*tweet\\s*\\)\\s*>=\\s*5|5\\s*<=\\s*len\\(\\s*tweet\\s*\\))\\s*:[\\s\\S]*\\nelse\\s*:",
+    "outputPattern": "^もっと書いてね$",
+    "inputs": [
+     "ねてる"
     ],
-    "mustUse": [
-     "elif score >= 40:"
+    "note": "tweet の行から書く。elif を使って、10文字以上なら「長すぎるよ」、5文字以上ならそのまま、でなければ「もっと書いてね」",
+    "answerNote": "「ねてる」は3文字なので、10 以上でも 5 以上でもない。else の中が動くよ"
+   },
+   {
+    "title": "チャレンジ③ とびらがしまった",
+    "start": 349,
+    "pauseAt": 382,
+    "challenge": true,
+    "code": "word = input(\"あいことばは？\")\nif word == \"ひらけごま\":\n    print(\"とびらがひらいた\")\nelif word == \"とじろごま\":\n    print(\"とびらがしまった\")\nelse:\n    print(\"ちがうよ\")",
+    "expected": [],
+    "mustMatch": "if\\s+word\\s*==[\\s\\S]*\\nelif\\s+word\\s*==[\\s\\S]*\\nelse\\s*:\\s*\\n[ \\t]+print\\(\\s*[\\\"']ちがうよ",
+    "outputPattern": "^とびらがしまった$",
+    "inputs": [
+     "とじろごま"
     ],
-    "note": "1つ目の elif の下・else の上に入れる。score が 70 のままなので結果は前と同じ（score を 50 にすると「もう少し頑張りましょう」）"
+    "note": "word の行から書く。elif を使って、「ひらけごま」なら「とびらがひらいた」、「とじろごま」なら「とびらがしまった」、でなければ「ちがうよ」",
+    "answerNote": "ひらけごま と とじろごま は、どちらを先に書いてもいいよ（== は 1つしか 合わないから）"
    }
   ],
   "video": {
-   "no": "#9",
-   "id": "4AHDum6ynhk",
-   "length": 170,
-   "end": 333,
-   "start": 163
+   "no": "⑱",
+   "id": "FF0L3IivfgE",
+   "length": 425,
+   "end": 418
   },
   "learn": [
-   "== は「同じ」、!= は「ちがう」",
-   "elif で、条件をいくつもふやせる",
-   "上から順に調べて、合ったところだけが動く"
+   "elif は「でなければ、もし」。条件をふやせる",
+   "上から順に調べて、はじめに合ったところだけが動く。大きい数から書く",
+   "elif はいくつでも足せる。else はいちばん最後"
   ],
   "codeblock": [
    "31-18"
   ],
   "review": {
-   "question": "score = 70 で if score > 70: のとき、動くのは？",
+   "question": "score = 90 で、if score >= 60: が「おしい」、elif score >= 80: が「ごうかく」のとき、出るのは？",
    "choices": [
-    "if の中",
-    "else の中",
-    "両方"
+    "おしい",
+    "ごうかく",
+    "おしい と ごうかく"
    ],
-   "answer": 1
-  }
+   "answer": 0
+  },
+  "starter": "score = 80\nif score >= 80:\n    print(\"ごうかく\")\nelse:\n    print(\"もう少し\")"
  },
  {
   "step": 19,
