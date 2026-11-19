@@ -138,7 +138,7 @@ export const finishStepLessons: Lesson[] = [
     "unitNumber": 31,
     "subNumber": 18,
     "title": "ステップ18の仕上げ",
-    "description": ">=・> のちがいと、elif で条件をふやそう",
+    "description": "elif で条件をふやして、3つ・4つに分けよう",
     "difficulty": "ふつう"
   },
   {
@@ -3748,60 +3748,60 @@ export const finishStepMissions: Record<string, Mission[]> = {
     {
       "id": 1,
       "type": "quiz",
-      "title": ">= のとき",
+      "title": "上から順に",
       "description": "このコードを実行すると、何が出る？",
-      "codeToRead": "score = 80\nif score >= 80:\n    print(\"合格\")\nelse:\n    print(\"もう少し\")",
+      "codeToRead": "score = 90\nif score >= 80:\n    print(\"ごうかく\")\nelif score >= 60:\n    print(\"おしい\")\nelse:\n    print(\"もう少し\")",
       "choices": [
-        "もう少し",
-        "合格",
-        "両方出る"
+        "おしい",
+        "ごうかく",
+        "ごうかく と おしい"
       ],
       "correctAnswer": 1,
-      "expectedOutput": "合格",
-      "hint": ">= は「以上」。80 もふくむかな？",
-      "explanation": "80 は「80以上」に入るので、if の中が動くよ。",
+      "expectedOutput": "ごうかく",
+      "hint": "上から順に調べるよ。はじめに合うのはどこ？",
+      "explanation": "90 は 80 以上なので、if の中の「ごうかく」が動く。はじめに合ったところだけが動くので、「おしい」は出ないよ。",
       "availableBlocks": []
     },
     {
       "id": 2,
       "type": "quiz",
-      "title": "elif のとき",
+      "title": "順番を逆にすると",
       "description": "このコードを実行すると、何が出る？",
-      "codeToRead": "score = 65\nif score >= 80:\n    print(\"大変よくできました\")\nelif score >= 60:\n    print(\"よくできましたね\")\nelse:\n    print(\"もっと頑張りましょう\")",
+      "codeToRead": "score = 90\nif score >= 60:\n    print(\"おしい\")\nelif score >= 80:\n    print(\"ごうかく\")",
       "choices": [
-        "よくできましたね",
-        "大変よくできました",
-        "もっと頑張りましょう"
+        "おしい",
+        "ごうかく",
+        "おしい と ごうかく"
       ],
       "correctAnswer": 0,
-      "expectedOutput": "よくできましたね",
-      "hint": "上から順に調べるよ。",
-      "explanation": "65 は 80 以上ではないけど 60 以上なので、elif の中が動くよ。",
+      "expectedOutput": "おしい",
+      "hint": "上から順に調べるよ。90 は 60 以上かな？",
+      "explanation": "90 は 60 以上なので、はじめの if で合ってしまい「おしい」が出る。大きい数から順に書こう。",
       "availableBlocks": []
     },
     {
       "id": 3,
       "type": "quiz",
       "title": "エラーを直そう",
-      "description": "実行したら SyntaxError が出た。どう直す？",
-      "codeToRead": "score = 70\nif score => 70:\n    print(\"頑張りましたね\")",
+      "description": "実行したら「SyntaxError: expected ':'」と出た。どう直す？",
+      "codeToRead": "score = 70\nif score >= 80:\n    print(\"ごうかく\")\nelse if score >= 60:\n    print(\"おしい\")",
       "choices": [
-        "70 を \"70\" にする",
-        "if を elif にする",
-        "=> を >= にする"
+        "else if のあとの : を消す",
+        "if を2つ書く",
+        "else if を elif にする"
       ],
       "correctAnswer": 2,
-      "expectedOutput": "=> を >= にする",
-      "hint": "記号の順番をよく見てみよう。",
-      "explanation": "「以上」は >= の順番。=> はエラーになるよ。",
+      "expectedOutput": "else if を elif にする",
+      "hint": "Python では「でなければ、もし」をどう書くんだったかな？",
+      "explanation": "Python では else if ではなく、elif とくっつけて書くよ。",
       "availableBlocks": []
     },
     {
       "id": 4,
-      "title": "70点以上なら",
-      "description": "score が 70 以上なら「頑張りましたね」と出す if を書こう！",
-      "expectedOutput": "頑張りましたね",
-      "correctCode": "if score >= 70:\n    print(\"頑張りましたね\")",
+      "title": "ねだんで 3つに",
+      "description": "nedan が 1000 以上なら「たかい」、500 以上なら「ふつう」、でなければ「やすい」と表示しよう！",
+      "expectedOutput": "ふつう",
+      "correctCode": "if nedan >= 1000:\n    print(\"たかい\")\nelif nedan >= 500:\n    print(\"ふつう\")\nelse:\n    print(\"やすい\")",
       "availableBlocks": [
         {
           "id": "b0",
@@ -3811,7 +3811,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
         },
         {
           "id": "b1",
-          "text": "score",
+          "text": "nedan",
           "type": "variable",
           "color": "bg-sky-200"
         },
@@ -3823,7 +3823,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
         },
         {
           "id": "b3",
-          "text": "70",
+          "text": "1000",
           "type": "number",
           "color": "bg-yellow-100"
         },
@@ -3859,97 +3859,7 @@ export const finishStepMissions: Record<string, Mission[]> = {
         },
         {
           "id": "b9",
-          "text": "\"頑張りましたね\"",
-          "type": "string",
-          "color": "bg-green-200"
-        },
-        {
-          "id": "b10",
-          "text": ")",
-          "type": "bracket",
-          "color": "bg-gray-200"
-        },
-        {
-          "id": "b11",
-          "text": ">",
-          "type": "operator",
-          "color": "bg-orange-200"
-        }
-      ],
-      "prefixCode": "score = 70",
-      "rules": [
-        {
-          "requires": [
-            ">="
-          ],
-          "message": ">= は「以上」。70 もふくめるよ！"
-        }
-      ]
-    },
-    {
-      "id": 5,
-      "title": "elif をつかう",
-      "description": "60 以上なら「よくできましたね」、そうでなく 40 以上なら「もう少し頑張りましょう」と出そう！",
-      "expectedOutput": "もう少し頑張りましょう",
-      "correctCode": "if score >= 60:\n    print(\"よくできましたね\")\nelif score >= 40:\n    print(\"もう少し頑張りましょう\")",
-      "availableBlocks": [
-        {
-          "id": "b0",
-          "text": "if",
-          "type": "keyword",
-          "color": "bg-blue-200"
-        },
-        {
-          "id": "b1",
-          "text": "score",
-          "type": "variable",
-          "color": "bg-sky-200"
-        },
-        {
-          "id": "b2",
-          "text": ">=",
-          "type": "operator",
-          "color": "bg-orange-200"
-        },
-        {
-          "id": "b3",
-          "text": "60",
-          "type": "number",
-          "color": "bg-yellow-100"
-        },
-        {
-          "id": "b4",
-          "text": ":",
-          "type": "colon",
-          "color": "bg-gray-200"
-        },
-        {
-          "id": "nl5",
-          "text": "↵",
-          "type": "newline",
-          "color": "bg-pink-200"
-        },
-        {
-          "id": "ind6",
-          "text": "    ",
-          "type": "indent",
-          "color": "bg-gray-200"
-        },
-        {
-          "id": "b7",
-          "text": "print",
-          "type": "function",
-          "color": "bg-yellow-200"
-        },
-        {
-          "id": "b8",
-          "text": "(",
-          "type": "bracket",
-          "color": "bg-gray-200"
-        },
-        {
-          "id": "b9",
-          "text": "\"よくできましたね\"",
+          "text": "\"たかい\"",
           "type": "string",
           "color": "bg-green-200"
         },
@@ -3967,13 +3877,13 @@ export const finishStepMissions: Record<string, Mission[]> = {
         },
         {
           "id": "b12",
-          "text": "40",
+          "text": "500",
           "type": "number",
           "color": "bg-yellow-100"
         },
         {
           "id": "b13",
-          "text": "\"もう少し頑張りましょう\"",
+          "text": "\"ふつう\"",
           "type": "string",
           "color": "bg-green-200"
         },
@@ -3982,15 +3892,153 @@ export const finishStepMissions: Record<string, Mission[]> = {
           "text": "else",
           "type": "keyword",
           "color": "bg-blue-200"
+        },
+        {
+          "id": "b15",
+          "text": "\"やすい\"",
+          "type": "string",
+          "color": "bg-green-200"
         }
       ],
-      "prefixCode": "score = 50",
+      "prefixCode": "nedan = 700",
       "rules": [
         {
           "requires": [
-            "elif "
+            "\nelif"
           ],
-          "message": "条件をふやすときは elif を使うよ！"
+          "message": "2つめの条件は elif で書こう！"
+        },
+        {
+          "requires": [
+            "\nelse"
+          ],
+          "message": "else は、いちばん最後に書こう！"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "4つに 分けよう",
+      "description": "score が 80 以上なら「ごうかく」、60 以上なら「おしい」、40 以上なら「がんばったね」、でなければ「もう少し」と表示しよう！",
+      "expectedOutput": "がんばったね",
+      "correctCode": "if score >= 80:\n    print(\"ごうかく\")\nelif score >= 60:\n    print(\"おしい\")\nelif score >= 40:\n    print(\"がんばったね\")\nelse:\n    print(\"もう少し\")",
+      "availableBlocks": [
+        {
+          "id": "b0",
+          "text": "if",
+          "type": "keyword",
+          "color": "bg-blue-200"
+        },
+        {
+          "id": "b1",
+          "text": "score",
+          "type": "variable",
+          "color": "bg-sky-200"
+        },
+        {
+          "id": "b2",
+          "text": ">=",
+          "type": "operator",
+          "color": "bg-orange-200"
+        },
+        {
+          "id": "b3",
+          "text": "80",
+          "type": "number",
+          "color": "bg-yellow-100"
+        },
+        {
+          "id": "b4",
+          "text": ":",
+          "type": "colon",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "nl5",
+          "text": "↵",
+          "type": "newline",
+          "color": "bg-pink-200"
+        },
+        {
+          "id": "ind6",
+          "text": "    ",
+          "type": "indent",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b7",
+          "text": "print",
+          "type": "function",
+          "color": "bg-yellow-200"
+        },
+        {
+          "id": "b8",
+          "text": "(",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b9",
+          "text": "\"ごうかく\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b10",
+          "text": ")",
+          "type": "bracket",
+          "color": "bg-gray-200"
+        },
+        {
+          "id": "b11",
+          "text": "elif",
+          "type": "keyword",
+          "color": "bg-blue-200"
+        },
+        {
+          "id": "b12",
+          "text": "60",
+          "type": "number",
+          "color": "bg-yellow-100"
+        },
+        {
+          "id": "b13",
+          "text": "\"おしい\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b14",
+          "text": "40",
+          "type": "number",
+          "color": "bg-yellow-100"
+        },
+        {
+          "id": "b15",
+          "text": "\"がんばったね\"",
+          "type": "string",
+          "color": "bg-green-200"
+        },
+        {
+          "id": "b16",
+          "text": "else",
+          "type": "keyword",
+          "color": "bg-blue-200"
+        },
+        {
+          "id": "b17",
+          "text": "\"もう少し\"",
+          "type": "string",
+          "color": "bg-green-200"
+        }
+      ],
+      "prefixCode": "score = 45",
+      "rules": [
+        {
+          "requires": [
+            "elif score >= 40"
+          ],
+          "message": "40 以上も elif でふやそう！"
         }
       ]
     }
@@ -7230,7 +7278,7 @@ export const finishStepTutorials: LessonTutorial[] = [
         "content": "さっきの動画で習ったことを、5問でたしかめます。結果を予想する問題・まちがいを直す問題・ブロックをならべる問題があります。",
         "characterMessage": "わからなくなったら、ヒントを見てね。",
         "codeExample": {
-          "good": "score = 90\nif score >= 80:\n    print(\"大変よくできました\")"
+          "good": "jikan = 7\nif jikan >= 8:\n    print(\"ねぼう\")\nelif jikan >= 6:\n    print(\"ちょうどいい\")  # 上から順に調べる"
         }
       }
     ]
