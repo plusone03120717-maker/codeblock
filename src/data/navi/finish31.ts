@@ -53,7 +53,7 @@ export const finishMissions: Record<string, Mission[]> = {
       correctAnswer: 2,
       expectedOutput: "おかしは 12",
       hint: "3 * 4 は \" \" の外。カンマのところには何が入るかな？",
-      explanation: "3 * 4 は計算されて 12。カンマでならべると、あいだにスペースが1つ入るよ。",
+      explanation: "3 * 4 は計算されて 12 になるよ。カンマでつなぐと、つないだところにスペースが1つ入るよ。だから「おかしは12」とくっつかずに、「おかしは 12」と出るんだ。",
       availableBlocks: [],
     },
     {
